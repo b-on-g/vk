@@ -38,6 +38,16 @@ namespace $ {
 				const blob = await db.read('tracks').tracks.get(key)
 				db.destructor()
 				if (blob) {
+					// Delete broken cache entries (empty or too small)
+					if (blob.size < 1000) {
+						console.warn(`[cache] broken entry (${blob.size} bytes), deleting: ${audio.artist} — ${audio.title}`)
+						const db2 = await this.db_async()
+						const tx = db2.change('tracks', 'meta')
+						await tx.stores.tracks.delete(key)
+						await tx.stores.meta.delete(key)
+						db2.destructor()
+						return null
+					}
 					// Re-mux old audio/aac entries to audio/mp4
 					if (blob.type === 'audio/aac') {
 						console.log(`[cache] migrating ${audio.artist} — ${audio.title} from aac to m4a...`)
