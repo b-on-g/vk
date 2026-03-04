@@ -1450,6 +1450,96 @@ declare namespace $ {
 
 //# sourceMappingURL=string.view.tree.d.ts.map
 declare namespace $ {
+    class $mol_state_time extends $mol_object {
+        static task(precision: number, reset?: null): $mol_after_timeout | $mol_after_frame;
+        static now(precision: number): number;
+    }
+}
+
+declare namespace $.$$ {
+    class $mol_svg extends $.$mol_svg {
+        computed_style(): Record<string, any>;
+        font_size(): number;
+        font_family(): any;
+    }
+}
+
+declare namespace $ {
+
+	export class $mol_svg extends $mol_view {
+		dom_name( ): string
+		dom_name_space( ): string
+		font_size( ): number
+		font_family( ): string
+		style_size( ): Record<string, any>
+	}
+	
+}
+
+//# sourceMappingURL=svg.view.tree.d.ts.map
+declare namespace $ {
+}
+
+declare namespace $ {
+
+	export class $mol_svg_root extends $mol_svg {
+		view_box( ): string
+		aspect( ): string
+		dom_name( ): string
+		attr( ): ({ 
+			'viewBox': ReturnType< $mol_svg_root['view_box'] >,
+			'preserveAspectRatio': ReturnType< $mol_svg_root['aspect'] >,
+		})  & ReturnType< $mol_svg['attr'] >
+	}
+	
+}
+
+//# sourceMappingURL=root.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_svg_path extends $mol_svg {
+		geometry( ): string
+		dom_name( ): string
+		attr( ): ({ 
+			'd': ReturnType< $mol_svg_path['geometry'] >,
+		})  & ReturnType< $mol_svg['attr'] >
+	}
+	
+}
+
+//# sourceMappingURL=path.view.tree.d.ts.map
+declare namespace $ {
+}
+
+declare namespace $ {
+
+	type $mol_svg_path__geometry_mol_icon_1 = $mol_type_enforce<
+		ReturnType< $mol_icon['path'] >
+		,
+		ReturnType< $mol_svg_path['geometry'] >
+	>
+	export class $mol_icon extends $mol_svg_root {
+		path( ): string
+		Path( ): $mol_svg_path
+		view_box( ): string
+		minimal_width( ): number
+		minimal_height( ): number
+		sub( ): readonly(any)[]
+	}
+	
+}
+
+//# sourceMappingURL=icon.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_icon_download extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=download.view.tree.d.ts.map
+declare namespace $ {
 }
 
 declare namespace $ {
@@ -1595,87 +1685,6 @@ declare namespace $ {
 declare namespace $ {
 
 	export class $mol_check_icon extends $mol_check {
-	}
-	
-}
-
-//# sourceMappingURL=icon.view.tree.d.ts.map
-declare namespace $ {
-    class $mol_state_time extends $mol_object {
-        static task(precision: number, reset?: null): $mol_after_timeout | $mol_after_frame;
-        static now(precision: number): number;
-    }
-}
-
-declare namespace $.$$ {
-    class $mol_svg extends $.$mol_svg {
-        computed_style(): Record<string, any>;
-        font_size(): number;
-        font_family(): any;
-    }
-}
-
-declare namespace $ {
-
-	export class $mol_svg extends $mol_view {
-		dom_name( ): string
-		dom_name_space( ): string
-		font_size( ): number
-		font_family( ): string
-		style_size( ): Record<string, any>
-	}
-	
-}
-
-//# sourceMappingURL=svg.view.tree.d.ts.map
-declare namespace $ {
-}
-
-declare namespace $ {
-
-	export class $mol_svg_root extends $mol_svg {
-		view_box( ): string
-		aspect( ): string
-		dom_name( ): string
-		attr( ): ({ 
-			'viewBox': ReturnType< $mol_svg_root['view_box'] >,
-			'preserveAspectRatio': ReturnType< $mol_svg_root['aspect'] >,
-		})  & ReturnType< $mol_svg['attr'] >
-	}
-	
-}
-
-//# sourceMappingURL=root.view.tree.d.ts.map
-declare namespace $ {
-
-	export class $mol_svg_path extends $mol_svg {
-		geometry( ): string
-		dom_name( ): string
-		attr( ): ({ 
-			'd': ReturnType< $mol_svg_path['geometry'] >,
-		})  & ReturnType< $mol_svg['attr'] >
-	}
-	
-}
-
-//# sourceMappingURL=path.view.tree.d.ts.map
-declare namespace $ {
-}
-
-declare namespace $ {
-
-	type $mol_svg_path__geometry_mol_icon_1 = $mol_type_enforce<
-		ReturnType< $mol_icon['path'] >
-		,
-		ReturnType< $mol_svg_path['geometry'] >
-	>
-	export class $mol_icon extends $mol_svg_root {
-		path( ): string
-		Path( ): $mol_svg_path
-		view_box( ): string
-		minimal_width( ): number
-		minimal_height( ): number
-		sub( ): readonly(any)[]
 	}
 	
 }
@@ -2190,6 +2199,7 @@ declare namespace $ {
     class $bog_vk_api extends $mol_object {
         static proxy_url: string;
         static token(next?: string): string;
+        static cookies(next?: string): string;
         static fetch_proxy(endpoint: string, body: Record<string, any>): Promise<any>;
         static my_audios(): $bog_vk_api_audio_list;
         static search_audios(query: string): $bog_vk_api_audio_list;
@@ -2217,153 +2227,6 @@ declare namespace $ {
     }
 }
 
-declare namespace $ {
-
-	type $mol_image__uri_bog_vk_track_1 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['cover'] >
-		,
-		ReturnType< $mol_image['uri'] >
-	>
-	type $mol_paragraph__title_bog_vk_track_2 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['title'] >
-		,
-		ReturnType< $mol_paragraph['title'] >
-	>
-	type $mol_paragraph__title_bog_vk_track_3 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['artist'] >
-		,
-		ReturnType< $mol_paragraph['title'] >
-	>
-	type $mol_view__sub_bog_vk_track_4 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
-	>
-	type $mol_paragraph__title_bog_vk_track_5 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['duration_text'] >
-		,
-		ReturnType< $mol_paragraph['title'] >
-	>
-	export class $bog_vk_track extends $mol_view {
-		event_click( next?: any ): any
-		cover( ): string
-		Cover( ): $mol_image
-		Cover_placeholder( ): $mol_icon_music
-		title( ): string
-		Title( ): $mol_paragraph
-		artist( ): string
-		Artist( ): $mol_paragraph
-		Info( ): $mol_view
-		duration_text( ): string
-		Duration( ): $mol_paragraph
-		audio( ): any
-		current( ): boolean
-		play( next?: any ): any
-		event( ): ({ 
-			click( next?: ReturnType< $bog_vk_track['event_click'] > ): ReturnType< $bog_vk_track['event_click'] >,
-		}) 
-		attr( ): ({ 
-			'bog_vk_track_current': ReturnType< $bog_vk_track['current'] >,
-		}) 
-		sub( ): readonly(any)[]
-	}
-	
-}
-
-//# sourceMappingURL=track.view.tree.d.ts.map
-declare namespace $.$$ {
-    class $bog_vk_track extends $.$bog_vk_track {
-        audio_data(): $bog_vk_api_audio | null;
-        title(): string;
-        artist(): string;
-        cover(): string;
-        Cover(): any;
-        Cover_placeholder(): any;
-        duration_text(): string;
-        event_click(event: Event): void;
-    }
-}
-
-declare namespace $.$$ {
-}
-
-declare namespace $ {
-
-	type $bog_vk_track__audio_bog_vk_tracks_1 = $mol_type_enforce<
-		ReturnType< $bog_vk_tracks['track_audio'] >
-		,
-		ReturnType< $bog_vk_track['audio'] >
-	>
-	type $bog_vk_track__current_bog_vk_tracks_2 = $mol_type_enforce<
-		ReturnType< $bog_vk_tracks['track_current'] >
-		,
-		ReturnType< $bog_vk_track['current'] >
-	>
-	type $bog_vk_track__play_bog_vk_tracks_3 = $mol_type_enforce<
-		ReturnType< $bog_vk_tracks['track_play'] >
-		,
-		ReturnType< $bog_vk_track['play'] >
-	>
-	export class $bog_vk_tracks extends $mol_list {
-		track_audio( id: any): any
-		track_current( id: any): boolean
-		track_play( id: any, next?: any ): any
-		Track( id: any): $bog_vk_track
-		track_rows( ): readonly(any)[]
-		audios( ): readonly(any)[]
-		current_audio( ): any
-		play_audio( next?: any ): any
-		rows( ): ReturnType< $bog_vk_tracks['track_rows'] >
-	}
-	
-}
-
-//# sourceMappingURL=tracks.view.tree.d.ts.map
-declare namespace $.$$ {
-    class $bog_vk_tracks extends $.$bog_vk_tracks {
-        track_rows(): $.$bog_vk_track[];
-        track_audio(index: number): any;
-        track_current(index: number): boolean;
-        track_play(index: number): void;
-    }
-}
-
-declare namespace $ {
-
-	export class $mol_icon_skip_previous extends $mol_icon {
-		path( ): string
-	}
-	
-}
-
-//# sourceMappingURL=previous.view.tree.d.ts.map
-declare namespace $ {
-
-	export class $mol_icon_play extends $mol_icon {
-		path( ): string
-	}
-	
-}
-
-//# sourceMappingURL=play.view.tree.d.ts.map
-declare namespace $ {
-
-	export class $mol_icon_pause extends $mol_icon {
-		path( ): string
-	}
-	
-}
-
-//# sourceMappingURL=pause.view.tree.d.ts.map
-declare namespace $ {
-
-	export class $mol_icon_skip_next extends $mol_icon {
-		path( ): string
-	}
-	
-}
-
-//# sourceMappingURL=next.view.tree.d.ts.map
 declare namespace $ {
     function $mol_db_response<Result>(request: IDBRequest<Result>): Promise<Result>;
 }
@@ -2481,15 +2344,184 @@ declare namespace $ {
         static cache_key(audio: $bog_vk_api_audio): string;
         static get(audio: $bog_vk_api_audio): Promise<string | null>;
         static all_cached(): Promise<$bog_vk_api_audio[]>;
+        static adts_to_m4a(adts: Uint8Array): Uint8Array;
         static extract_audio(ts: Uint8Array): {
             data: Uint8Array;
             mime: string;
         };
+        static demux_ts_audio(ts: Uint8Array): Uint8Array | null;
+        static parse_m3u8(text: string, base_url: string): {
+            segments: string[];
+            key_url: string;
+            key_iv: string;
+        };
+        static decrypt_segment(data: ArrayBuffer, cryptoKey: CryptoKey, index: number, iv_hex: string): Promise<ArrayBuffer>;
         static save_hls(audio: $bog_vk_api_audio): Promise<void>;
     }
     export {};
 }
 
+declare namespace $ {
+
+	type $mol_image__uri_bog_vk_track_1 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['cover'] >
+		,
+		ReturnType< $mol_image['uri'] >
+	>
+	type $mol_paragraph__title_bog_vk_track_2 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['title'] >
+		,
+		ReturnType< $mol_paragraph['title'] >
+	>
+	type $mol_paragraph__title_bog_vk_track_3 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['artist'] >
+		,
+		ReturnType< $mol_paragraph['title'] >
+	>
+	type $mol_view__sub_bog_vk_track_4 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_paragraph__title_bog_vk_track_5 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['duration_text'] >
+		,
+		ReturnType< $mol_paragraph['title'] >
+	>
+	type $mol_button_minor__click_bog_vk_track_6 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['download'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_bog_vk_track_7 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	export class $bog_vk_track extends $mol_view {
+		event_click( next?: any ): any
+		cover( ): string
+		Cover( ): $mol_image
+		Cover_placeholder( ): $mol_icon_music
+		title( ): string
+		Title( ): $mol_paragraph
+		artist( ): string
+		Artist( ): $mol_paragraph
+		Info( ): $mol_view
+		duration_text( ): string
+		Duration( ): $mol_paragraph
+		download( next?: any ): any
+		Download_icon( ): $mol_icon_download
+		Download( ): $mol_button_minor
+		audio( ): any
+		current( ): boolean
+		play( next?: any ): any
+		event( ): ({ 
+			click( next?: ReturnType< $bog_vk_track['event_click'] > ): ReturnType< $bog_vk_track['event_click'] >,
+		}) 
+		attr( ): ({ 
+			'bog_vk_track_current': ReturnType< $bog_vk_track['current'] >,
+		}) 
+		sub( ): readonly(any)[]
+	}
+	
+}
+
+//# sourceMappingURL=track.view.tree.d.ts.map
+declare namespace $.$$ {
+    class $bog_vk_track extends $.$bog_vk_track {
+        audio_data(): $bog_vk_api_audio | null;
+        title(): string;
+        artist(): string;
+        cover(): string;
+        Cover(): any;
+        Cover_placeholder(): any;
+        duration_text(): string;
+        event_click(event: Event): void;
+        download(): void;
+    }
+}
+
+declare namespace $.$$ {
+}
+
+declare namespace $ {
+
+	type $bog_vk_track__audio_bog_vk_tracks_1 = $mol_type_enforce<
+		ReturnType< $bog_vk_tracks['track_audio'] >
+		,
+		ReturnType< $bog_vk_track['audio'] >
+	>
+	type $bog_vk_track__current_bog_vk_tracks_2 = $mol_type_enforce<
+		ReturnType< $bog_vk_tracks['track_current'] >
+		,
+		ReturnType< $bog_vk_track['current'] >
+	>
+	type $bog_vk_track__play_bog_vk_tracks_3 = $mol_type_enforce<
+		ReturnType< $bog_vk_tracks['track_play'] >
+		,
+		ReturnType< $bog_vk_track['play'] >
+	>
+	export class $bog_vk_tracks extends $mol_list {
+		track_audio( id: any): any
+		track_current( id: any): boolean
+		track_play( id: any, next?: any ): any
+		Track( id: any): $bog_vk_track
+		track_rows( ): readonly(any)[]
+		audios( ): readonly(any)[]
+		current_audio( ): any
+		play_audio( next?: any ): any
+		rows( ): ReturnType< $bog_vk_tracks['track_rows'] >
+	}
+	
+}
+
+//# sourceMappingURL=tracks.view.tree.d.ts.map
+declare namespace $.$$ {
+    class $bog_vk_tracks extends $.$bog_vk_tracks {
+        track_rows(): $.$bog_vk_track[];
+        track_audio(index: number): any;
+        track_current(index: number): boolean;
+        track_play(index: number): void;
+    }
+}
+
+declare namespace $ {
+
+	export class $mol_icon_skip_previous extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=previous.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_icon_play extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=play.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_icon_pause extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=pause.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_icon_skip_next extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=next.view.tree.d.ts.map
 declare namespace $ {
 
 	type $mol_view__sub_bog_vk_player_1 = $mol_type_enforce<
@@ -2638,6 +2670,7 @@ declare namespace $.$$ {
         format_time(seconds: number): string;
         progress_percent(): number;
         play_track(audio?: $bog_vk_api_audio | null): void;
+        private play_source;
         toggle(): void;
         prev(): void;
         next(): void;
@@ -2674,43 +2707,43 @@ declare namespace $ {
 		,
 		ReturnType< $mol_string['value'] >
 	>
-	type $mol_link__uri_bog_vk_app_3 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_link['uri'] >
-	>
-	type $mol_link__target_bog_vk_app_4 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_link['target'] >
-	>
-	type $mol_link__sub_bog_vk_app_5 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_link['sub'] >
-	>
-	type $mol_paragraph__title_bog_vk_app_6 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['token_hint'] >
-		,
-		ReturnType< $mol_paragraph['title'] >
-	>
-	type $mol_view__sub_bog_vk_app_7 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
-	>
-	type $mol_button_minor__click_bog_vk_app_8 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['show_my'] >
+	type $mol_button_minor__click_bog_vk_app_3 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['download_all'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
-	type $mol_button_minor__sub_bog_vk_app_9 = $mol_type_enforce<
+	type $mol_button_minor__sub_bog_vk_app_4 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
+	type $mol_link__uri_bog_vk_app_5 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_link['uri'] >
+	>
+	type $mol_link__target_bog_vk_app_6 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_link['target'] >
+	>
+	type $mol_link__sub_bog_vk_app_7 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_link['sub'] >
+	>
+	type $mol_paragraph__title_bog_vk_app_8 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['token_hint'] >
+		,
+		ReturnType< $mol_paragraph['title'] >
+	>
+	type $mol_view__sub_bog_vk_app_9 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
 	type $mol_button_minor__click_bog_vk_app_10 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['show_search'] >
+		ReturnType< $bog_vk_app['show_my'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
@@ -2719,42 +2752,52 @@ declare namespace $ {
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
-	type $mol_view__sub_bog_vk_app_12 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_app_12 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['show_search'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_bog_vk_app_13 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	type $mol_view__sub_bog_vk_app_14 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_string__hint_bog_vk_app_13 = $mol_type_enforce<
+	type $mol_string__hint_bog_vk_app_15 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_string['hint'] >
 	>
-	type $mol_string__value_bog_vk_app_14 = $mol_type_enforce<
+	type $mol_string__value_bog_vk_app_16 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['search_query'] >
 		,
 		ReturnType< $mol_string['value'] >
 	>
-	type $bog_vk_tracks__audios_bog_vk_app_15 = $mol_type_enforce<
+	type $bog_vk_tracks__audios_bog_vk_app_17 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_tracks['audios'] >
 	>
-	type $bog_vk_tracks__current_audio_bog_vk_app_16 = $mol_type_enforce<
+	type $bog_vk_tracks__current_audio_bog_vk_app_18 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['current_audio'] >
 	>
-	type $bog_vk_tracks__play_audio_bog_vk_app_17 = $mol_type_enforce<
+	type $bog_vk_tracks__play_audio_bog_vk_app_19 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['on_play_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['play_audio'] >
 	>
-	type $bog_vk_player__queue_bog_vk_app_18 = $mol_type_enforce<
+	type $bog_vk_player__queue_bog_vk_app_20 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_player['queue'] >
 	>
-	type $bog_vk_player__current_audio_bog_vk_app_19 = $mol_type_enforce<
+	type $bog_vk_player__current_audio_bog_vk_app_21 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_player['current_audio'] >
@@ -2763,6 +2806,9 @@ declare namespace $ {
 		Theme( ): $mol_theme_auto
 		token( next?: string ): string
 		Token_input( ): $mol_string
+		download_all( next?: any ): any
+		Download_all_icon( ): $mol_icon_download
+		Download_all( ): $mol_button_minor
 		Lighter( ): $mol_lights_toggle
 		scroll( next?: number ): number
 		Auth_link( ): $mol_link
@@ -2799,6 +2845,7 @@ declare namespace $.$$ {
         title(): "VK Music (offline)" | "VK Music (токен протух)" | "VK Music";
         token(next?: string): string;
         extract_token(input: string): string;
+        extract_cookies(input: string): string;
         page(next?: string): string;
         show_my(): void;
         show_search(): void;
@@ -2810,6 +2857,7 @@ declare namespace $.$$ {
         on_play_audio(audio?: $bog_vk_api_audio | null): void;
         Auth_block(): any;
         token_hint(): string;
+        download_all(): void;
         Search_bar(): any;
     }
 }

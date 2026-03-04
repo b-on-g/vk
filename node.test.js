@@ -5840,6 +5840,185 @@ var $;
 })($ || ($ = {}));
 
 ;
+	($.$mol_svg) = class $mol_svg extends ($.$mol_view) {
+		dom_name(){
+			return "svg";
+		}
+		dom_name_space(){
+			return "http://www.w3.org/2000/svg";
+		}
+		font_size(){
+			return 16;
+		}
+		font_family(){
+			return "";
+		}
+		style_size(){
+			return {};
+		}
+	};
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    class $mol_state_time extends $mol_object {
+        static task(precision, reset) {
+            if (precision) {
+                return new $mol_after_timeout(precision, () => this.task(precision, null));
+            }
+            else {
+                return new $mol_after_frame(() => this.task(precision, null));
+            }
+        }
+        static now(precision) {
+            this.task(precision);
+            return Date.now();
+        }
+    }
+    __decorate([
+        $mol_mem_key
+    ], $mol_state_time, "task", null);
+    __decorate([
+        $mol_mem_key
+    ], $mol_state_time, "now", null);
+    $.$mol_state_time = $mol_state_time;
+})($ || ($ = {}));
+
+;
+"use strict";
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        class $mol_svg extends $.$mol_svg {
+            computed_style() {
+                const win = this.$.$mol_dom_context;
+                const style = win.getComputedStyle(this.dom_node());
+                if (!style['font-size'])
+                    $mol_state_time.now(0);
+                return style;
+            }
+            font_size() {
+                return parseInt(this.computed_style()['font-size']) || 16;
+            }
+            font_family() {
+                return this.computed_style()['font-family'];
+            }
+        }
+        __decorate([
+            $mol_mem
+        ], $mol_svg.prototype, "computed_style", null);
+        __decorate([
+            $mol_mem
+        ], $mol_svg.prototype, "font_size", null);
+        __decorate([
+            $mol_mem
+        ], $mol_svg.prototype, "font_family", null);
+        $$.$mol_svg = $mol_svg;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+	($.$mol_svg_root) = class $mol_svg_root extends ($.$mol_svg) {
+		view_box(){
+			return "0 0 100 100";
+		}
+		aspect(){
+			return "xMidYMid";
+		}
+		dom_name(){
+			return "svg";
+		}
+		attr(){
+			return {
+				...(super.attr()), 
+				"viewBox": (this.view_box()), 
+				"preserveAspectRatio": (this.aspect())
+			};
+		}
+	};
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_style_attach("mol/svg/root/root.view.css", "[mol_svg_root] {\n\toverflow: hidden;\n}\n");
+})($ || ($ = {}));
+
+;
+"use strict";
+
+;
+	($.$mol_svg_path) = class $mol_svg_path extends ($.$mol_svg) {
+		geometry(){
+			return "";
+		}
+		dom_name(){
+			return "path";
+		}
+		attr(){
+			return {...(super.attr()), "d": (this.geometry())};
+		}
+	};
+
+
+;
+"use strict";
+
+;
+	($.$mol_icon) = class $mol_icon extends ($.$mol_svg_root) {
+		path(){
+			return "";
+		}
+		Path(){
+			const obj = new this.$.$mol_svg_path();
+			(obj.geometry) = () => ((this.path()));
+			return obj;
+		}
+		view_box(){
+			return "0 0 24 24";
+		}
+		minimal_width(){
+			return 16;
+		}
+		minimal_height(){
+			return 16;
+		}
+		sub(){
+			return [(this.Path())];
+		}
+	};
+	($mol_mem(($.$mol_icon.prototype), "Path"));
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_style_attach("mol/icon/icon.view.css", "[mol_icon] {\n\tfill: currentColor;\n\tstroke: none;\n\twidth: 1em;\n\theight: 1.5em;\n\tflex: 0 0 auto;\n\tvertical-align: top;\n\tdisplay: inline-block;\n\tfilter: drop-shadow(0px 1px 1px var(--mol_theme_back));\n\ttransform-origin: center;\n}\n\n[mol_icon_path] {\n\ttransform-origin: center;\n}\n");
+})($ || ($ = {}));
+
+;
+"use strict";
+
+;
+	($.$mol_icon_download) = class $mol_icon_download extends ($.$mol_icon) {
+		path(){
+			return "M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z";
+		}
+	};
+
+
+;
+"use strict";
+
+;
 	($.$mol_speck) = class $mol_speck extends ($.$mol_view) {
 		value(){
 			return null;
@@ -6175,174 +6354,6 @@ var $;
 var $;
 (function ($) {
     $mol_style_attach("mol/check/icon/icon.view.css", "[mol_check_icon]:where([mol_check_checked]) {\n\tcolor: var(--mol_theme_current);\n}\n");
-})($ || ($ = {}));
-
-;
-"use strict";
-
-;
-	($.$mol_svg) = class $mol_svg extends ($.$mol_view) {
-		dom_name(){
-			return "svg";
-		}
-		dom_name_space(){
-			return "http://www.w3.org/2000/svg";
-		}
-		font_size(){
-			return 16;
-		}
-		font_family(){
-			return "";
-		}
-		style_size(){
-			return {};
-		}
-	};
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    class $mol_state_time extends $mol_object {
-        static task(precision, reset) {
-            if (precision) {
-                return new $mol_after_timeout(precision, () => this.task(precision, null));
-            }
-            else {
-                return new $mol_after_frame(() => this.task(precision, null));
-            }
-        }
-        static now(precision) {
-            this.task(precision);
-            return Date.now();
-        }
-    }
-    __decorate([
-        $mol_mem_key
-    ], $mol_state_time, "task", null);
-    __decorate([
-        $mol_mem_key
-    ], $mol_state_time, "now", null);
-    $.$mol_state_time = $mol_state_time;
-})($ || ($ = {}));
-
-;
-"use strict";
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        class $mol_svg extends $.$mol_svg {
-            computed_style() {
-                const win = this.$.$mol_dom_context;
-                const style = win.getComputedStyle(this.dom_node());
-                if (!style['font-size'])
-                    $mol_state_time.now(0);
-                return style;
-            }
-            font_size() {
-                return parseInt(this.computed_style()['font-size']) || 16;
-            }
-            font_family() {
-                return this.computed_style()['font-family'];
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_svg.prototype, "computed_style", null);
-        __decorate([
-            $mol_mem
-        ], $mol_svg.prototype, "font_size", null);
-        __decorate([
-            $mol_mem
-        ], $mol_svg.prototype, "font_family", null);
-        $$.$mol_svg = $mol_svg;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-	($.$mol_svg_root) = class $mol_svg_root extends ($.$mol_svg) {
-		view_box(){
-			return "0 0 100 100";
-		}
-		aspect(){
-			return "xMidYMid";
-		}
-		dom_name(){
-			return "svg";
-		}
-		attr(){
-			return {
-				...(super.attr()), 
-				"viewBox": (this.view_box()), 
-				"preserveAspectRatio": (this.aspect())
-			};
-		}
-	};
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/svg/root/root.view.css", "[mol_svg_root] {\n\toverflow: hidden;\n}\n");
-})($ || ($ = {}));
-
-;
-"use strict";
-
-;
-	($.$mol_svg_path) = class $mol_svg_path extends ($.$mol_svg) {
-		geometry(){
-			return "";
-		}
-		dom_name(){
-			return "path";
-		}
-		attr(){
-			return {...(super.attr()), "d": (this.geometry())};
-		}
-	};
-
-
-;
-"use strict";
-
-;
-	($.$mol_icon) = class $mol_icon extends ($.$mol_svg_root) {
-		path(){
-			return "";
-		}
-		Path(){
-			const obj = new this.$.$mol_svg_path();
-			(obj.geometry) = () => ((this.path()));
-			return obj;
-		}
-		view_box(){
-			return "0 0 24 24";
-		}
-		minimal_width(){
-			return 16;
-		}
-		minimal_height(){
-			return 16;
-		}
-		sub(){
-			return [(this.Path())];
-		}
-	};
-	($mol_mem(($.$mol_icon.prototype), "Path"));
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/icon/icon.view.css", "[mol_icon] {\n\tfill: currentColor;\n\tstroke: none;\n\twidth: 1em;\n\theight: 1.5em;\n\tflex: 0 0 auto;\n\tvertical-align: top;\n\tdisplay: inline-block;\n\tfilter: drop-shadow(0px 1px 1px var(--mol_theme_back));\n\ttransform-origin: center;\n}\n\n[mol_icon_path] {\n\ttransform-origin: center;\n}\n");
 })($ || ($ = {}));
 
 ;
@@ -7157,6 +7168,20 @@ var $;
 			(obj.title) = () => ((this.duration_text()));
 			return obj;
 		}
+		download(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Download_icon(){
+			const obj = new this.$.$mol_icon_download();
+			return obj;
+		}
+		Download(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.click) = (next) => ((this.download(next)));
+			(obj.sub) = () => ([(this.Download_icon())]);
+			return obj;
+		}
 		audio(){
 			return null;
 		}
@@ -7178,7 +7203,8 @@ var $;
 				(this.Cover()), 
 				(this.Cover_placeholder()), 
 				(this.Info()), 
-				(this.Duration())
+				(this.Duration()), 
+				(this.Download())
 			];
 		}
 	};
@@ -7189,6 +7215,9 @@ var $;
 	($mol_mem(($.$bog_vk_track.prototype), "Artist"));
 	($mol_mem(($.$bog_vk_track.prototype), "Info"));
 	($mol_mem(($.$bog_vk_track.prototype), "Duration"));
+	($mol_mem(($.$bog_vk_track.prototype), "download"));
+	($mol_mem(($.$bog_vk_track.prototype), "Download_icon"));
+	($mol_mem(($.$bog_vk_track.prototype), "Download"));
 	($mol_mem(($.$bog_vk_track.prototype), "play"));
 
 
@@ -7200,6 +7229,9 @@ var $;
         static proxy_url = 'https://bog-vk-audio.cmyser-fast-i.workers.dev';
         static token(next) {
             return $mol_state_local.value('vk_token', next) ?? '';
+        }
+        static cookies(next) {
+            return $mol_state_local.value('vk_cookies', next) ?? '';
         }
         static async fetch_proxy(endpoint, body) {
             const resp = await fetch(`${this.proxy_url}${endpoint}`, {
@@ -7220,13 +7252,13 @@ var $;
             const token = this.token();
             if (!token)
                 throw new Error('Token is not set');
-            return $mol_wire_sync(this).fetch_proxy('/audios', { token, count: 200 });
+            return $mol_wire_sync(this).fetch_proxy('/audios', { token, cookies: this.cookies(), count: 200 });
         }
         static search_audios(query) {
             const token = this.token();
             if (!token)
                 throw new Error('Token is not set');
-            return $mol_wire_sync(this).fetch_proxy('/search', { token, query, count: 100 });
+            return $mol_wire_sync(this).fetch_proxy('/search', { token, cookies: this.cookies(), query, count: 100 });
         }
     }
     __decorate([
@@ -7234,11 +7266,642 @@ var $;
     ], $bog_vk_api, "token", null);
     __decorate([
         $mol_mem
+    ], $bog_vk_api, "cookies", null);
+    __decorate([
+        $mol_mem
     ], $bog_vk_api, "my_audios", null);
     __decorate([
         $mol_mem_key
     ], $bog_vk_api, "search_audios", null);
     $.$bog_vk_api = $bog_vk_api;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    function $mol_db_response(request) {
+        return new Promise((done, fail) => {
+            request.onerror = () => fail(new Error(request.error.message));
+            request.onsuccess = () => done(request.result);
+        });
+    }
+    $.$mol_db_response = $mol_db_response;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    async function $mol_db(name, ...migrations) {
+        const request = this.$mol_dom_context.indexedDB.open(name, migrations.length ? migrations.length + 1 : undefined);
+        request.onupgradeneeded = event => {
+            migrations.splice(0, event.oldVersion - 1);
+            const transaction = new $mol_db_transaction(request.transaction);
+            for (const migrate of migrations)
+                migrate(transaction);
+        };
+        const db = await $mol_db_response(request);
+        return new $mol_db_database(db);
+    }
+    $.$mol_db = $mol_db;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    class $mol_db_store {
+        native;
+        constructor(native) {
+            this.native = native;
+        }
+        get name() {
+            return this.native.name;
+        }
+        get path() {
+            return this.native.keyPath;
+        }
+        get incremental() {
+            return this.native.autoIncrement;
+        }
+        get indexes() {
+            return new Proxy({}, {
+                ownKeys: () => [...this.native.indexNames],
+                has: (_, name) => this.native.indexNames.contains(name),
+                get: (_, name) => new $mol_db_index(this.native.index(name))
+            });
+        }
+        index_make(name, path = [], unique = false, multiEntry = false) {
+            return this.native.createIndex(name, path, { multiEntry, unique });
+        }
+        index_drop(name) {
+            this.native.deleteIndex(name);
+            return this;
+        }
+        get transaction() {
+            return new $mol_db_transaction(this.native.transaction);
+        }
+        get db() {
+            return this.transaction.db;
+        }
+        clear() {
+            return $mol_db_response(this.native.clear());
+        }
+        count(keys) {
+            return $mol_db_response(this.native.count(keys));
+        }
+        put(doc, key) {
+            return $mol_db_response(this.native.put(doc, key));
+        }
+        get(key) {
+            return $mol_db_response(this.native.get(key));
+        }
+        select(key, count) {
+            return $mol_db_response(this.native.getAll(key, count));
+        }
+        drop(keys) {
+            return $mol_db_response(this.native.delete(keys));
+        }
+    }
+    $.$mol_db_store = $mol_db_store;
+})($ || ($ = {}));
+
+;
+"use strict";
+
+;
+"use strict";
+var $;
+(function ($) {
+    class $mol_db_index {
+        native;
+        constructor(native) {
+            this.native = native;
+        }
+        get name() {
+            return this.native.name;
+        }
+        get paths() {
+            return this.native.keyPath;
+        }
+        get unique() {
+            return this.native.unique;
+        }
+        get multiple() {
+            return this.native.multiEntry;
+        }
+        get store() {
+            return new $mol_db_store(this.native.objectStore);
+        }
+        get transaction() {
+            return this.store.transaction;
+        }
+        get db() {
+            return this.store.db;
+        }
+        count(keys) {
+            return $mol_db_response(this.native.count(keys));
+        }
+        get(key) {
+            return $mol_db_response(this.native.get(key));
+        }
+        select(key, count) {
+            return $mol_db_response(this.native.getAll(key, count));
+        }
+    }
+    $.$mol_db_index = $mol_db_index;
+})($ || ($ = {}));
+
+;
+"use strict";
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_dom_context.indexedDB = $node['fake-indexeddb'].indexedDB;
+    $mol_dom_context.IDBCursor = $node['fake-indexeddb'].IDBCursor;
+    $mol_dom_context.IDBCursorWithValue = $node['fake-indexeddb'].IDBCursorWithValue;
+    $mol_dom_context.IDBDatabase = $node['fake-indexeddb'].IDBDatabase;
+    $mol_dom_context.IDBFactory = $node['fake-indexeddb'].IDBFactory;
+    $mol_dom_context.IDBIndex = $node['fake-indexeddb'].IDBIndex;
+    $mol_dom_context.IDBKeyRange = $node['fake-indexeddb'].IDBKeyRange;
+    $mol_dom_context.IDBObjectStore = $node['fake-indexeddb'].IDBObjectStore;
+    $mol_dom_context.IDBOpenDBRequest = $node['fake-indexeddb'].IDBOpenDBRequest;
+    $mol_dom_context.IDBRequest = $node['fake-indexeddb'].IDBRequest;
+    $mol_dom_context.IDBTransaction = $node['fake-indexeddb'].IDBTransaction;
+    $mol_dom_context.IDBVersionChangeEvent = $node['fake-indexeddb'].IDBVersionChangeEvent;
+})($ || ($ = {}));
+
+;
+"use strict";
+
+;
+"use strict";
+var $;
+(function ($) {
+    class $mol_db_database {
+        native;
+        constructor(native) {
+            this.native = native;
+        }
+        get name() {
+            return this.native.name;
+        }
+        get version() {
+            return this.native.version;
+        }
+        get stores() {
+            return [...this.native.objectStoreNames];
+        }
+        read(...names) {
+            return new $mol_db_transaction(this.native.transaction(names, 'readonly', { durability: 'relaxed' })).stores;
+        }
+        change(...names) {
+            return new $mol_db_transaction(this.native.transaction(names, 'readwrite', { durability: 'relaxed' }));
+        }
+        kill() {
+            this.native.close();
+            const request = $mol_dom_context.indexedDB.deleteDatabase(this.name);
+            request.onblocked = console.warn;
+            return $mol_db_response(request);
+        }
+        destructor() {
+            this.native.close();
+        }
+    }
+    $.$mol_db_database = $mol_db_database;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    class $mol_db_transaction {
+        native;
+        constructor(native) {
+            this.native = native;
+        }
+        get stores() {
+            return new Proxy({}, {
+                ownKeys: () => [...this.native.objectStoreNames],
+                has: (_, name) => this.native.objectStoreNames.contains(name),
+                get: (_, name, proxy) => (name in proxy)
+                    ? new $mol_db_store(this.native.objectStore(name))
+                    : undefined,
+            });
+        }
+        store_make(name) {
+            return this.native.db.createObjectStore(name, { autoIncrement: true });
+        }
+        store_drop(name) {
+            this.native.db.deleteObjectStore(name);
+            return this;
+        }
+        abort() {
+            if (this.native.error)
+                return;
+            this.native.abort();
+        }
+        commit() {
+            this.native.commit?.();
+            return new Promise((done, fail) => {
+                this.native.onerror = () => fail(new Error(this.native.error.message));
+                this.native.oncomplete = () => done();
+            });
+        }
+        get db() {
+            return new $mol_db_database(this.native.db);
+        }
+    }
+    $.$mol_db_transaction = $mol_db_transaction;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    class $bog_vk_cache extends $mol_object {
+        static db() {
+            return $mol_wire_sync(this).db_async();
+        }
+        static async db_async() {
+            return $$.$mol_db('vk_audio_cache', mig => mig.store_make('tracks'), mig => mig.store_make('meta'));
+        }
+        static cache_key(audio) {
+            return `${audio.owner_id}_${audio.id}`;
+        }
+        static async get(audio) {
+            const key = this.cache_key(audio);
+            try {
+                const db = await this.db_async();
+                const blob = await db.read('tracks').tracks.get(key);
+                db.destructor();
+                if (blob) {
+                    if (blob.type === 'audio/aac') {
+                        console.log(`[cache] migrating ${audio.artist} — ${audio.title} from aac to m4a...`);
+                        const adts = new Uint8Array(await blob.arrayBuffer());
+                        const m4a = this.adts_to_m4a(adts);
+                        const newBlob = new Blob([m4a.buffer], { type: 'audio/mp4' });
+                        const db2 = await this.db_async();
+                        const tx = db2.change('tracks');
+                        await tx.stores.tracks.put(newBlob, key);
+                        db2.destructor();
+                        return URL.createObjectURL(newBlob);
+                    }
+                    console.log(`[cache] hit: ${audio.artist} — ${audio.title} (${(blob.size / 1024 / 1024).toFixed(1)} MB)`);
+                    return URL.createObjectURL(blob);
+                }
+                console.warn(`[cache] miss: ${audio.artist} — ${audio.title} (key: ${key})`);
+                return null;
+            }
+            catch (e) {
+                console.warn(`[cache] get error: ${key}`, e?.message);
+                return null;
+            }
+        }
+        static async all_cached() {
+            try {
+                const db = await this.db_async();
+                const all = await db.read('meta').meta.select();
+                db.destructor();
+                return all;
+            }
+            catch {
+                return [];
+            }
+        }
+        static adts_to_m4a(adts) {
+            const frames = [];
+            const frameSizes = [];
+            let audioObjectType = 2;
+            let sampleRateIndex = 4;
+            let channelConfig = 2;
+            let i = 0;
+            while (i < adts.length - 7) {
+                if (adts[i] !== 0xFF || (adts[i + 1] & 0xF6) !== 0xF0) {
+                    i++;
+                    continue;
+                }
+                const protAbsent = adts[i + 1] & 0x01;
+                const profile = (adts[i + 2] >> 6) & 0x03;
+                const srIdx = (adts[i + 2] >> 2) & 0x0F;
+                const chCfg = ((adts[i + 2] & 0x01) << 2) | ((adts[i + 3] >> 6) & 0x03);
+                const frameLen = ((adts[i + 3] & 0x03) << 11) | (adts[i + 4] << 3) | ((adts[i + 5] >> 5) & 0x07);
+                if (frameLen < 7 || frameLen > 8192 || i + frameLen > adts.length) {
+                    i++;
+                    continue;
+                }
+                if (i + frameLen + 1 < adts.length) {
+                    if (adts[i + frameLen] !== 0xFF || (adts[i + frameLen + 1] & 0xF6) !== 0xF0) {
+                        i++;
+                        continue;
+                    }
+                }
+                if (frames.length === 0) {
+                    audioObjectType = profile + 1;
+                    sampleRateIndex = srIdx;
+                    channelConfig = chCfg;
+                }
+                const hdrLen = protAbsent ? 7 : 9;
+                if (hdrLen >= frameLen) {
+                    i++;
+                    continue;
+                }
+                const raw = adts.slice(i + hdrLen, i + frameLen);
+                frames.push(raw);
+                frameSizes.push(raw.length);
+                i += frameLen;
+            }
+            if (frames.length === 0)
+                return adts;
+            const sampleRates = [96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350];
+            const sampleRate = sampleRates[sampleRateIndex] || 44100;
+            const totalSamples = frames.length * 1024;
+            const rawSize = frameSizes.reduce((a, b) => a + b, 0);
+            const asc0 = (audioObjectType << 3) | (sampleRateIndex >> 1);
+            const asc1 = ((sampleRateIndex & 1) << 7) | (channelConfig << 3);
+            const u32 = (v) => [(v >>> 24) & 0xFF, (v >>> 16) & 0xFF, (v >>> 8) & 0xFF, v & 0xFF];
+            const u16 = (v) => [(v >> 8) & 0xFF, v & 0xFF];
+            const str = (s) => s.split('').map(c => c.charCodeAt(0));
+            const box = (type, payload) => [...u32(8 + payload.length), ...str(type), ...payload];
+            const fbox = (type, ver, fl, payload) => [...u32(12 + payload.length), ...str(type), ver, (fl >> 16) & 0xFF, (fl >> 8) & 0xFF, fl & 0xFF, ...payload];
+            const ftyp = box('ftyp', [...str('M4A '), ...u32(0), ...str('M4A '), ...str('isom'), ...str('mp42')]);
+            const decSpecInfo = [0x05, 0x02, asc0, asc1];
+            const decConfigPayload = [0x40, 0x15, 0x00, 0x00, 0x00, ...u32(0), ...u32(0), ...decSpecInfo];
+            const decConfig = [0x04, decConfigPayload.length, ...decConfigPayload];
+            const slConfig = [0x06, 0x01, 0x02];
+            const esPayload = [...u16(1), 0x00, ...decConfig, ...slConfig];
+            const esDescr = [0x03, esPayload.length, ...esPayload];
+            const esds = fbox('esds', 0, 0, esDescr);
+            const mp4aPayload = [
+                ...Array(6).fill(0), ...u16(1),
+                ...Array(8).fill(0),
+                ...u16(channelConfig), ...u16(16),
+                ...u16(0), ...u16(0),
+                ...u16(sampleRate), ...u16(0),
+                ...esds,
+            ];
+            const mp4a = [...u32(8 + mp4aPayload.length), ...str('mp4a'), ...mp4aPayload];
+            const stsd = fbox('stsd', 0, 0, [...u32(1), ...mp4a]);
+            const stts = fbox('stts', 0, 0, [...u32(1), ...u32(frames.length), ...u32(1024)]);
+            const stsc = fbox('stsc', 0, 0, [...u32(1), ...u32(1), ...u32(frames.length), ...u32(1)]);
+            const stsz = fbox('stsz', 0, 0, [...u32(0), ...u32(frames.length), ...frameSizes.flatMap(s => u32(s))]);
+            const stco = fbox('stco', 0, 0, [...u32(1), ...u32(0)]);
+            const stbl = box('stbl', [...stsd, ...stts, ...stsc, ...stsz, ...stco]);
+            const smhd = fbox('smhd', 0, 0, [...u16(0), ...u16(0)]);
+            const urlBox = fbox('url ', 0, 1, []);
+            const dref = fbox('dref', 0, 0, [...u32(1), ...urlBox]);
+            const dinf = box('dinf', dref);
+            const minf = box('minf', [...smhd, ...dinf, ...stbl]);
+            const mdhd = fbox('mdhd', 0, 0, [...u32(0), ...u32(0), ...u32(sampleRate), ...u32(totalSamples), ...u16(0x55C4), ...u16(0)]);
+            const hdlr = fbox('hdlr', 0, 0, [...u32(0), ...str('soun'), ...u32(0), ...u32(0), ...u32(0), 0]);
+            const mdia = box('mdia', [...mdhd, ...hdlr, ...minf]);
+            const identity = [
+                0x00, 0x01, 0x00, 0x00, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0x00, 0x01, 0x00, 0x00, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0x40, 0x00, 0x00, 0x00,
+            ];
+            const tkhd = fbox('tkhd', 0, 3, [
+                ...u32(0), ...u32(0), ...u32(1), ...u32(0), ...u32(totalSamples),
+                ...u32(0), ...u32(0), ...u16(0), ...u16(0), ...u16(0x0100), ...u16(0),
+                ...identity, ...u32(0), ...u32(0),
+            ]);
+            const trak = box('trak', [...tkhd, ...mdia]);
+            const mvhd = fbox('mvhd', 0, 0, [
+                ...u32(0), ...u32(0), ...u32(sampleRate), ...u32(totalSamples),
+                ...u32(0x00010000), ...u16(0x0100), ...Array(10).fill(0),
+                ...identity, ...Array(24).fill(0), ...u32(2),
+            ]);
+            const moov = box('moov', [...mvhd, ...trak]);
+            const mdatDataOffset = ftyp.length + moov.length + 8;
+            for (let j = 0; j < moov.length - 4; j++) {
+                if (moov[j] === 0x73 && moov[j + 1] === 0x74 && moov[j + 2] === 0x63 && moov[j + 3] === 0x6F) {
+                    const p = j + 12;
+                    moov[p] = (mdatDataOffset >>> 24) & 0xFF;
+                    moov[p + 1] = (mdatDataOffset >>> 16) & 0xFF;
+                    moov[p + 2] = (mdatDataOffset >>> 8) & 0xFF;
+                    moov[p + 3] = mdatDataOffset & 0xFF;
+                    break;
+                }
+            }
+            const mdatHeader = [...u32(8 + rawSize), ...str('mdat')];
+            const total = ftyp.length + moov.length + mdatHeader.length + rawSize;
+            const out = new Uint8Array(total);
+            let pos = 0;
+            out.set(ftyp, pos);
+            pos += ftyp.length;
+            out.set(moov, pos);
+            pos += moov.length;
+            out.set(mdatHeader, pos);
+            pos += mdatHeader.length;
+            for (const frame of frames) {
+                out.set(frame, pos);
+                pos += frame.length;
+            }
+            console.log(`[cache] muxed ${frames.length} AAC frames → ${(total / 1024).toFixed(0)} KB M4A`);
+            return out;
+        }
+        static extract_audio(ts) {
+            if (ts[0] === 0xFF && (ts[1] & 0xF0) === 0xF0) {
+                return { data: ts, mime: 'audio/aac' };
+            }
+            if (ts[0] === 0xFF && (ts[1] & 0xE0) === 0xE0) {
+                return { data: ts, mime: 'audio/mpeg' };
+            }
+            if (ts[0] === 0x49 && ts[1] === 0x44 && ts[2] === 0x33) {
+                return { data: ts, mime: 'audio/mpeg' };
+            }
+            if (ts[0] === 0x47) {
+                const audio = this.demux_ts_audio(ts);
+                if (audio)
+                    return { data: audio, mime: 'audio/aac' };
+            }
+            return { data: ts, mime: 'audio/mpeg' };
+        }
+        static demux_ts_audio(ts) {
+            const pidChunks = new Map();
+            for (let pos = 0; pos + 188 <= ts.length; pos += 188) {
+                if (ts[pos] !== 0x47)
+                    continue;
+                const pusi = !!(ts[pos + 1] & 0x40);
+                const pid = ((ts[pos + 1] & 0x1F) << 8) | ts[pos + 2];
+                const afc = (ts[pos + 3] >> 4) & 0x03;
+                if (pid === 0 || pid === 0x1FFF)
+                    continue;
+                if (!(afc & 0x01))
+                    continue;
+                let off = 4;
+                if (afc & 0x02)
+                    off += 1 + ts[pos + 4];
+                if (off >= 188)
+                    continue;
+                if (!pidChunks.has(pid))
+                    pidChunks.set(pid, []);
+                pidChunks.get(pid).push({ pusi, data: ts.slice(pos + off, pos + 188) });
+            }
+            for (const [pid, chunks] of pidChunks) {
+                const first = chunks.find(c => c.pusi);
+                if (!first)
+                    continue;
+                const d = first.data;
+                if (d.length < 9)
+                    continue;
+                if (d[0] !== 0x00 || d[1] !== 0x00 || d[2] !== 0x01)
+                    continue;
+                if (d[3] < 0xC0 || d[3] > 0xDF)
+                    continue;
+                const parts = [];
+                for (const chunk of chunks) {
+                    if (chunk.pusi) {
+                        const p = chunk.data;
+                        if (p.length < 9 || p[0] !== 0x00 || p[1] !== 0x00 || p[2] !== 0x01)
+                            continue;
+                        const pesHdrLen = 9 + p[8];
+                        if (pesHdrLen < p.length) {
+                            parts.push(p.slice(pesHdrLen));
+                        }
+                    }
+                    else {
+                        parts.push(chunk.data);
+                    }
+                }
+                const total = parts.reduce((s, p) => s + p.length, 0);
+                if (total === 0)
+                    continue;
+                const out = new Uint8Array(total);
+                let off = 0;
+                for (const p of parts) {
+                    out.set(p, off);
+                    off += p.length;
+                }
+                console.log(`[cache] demuxed TS: PID ${pid}, ${total} bytes raw ADTS`);
+                return out;
+            }
+            return null;
+        }
+        static parse_m3u8(text, base_url) {
+            const lines = text.split('\n');
+            let key_url = '';
+            let key_iv = '';
+            const segments = [];
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('#EXT-X-KEY:')) {
+                    const uri_match = trimmed.match(/URI="([^"]+)"/);
+                    if (uri_match) {
+                        key_url = uri_match[1].startsWith('http') ? uri_match[1] : base_url + uri_match[1];
+                    }
+                    const iv_match = trimmed.match(/IV=0x([0-9a-fA-F]+)/);
+                    if (iv_match) {
+                        key_iv = iv_match[1];
+                    }
+                }
+                else if (trimmed && !trimmed.startsWith('#')) {
+                    segments.push(trimmed.startsWith('http') ? trimmed : base_url + trimmed);
+                }
+            }
+            return { segments, key_url, key_iv };
+        }
+        static async decrypt_segment(data, cryptoKey, index, iv_hex) {
+            let iv;
+            if (iv_hex) {
+                const bytes = new Uint8Array(16);
+                for (let i = 0; i < 16 && i * 2 < iv_hex.length; i++) {
+                    bytes[i] = parseInt(iv_hex.substring(i * 2, i * 2 + 2), 16);
+                }
+                iv = bytes.buffer;
+            }
+            else {
+                const bytes = new Uint8Array(16);
+                bytes[15] = index & 0xFF;
+                bytes[14] = (index >> 8) & 0xFF;
+                bytes[13] = (index >> 16) & 0xFF;
+                bytes[12] = (index >> 24) & 0xFF;
+                iv = bytes.buffer;
+            }
+            return crypto.subtle.decrypt({ name: 'AES-CBC', iv }, cryptoKey, data);
+        }
+        static async save_hls(audio) {
+            const url = audio.url;
+            if (!url) {
+                console.warn('[cache] skip — no URL:', audio.artist, '—', audio.title);
+                return;
+            }
+            const cache_id = this.cache_key(audio);
+            try {
+                const db_check = await this.db_async();
+                const existing = await db_check.read('tracks').tracks.count(cache_id);
+                db_check.destructor();
+                if (existing > 0) {
+                    console.log('[cache] already cached:', audio.artist, '—', audio.title);
+                    return;
+                }
+                console.log('[cache] start download:', audio.artist, '—', audio.title);
+                const m3u8_resp = await fetch(url);
+                if (!m3u8_resp.ok)
+                    throw new Error(`m3u8 fetch ${m3u8_resp.status}`);
+                const m3u8_text = await m3u8_resp.text();
+                const base_url = url.substring(0, url.lastIndexOf('/') + 1);
+                const { segments, key_url, key_iv } = this.parse_m3u8(m3u8_text, base_url);
+                if (!segments.length)
+                    throw new Error('No segments in m3u8');
+                let cryptoKey = null;
+                if (key_url) {
+                    console.log(`[cache] encrypted HLS, fetching key from:`, key_url);
+                    const key_resp = await fetch(key_url);
+                    if (!key_resp.ok)
+                        throw new Error(`Key fetch failed: ${key_resp.status}`);
+                    const key_data = await key_resp.arrayBuffer();
+                    console.log(`[cache] key size: ${key_data.byteLength} bytes, hex: ${Array.from(new Uint8Array(key_data)).map(b => b.toString(16).padStart(2, '0')).join('')}`);
+                    if (key_data.byteLength !== 16) {
+                        console.warn(`[cache] unexpected key size ${key_data.byteLength}, expected 16`);
+                    }
+                    cryptoKey = await crypto.subtle.importKey('raw', key_data, 'AES-CBC', false, ['decrypt']);
+                    console.log(`[cache] key imported, IV: ${key_iv || '(sequence number)'}`);
+                }
+                console.log(`[cache] ${segments.length} segments to download${cryptoKey ? ' (encrypted)' : ''}`);
+                const chunks = [];
+                for (let i = 0; i < segments.length; i++) {
+                    const resp = await fetch(segments[i]);
+                    if (!resp.ok)
+                        throw new Error(`Segment ${i + 1}/${segments.length} failed: ${resp.status}`);
+                    let data = await resp.arrayBuffer();
+                    const firstByte = new Uint8Array(data)[0];
+                    if (cryptoKey && firstByte !== 0x47) {
+                        data = await this.decrypt_segment(data, cryptoKey, i, key_iv);
+                    }
+                    chunks.push(data);
+                }
+                const total = chunks.reduce((s, c) => s + c.byteLength, 0);
+                const merged = new Uint8Array(total);
+                let offset = 0;
+                for (const chunk of chunks) {
+                    merged.set(new Uint8Array(chunk), offset);
+                    offset += chunk.byteLength;
+                }
+                let { data: audioData, mime } = this.extract_audio(merged);
+                if (mime === 'audio/aac') {
+                    audioData = this.adts_to_m4a(audioData);
+                    mime = 'audio/mp4';
+                }
+                const blob = new Blob([audioData.buffer], { type: mime });
+                const sizeMB = (audioData.byteLength / 1024 / 1024).toFixed(1);
+                console.log(`[cache] format: ${mime}, extracted ${sizeMB} MB from ${(total / 1024 / 1024).toFixed(1)} MB raw`);
+                const db = await this.db_async();
+                const tx = db.change('tracks', 'meta');
+                await tx.stores.tracks.put(blob, cache_id);
+                await tx.stores.meta.put({ ...audio, url: '' }, cache_id);
+                db.destructor();
+                console.log(`[cache] saved: ${audio.artist} — ${audio.title} (${sizeMB} MB)`);
+            }
+            catch (e) {
+                console.warn(`[cache] FAILED: ${audio.artist} — ${audio.title}:`, e?.message || e?.name || String(e), e);
+            }
+        }
+    }
+    $.$bog_vk_cache = $bog_vk_cache;
 })($ || ($ = {}));
 
 ;
@@ -7280,7 +7943,15 @@ var $;
                 return `${min}:${sec.toString().padStart(2, '0')}`;
             }
             event_click(event) {
+                if (this.Download().dom_node().contains(event.target))
+                    return;
                 this.play(this.audio());
+            }
+            download() {
+                const audio = this.audio_data();
+                if (!audio)
+                    return;
+                $bog_vk_cache.save_hls(audio).catch(() => { });
             }
         }
         $$.$bog_vk_track = $bog_vk_track;
@@ -7379,6 +8050,18 @@ var $;
                     size: '0.8125rem',
                 },
                 color: $mol_theme.shade,
+            },
+            Download: {
+                flex: {
+                    shrink: 0,
+                },
+                color: $mol_theme.shade,
+                padding: {
+                    top: '0.25rem',
+                    bottom: '0.25rem',
+                    left: '0.25rem',
+                    right: '0.25rem',
+                },
             },
             '@': {
                 bog_vk_track_current: {
@@ -7701,388 +8384,6 @@ var $;
 
 ;
 "use strict";
-var $;
-(function ($) {
-    function $mol_db_response(request) {
-        return new Promise((done, fail) => {
-            request.onerror = () => fail(new Error(request.error.message));
-            request.onsuccess = () => done(request.result);
-        });
-    }
-    $.$mol_db_response = $mol_db_response;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    async function $mol_db(name, ...migrations) {
-        const request = this.$mol_dom_context.indexedDB.open(name, migrations.length ? migrations.length + 1 : undefined);
-        request.onupgradeneeded = event => {
-            migrations.splice(0, event.oldVersion - 1);
-            const transaction = new $mol_db_transaction(request.transaction);
-            for (const migrate of migrations)
-                migrate(transaction);
-        };
-        const db = await $mol_db_response(request);
-        return new $mol_db_database(db);
-    }
-    $.$mol_db = $mol_db;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    class $mol_db_store {
-        native;
-        constructor(native) {
-            this.native = native;
-        }
-        get name() {
-            return this.native.name;
-        }
-        get path() {
-            return this.native.keyPath;
-        }
-        get incremental() {
-            return this.native.autoIncrement;
-        }
-        get indexes() {
-            return new Proxy({}, {
-                ownKeys: () => [...this.native.indexNames],
-                has: (_, name) => this.native.indexNames.contains(name),
-                get: (_, name) => new $mol_db_index(this.native.index(name))
-            });
-        }
-        index_make(name, path = [], unique = false, multiEntry = false) {
-            return this.native.createIndex(name, path, { multiEntry, unique });
-        }
-        index_drop(name) {
-            this.native.deleteIndex(name);
-            return this;
-        }
-        get transaction() {
-            return new $mol_db_transaction(this.native.transaction);
-        }
-        get db() {
-            return this.transaction.db;
-        }
-        clear() {
-            return $mol_db_response(this.native.clear());
-        }
-        count(keys) {
-            return $mol_db_response(this.native.count(keys));
-        }
-        put(doc, key) {
-            return $mol_db_response(this.native.put(doc, key));
-        }
-        get(key) {
-            return $mol_db_response(this.native.get(key));
-        }
-        select(key, count) {
-            return $mol_db_response(this.native.getAll(key, count));
-        }
-        drop(keys) {
-            return $mol_db_response(this.native.delete(keys));
-        }
-    }
-    $.$mol_db_store = $mol_db_store;
-})($ || ($ = {}));
-
-;
-"use strict";
-
-;
-"use strict";
-var $;
-(function ($) {
-    class $mol_db_index {
-        native;
-        constructor(native) {
-            this.native = native;
-        }
-        get name() {
-            return this.native.name;
-        }
-        get paths() {
-            return this.native.keyPath;
-        }
-        get unique() {
-            return this.native.unique;
-        }
-        get multiple() {
-            return this.native.multiEntry;
-        }
-        get store() {
-            return new $mol_db_store(this.native.objectStore);
-        }
-        get transaction() {
-            return this.store.transaction;
-        }
-        get db() {
-            return this.store.db;
-        }
-        count(keys) {
-            return $mol_db_response(this.native.count(keys));
-        }
-        get(key) {
-            return $mol_db_response(this.native.get(key));
-        }
-        select(key, count) {
-            return $mol_db_response(this.native.getAll(key, count));
-        }
-    }
-    $.$mol_db_index = $mol_db_index;
-})($ || ($ = {}));
-
-;
-"use strict";
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_dom_context.indexedDB = $node['fake-indexeddb'].indexedDB;
-    $mol_dom_context.IDBCursor = $node['fake-indexeddb'].IDBCursor;
-    $mol_dom_context.IDBCursorWithValue = $node['fake-indexeddb'].IDBCursorWithValue;
-    $mol_dom_context.IDBDatabase = $node['fake-indexeddb'].IDBDatabase;
-    $mol_dom_context.IDBFactory = $node['fake-indexeddb'].IDBFactory;
-    $mol_dom_context.IDBIndex = $node['fake-indexeddb'].IDBIndex;
-    $mol_dom_context.IDBKeyRange = $node['fake-indexeddb'].IDBKeyRange;
-    $mol_dom_context.IDBObjectStore = $node['fake-indexeddb'].IDBObjectStore;
-    $mol_dom_context.IDBOpenDBRequest = $node['fake-indexeddb'].IDBOpenDBRequest;
-    $mol_dom_context.IDBRequest = $node['fake-indexeddb'].IDBRequest;
-    $mol_dom_context.IDBTransaction = $node['fake-indexeddb'].IDBTransaction;
-    $mol_dom_context.IDBVersionChangeEvent = $node['fake-indexeddb'].IDBVersionChangeEvent;
-})($ || ($ = {}));
-
-;
-"use strict";
-
-;
-"use strict";
-var $;
-(function ($) {
-    class $mol_db_database {
-        native;
-        constructor(native) {
-            this.native = native;
-        }
-        get name() {
-            return this.native.name;
-        }
-        get version() {
-            return this.native.version;
-        }
-        get stores() {
-            return [...this.native.objectStoreNames];
-        }
-        read(...names) {
-            return new $mol_db_transaction(this.native.transaction(names, 'readonly', { durability: 'relaxed' })).stores;
-        }
-        change(...names) {
-            return new $mol_db_transaction(this.native.transaction(names, 'readwrite', { durability: 'relaxed' }));
-        }
-        kill() {
-            this.native.close();
-            const request = $mol_dom_context.indexedDB.deleteDatabase(this.name);
-            request.onblocked = console.warn;
-            return $mol_db_response(request);
-        }
-        destructor() {
-            this.native.close();
-        }
-    }
-    $.$mol_db_database = $mol_db_database;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    class $mol_db_transaction {
-        native;
-        constructor(native) {
-            this.native = native;
-        }
-        get stores() {
-            return new Proxy({}, {
-                ownKeys: () => [...this.native.objectStoreNames],
-                has: (_, name) => this.native.objectStoreNames.contains(name),
-                get: (_, name, proxy) => (name in proxy)
-                    ? new $mol_db_store(this.native.objectStore(name))
-                    : undefined,
-            });
-        }
-        store_make(name) {
-            return this.native.db.createObjectStore(name, { autoIncrement: true });
-        }
-        store_drop(name) {
-            this.native.db.deleteObjectStore(name);
-            return this;
-        }
-        abort() {
-            if (this.native.error)
-                return;
-            this.native.abort();
-        }
-        commit() {
-            this.native.commit?.();
-            return new Promise((done, fail) => {
-                this.native.onerror = () => fail(new Error(this.native.error.message));
-                this.native.oncomplete = () => done();
-            });
-        }
-        get db() {
-            return new $mol_db_database(this.native.db);
-        }
-    }
-    $.$mol_db_transaction = $mol_db_transaction;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    class $bog_vk_cache extends $mol_object {
-        static db() {
-            return $mol_wire_sync(this).db_async();
-        }
-        static async db_async() {
-            return $$.$mol_db('vk_audio_cache', mig => mig.store_make('tracks'), mig => mig.store_make('meta'));
-        }
-        static cache_key(audio) {
-            return `${audio.owner_id}_${audio.id}`;
-        }
-        static async get(audio) {
-            const key = this.cache_key(audio);
-            try {
-                const db = await this.db_async();
-                const blob = await db.read('tracks').tracks.get(key);
-                db.destructor();
-                if (blob) {
-                    console.log(`[cache] hit: ${audio.artist} — ${audio.title} (${(blob.size / 1024 / 1024).toFixed(1)} MB)`);
-                    return URL.createObjectURL(blob);
-                }
-                console.warn(`[cache] miss: ${audio.artist} — ${audio.title} (key: ${key})`);
-                return null;
-            }
-            catch (e) {
-                console.warn(`[cache] get error: ${key}`, e?.message);
-                return null;
-            }
-        }
-        static async all_cached() {
-            try {
-                const db = await this.db_async();
-                const all = await db.read('meta').meta.select();
-                db.destructor();
-                return all;
-            }
-            catch {
-                return [];
-            }
-        }
-        static extract_audio(ts) {
-            if (ts[0] === 0xFF && (ts[1] & 0xF0) === 0xF0) {
-                return { data: ts, mime: 'audio/aac' };
-            }
-            if (ts[0] === 0xFF && (ts[1] & 0xE0) === 0xE0) {
-                return { data: ts, mime: 'audio/mpeg' };
-            }
-            if (ts[0] === 0x49 && ts[1] === 0x44 && ts[2] === 0x33) {
-                return { data: ts, mime: 'audio/mpeg' };
-            }
-            if (ts[0] === 0x47) {
-                const frames = [];
-                for (let i = 0; i < ts.length - 7; i++) {
-                    if (ts[i] !== 0xFF || (ts[i + 1] & 0xF6) !== 0xF0)
-                        continue;
-                    const len = ((ts[i + 3] & 0x03) << 11) |
-                        (ts[i + 4] << 3) |
-                        ((ts[i + 5] & 0xE0) >> 5);
-                    if (len < 7 || len > 8192 || i + len > ts.length)
-                        continue;
-                    frames.push(ts.slice(i, i + len));
-                    i += len - 1;
-                }
-                if (frames.length > 0) {
-                    const size = frames.reduce((s, f) => s + f.length, 0);
-                    const out = new Uint8Array(size);
-                    let off = 0;
-                    for (const f of frames) {
-                        out.set(f, off);
-                        off += f.length;
-                    }
-                    return { data: out, mime: 'audio/aac' };
-                }
-            }
-            return { data: ts, mime: 'audio/mpeg' };
-        }
-        static async save_hls(audio) {
-            const url = audio.url;
-            if (!url) {
-                console.warn('[cache] skip — no URL:', audio.artist, '—', audio.title);
-                return;
-            }
-            const key = this.cache_key(audio);
-            try {
-                const db_check = await this.db_async();
-                const existing = await db_check.read('tracks').tracks.count(key);
-                db_check.destructor();
-                if (existing > 0) {
-                    console.log('[cache] already cached:', audio.artist, '—', audio.title);
-                    return;
-                }
-                console.log('[cache] start download:', audio.artist, '—', audio.title);
-                const m3u8_resp = await fetch(url);
-                if (!m3u8_resp.ok)
-                    throw new Error(`m3u8 fetch ${m3u8_resp.status}`);
-                const m3u8_text = await m3u8_resp.text();
-                const base_url = url.substring(0, url.lastIndexOf('/') + 1);
-                const segments = m3u8_text
-                    .split('\n')
-                    .filter(line => line.trim() && !line.startsWith('#'))
-                    .map(seg => seg.startsWith('http') ? seg : base_url + seg);
-                if (!segments.length)
-                    throw new Error('No segments in m3u8');
-                console.log(`[cache] ${segments.length} segments to download`);
-                const chunks = [];
-                for (let i = 0; i < segments.length; i++) {
-                    const resp = await fetch(segments[i]);
-                    if (!resp.ok)
-                        throw new Error(`Segment ${i + 1}/${segments.length} failed: ${resp.status}`);
-                    chunks.push(await resp.arrayBuffer());
-                }
-                const total = chunks.reduce((s, c) => s + c.byteLength, 0);
-                const merged = new Uint8Array(total);
-                let offset = 0;
-                for (const chunk of chunks) {
-                    merged.set(new Uint8Array(chunk), offset);
-                    offset += chunk.byteLength;
-                }
-                const { data: audioData, mime } = this.extract_audio(merged);
-                const blob = new Blob([audioData.buffer], { type: mime });
-                const sizeMB = (audioData.byteLength / 1024 / 1024).toFixed(1);
-                console.log(`[cache] format: ${mime}, extracted ${sizeMB} MB from ${(total / 1024 / 1024).toFixed(1)} MB TS`);
-                const db = await this.db_async();
-                const tx = db.change('tracks', 'meta');
-                await tx.stores.tracks.put(blob, key);
-                await tx.stores.meta.put({ ...audio, url: '' }, key);
-                db.destructor();
-                console.log(`[cache] saved: ${audio.artist} — ${audio.title} (${sizeMB} MB)`);
-            }
-            catch (e) {
-                console.warn(`[cache] FAILED: ${audio.artist} — ${audio.title}:`, e?.message ?? e);
-            }
-        }
-    }
-    $.$bog_vk_cache = $bog_vk_cache;
-})($ || ($ = {}));
-
-;
-"use strict";
 
 ;
 "use strict";
@@ -8112,11 +8413,13 @@ var $;
                     this.duration(el.duration);
                 });
                 el.addEventListener('error', (e) => {
-                    console.error('[player] audio error:', el.error);
+                    console.error('[player] audio error:', el.error?.code, el.error?.message, el.error);
                 });
                 if ('mediaSession' in navigator) {
                     navigator.mediaSession.setActionHandler('previoustrack', () => this.prev());
                     navigator.mediaSession.setActionHandler('nexttrack', () => this.next());
+                    navigator.mediaSession.setActionHandler('seekbackward', null);
+                    navigator.mediaSession.setActionHandler('seekforward', null);
                     navigator.mediaSession.setActionHandler('play', () => {
                         el.play();
                         this.playing(true);
@@ -8196,25 +8499,44 @@ var $;
                         artwork,
                     });
                 }
-                $bog_vk_cache.get(audio).then(cached_url => {
-                    const src = cached_url || audio.url;
-                    if (!src) {
-                        console.warn('[player] no source for:', audio.artist, '—', audio.title);
-                        this.playing(false);
+                this.play_source(audio, el);
+            }
+            async play_source(audio, el) {
+                try {
+                    const cached = await $bog_vk_cache.get(audio);
+                    if (cached) {
+                        el.src = cached;
+                        await el.play();
+                        this.playing(true);
                         return;
                     }
-                    el.src = src;
-                    el.play().catch((e) => console.error('[player] play error:', e));
-                }).catch(() => {
-                    if (!audio.url) {
-                        console.warn('[player] no source for:', audio.artist, '—', audio.title);
-                        this.playing(false);
-                        return;
+                    if (audio.url) {
+                        el.src = audio.url;
+                        try {
+                            await el.play();
+                            this.playing(true);
+                            $bog_vk_cache.save_hls(audio).catch(() => { });
+                            return;
+                        }
+                        catch {
+                        }
                     }
-                    el.src = audio.url;
-                    el.play().catch((e) => console.error('[player] play error:', e));
-                });
-                this.playing(true);
+                    if (audio.url) {
+                        await $bog_vk_cache.save_hls(audio);
+                        const url = await $bog_vk_cache.get(audio);
+                        if (url) {
+                            el.src = url;
+                            await el.play();
+                            this.playing(true);
+                            return;
+                        }
+                    }
+                    console.warn('[player] no source:', audio.artist, '—', audio.title);
+                }
+                catch (e) {
+                    console.error('[player] play failed:', e);
+                }
+                this.playing(false);
             }
             toggle() {
                 const el = this.audio_el();
@@ -8442,6 +8764,20 @@ var $;
 			(obj.value) = (next) => ((this.token(next)));
 			return obj;
 		}
+		download_all(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Download_all_icon(){
+			const obj = new this.$.$mol_icon_download();
+			return obj;
+		}
+		Download_all(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.click) = (next) => ((this.download_all(next)));
+			(obj.sub) = () => ([(this.Download_all_icon())]);
+			return obj;
+		}
 		Lighter(){
 			const obj = new this.$.$mol_lights_toggle();
 			return obj;
@@ -8536,7 +8872,11 @@ var $;
 			return "VK Music";
 		}
 		tools(){
-			return [(this.Token_input()), (this.Lighter())];
+			return [
+				(this.Token_input()), 
+				(this.Download_all()), 
+				(this.Lighter())
+			];
 		}
 		body_scroll_top(next){
 			return (this.scroll(next));
@@ -8556,6 +8896,9 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "Theme"));
 	($mol_mem(($.$bog_vk_app.prototype), "token"));
 	($mol_mem(($.$bog_vk_app.prototype), "Token_input"));
+	($mol_mem(($.$bog_vk_app.prototype), "download_all"));
+	($mol_mem(($.$bog_vk_app.prototype), "Download_all_icon"));
+	($mol_mem(($.$bog_vk_app.prototype), "Download_all"));
 	($mol_mem(($.$bog_vk_app.prototype), "Lighter"));
 	($mol_mem(($.$bog_vk_app.prototype), "scroll"));
 	($mol_mem(($.$bog_vk_app.prototype), "Auth_link"));
@@ -8625,20 +8968,32 @@ var $;
             token(next) {
                 if (next !== undefined) {
                     const extracted = this.extract_token(next);
+                    const cookies = this.extract_cookies(next);
                     this.$.$bog_vk_api.token(extracted);
+                    if (cookies)
+                        this.$.$bog_vk_api.cookies(cookies);
                     this.token_expired(false);
                 }
                 return this.$.$bog_vk_api.token();
             }
             extract_token(input) {
                 const trimmed = input.trim();
-                const match = trimmed.match(/vk1\.a\.[A-Za-z0-9_-]+/);
+                const match = trimmed.match(/access_token=([^&\s'"]+)/);
                 if (match)
-                    return match[0];
-                const url_match = trimmed.match(/access_token=([^&\s'"]+)/);
-                if (url_match)
-                    return url_match[1];
+                    return match[1];
+                const vk_match = trimmed.match(/vk1\.a\.[A-Za-z0-9_-]+/);
+                if (vk_match)
+                    return vk_match[0];
                 return trimmed;
+            }
+            extract_cookies(input) {
+                const match = input.match(/-b\s+'([^']+)'/);
+                if (match)
+                    return match[1];
+                const match2 = input.match(/--cookie\s+'([^']+)'/);
+                if (match2)
+                    return match2[1];
+                return '';
             }
             page(next) {
                 if (next !== undefined) {
@@ -8709,6 +9064,21 @@ var $;
             }
             token_hint() {
                 return '1. Открой VK Music (ссылка выше)\n2. F12 → Network → фильтр «api.vk.com»\n3. Любой запрос → ПКМ → Copy as cURL\n4. Вставь в поле токена наверху';
+            }
+            download_all() {
+                const audios = this.visible_audios();
+                if (!audios.length)
+                    return;
+                console.log(`[app] downloading all ${audios.length} tracks...`);
+                const download_next = async (i) => {
+                    if (i >= audios.length) {
+                        console.log('[app] all downloads complete');
+                        return;
+                    }
+                    await $bog_vk_cache.save_hls(audios[i]);
+                    await download_next(i + 1);
+                };
+                download_next(0).catch(e => console.warn('[app] download all error:', e));
             }
             Search_bar() {
                 if (this.page() !== 'search')
