@@ -32,13 +32,19 @@ namespace $ {
 		}
 
 		static async get(audio: $bog_vk_api_audio): Promise<string | null> {
+			const key = this.cache_key(audio)
 			try {
 				const db = await this.db_async()
-				const blob = await db.read('tracks').tracks.get(this.cache_key(audio))
+				const blob = await db.read('tracks').tracks.get(key)
 				db.destructor()
-				if (blob) return URL.createObjectURL(blob)
+				if (blob) {
+					console.log(`[cache] hit: ${audio.artist} — ${audio.title} (${(blob.size / 1024 / 1024).toFixed(1)} MB)`)
+					return URL.createObjectURL(blob)
+				}
+				console.warn(`[cache] miss: ${audio.artist} — ${audio.title} (key: ${key})`)
 				return null
-			} catch {
+			} catch (e: any) {
+				console.warn(`[cache] get error: ${key}`, e?.message)
 				return null
 			}
 		}
@@ -52,6 +58,57 @@ namespace $ {
 			} catch {
 				return []
 			}
+		}
+
+		static extract_audio(ts: Uint8Array): { data: Uint8Array, mime: string } {
+			// Already raw AAC (ADTS)
+			if (ts[0] === 0xFF && (ts[1] & 0xF0) === 0xF0) {
+				return { data: ts, mime: 'audio/aac' }
+			}
+
+			// Already MP3
+			if (ts[0] === 0xFF && (ts[1] & 0xE0) === 0xE0) {
+				return { data: ts, mime: 'audio/mpeg' }
+			}
+
+			// ID3 tag (MP3 with metadata)
+			if (ts[0] === 0x49 && ts[1] === 0x44 && ts[2] === 0x33) {
+				return { data: ts, mime: 'audio/mpeg' }
+			}
+
+			// MPEG-TS → extract ADTS AAC frames
+			if (ts[0] === 0x47) {
+				const frames: Uint8Array[] = []
+
+				for (let i = 0; i < ts.length - 7; i++) {
+					// ADTS sync word: 0xFFF (12 bits)
+					if (ts[i] !== 0xFF || (ts[i + 1] & 0xF6) !== 0xF0) continue
+
+					// Frame length from ADTS header (13 bits at offset 30-42)
+					const len = ((ts[i + 3] & 0x03) << 11) |
+						(ts[i + 4] << 3) |
+						((ts[i + 5] & 0xE0) >> 5)
+
+					if (len < 7 || len > 8192 || i + len > ts.length) continue
+
+					frames.push(ts.slice(i, i + len))
+					i += len - 1
+				}
+
+				if (frames.length > 0) {
+					const size = frames.reduce((s, f) => s + f.length, 0)
+					const out = new Uint8Array(size)
+					let off = 0
+					for (const f of frames) {
+						out.set(f, off)
+						off += f.length
+					}
+					return { data: out, mime: 'audio/aac' }
+				}
+			}
+
+			// Fallback: return as-is
+			return { data: ts, mime: 'audio/mpeg' }
 		}
 
 		static async save_hls(audio: $bog_vk_api_audio): Promise<void> {
@@ -103,8 +160,10 @@ namespace $ {
 					offset += chunk.byteLength
 				}
 
-				const blob = new Blob([merged], { type: 'audio/mpeg' })
-				const sizeMB = (total / 1024 / 1024).toFixed(1)
+				const { data: audioData, mime } = this.extract_audio(merged)
+				const blob = new Blob([audioData.buffer as ArrayBuffer], { type: mime })
+				const sizeMB = (audioData.byteLength / 1024 / 1024).toFixed(1)
+				console.log(`[cache] format: ${mime}, extracted ${sizeMB} MB from ${(total / 1024 / 1024).toFixed(1)} MB TS`)
 
 				const db = await this.db_async()
 				const tx = db.change('tracks', 'meta')

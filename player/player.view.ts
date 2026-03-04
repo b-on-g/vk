@@ -122,9 +122,20 @@ namespace $.$$ {
 			}
 
 			$bog_vk_cache.get(audio).then(cached_url => {
-				el.src = cached_url || audio.url
+				const src = cached_url || audio.url
+				if (!src) {
+					console.warn('[player] no source for:', audio.artist, '—', audio.title)
+					this.playing(false)
+					return
+				}
+				el.src = src
 				el.play().catch((e: any) => console.error('[player] play error:', e))
 			}).catch(() => {
+				if (!audio.url) {
+					console.warn('[player] no source for:', audio.artist, '—', audio.title)
+					this.playing(false)
+					return
+				}
 				el.src = audio.url
 				el.play().catch((e: any) => console.error('[player] play error:', e))
 			})

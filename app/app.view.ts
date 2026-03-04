@@ -1,6 +1,5 @@
 namespace $.$$ {
 	export class $bog_vk_app extends $.$bog_vk_app {
-
 		@$mol_mem
 		online(next?: boolean) {
 			if (next !== undefined) return next
@@ -70,14 +69,15 @@ namespace $.$$ {
 			if (!this.online()) return this.cached_audios()
 			try {
 				const result = this.$.$bog_vk_api.my_audios()?.items ?? []
-				this.token_expired(false)
+				setTimeout(() => this.token_expired(false), 0)
 				return result
 			} catch (e: any) {
 				if (e instanceof Promise || e?.constructor?.name === '$mol_fail_hidden') throw e
-				if (String(e?.message).includes('expired') || String(e?.message).includes('authorization')) {
-					this.token_expired(true)
+				const msg = String(e?.message)
+				if (msg.includes('expired') || msg.includes('authorization') || msg.includes('User authorization failed')) {
+					setTimeout(() => this.token_expired(true), 0)
 				}
-				console.warn('[app] API failed, using cache:', e?.message)
+				console.warn('[app] API failed, using cache:', msg)
 				return this.cached_audios()
 			}
 		}
@@ -108,9 +108,7 @@ namespace $.$$ {
 			if (!audio) return
 
 			const audios = this.visible_audios()
-			const idx = audios.findIndex(
-				(a: $bog_vk_api_audio) => a.id === audio.id && a.owner_id === audio.owner_id
-			)
+			const idx = audios.findIndex((a: $bog_vk_api_audio) => a.id === audio.id && a.owner_id === audio.owner_id)
 			this.Player().queue_index(idx >= 0 ? idx : 0)
 			this.Player().play_track(audio)
 		}
@@ -121,7 +119,7 @@ namespace $.$$ {
 		}
 
 		token_hint() {
-			return 'Открой VK Music → F12 → Console → вставь:\nperformance.getEntriesByType("resource").filter(e=>e.name.includes("api.vk.com")).map(e=>new URL(e.name).searchParams.get("access_token")).find(Boolean)\n\nСкопируй результат и вставь в поле токена наверху'
+			return '1. Открой VK Music (ссылка выше)\n2. F12 → Network → фильтр «api.vk.com»\n3. Любой запрос → ПКМ → Copy as cURL\n4. Вставь в поле токена наверху'
 		}
 
 		Search_bar() {

@@ -1,70 +1,44 @@
 namespace $ {
 	export class $bog_vk_api extends $mol_object {
 
+		static proxy_url = 'https://bog-vk-audio.cmyser-fast-i.workers.dev'
+
 		@$mol_mem
 		static token(next?: string) {
 			return $mol_state_local.value('vk_token', next) ?? ''
 		}
 
-		static async jsonp_async(method: string, params: Record<string, string | number> = {}): Promise<any> {
-			const token = this.token()
-			if (!token) throw new Error('Token is not set')
-
-			const cbName = `vk_${Date.now()}_${Math.random().toString(36).slice(2)}`
-
-			const query = new URLSearchParams({
-				...Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
-				access_token: token,
-				v: '5.131',
-				callback: cbName,
+		static async fetch_proxy(endpoint: string, body: Record<string, any>): Promise<any> {
+			const resp = await fetch(`${this.proxy_url}${endpoint}`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(body),
 			})
 
-			return new Promise<any>((resolve, reject) => {
-				const timeout = setTimeout(() => {
-					delete (globalThis as any)[cbName]
-					script.remove()
-					reject(new Error('Request timeout'))
-				}, 15000)
+			const data = await resp.json()
 
-				;(globalThis as any)[cbName] = (data: any) => {
-					clearTimeout(timeout)
-					delete (globalThis as any)[cbName]
-					script.remove()
-					if (data.error) {
-						const msg = data.error.error_msg ?? 'VK API error'
-						reject(new Error(msg))
-					} else {
-						resolve(data.response)
-					}
-				}
+			if (!resp.ok) {
+				const code = (data as any).code ?? '?'
+				const msg = (data as any).error ?? 'Proxy error'
+				console.error(`[vk-api] error ${code}: ${msg}`)
+				throw new Error(`[${code}] ${msg}`)
+			}
 
-				const script = document.createElement('script')
-				script.src = `https://api.vk.com/method/${method}?${query}`
-				script.onerror = () => {
-					clearTimeout(timeout)
-					delete (globalThis as any)[cbName]
-					script.remove()
-					reject(new Error('JSONP request failed'))
-				}
-				document.head.appendChild(script)
-			})
-		}
-
-		@$mol_mem_key
-		static jsonp(key: string) {
-			const [method, paramsJson] = key.split('|')
-			const params = JSON.parse(paramsJson)
-			return ($mol_wire_sync(this) as any).jsonp_async(method, params)
+			return data
 		}
 
 		@$mol_mem
 		static my_audios() {
-			return this.jsonp('audio.get|{"count":200}') as $bog_vk_api_audio_list
+			const token = this.token()
+			if (!token) throw new Error('Token is not set')
+			return ($mol_wire_sync(this) as any).fetch_proxy('/audios', { token, count: 200 }) as $bog_vk_api_audio_list
 		}
 
 		@$mol_mem_key
 		static search_audios(query: string) {
-			return this.jsonp(`audio.search|${JSON.stringify({ q: query, count: 100, sort: 2 })}`) as $bog_vk_api_audio_list
+			const token = this.token()
+			if (!token) throw new Error('Token is not set')
+			return ($mol_wire_sync(this) as any).fetch_proxy('/search', { token, query, count: 100 }) as $bog_vk_api_audio_list
 		}
 	}
 
