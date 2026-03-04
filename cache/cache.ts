@@ -43,8 +43,8 @@ namespace $ {
 						console.warn(`[cache] broken entry (${blob.size} bytes), deleting: ${audio.artist} — ${audio.title}`)
 						const db2 = await this.db_async()
 						const tx = db2.change('tracks', 'meta')
-						await tx.stores.tracks.delete(key)
-						await tx.stores.meta.delete(key)
+						await tx.stores.tracks.drop(key)
+						await tx.stores.meta.drop(key)
 						db2.destructor()
 						return null
 					}
