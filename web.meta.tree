@@ -43,3 +43,4 @@
 	include \/mol/view/tree/test
 \/bog/vk/app
 	include \/mol/offline/install
+	deploy \/bog/vk/app/favicon.svg

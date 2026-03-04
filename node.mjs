@@ -7032,10 +7032,17 @@ var $;
                     clearTimeout(timeout);
                     delete globalThis[cbName];
                     script.remove();
-                    if (data.error)
-                        reject(new Error(data.error.error_msg ?? 'VK API error'));
-                    else
+                    if (data.error) {
+                        const msg = data.error.error_msg ?? 'VK API error';
+                        if (msg.includes('expired') || data.error.error_code === 5) {
+                            console.warn('[vk] token expired, clearing');
+                            this.token('');
+                        }
+                        reject(new Error(msg));
+                    }
+                    else {
                         resolve(data.response);
+                    }
                 };
                 const script = document.createElement('script');
                 script.src = `https://api.vk.com/method/${method}?${query}`;
@@ -7537,44 +7544,266 @@ var $;
 "use strict";
 var $;
 (function ($) {
-    const DB_NAME = 'vk_audio_cache';
-    const DB_VERSION = 1;
-    const STORE_NAME = 'tracks';
-    function open_db() {
-        return new Promise((resolve, reject) => {
-            const req = indexedDB.open(DB_NAME, DB_VERSION);
-            req.onupgradeneeded = () => {
-                const db = req.result;
-                if (!db.objectStoreNames.contains(STORE_NAME)) {
-                    db.createObjectStore(STORE_NAME);
-                }
-            };
-            req.onsuccess = () => resolve(req.result);
-            req.onerror = () => reject(req.error);
+    function $mol_db_response(request) {
+        return new Promise((done, fail) => {
+            request.onerror = () => fail(new Error(request.error.message));
+            request.onsuccess = () => done(request.result);
         });
     }
-    function cache_key(audio) {
-        return `${audio.owner_id}_${audio.id}`;
+    $.$mol_db_response = $mol_db_response;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    async function $mol_db(name, ...migrations) {
+        const request = this.$mol_dom_context.indexedDB.open(name, migrations.length ? migrations.length + 1 : undefined);
+        request.onupgradeneeded = event => {
+            migrations.splice(0, event.oldVersion - 1);
+            const transaction = new $mol_db_transaction(request.transaction);
+            for (const migrate of migrations)
+                migrate(transaction);
+        };
+        const db = await $mol_db_response(request);
+        return new $mol_db_database(db);
     }
+    $.$mol_db = $mol_db;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    class $mol_db_store {
+        native;
+        constructor(native) {
+            this.native = native;
+        }
+        get name() {
+            return this.native.name;
+        }
+        get path() {
+            return this.native.keyPath;
+        }
+        get incremental() {
+            return this.native.autoIncrement;
+        }
+        get indexes() {
+            return new Proxy({}, {
+                ownKeys: () => [...this.native.indexNames],
+                has: (_, name) => this.native.indexNames.contains(name),
+                get: (_, name) => new $mol_db_index(this.native.index(name))
+            });
+        }
+        index_make(name, path = [], unique = false, multiEntry = false) {
+            return this.native.createIndex(name, path, { multiEntry, unique });
+        }
+        index_drop(name) {
+            this.native.deleteIndex(name);
+            return this;
+        }
+        get transaction() {
+            return new $mol_db_transaction(this.native.transaction);
+        }
+        get db() {
+            return this.transaction.db;
+        }
+        clear() {
+            return $mol_db_response(this.native.clear());
+        }
+        count(keys) {
+            return $mol_db_response(this.native.count(keys));
+        }
+        put(doc, key) {
+            return $mol_db_response(this.native.put(doc, key));
+        }
+        get(key) {
+            return $mol_db_response(this.native.get(key));
+        }
+        select(key, count) {
+            return $mol_db_response(this.native.getAll(key, count));
+        }
+        drop(keys) {
+            return $mol_db_response(this.native.delete(keys));
+        }
+    }
+    $.$mol_db_store = $mol_db_store;
+})($ || ($ = {}));
+
+;
+"use strict";
+
+;
+"use strict";
+var $;
+(function ($) {
+    class $mol_db_index {
+        native;
+        constructor(native) {
+            this.native = native;
+        }
+        get name() {
+            return this.native.name;
+        }
+        get paths() {
+            return this.native.keyPath;
+        }
+        get unique() {
+            return this.native.unique;
+        }
+        get multiple() {
+            return this.native.multiEntry;
+        }
+        get store() {
+            return new $mol_db_store(this.native.objectStore);
+        }
+        get transaction() {
+            return this.store.transaction;
+        }
+        get db() {
+            return this.store.db;
+        }
+        count(keys) {
+            return $mol_db_response(this.native.count(keys));
+        }
+        get(key) {
+            return $mol_db_response(this.native.get(key));
+        }
+        select(key, count) {
+            return $mol_db_response(this.native.getAll(key, count));
+        }
+    }
+    $.$mol_db_index = $mol_db_index;
+})($ || ($ = {}));
+
+;
+"use strict";
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_dom_context.indexedDB = $node['fake-indexeddb'].indexedDB;
+    $mol_dom_context.IDBCursor = $node['fake-indexeddb'].IDBCursor;
+    $mol_dom_context.IDBCursorWithValue = $node['fake-indexeddb'].IDBCursorWithValue;
+    $mol_dom_context.IDBDatabase = $node['fake-indexeddb'].IDBDatabase;
+    $mol_dom_context.IDBFactory = $node['fake-indexeddb'].IDBFactory;
+    $mol_dom_context.IDBIndex = $node['fake-indexeddb'].IDBIndex;
+    $mol_dom_context.IDBKeyRange = $node['fake-indexeddb'].IDBKeyRange;
+    $mol_dom_context.IDBObjectStore = $node['fake-indexeddb'].IDBObjectStore;
+    $mol_dom_context.IDBOpenDBRequest = $node['fake-indexeddb'].IDBOpenDBRequest;
+    $mol_dom_context.IDBRequest = $node['fake-indexeddb'].IDBRequest;
+    $mol_dom_context.IDBTransaction = $node['fake-indexeddb'].IDBTransaction;
+    $mol_dom_context.IDBVersionChangeEvent = $node['fake-indexeddb'].IDBVersionChangeEvent;
+})($ || ($ = {}));
+
+;
+"use strict";
+
+;
+"use strict";
+var $;
+(function ($) {
+    class $mol_db_database {
+        native;
+        constructor(native) {
+            this.native = native;
+        }
+        get name() {
+            return this.native.name;
+        }
+        get version() {
+            return this.native.version;
+        }
+        get stores() {
+            return [...this.native.objectStoreNames];
+        }
+        read(...names) {
+            return new $mol_db_transaction(this.native.transaction(names, 'readonly', { durability: 'relaxed' })).stores;
+        }
+        change(...names) {
+            return new $mol_db_transaction(this.native.transaction(names, 'readwrite', { durability: 'relaxed' }));
+        }
+        kill() {
+            this.native.close();
+            const request = $mol_dom_context.indexedDB.deleteDatabase(this.name);
+            request.onblocked = console.warn;
+            return $mol_db_response(request);
+        }
+        destructor() {
+            this.native.close();
+        }
+    }
+    $.$mol_db_database = $mol_db_database;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    class $mol_db_transaction {
+        native;
+        constructor(native) {
+            this.native = native;
+        }
+        get stores() {
+            return new Proxy({}, {
+                ownKeys: () => [...this.native.objectStoreNames],
+                has: (_, name) => this.native.objectStoreNames.contains(name),
+                get: (_, name, proxy) => (name in proxy)
+                    ? new $mol_db_store(this.native.objectStore(name))
+                    : undefined,
+            });
+        }
+        store_make(name) {
+            return this.native.db.createObjectStore(name, { autoIncrement: true });
+        }
+        store_drop(name) {
+            this.native.db.deleteObjectStore(name);
+            return this;
+        }
+        abort() {
+            if (this.native.error)
+                return;
+            this.native.abort();
+        }
+        commit() {
+            this.native.commit?.();
+            return new Promise((done, fail) => {
+                this.native.onerror = () => fail(new Error(this.native.error.message));
+                this.native.oncomplete = () => done();
+            });
+        }
+        get db() {
+            return new $mol_db_database(this.native.db);
+        }
+    }
+    $.$mol_db_transaction = $mol_db_transaction;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
     class $bog_vk_cache extends $mol_object {
+        static db() {
+            return $mol_wire_sync(this).db_async();
+        }
+        static async db_async() {
+            return $$.$mol_db('vk_audio_cache', mig => mig.store_make('tracks'));
+        }
+        static cache_key(audio) {
+            return `${audio.owner_id}_${audio.id}`;
+        }
         static async get(audio) {
             try {
-                const db = await open_db();
-                return new Promise((resolve, reject) => {
-                    const tx = db.transaction(STORE_NAME, 'readonly');
-                    const store = tx.objectStore(STORE_NAME);
-                    const req = store.get(cache_key(audio));
-                    req.onsuccess = () => {
-                        const blob = req.result;
-                        if (blob) {
-                            resolve(URL.createObjectURL(blob));
-                        }
-                        else {
-                            resolve(null);
-                        }
-                    };
-                    req.onerror = () => resolve(null);
-                });
+                const db = await this.db_async();
+                const blob = await db.read('tracks').tracks.get(this.cache_key(audio));
+                db.destructor();
+                if (blob)
+                    return URL.createObjectURL(blob);
+                return null;
             }
             catch {
                 return null;
@@ -7582,14 +7811,10 @@ var $;
         }
         static async has(audio) {
             try {
-                const db = await open_db();
-                return new Promise((resolve) => {
-                    const tx = db.transaction(STORE_NAME, 'readonly');
-                    const store = tx.objectStore(STORE_NAME);
-                    const req = store.count(cache_key(audio));
-                    req.onsuccess = () => resolve(req.result > 0);
-                    req.onerror = () => resolve(false);
-                });
+                const db = await this.db_async();
+                const count = await db.read('tracks').tracks.count(this.cache_key(audio));
+                db.destructor();
+                return count > 0;
             }
             catch {
                 return false;
@@ -7627,14 +7852,10 @@ var $;
                     offset += chunk.byteLength;
                 }
                 const blob = new Blob([merged], { type: 'audio/mpeg' });
-                const db = await open_db();
-                await new Promise((resolve, reject) => {
-                    const tx = db.transaction(STORE_NAME, 'readwrite');
-                    const store = tx.objectStore(STORE_NAME);
-                    const req = store.put(blob, cache_key(audio));
-                    req.onsuccess = () => resolve();
-                    req.onerror = () => reject(req.error);
-                });
+                const db = await this.db_async();
+                const tx = db.change('tracks');
+                await tx.stores.tracks.put(blob, this.cache_key(audio));
+                db.destructor();
                 console.log('[cache] saved:', audio.title, `(${(total / 1024 / 1024).toFixed(1)} MB)`);
             }
             catch (e) {
@@ -8144,9 +8365,20 @@ var $;
         class $bog_vk_app extends $.$bog_vk_app {
             token(next) {
                 if (next !== undefined) {
-                    this.$.$bog_vk_api.token(next);
+                    const extracted = this.extract_token(next);
+                    this.$.$bog_vk_api.token(extracted);
                 }
                 return this.$.$bog_vk_api.token();
+            }
+            extract_token(input) {
+                const trimmed = input.trim();
+                const match = trimmed.match(/vk1\.a\.[A-Za-z0-9_-]+/);
+                if (match)
+                    return match[0];
+                const url_match = trimmed.match(/access_token=([^&\s'"]+)/);
+                if (url_match)
+                    return url_match[1];
+                return trimmed;
             }
             page(next) {
                 if (next !== undefined) {
@@ -8241,6 +8473,9 @@ var $;
         $$.$bog_vk_app = $bog_vk_app;
     })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));
+
+;
+var $node = $node || {} ; $node[ "/bog/vk/app/favicon.svg" ] = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMCIgZmlsbD0iIzFhMWEyZSIvPgo8ZyBmaWxsPSIjNDVhYWZmIj4KPHJlY3QgeD0iMzAiIHk9IjIwIiB3aWR0aD0iNiIgaGVpZ2h0PSI0NSIgcng9IjMiLz4KPHJlY3QgeD0iNjQiIHk9IjE1IiB3aWR0aD0iNiIgaGVpZ2h0PSI1MCIgcng9IjMiLz4KPGNpcmNsZSBjeD0iMjIiIGN5PSI2NSIgcj0iMTIiLz4KPGNpcmNsZSBjeD0iNTYiIGN5PSI2NSIgcj0iMTIiLz4KPHBhdGggZD0iTTM2IDIyQzM2IDIyIDUyIDE0IDcwIDE3TDcwIDE1QzUyIDEyIDM2IDIwIDM2IDIwWiIvPgo8L2c+Cjwvc3ZnPgo="
 
 ;
 "use strict";

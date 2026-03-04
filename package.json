@@ -193,11 +193,18 @@
     "$mol_icon_pause",
     "$mol_icon_skip_next",
     "$bog_vk_cache",
+    "$mol_db",
+    "$mol_db_transaction",
+    "$mol_db_store",
+    "$mol_db_index",
+    "$mol_db_response",
+    "$mol_db_database",
     "$mol_offline_install",
     "$mol_offline"
   ],
   "dependencies": {
     "autoinstall": "*",
-    "jsdom": "*"
+    "jsdom": "*",
+    "fake-indexeddb": "*"
   }
 }
