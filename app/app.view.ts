@@ -61,6 +61,7 @@ namespace $.$$ {
 
 		@$mol_action
 		on_play_audio(audio?: $bog_vk_api_audio | null) {
+			console.log('[app] on_play_audio called, audio:', audio)
 			if (!audio) return
 			this.current_audio(audio)
 
@@ -69,6 +70,7 @@ namespace $.$$ {
 				(a: $bog_vk_api_audio) => a.id === audio.id && a.owner_id === audio.owner_id
 			)
 			this.queue_index(idx >= 0 ? idx : 0)
+			console.log('[app] calling play_track, url:', audio.url)
 			this.Player().play_track(audio)
 		}
 

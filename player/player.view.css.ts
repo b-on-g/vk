@@ -1,5 +1,6 @@
 namespace $.$$ {
 	$mol_style_define($bog_vk_player, {
+		width: '100%',
 		flex: {
 			direction: 'column',
 			shrink: 0,

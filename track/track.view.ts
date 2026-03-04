@@ -35,7 +35,10 @@ namespace $.$$ {
 		}
 
 		event_click(event: Event) {
-			this.play(this.audio())
+			const audio = this.audio()
+			console.log('[track] click, audio:', audio)
+			this.play(audio)
+			console.log('[track] play() called')
 		}
 	}
 }

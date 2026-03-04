@@ -90,11 +90,13 @@ namespace $.$$ {
 
 		@$mol_action
 		play_track(audio?: $bog_vk_api_audio | null) {
+			console.log('[player] play_track called, audio:', audio)
 			if (!audio) return
 			const el = this.audio_el()
 			this.current_audio(audio)
+			console.log('[player] setting src:', audio.url)
 			el.src = audio.url
-			el.play()
+			el.play().then(() => console.log('[player] play started')).catch((e: any) => console.error('[player] play error:', e))
 			this.playing(true)
 		}
 
