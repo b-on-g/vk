@@ -98,7 +98,7 @@ namespace $ {
 				const db = await this.db_async()
 				const all = await db.read('meta').meta.select()
 				db.destructor()
-				return all
+				return all.reverse()
 			} catch {
 				return []
 			}
