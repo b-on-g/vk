@@ -16,7 +16,18 @@ namespace $.$$ {
 		cursor: 'pointer',
 		borderRadius: '0.5rem',
 
-		overflow: 'clip',
+		Download: {
+			justify: {
+				content: 'flex-end',
+			},
+		},
+
+		Delete: {
+			justify: {
+				content: 'flex-end',
+			},
+		},
+
 		Cover: {
 			flex: {
 				shrink: 0,
