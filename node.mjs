@@ -8907,7 +8907,7 @@ var $;
 			const obj = new this.$.$mol_link();
 			(obj.uri) = () => ("https://vk.com/audios374092255");
 			(obj.target) = () => ("_blank");
-			(obj.sub) = () => (["Открыть VK Music"]);
+			(obj.sub) = () => (["Открыть аудио"]);
 			return obj;
 		}
 		token_hint(){
@@ -8986,7 +8986,7 @@ var $;
 			return [(this.Theme())];
 		}
 		title(){
-			return "VK Music";
+			return "Bog Music";
 		}
 		tools(){
 			return [
@@ -9077,10 +9077,10 @@ var $;
             }
             title() {
                 if (!this.online())
-                    return 'VK Music (offline)';
+                    return 'Bog Music (offline)';
                 if (this.token_expired())
-                    return 'VK Music (токен протух)';
-                return 'VK Music';
+                    return 'Bog Music (токен протух)';
+                return 'Bog Music';
             }
             token(next) {
                 if (next !== undefined) {
@@ -9180,7 +9180,7 @@ var $;
                 return super.Auth_block();
             }
             token_hint() {
-                return '1. Открой VK Music (ссылка выше)\n2. F12 → Network → фильтр «api.vk.com»\n3. Любой запрос → ПКМ → Copy as cURL\n4. Вставь в поле токена наверху';
+                return '1. Открой аудио (ссылка выше)\n2. F12 → Network → фильтр «api»\n3. Любой запрос → ПКМ → Copy as cURL\n4. Вставь в поле токена наверху';
             }
             download_all() {
                 const audios = this.visible_audios();

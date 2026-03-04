@@ -1,7 +1,7 @@
 {
-	"name": "VK Music",
-	"short_name": "VK Music",
-	"description": "VK Music Player",
+	"name": "Bog Music",
+	"short_name": "Bog Music",
+	"description": "Music Player",
 	"id": "bog_vk_app",
 	"start_url": ".",
 	"display": "standalone",

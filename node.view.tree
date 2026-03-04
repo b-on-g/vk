@@ -320,7 +320,7 @@ $bog_vk_player $mol_view
 $bog_vk_app $mol_page
 	plugins /
 		<= Theme $mol_theme_auto
-	title \VK Music
+	title \Bog Music
 	tools /
 		<= Token_input $mol_string
 			hint \Вставь токен или URL с access_token
@@ -337,7 +337,7 @@ $bog_vk_app $mol_page
 				<= Auth_link $mol_link
 					uri \https://vk.com/audios374092255
 					target \_blank
-					sub / \Открыть VK Music
+					sub / \Открыть аудио
 				<= Auth_hint $mol_paragraph
 					title <= token_hint \
 		<= Tabs $mol_view

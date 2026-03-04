@@ -2915,7 +2915,7 @@ declare namespace $.$$ {
     class $bog_vk_app extends $.$bog_vk_app {
         online(next?: boolean): boolean;
         token_expired(next?: boolean): boolean;
-        title(): "VK Music (offline)" | "VK Music (токен протух)" | "VK Music";
+        title(): "Bog Music (offline)" | "Bog Music (токен протух)" | "Bog Music";
         token(next?: string): string;
         extract_token(input: string): string;
         extract_cookies(input: string): string;
