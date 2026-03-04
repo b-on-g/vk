@@ -1,7 +1,7 @@
 {
-	"name": "VK Music",
-	"short_name": "VK Music",
-	"description": "VK Music Player",
+	"name": "Bog Music",
+	"short_name": "Bog Music",
+	"description": "Music Player",
 	"start_url": ".",
 	"display": "standalone",
 	"background_color": "#1a1a2e",

@@ -15,9 +15,9 @@ namespace $.$$ {
 		}
 
 		title() {
-			if (!this.online()) return 'VK Music (offline)'
-			if (this.token_expired()) return 'VK Music (токен протух)'
-			return 'VK Music'
+			if (!this.online()) return 'Bog Music (offline)'
+			if (this.token_expired()) return 'Bog Music (токен протух)'
+			return 'Bog Music'
 		}
 
 		@$mol_mem
@@ -129,7 +129,7 @@ namespace $.$$ {
 		}
 
 		token_hint() {
-			return '1. Открой VK Music (ссылка выше)\n2. F12 → Network → фильтр «api.vk.com»\n3. Любой запрос → ПКМ → Copy as cURL\n4. Вставь в поле токена наверху'
+			return '1. Открой аудио (ссылка выше)\n2. F12 → Network → фильтр «api»\n3. Любой запрос → ПКМ → Copy as cURL\n4. Вставь в поле токена наверху'
 		}
 
 		download_all() {
