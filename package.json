@@ -193,7 +193,9 @@
     "$mol_icon_pause",
     "$mol_icon_skip_next",
     "$mol_icon_volume_high",
-    "$mol_icon_volume"
+    "$mol_icon_volume",
+    "$mol_offline_install",
+    "$mol_offline"
   ],
   "dependencies": {
     "autoinstall": "*",

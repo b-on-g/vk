@@ -2237,7 +2237,7 @@ declare namespace $ {
 		ReturnType< $mol_paragraph['title'] >
 	>
 	export class $bog_vk_track extends $mol_view {
-		play( next?: any ): any
+		event_click( next?: any ): any
 		cover( ): string
 		Cover( ): $mol_image
 		Cover_placeholder( ): $mol_icon_music
@@ -2250,7 +2250,10 @@ declare namespace $ {
 		Duration( ): $mol_paragraph
 		audio( ): any
 		current( ): boolean
-		click( next?: ReturnType< $bog_vk_track['play'] > ): ReturnType< $bog_vk_track['play'] >
+		play( next?: any ): any
+		event( ): ({ 
+			click( next?: ReturnType< $bog_vk_track['event_click'] > ): ReturnType< $bog_vk_track['event_click'] >,
+		}) 
 		attr( ): ({ 
 			'bog_vk_track_current': ReturnType< $bog_vk_track['current'] >,
 		}) 
@@ -2534,6 +2537,13 @@ declare namespace $.$$ {
 }
 
 declare namespace $.$$ {
+}
+
+declare namespace $ {
+    function $mol_offline(): void;
+}
+
+declare namespace $ {
 }
 
 declare namespace $ {

@@ -6923,7 +6923,7 @@ var $;
 
 ;
 	($.$bog_vk_track) = class $bog_vk_track extends ($.$mol_view) {
-		play(next){
+		event_click(next){
 			if(next !== undefined) return next;
 			return null;
 		}
@@ -6974,8 +6974,12 @@ var $;
 		current(){
 			return false;
 		}
-		click(next){
-			return (this.play(next));
+		play(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		event(){
+			return {"click": (next) => (this.event_click(next))};
 		}
 		attr(){
 			return {"bog_vk_track_current": (this.current())};
@@ -6989,13 +6993,14 @@ var $;
 			];
 		}
 	};
-	($mol_mem(($.$bog_vk_track.prototype), "play"));
+	($mol_mem(($.$bog_vk_track.prototype), "event_click"));
 	($mol_mem(($.$bog_vk_track.prototype), "Cover"));
 	($mol_mem(($.$bog_vk_track.prototype), "Cover_placeholder"));
 	($mol_mem(($.$bog_vk_track.prototype), "Title"));
 	($mol_mem(($.$bog_vk_track.prototype), "Artist"));
 	($mol_mem(($.$bog_vk_track.prototype), "Info"));
 	($mol_mem(($.$bog_vk_track.prototype), "Duration"));
+	($mol_mem(($.$bog_vk_track.prototype), "play"));
 
 
 ;
@@ -8030,6 +8035,26 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "player_play"));
 	($mol_mem(($.$bog_vk_app.prototype), "Player"));
 
+
+;
+"use strict";
+var $;
+(function ($) {
+    function $mol_offline() { }
+    $.$mol_offline = $mol_offline;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    try {
+        $mol_offline();
+    }
+    catch (error) {
+        console.error(error);
+    }
+})($ || ($ = {}));
 
 ;
 "use strict";

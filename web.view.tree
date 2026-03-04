@@ -207,7 +207,9 @@ $mol_icon_music $mol_icon path \M21,3V15.5A3.5,3.5 0 0,1 17.5,19A3.5,3.5 0 0,1 1
 $bog_vk_track $mol_view
 	audio null
 	current false
-	click? <=> play? null
+	play? null
+	event *
+		click? <=> event_click? null
 	attr *
 		bog_vk_track_current <= current
 	sub /
