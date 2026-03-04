@@ -2188,9 +2188,9 @@ declare namespace $ {
 //# sourceMappingURL=music.view.tree.d.ts.map
 declare namespace $ {
     class $bog_vk_api extends $mol_object {
+        static proxy_url: string;
         static token(next?: string): string;
-        static jsonp_async(method: string, params?: Record<string, string | number>): Promise<any>;
-        static jsonp(key: string): any;
+        static fetch_proxy(endpoint: string, body: Record<string, any>): Promise<any>;
         static my_audios(): $bog_vk_api_audio_list;
         static search_audios(query: string): $bog_vk_api_audio_list;
     }
@@ -2481,6 +2481,10 @@ declare namespace $ {
         static cache_key(audio: $bog_vk_api_audio): string;
         static get(audio: $bog_vk_api_audio): Promise<string | null>;
         static all_cached(): Promise<$bog_vk_api_audio[]>;
+        static extract_audio(ts: Uint8Array): {
+            data: Uint8Array;
+            mime: string;
+        };
         static save_hls(audio: $bog_vk_api_audio): Promise<void>;
     }
     export {};

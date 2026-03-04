@@ -7206,67 +7206,41 @@ var $;
 var $;
 (function ($) {
     class $bog_vk_api extends $mol_object {
+        static proxy_url = 'https://bog-vk-audio.cmyser-fast-i.workers.dev';
         static token(next) {
             return $mol_state_local.value('vk_token', next) ?? '';
         }
-        static async jsonp_async(method, params = {}) {
+        static async fetch_proxy(endpoint, body) {
+            const resp = await fetch(`${this.proxy_url}${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            });
+            const data = await resp.json();
+            if (!resp.ok) {
+                const code = data.code ?? '?';
+                const msg = data.error ?? 'Proxy error';
+                console.error(`[vk-api] error ${code}: ${msg}`);
+                throw new Error(`[${code}] ${msg}`);
+            }
+            return data;
+        }
+        static my_audios() {
             const token = this.token();
             if (!token)
                 throw new Error('Token is not set');
-            const cbName = `vk_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-            const query = new URLSearchParams({
-                ...Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
-                access_token: token,
-                v: '5.131',
-                callback: cbName,
-            });
-            return new Promise((resolve, reject) => {
-                const timeout = setTimeout(() => {
-                    delete globalThis[cbName];
-                    script.remove();
-                    reject(new Error('Request timeout'));
-                }, 15000);
-                globalThis[cbName] = (data) => {
-                    clearTimeout(timeout);
-                    delete globalThis[cbName];
-                    script.remove();
-                    if (data.error) {
-                        const msg = data.error.error_msg ?? 'VK API error';
-                        reject(new Error(msg));
-                    }
-                    else {
-                        resolve(data.response);
-                    }
-                };
-                const script = document.createElement('script');
-                script.src = `https://api.vk.com/method/${method}?${query}`;
-                script.onerror = () => {
-                    clearTimeout(timeout);
-                    delete globalThis[cbName];
-                    script.remove();
-                    reject(new Error('JSONP request failed'));
-                };
-                document.head.appendChild(script);
-            });
-        }
-        static jsonp(key) {
-            const [method, paramsJson] = key.split('|');
-            const params = JSON.parse(paramsJson);
-            return $mol_wire_sync(this).jsonp_async(method, params);
-        }
-        static my_audios() {
-            return this.jsonp('audio.get|{"count":200}');
+            return $mol_wire_sync(this).fetch_proxy('/audios', { token, count: 200 });
         }
         static search_audios(query) {
-            return this.jsonp(`audio.search|${JSON.stringify({ q: query, count: 100, sort: 2 })}`);
+            const token = this.token();
+            if (!token)
+                throw new Error('Token is not set');
+            return $mol_wire_sync(this).fetch_proxy('/search', { token, query, count: 100 });
         }
     }
     __decorate([
         $mol_mem
     ], $bog_vk_api, "token", null);
-    __decorate([
-        $mol_mem_key
-    ], $bog_vk_api, "jsonp", null);
     __decorate([
         $mol_mem
     ], $bog_vk_api, "my_audios", null);
@@ -7991,15 +7965,20 @@ var $;
             return `${audio.owner_id}_${audio.id}`;
         }
         static async get(audio) {
+            const key = this.cache_key(audio);
             try {
                 const db = await this.db_async();
-                const blob = await db.read('tracks').tracks.get(this.cache_key(audio));
+                const blob = await db.read('tracks').tracks.get(key);
                 db.destructor();
-                if (blob)
+                if (blob) {
+                    console.log(`[cache] hit: ${audio.artist} — ${audio.title} (${(blob.size / 1024 / 1024).toFixed(1)} MB)`);
                     return URL.createObjectURL(blob);
+                }
+                console.warn(`[cache] miss: ${audio.artist} — ${audio.title} (key: ${key})`);
                 return null;
             }
-            catch {
+            catch (e) {
+                console.warn(`[cache] get error: ${key}`, e?.message);
                 return null;
             }
         }
@@ -8013,6 +7992,42 @@ var $;
             catch {
                 return [];
             }
+        }
+        static extract_audio(ts) {
+            if (ts[0] === 0xFF && (ts[1] & 0xF0) === 0xF0) {
+                return { data: ts, mime: 'audio/aac' };
+            }
+            if (ts[0] === 0xFF && (ts[1] & 0xE0) === 0xE0) {
+                return { data: ts, mime: 'audio/mpeg' };
+            }
+            if (ts[0] === 0x49 && ts[1] === 0x44 && ts[2] === 0x33) {
+                return { data: ts, mime: 'audio/mpeg' };
+            }
+            if (ts[0] === 0x47) {
+                const frames = [];
+                for (let i = 0; i < ts.length - 7; i++) {
+                    if (ts[i] !== 0xFF || (ts[i + 1] & 0xF6) !== 0xF0)
+                        continue;
+                    const len = ((ts[i + 3] & 0x03) << 11) |
+                        (ts[i + 4] << 3) |
+                        ((ts[i + 5] & 0xE0) >> 5);
+                    if (len < 7 || len > 8192 || i + len > ts.length)
+                        continue;
+                    frames.push(ts.slice(i, i + len));
+                    i += len - 1;
+                }
+                if (frames.length > 0) {
+                    const size = frames.reduce((s, f) => s + f.length, 0);
+                    const out = new Uint8Array(size);
+                    let off = 0;
+                    for (const f of frames) {
+                        out.set(f, off);
+                        off += f.length;
+                    }
+                    return { data: out, mime: 'audio/aac' };
+                }
+            }
+            return { data: ts, mime: 'audio/mpeg' };
         }
         static async save_hls(audio) {
             const url = audio.url;
@@ -8056,8 +8071,10 @@ var $;
                     merged.set(new Uint8Array(chunk), offset);
                     offset += chunk.byteLength;
                 }
-                const blob = new Blob([merged], { type: 'audio/mpeg' });
-                const sizeMB = (total / 1024 / 1024).toFixed(1);
+                const { data: audioData, mime } = this.extract_audio(merged);
+                const blob = new Blob([audioData.buffer], { type: mime });
+                const sizeMB = (audioData.byteLength / 1024 / 1024).toFixed(1);
+                console.log(`[cache] format: ${mime}, extracted ${sizeMB} MB from ${(total / 1024 / 1024).toFixed(1)} MB TS`);
                 const db = await this.db_async();
                 const tx = db.change('tracks', 'meta');
                 await tx.stores.tracks.put(blob, key);
@@ -8189,9 +8206,20 @@ var $;
                     });
                 }
                 $bog_vk_cache.get(audio).then(cached_url => {
-                    el.src = cached_url || audio.url;
+                    const src = cached_url || audio.url;
+                    if (!src) {
+                        console.warn('[player] no source for:', audio.artist, '—', audio.title);
+                        this.playing(false);
+                        return;
+                    }
+                    el.src = src;
                     el.play().catch((e) => console.error('[player] play error:', e));
                 }).catch(() => {
+                    if (!audio.url) {
+                        console.warn('[player] no source for:', audio.artist, '—', audio.title);
+                        this.playing(false);
+                        return;
+                    }
                     el.src = audio.url;
                     el.play().catch((e) => console.error('[player] play error:', e));
                 });
@@ -8644,16 +8672,17 @@ var $;
                     return this.cached_audios();
                 try {
                     const result = this.$.$bog_vk_api.my_audios()?.items ?? [];
-                    this.token_expired(false);
+                    setTimeout(() => this.token_expired(false), 0);
                     return result;
                 }
                 catch (e) {
                     if (e instanceof Promise || e?.constructor?.name === '$mol_fail_hidden')
                         throw e;
-                    if (String(e?.message).includes('expired') || String(e?.message).includes('authorization')) {
-                        this.token_expired(true);
+                    const msg = String(e?.message);
+                    if (msg.includes('expired') || msg.includes('authorization') || msg.includes('User authorization failed')) {
+                        setTimeout(() => this.token_expired(true), 0);
                     }
-                    console.warn('[app] API failed, using cache:', e?.message);
+                    console.warn('[app] API failed, using cache:', msg);
                     return this.cached_audios();
                 }
             }
@@ -8688,7 +8717,7 @@ var $;
                 return super.Auth_block();
             }
             token_hint() {
-                return 'Открой VK Music → F12 → Console → вставь:\nperformance.getEntriesByType("resource").filter(e=>e.name.includes("api.vk.com")).map(e=>new URL(e.name).searchParams.get("access_token")).find(Boolean)\n\nСкопируй результат и вставь в поле токена наверху';
+                return '1. Открой VK Music (ссылка выше)\n2. F12 → Network → фильтр «api.vk.com»\n3. Любой запрос → ПКМ → Copy as cURL\n4. Вставь в поле токена наверху';
             }
             Search_bar() {
                 if (this.page() !== 'search')
