@@ -6,7 +6,6 @@ namespace $ {
 			return $mol_state_local.value('vk_token', next) ?? ''
 		}
 
-		/** JSONP call — bypasses CORS and preserves user IP (VK tokens are IP-bound) */
 		static async jsonp_async(method: string, params: Record<string, string | number> = {}): Promise<any> {
 			const token = this.token()
 			if (!token) throw new Error('Token is not set')
@@ -31,8 +30,16 @@ namespace $ {
 					clearTimeout(timeout)
 					delete (globalThis as any)[cbName]
 					script.remove()
-					if (data.error) reject(new Error(data.error.error_msg ?? 'VK API error'))
-					else resolve(data.response)
+					if (data.error) {
+						const msg = data.error.error_msg ?? 'VK API error'
+						if (msg.includes('expired') || data.error.error_code === 5) {
+							console.warn('[vk] token expired, clearing')
+							this.token('')
+						}
+						reject(new Error(msg))
+					} else {
+						resolve(data.response)
+					}
 				}
 
 				const script = document.createElement('script')

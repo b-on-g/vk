@@ -1,1 +1,3 @@
 include \/mol/offline/install
+
+deploy \/bog/vk/app/favicon.svg

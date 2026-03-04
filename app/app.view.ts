@@ -4,9 +4,19 @@ namespace $.$$ {
 		@$mol_mem
 		token(next?: string) {
 			if (next !== undefined) {
-				this.$.$bog_vk_api.token(next)
+				const extracted = this.extract_token(next)
+				this.$.$bog_vk_api.token(extracted)
 			}
 			return this.$.$bog_vk_api.token()
+		}
+
+		extract_token(input: string): string {
+			const trimmed = input.trim()
+			const match = trimmed.match(/vk1\.a\.[A-Za-z0-9_-]+/)
+			if (match) return match[0]
+			const url_match = trimmed.match(/access_token=([^&\s'"]+)/)
+			if (url_match) return url_match[1]
+			return trimmed
 		}
 
 		@$mol_mem
