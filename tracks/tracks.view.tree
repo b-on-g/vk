@@ -1,0 +1,9 @@
+$bog_vk_tracks $mol_list
+	audios /
+	current_audio null
+	play_audio? null
+	rows <= track_rows /
+		<= Track*0 $bog_vk_track
+			audio <= track_audio* null
+			current <= track_current* false
+			play? <=> track_play*? null

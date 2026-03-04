@@ -1,0 +1,17 @@
+$bog_vk_track $mol_view
+	audio null
+	current false
+	click? <=> play? null
+	attr *
+		bog_vk_track_current <= current
+	sub /
+		<= Cover $mol_image
+			uri <= cover \
+		<= Info $mol_view
+			sub /
+				<= Title $mol_paragraph
+					title <= title \
+				<= Artist $mol_paragraph
+					title <= artist \
+		<= Duration $mol_paragraph
+			title <= duration_text \

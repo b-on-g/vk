@@ -1,0 +1,41 @@
+$bog_vk_player $mol_view
+	queue /
+	queue_index? 0
+	play_track? null
+	sub /
+		<= Progress $mol_view
+			sub /
+				<= Progress_bar $mol_view
+		<= Controls $mol_view
+			sub /
+				<= Left $mol_view
+					sub /
+						<= Cover $mol_image
+							uri <= cover \
+						<= Track_info $mol_view
+							sub /
+								<= Title $mol_paragraph
+									title <= title \
+								<= Artist $mol_paragraph
+									title <= artist \
+				<= Center $mol_view
+					sub /
+						<= Prev $mol_button_minor
+							click? <=> prev? null
+							sub / <= Prev_icon $mol_icon_skip_previous
+						<= Play $mol_button_minor
+							click? <=> toggle? null
+							sub / <= Play_icon $mol_icon_play
+						<= Pause $mol_button_minor
+							click? <=> toggle? null
+							sub / <= Pause_icon $mol_icon_pause
+						<= Next $mol_button_minor
+							click? <=> next? null
+							sub / <= Next_icon $mol_icon_skip_next
+				<= Right $mol_view
+					sub /
+						<= Time $mol_paragraph
+							title <= time_text \
+						<= Volume_btn $mol_button_minor
+							click? <=> toggle_mute? null
+							sub / <= Volume_icon $mol_icon_volume_high

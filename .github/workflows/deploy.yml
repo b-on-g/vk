@@ -1,0 +1,25 @@
+name: $bog_vk
+
+permissions: write-all
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+  schedule:
+  - cron: "0 7 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - uses: hyoo-ru/mam_build@master2
+      with:
+        package: 'bog/vk/app'
+
+    - uses: hyoo-ru/gh-deploy@v4.4.1
+      if: github.ref == 'refs/heads/master'
+      with:
+        folder: 'bog/vk/app/-'

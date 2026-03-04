@@ -1,0 +1,35 @@
+$bog_vk_app $mol_page
+	plugins /
+		<= Theme $mol_theme_auto
+	title \VK Music
+	tools /
+		<= Token_input $mol_string
+			hint \Вставь токен — F12 → Console → скрипт
+			value? <=> token? \
+		<= Lighter $mol_lights_toggle
+	body_scroll_top? <=> scroll? 0
+	body /
+		<= Token_hint $mol_view
+			sub /
+				<= Token_hint_text $mol_paragraph
+					title <= token_hint \
+		<= Tabs $mol_view
+			sub /
+				<= Tab_my $mol_button_minor
+					click? <=> show_my? null
+					sub / \Моя музыка
+				<= Tab_search $mol_button_minor
+					click? <=> show_search? null
+					sub / \Поиск
+		<= Search_bar $mol_string
+			hint \Поиск музыки...
+			value? <=> search_query? \
+		<= Tracks $bog_vk_tracks
+			audios <= visible_audios /
+			current_audio <= current_audio null
+			play_audio? <=> on_play_audio? null
+	foot /
+		<= Player $bog_vk_player
+			queue <= visible_audios /
+			queue_index? <=> queue_index? 0
+			play_track? <=> player_play? null
