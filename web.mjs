@@ -8051,7 +8051,7 @@ var $;
 		}
 		Auth_link(){
 			const obj = new this.$.$mol_link();
-			(obj.uri) = () => ("https://music.vk.com");
+			(obj.uri) = () => ("https://vk.com/audios374092255");
 			(obj.target) = () => ("_blank");
 			(obj.sub) = () => (["Открыть VK Music"]);
 			return obj;
@@ -8363,7 +8363,7 @@ var $;
             }
             my_audios() {
                 if (!this.token())
-                    return [];
+                    return this.cached_audios();
                 if (!this.online())
                     return this.cached_audios();
                 try {
