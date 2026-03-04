@@ -6986,57 +6986,31 @@ var $;
 var $;
 (function ($) {
     class $bog_vk_api extends $mol_object {
-        static base = 'https://api.vk.com/method/';
-        static version = '5.131';
+        static worker = 'https://bog-vk-audio.cmyser-fast-i.workers.dev';
         static token(next) {
-            return $mol_state_local.value('vk_token', next) ?? '';
+            return $mol_state_local.value('vk_remixsid', next) ?? '';
         }
-        static async call_async(url) {
-            return new Promise((resolve, reject) => {
-                const cbName = `vk_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-                globalThis[cbName] = (data) => {
-                    delete globalThis[cbName];
-                    script.remove();
-                    if (data.error)
-                        reject(new Error(data.error.error_msg));
-                    else
-                        resolve(data.response);
-                };
-                const script = document.createElement('script');
-                script.src = `${url}&callback=${cbName}`;
-                script.onerror = () => {
-                    delete globalThis[cbName];
-                    script.remove();
-                    reject(new Error('JSONP request failed'));
-                };
-                document.head.appendChild(script);
+        static async post_async(endpoint, body) {
+            const response = await fetch(`${this.worker}${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ remixsid: this.token(), ...body }),
             });
+            const data = await response.json();
+            if (data.error)
+                throw new Error(data.error);
+            return data;
         }
-        static call(url) {
-            return $mol_wire_sync(this).call_async(url);
-        }
-        static make_url(method, params = {}) {
-            const token = this.token();
-            if (!token)
-                $mol_fail(new Error('VK token is not set'));
-            const query = new URLSearchParams({
-                ...Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
-                access_token: token,
-                v: this.version,
-            });
-            return `${this.base}${method}?${query}`;
+        static post(key) {
+            const [endpoint, bodyJson] = key.split('|');
+            const body = JSON.parse(bodyJson);
+            return $mol_wire_sync(this).post_async(endpoint, body);
         }
         static my_audios() {
-            const url = this.make_url('audio.get', { count: 200 });
-            return this.call(url);
+            return this.post('/audios|{}');
         }
         static search_audios(query) {
-            const url = this.make_url('audio.search', {
-                q: query,
-                count: 100,
-                sort: 2,
-            });
-            return this.call(url);
+            return this.post(`/search|${JSON.stringify({ query })}`);
         }
     }
     __decorate([
@@ -7044,7 +7018,7 @@ var $;
     ], $bog_vk_api, "token", null);
     __decorate([
         $mol_mem_key
-    ], $bog_vk_api, "call", null);
+    ], $bog_vk_api, "post", null);
     __decorate([
         $mol_mem
     ], $bog_vk_api, "my_audios", null);
@@ -7812,7 +7786,7 @@ var $;
 		}
 		Token_input(){
 			const obj = new this.$.$mol_string();
-			(obj.hint) = () => ("Вставь токен — F12 → Console → скрипт");
+			(obj.hint) = () => ("Вставь remixsid из vk.com cookies");
 			(obj.value) = (next) => ((this.token(next)));
 			return obj;
 		}
@@ -8013,7 +7987,7 @@ var $;
             token_hint() {
                 if (this.token())
                     return '';
-                return 'Открой vk.com → F12 → Console → вставь:\n\nfetch("/al_audio.php",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"act=reload_audio"}).then(r=>r.text()).then(t=>{let m=t.match(/access_token=([a-f0-9]+)/);if(m)prompt("Token:",m[1]);else window.open("https://oauth.vk.com/authorize?client_id=6121396&scope=1073737727&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token")})\n\nИли открой ссылку вручную:\nhttps://oauth.vk.com/authorize?client_id=6121396&scope=1073737727&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token\n\nПосле авторизации скопируй access_token из адресной строки.';
+                return 'Открой vk.com → F12 → Console → вставь:\n\ndocument.cookie.match(/remixsid=([^;]+)/)?.[1]\n\nСкопируй результат и вставь сюда.\n\nИли: F12 → Application → Cookies → vk.com → remixsid → скопируй Value.';
             }
             Token_hint() {
                 if (this.token())

@@ -2171,12 +2171,10 @@ declare namespace $ {
 
 declare namespace $ {
     class $bog_vk_api extends $mol_object {
-        static base: string;
-        static version: string;
+        static worker: string;
         static token(next?: string): string;
-        static call_async(url: string): Promise<any>;
-        static call(url: string): any;
-        static make_url(method: string, params?: Record<string, string | number>): string;
+        static post_async(endpoint: string, body: Record<string, any>): Promise<any>;
+        static post(key: string): any;
         static my_audios(): $bog_vk_api_audio_list;
         static search_audios(query: string): $bog_vk_api_audio_list;
     }
@@ -2656,7 +2654,7 @@ declare namespace $.$$ {
         current_audio(next?: $bog_vk_api_audio | null): $bog_vk_api_audio | null;
         queue_index(next?: number): number;
         on_play_audio(audio?: $bog_vk_api_audio | null): void;
-        token_hint(): "" | "Открой vk.com → F12 → Console → вставь:\n\nfetch(\"/al_audio.php\",{method:\"POST\",headers:{\"Content-Type\":\"application/x-www-form-urlencoded\"},body:\"act=reload_audio\"}).then(r=>r.text()).then(t=>{let m=t.match(/access_token=([a-f0-9]+)/);if(m)prompt(\"Token:\",m[1]);else window.open(\"https://oauth.vk.com/authorize?client_id=6121396&scope=1073737727&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token\")})\n\nИли открой ссылку вручную:\nhttps://oauth.vk.com/authorize?client_id=6121396&scope=1073737727&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token\n\nПосле авторизации скопируй access_token из адресной строки.";
+        token_hint(): "" | "Открой vk.com → F12 → Console → вставь:\n\ndocument.cookie.match(/remixsid=([^;]+)/)?.[1]\n\nСкопируй результат и вставь сюда.\n\nИли: F12 → Application → Cookies → vk.com → remixsid → скопируй Value.";
         Token_hint(): any;
         Search_bar(): any;
     }
