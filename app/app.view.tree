@@ -4,7 +4,7 @@ $bog_vk_app $mol_page
 	title \VK Music
 	tools /
 		<= Token_input $mol_string
-			hint \Вставь токен — F12 → Console → скрипт
+			hint \Вставь remixsid из vk.com cookies
 			value? <=> token? \
 		<= Lighter $mol_lights_toggle
 	body_scroll_top? <=> scroll? 0
