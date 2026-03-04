@@ -2587,11 +2587,6 @@ declare namespace $ {
 		,
 		ReturnType< $bog_vk_player['queue_index'] >
 	>
-	type $bog_vk_player__play_track_bog_vk_app_17 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['player_play'] >
-		,
-		ReturnType< $bog_vk_player['play_track'] >
-	>
 	export class $bog_vk_app extends $mol_page {
 		Theme( ): $mol_theme_auto
 		token( next?: string ): string
@@ -2613,7 +2608,6 @@ declare namespace $ {
 		on_play_audio( next?: any ): any
 		Tracks( ): $bog_vk_tracks
 		queue_index( next?: number ): number
-		player_play( next?: any ): any
 		Player( ): $bog_vk_player
 		plugins( ): readonly(any)[]
 		title( ): string

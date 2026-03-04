@@ -7105,7 +7105,10 @@ var $;
                 return `${min}:${sec.toString().padStart(2, '0')}`;
             }
             event_click(event) {
-                this.play(this.audio());
+                const audio = this.audio();
+                console.log('[track] click, audio:', audio);
+                this.play(audio);
+                console.log('[track] play() called');
             }
         }
         $$.$bog_vk_track = $bog_vk_track;
@@ -7281,7 +7284,9 @@ var $;
                 return audio.id === current.id && audio.owner_id === current.owner_id;
             }
             track_play(index) {
+                console.log('[tracks] track_play called, index:', index);
                 const audio = this.track_audio(index);
+                console.log('[tracks] audio:', audio);
                 if (audio)
                     this.play_audio(audio);
             }
@@ -7626,12 +7631,14 @@ var $;
                 return (this.current_time() / dur) * 100;
             }
             play_track(audio) {
+                console.log('[player] play_track called, audio:', audio);
                 if (!audio)
                     return;
                 const el = this.audio_el();
                 this.current_audio(audio);
+                console.log('[player] setting src:', audio.url);
                 el.src = audio.url;
-                el.play();
+                el.play().then(() => console.log('[player] play started')).catch((e) => console.error('[player] play error:', e));
                 this.playing(true);
             }
             toggle() {
@@ -7736,6 +7743,7 @@ var $;
     var $$;
     (function ($$) {
         $mol_style_define($bog_vk_player, {
+            width: '100%',
             flex: {
                 direction: 'column',
                 shrink: 0,
@@ -7971,15 +7979,10 @@ var $;
 			if(next !== undefined) return next;
 			return 0;
 		}
-		player_play(next){
-			if(next !== undefined) return next;
-			return null;
-		}
 		Player(){
 			const obj = new this.$.$bog_vk_player();
 			(obj.queue) = () => ((this.visible_audios()));
 			(obj.queue_index) = (next) => ((this.queue_index(next)));
-			(obj.play_track) = (next) => ((this.player_play(next)));
 			return obj;
 		}
 		plugins(){
@@ -8023,7 +8026,6 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "on_play_audio"));
 	($mol_mem(($.$bog_vk_app.prototype), "Tracks"));
 	($mol_mem(($.$bog_vk_app.prototype), "queue_index"));
-	($mol_mem(($.$bog_vk_app.prototype), "player_play"));
 	($mol_mem(($.$bog_vk_app.prototype), "Player"));
 
 
@@ -8100,12 +8102,14 @@ var $;
                 return next ?? 0;
             }
             on_play_audio(audio) {
+                console.log('[app] on_play_audio called, audio:', audio);
                 if (!audio)
                     return;
                 this.current_audio(audio);
                 const audios = this.visible_audios();
                 const idx = audios.findIndex((a) => a.id === audio.id && a.owner_id === audio.owner_id);
                 this.queue_index(idx >= 0 ? idx : 0);
+                console.log('[app] calling play_track, url:', audio.url);
                 this.Player().play_track(audio);
             }
             token_hint() {
