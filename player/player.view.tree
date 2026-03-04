@@ -37,6 +37,3 @@ $bog_vk_player $mol_view
 					sub /
 						<= Time $mol_paragraph
 							title <= time_text \
-						<= Volume_btn $mol_button_minor
-							click? <=> toggle_mute? null
-							sub / <= Volume_icon $mol_icon_volume_high

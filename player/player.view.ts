@@ -1,10 +1,12 @@
 namespace $.$$ {
 	export class $bog_vk_player extends $.$bog_vk_player {
 
-		@$mol_mem
+		private _audio_el?: HTMLAudioElement
+
 		audio_el() {
+			if (this._audio_el) return this._audio_el
 			const el = new Audio()
-			el.volume = this.volume()
+			el.volume = 0.7
 			el.addEventListener('ended', () => this.next())
 			el.addEventListener('timeupdate', () => {
 				this.current_time(el.currentTime)
@@ -12,6 +14,10 @@ namespace $.$$ {
 			el.addEventListener('loadedmetadata', () => {
 				this.duration(el.duration)
 			})
+			el.addEventListener('error', (e) => {
+				console.error('[player] audio error:', el.error)
+			})
+			this._audio_el = el
 			return el
 		}
 
@@ -33,19 +39,6 @@ namespace $.$$ {
 		@$mol_mem
 		duration(next?: number) {
 			return next ?? 0
-		}
-
-		@$mol_mem
-		volume(next?: number) {
-			if (next !== undefined) {
-				$mol_state_local.value('vk_volume', next)
-			}
-			return $mol_state_local.value('vk_volume') as number ?? 0.7
-		}
-
-		@$mol_mem
-		muted(next?: boolean) {
-			return next ?? false
 		}
 
 		title() {
@@ -90,13 +83,12 @@ namespace $.$$ {
 
 		@$mol_action
 		play_track(audio?: $bog_vk_api_audio | null) {
-			console.log('[player] play_track called, audio:', audio)
 			if (!audio) return
 			const el = this.audio_el()
+			el.pause()
 			this.current_audio(audio)
-			console.log('[player] setting src:', audio.url)
 			el.src = audio.url
-			el.play().then(() => console.log('[player] play started')).catch((e: any) => console.error('[player] play error:', e))
+			el.play().catch((e: any) => console.error('[player] play error:', e))
 			this.playing(true)
 		}
 
@@ -132,14 +124,6 @@ namespace $.$$ {
 				this.queue_index(idx + 1)
 				this.play_track(audio)
 			}
-		}
-
-		@$mol_action
-		toggle_mute() {
-			const el = this.audio_el()
-			const muted = !this.muted()
-			this.muted(muted)
-			el.muted = muted
 		}
 
 		sub() {

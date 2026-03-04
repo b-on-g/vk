@@ -19,9 +19,7 @@ namespace $.$$ {
 
 		@$mol_action
 		track_play(index: number) {
-			console.log('[tracks] track_play called, index:', index)
 			const audio = this.track_audio(index)
-			console.log('[tracks] audio:', audio)
 			if (audio) this.play_audio(audio)
 		}
 	}
