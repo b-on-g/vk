@@ -22,7 +22,7 @@ namespace $.$$ {
 				this.duration(el.duration)
 			})
 			el.addEventListener('error', (e) => {
-				console.error('[player] audio error:', el.error)
+				console.error('[player] audio error:', el.error?.code, el.error?.message, el.error)
 			})
 
 			if ('mediaSession' in navigator) {
@@ -121,26 +121,50 @@ namespace $.$$ {
 				})
 			}
 
-			$bog_vk_cache.get(audio).then(cached_url => {
-				const src = cached_url || audio.url
-				if (!src) {
-					console.warn('[player] no source for:', audio.artist, '—', audio.title)
-					this.playing(false)
-					return
-				}
-				el.src = src
-				el.play().catch((e: any) => console.error('[player] play error:', e))
-			}).catch(() => {
-				if (!audio.url) {
-					console.warn('[player] no source for:', audio.artist, '—', audio.title)
-					this.playing(false)
-					return
-				}
-				el.src = audio.url
-				el.play().catch((e: any) => console.error('[player] play error:', e))
-			})
+			this.play_source(audio, el)
+		}
 
-			this.playing(true)
+		private async play_source(audio: $bog_vk_api_audio, el: HTMLAudioElement) {
+			try {
+				// 1. Try cache
+				const cached = await $bog_vk_cache.get(audio)
+				if (cached) {
+					el.src = cached
+					await el.play()
+					this.playing(true)
+					return
+				}
+
+				// 2. Try direct URL (works in Safari / for non-HLS)
+				if (audio.url) {
+					el.src = audio.url
+					try {
+						await el.play()
+						this.playing(true)
+						$bog_vk_cache.save_hls(audio).catch(() => {})
+						return
+					} catch {
+						// Direct play failed (HLS on Chrome) — download first
+					}
+				}
+
+				// 3. Download HLS → cache → play
+				if (audio.url) {
+					await $bog_vk_cache.save_hls(audio)
+					const url = await $bog_vk_cache.get(audio)
+					if (url) {
+						el.src = url
+						await el.play()
+						this.playing(true)
+						return
+					}
+				}
+
+				console.warn('[player] no source:', audio.artist, '—', audio.title)
+			} catch (e: any) {
+				console.error('[player] play failed:', e)
+			}
+			this.playing(false)
 		}
 
 		toggle() {

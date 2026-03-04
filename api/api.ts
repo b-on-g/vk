@@ -8,6 +8,11 @@ namespace $ {
 			return $mol_state_local.value('vk_token', next) ?? ''
 		}
 
+		@$mol_mem
+		static cookies(next?: string) {
+			return $mol_state_local.value('vk_cookies', next) ?? ''
+		}
+
 		static async fetch_proxy(endpoint: string, body: Record<string, any>): Promise<any> {
 			const resp = await fetch(`${this.proxy_url}${endpoint}`, {
 				method: 'POST',
@@ -31,14 +36,14 @@ namespace $ {
 		static my_audios() {
 			const token = this.token()
 			if (!token) throw new Error('Token is not set')
-			return ($mol_wire_sync(this) as any).fetch_proxy('/audios', { token, count: 200 }) as $bog_vk_api_audio_list
+			return ($mol_wire_sync(this) as any).fetch_proxy('/audios', { token, cookies: this.cookies(), count: 200 }) as $bog_vk_api_audio_list
 		}
 
 		@$mol_mem_key
 		static search_audios(query: string) {
 			const token = this.token()
 			if (!token) throw new Error('Token is not set')
-			return ($mol_wire_sync(this) as any).fetch_proxy('/search', { token, query, count: 100 }) as $bog_vk_api_audio_list
+			return ($mol_wire_sync(this) as any).fetch_proxy('/search', { token, cookies: this.cookies(), query, count: 100 }) as $bog_vk_api_audio_list
 		}
 	}
 

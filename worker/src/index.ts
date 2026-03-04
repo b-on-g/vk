@@ -1,6 +1,6 @@
 /**
  * Cloudflare Worker proxy for VK audio API
- * Uses VK's first-party access_token to call audio.* methods
+ * Forwards requests to VK API as POST with first-party headers + cookies
  */
 
 interface Env {
@@ -29,26 +29,42 @@ function jsonResponse(data: unknown, request: Request, status = 200) {
 	})
 }
 
-async function vkApi(method: string, token: string, params: Record<string, string | number> = {}) {
-	const query = new URLSearchParams({
+async function vkApi(method: string, token: string, cookies: string, params: Record<string, string | number> = {}) {
+	const body = new URLSearchParams({
 		...Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
 		access_token: token,
-		v: '5.131',
+		v: '5.269',
+		client_id: '6287487',
 	})
 
-	const resp = await fetch(`https://api.vk.com/method/${method}?${query}`)
+	const headers: Record<string, string> = {
+		'Content-Type': 'application/x-www-form-urlencoded',
+		'Origin': 'https://vk.com',
+		'Referer': 'https://vk.com/',
+		'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
+	}
+
+	if (cookies) {
+		headers['Cookie'] = cookies
+	}
+
+	const resp = await fetch(`https://api.vk.com/method/${method}`, {
+		method: 'POST',
+		headers,
+		body: body.toString(),
+	})
 	return resp.json() as Promise<any>
 }
 
 /** Get user's audio list */
 async function handleGetAudios(request: Request) {
-	const body = await request.json<{ token: string; offset?: number; count?: number }>()
+	const body = await request.json<{ token: string; cookies?: string; offset?: number; count?: number }>()
 
 	if (!body.token) {
 		return jsonResponse({ error: 'token is required' }, request, 400)
 	}
 
-	const data = await vkApi('audio.get', body.token, {
+	const data = await vkApi('audio.get', body.token, body.cookies ?? '', {
 		count: body.count ?? 200,
 		offset: body.offset ?? 0,
 	})
@@ -62,13 +78,13 @@ async function handleGetAudios(request: Request) {
 
 /** Search audio */
 async function handleSearch(request: Request) {
-	const body = await request.json<{ token: string; query: string; offset?: number; count?: number }>()
+	const body = await request.json<{ token: string; cookies?: string; query: string; offset?: number; count?: number }>()
 
 	if (!body.token || !body.query) {
 		return jsonResponse({ error: 'token and query are required' }, request, 400)
 	}
 
-	const data = await vkApi('audio.search', body.token, {
+	const data = await vkApi('audio.search', body.token, body.cookies ?? '', {
 		q: body.query,
 		count: body.count ?? 100,
 		offset: body.offset ?? 0,

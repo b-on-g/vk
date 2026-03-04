@@ -93,6 +93,19 @@ namespace $.$$ {
 			color: $mol_theme.shade,
 		},
 
+		Download: {
+			flex: {
+				shrink: 0,
+			},
+			color: $mol_theme.shade,
+			padding: {
+				top: '0.25rem',
+				bottom: '0.25rem',
+				left: '0.25rem',
+				right: '0.25rem',
+			},
+		},
+
 		'@': {
 			bog_vk_track_current: {
 				true: {

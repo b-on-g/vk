@@ -35,7 +35,15 @@ namespace $.$$ {
 		}
 
 		event_click(event: Event) {
+			const target = event.target as HTMLElement
+			if (target?.closest('.mol_button_minor') || target?.closest('.mol_button_typed')) return
 			this.play(this.audio())
+		}
+
+		download() {
+			const audio = this.audio_data()
+			if (!audio) return
+			$bog_vk_cache.save_hls(audio).catch(() => {})
 		}
 	}
 }

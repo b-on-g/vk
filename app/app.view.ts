@@ -24,7 +24,9 @@ namespace $.$$ {
 		token(next?: string) {
 			if (next !== undefined) {
 				const extracted = this.extract_token(next)
+				const cookies = this.extract_cookies(next)
 				this.$.$bog_vk_api.token(extracted)
+				if (cookies) this.$.$bog_vk_api.cookies(cookies)
 				this.token_expired(false)
 			}
 			return this.$.$bog_vk_api.token()
@@ -32,11 +34,19 @@ namespace $.$$ {
 
 		extract_token(input: string): string {
 			const trimmed = input.trim()
-			const match = trimmed.match(/vk1\.a\.[A-Za-z0-9_-]+/)
-			if (match) return match[0]
-			const url_match = trimmed.match(/access_token=([^&\s'"]+)/)
-			if (url_match) return url_match[1]
+			const match = trimmed.match(/access_token=([^&\s'"]+)/)
+			if (match) return match[1]
+			const vk_match = trimmed.match(/vk1\.a\.[A-Za-z0-9_-]+/)
+			if (vk_match) return vk_match[0]
 			return trimmed
+		}
+
+		extract_cookies(input: string): string {
+			const match = input.match(/-b\s+'([^']+)'/)
+			if (match) return match[1]
+			const match2 = input.match(/--cookie\s+'([^']+)'/)
+			if (match2) return match2[1]
+			return ''
 		}
 
 		@$mol_mem
@@ -120,6 +130,21 @@ namespace $.$$ {
 
 		token_hint() {
 			return '1. Открой VK Music (ссылка выше)\n2. F12 → Network → фильтр «api.vk.com»\n3. Любой запрос → ПКМ → Copy as cURL\n4. Вставь в поле токена наверху'
+		}
+
+		download_all() {
+			const audios = this.visible_audios()
+			if (!audios.length) return
+			console.log(`[app] downloading all ${audios.length} tracks...`)
+			const download_next = async (i: number) => {
+				if (i >= audios.length) {
+					console.log('[app] all downloads complete')
+					return
+				}
+				await $bog_vk_cache.save_hls(audios[i])
+				await download_next(i + 1)
+			}
+			download_next(0).catch(e => console.warn('[app] download all error:', e))
 		}
 
 		Search_bar() {
