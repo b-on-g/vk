@@ -164,6 +164,27 @@ $mol_lights_toggle $mol_check_icon
 	hint @ \Toggle lights
 	checked? <=> lights? false
 
+$mol_link $mol_view
+	uri \
+	dom_name \a
+	uri_off \
+	uri_native null
+	external false
+	attr *
+		^
+		href <= uri_toggle \
+		title <= hint_safe <= hint \
+		target <= target \_self
+		download <= file_name \
+		mol_link_current <= current false
+		rel <= relation \
+	sub /$mol_view_content
+		<= title
+	arg *
+	event *
+		^
+		click?event <=> click?event <=> event_click?event null
+
 $mol_paragraph $mol_view
 	line_height 24
 	letter_width 7
@@ -290,11 +311,19 @@ $bog_vk_app $mol_page
 	title \VK Music
 	tools /
 		<= Token_input $mol_string
-			hint \access_token из vk.com (F12 → Network → api.vk.com)
+			hint \Вставь токен или URL с access_token
 			value? <=> token? \
 		<= Lighter $mol_lights_toggle
 	body_scroll_top? <=> scroll? 0
 	body /
+		<= Auth_block $mol_view
+			sub /
+				<= Auth_link $mol_link
+					uri <= auth_url \
+					target \_blank
+					sub / \Войти через VK
+				<= Auth_hint $mol_paragraph
+					title \После авторизации скопируй URL из адресной строки и вставь в поле токена
 		<= Token_hint $mol_view
 			sub /
 				<= Token_hint_text $mol_paragraph

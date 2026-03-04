@@ -2055,6 +2055,59 @@ declare namespace $.$$ {
 
 declare namespace $ {
 
+	export class $mol_link extends $mol_view {
+		uri_toggle( ): string
+		hint( ): string
+		hint_safe( ): ReturnType< $mol_link['hint'] >
+		target( ): string
+		file_name( ): string
+		current( ): boolean
+		relation( ): string
+		event_click( next?: any ): any
+		click( next?: ReturnType< $mol_link['event_click'] > ): ReturnType< $mol_link['event_click'] >
+		uri( ): string
+		dom_name( ): string
+		uri_off( ): string
+		uri_native( ): any
+		external( ): boolean
+		attr( ): ({ 
+			'href': ReturnType< $mol_link['uri_toggle'] >,
+			'title': ReturnType< $mol_link['hint_safe'] >,
+			'target': ReturnType< $mol_link['target'] >,
+			'download': ReturnType< $mol_link['file_name'] >,
+			'mol_link_current': ReturnType< $mol_link['current'] >,
+			'rel': ReturnType< $mol_link['relation'] >,
+		})  & ReturnType< $mol_view['attr'] >
+		sub( ): readonly($mol_view_content)[]
+		arg( ): Record<string, any>
+		event( ): ({ 
+			click( next?: ReturnType< $mol_link['click'] > ): ReturnType< $mol_link['click'] >,
+		})  & ReturnType< $mol_view['event'] >
+	}
+	
+}
+
+//# sourceMappingURL=link.view.tree.d.ts.map
+declare namespace $.$$ {
+    class $mol_link extends $.$mol_link {
+        uri_toggle(): string;
+        uri(): string;
+        uri_off(): string;
+        uri_native(): URL;
+        current(): boolean;
+        file_name(): string;
+        minimal_height(): number;
+        external(): boolean;
+        target(): '_self' | '_blank' | '_top' | '_parent' | string;
+        hint_safe(): string;
+    }
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
+
 	export class $mol_paragraph extends $mol_view {
 		line_height( ): number
 		letter_width( ): number
@@ -2656,72 +2709,97 @@ declare namespace $ {
 		,
 		ReturnType< $mol_string['value'] >
 	>
-	type $mol_paragraph__title_bog_vk_app_3 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['token_hint'] >
+	type $mol_link__uri_bog_vk_app_3 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['auth_url'] >
+		,
+		ReturnType< $mol_link['uri'] >
+	>
+	type $mol_link__target_bog_vk_app_4 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_link['target'] >
+	>
+	type $mol_link__sub_bog_vk_app_5 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_link['sub'] >
+	>
+	type $mol_paragraph__title_bog_vk_app_6 = $mol_type_enforce<
+		string
 		,
 		ReturnType< $mol_paragraph['title'] >
 	>
-	type $mol_view__sub_bog_vk_app_4 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_app_7 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_button_minor__click_bog_vk_app_5 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['show_my'] >
+	type $mol_paragraph__title_bog_vk_app_8 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['token_hint'] >
 		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_button_minor__sub_bog_vk_app_6 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_button_minor['sub'] >
-	>
-	type $mol_button_minor__click_bog_vk_app_7 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['show_search'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_button_minor__sub_bog_vk_app_8 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_button_minor['sub'] >
+		ReturnType< $mol_paragraph['title'] >
 	>
 	type $mol_view__sub_bog_vk_app_9 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_string__hint_bog_vk_app_10 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_app_10 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['show_my'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_bog_vk_app_11 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	type $mol_button_minor__click_bog_vk_app_12 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['show_search'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_bog_vk_app_13 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	type $mol_view__sub_bog_vk_app_14 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_string__hint_bog_vk_app_15 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_string['hint'] >
 	>
-	type $mol_string__value_bog_vk_app_11 = $mol_type_enforce<
+	type $mol_string__value_bog_vk_app_16 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['search_query'] >
 		,
 		ReturnType< $mol_string['value'] >
 	>
-	type $bog_vk_tracks__audios_bog_vk_app_12 = $mol_type_enforce<
+	type $bog_vk_tracks__audios_bog_vk_app_17 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_tracks['audios'] >
 	>
-	type $bog_vk_tracks__current_audio_bog_vk_app_13 = $mol_type_enforce<
+	type $bog_vk_tracks__current_audio_bog_vk_app_18 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['current_audio'] >
 	>
-	type $bog_vk_tracks__play_audio_bog_vk_app_14 = $mol_type_enforce<
+	type $bog_vk_tracks__play_audio_bog_vk_app_19 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['on_play_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['play_audio'] >
 	>
-	type $bog_vk_player__queue_bog_vk_app_15 = $mol_type_enforce<
+	type $bog_vk_player__queue_bog_vk_app_20 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_player['queue'] >
 	>
-	type $bog_vk_player__current_audio_bog_vk_app_16 = $mol_type_enforce<
+	type $bog_vk_player__current_audio_bog_vk_app_21 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_player['current_audio'] >
@@ -2732,6 +2810,10 @@ declare namespace $ {
 		Token_input( ): $mol_string
 		Lighter( ): $mol_lights_toggle
 		scroll( next?: number ): number
+		auth_url( ): string
+		Auth_link( ): $mol_link
+		Auth_hint( ): $mol_paragraph
+		Auth_block( ): $mol_view
 		token_hint( ): string
 		Token_hint_text( ): $mol_paragraph
 		Token_hint( ): $mol_view
@@ -2770,7 +2852,9 @@ declare namespace $.$$ {
         visible_audios(): $bog_vk_api_audio[];
         current_audio(next?: $bog_vk_api_audio | null): $bog_vk_api_audio | null;
         on_play_audio(audio?: $bog_vk_api_audio | null): void;
-        token_hint(): "" | "Открой vk.com → F12 → Network → фильтр «api.vk.com»\n\nВ любом запросе скопируй параметр access_token (начинается с vk1.a.)\n\nИли: Console → вставь:\nperformance.getEntriesByType(\"resource\").filter(e=>e.name.includes(\"api.vk.com\")).map(e=>new URL(e.name).searchParams.get(\"access_token\")).find(Boolean)";
+        auth_url(): string;
+        Auth_block(): any;
+        token_hint(): "" | "Или: vk.com → F12 → Network → фильтр «api.vk.com» → скопируй access_token";
         Token_hint(): any;
         Search_bar(): any;
     }

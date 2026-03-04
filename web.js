@@ -6113,6 +6113,204 @@ var $;
 "use strict";
 
 ;
+	($.$mol_link) = class $mol_link extends ($.$mol_view) {
+		uri_toggle(){
+			return "";
+		}
+		hint(){
+			return "";
+		}
+		hint_safe(){
+			return (this.hint());
+		}
+		target(){
+			return "_self";
+		}
+		file_name(){
+			return "";
+		}
+		current(){
+			return false;
+		}
+		relation(){
+			return "";
+		}
+		event_click(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		click(next){
+			return (this.event_click(next));
+		}
+		uri(){
+			return "";
+		}
+		dom_name(){
+			return "a";
+		}
+		uri_off(){
+			return "";
+		}
+		uri_native(){
+			return null;
+		}
+		external(){
+			return false;
+		}
+		attr(){
+			return {
+				...(super.attr()), 
+				"href": (this.uri_toggle()), 
+				"title": (this.hint_safe()), 
+				"target": (this.target()), 
+				"download": (this.file_name()), 
+				"mol_link_current": (this.current()), 
+				"rel": (this.relation())
+			};
+		}
+		sub(){
+			return [(this.title())];
+		}
+		arg(){
+			return {};
+		}
+		event(){
+			return {...(super.event()), "click": (next) => (this.click(next))};
+		}
+	};
+	($mol_mem(($.$mol_link.prototype), "event_click"));
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        class $mol_link extends $.$mol_link {
+            uri_toggle() {
+                return this.current() ? this.uri_off() : this.uri();
+            }
+            uri() {
+                return new this.$.$mol_state_arg(this.state_key()).link(this.arg());
+            }
+            uri_off() {
+                const arg2 = {};
+                for (let i in this.arg())
+                    arg2[i] = null;
+                return new this.$.$mol_state_arg(this.state_key()).link(arg2);
+            }
+            uri_native() {
+                const base = this.$.$mol_state_arg.href();
+                return new URL(this.uri(), base);
+            }
+            current() {
+                const base = this.$.$mol_state_arg.href_normal();
+                const target = this.uri_native().toString();
+                if (base === target)
+                    return true;
+                const args = this.arg();
+                const keys = Object.keys(args).filter(key => args[key] != null);
+                if (keys.length === 0)
+                    return false;
+                for (const key of keys) {
+                    if (this.$.$mol_state_arg.value(key) != args[key])
+                        return false;
+                }
+                return true;
+            }
+            file_name() {
+                return null;
+            }
+            minimal_height() {
+                return Math.max(super.minimal_height(), 24);
+            }
+            external() {
+                return this.uri_native().origin !== $mol_dom_context.location.origin;
+            }
+            target() {
+                return this.external() ? '_blank' : '_self';
+            }
+            hint_safe() {
+                try {
+                    return this.hint();
+                }
+                catch (error) {
+                    $mol_fail_log(error);
+                    return '';
+                }
+            }
+        }
+        __decorate([
+            $mol_mem
+        ], $mol_link.prototype, "uri_toggle", null);
+        __decorate([
+            $mol_mem
+        ], $mol_link.prototype, "uri", null);
+        __decorate([
+            $mol_mem
+        ], $mol_link.prototype, "uri_off", null);
+        __decorate([
+            $mol_mem
+        ], $mol_link.prototype, "uri_native", null);
+        __decorate([
+            $mol_mem
+        ], $mol_link.prototype, "current", null);
+        $$.$mol_link = $mol_link;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+
+;
+"use strict";
+var $;
+(function ($) {
+    const { rem } = $mol_style_unit;
+    $mol_style_define($mol_link, {
+        textDecoration: 'none',
+        color: $mol_theme.control,
+        stroke: 'currentcolor',
+        cursor: 'pointer',
+        padding: $mol_gap.text,
+        boxSizing: 'border-box',
+        position: 'relative',
+        minWidth: rem(2.5),
+        minHeight: rem(2.5),
+        gap: $mol_gap.space,
+        border: {
+            radius: $mol_gap.round,
+        },
+        ':hover': {
+            background: {
+                color: $mol_theme.hover,
+            },
+        },
+        ':focus': {
+            outline: 'none',
+        },
+        ':focus-visible': {
+            outline: 'none',
+            background: {
+                color: $mol_theme.hover,
+            }
+        },
+        ':active': {
+            color: $mol_theme.focus,
+        },
+        '@': {
+            mol_link_current: {
+                'true': {
+                    color: $mol_theme.current,
+                    textShadow: '0 0',
+                }
+            }
+        },
+    });
+})($ || ($ = {}));
+
+;
 	($.$mol_paragraph) = class $mol_paragraph extends ($.$mol_view) {
 		line_height(){
 			return 24;
@@ -7833,7 +8031,7 @@ var $;
 		}
 		Token_input(){
 			const obj = new this.$.$mol_string();
-			(obj.hint) = () => ("access_token из vk.com (F12 → Network → api.vk.com)");
+			(obj.hint) = () => ("Вставь токен или URL с access_token");
 			(obj.value) = (next) => ((this.token(next)));
 			return obj;
 		}
@@ -7844,6 +8042,26 @@ var $;
 		scroll(next){
 			if(next !== undefined) return next;
 			return 0;
+		}
+		auth_url(){
+			return "";
+		}
+		Auth_link(){
+			const obj = new this.$.$mol_link();
+			(obj.uri) = () => ((this.auth_url()));
+			(obj.target) = () => ("_blank");
+			(obj.sub) = () => (["Войти через VK"]);
+			return obj;
+		}
+		Auth_hint(){
+			const obj = new this.$.$mol_paragraph();
+			(obj.title) = () => ("После авторизации скопируй URL из адресной строки и вставь в поле токена");
+			return obj;
+		}
+		Auth_block(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([(this.Auth_link()), (this.Auth_hint())]);
+			return obj;
 		}
 		token_hint(){
 			return "";
@@ -7931,6 +8149,7 @@ var $;
 		}
 		body(){
 			return [
+				(this.Auth_block()), 
 				(this.Token_hint()), 
 				(this.Tabs()), 
 				(this.Search_bar()), 
@@ -7946,6 +8165,9 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "Token_input"));
 	($mol_mem(($.$bog_vk_app.prototype), "Lighter"));
 	($mol_mem(($.$bog_vk_app.prototype), "scroll"));
+	($mol_mem(($.$bog_vk_app.prototype), "Auth_link"));
+	($mol_mem(($.$bog_vk_app.prototype), "Auth_hint"));
+	($mol_mem(($.$bog_vk_app.prototype), "Auth_block"));
 	($mol_mem(($.$bog_vk_app.prototype), "Token_hint_text"));
 	($mol_mem(($.$bog_vk_app.prototype), "Token_hint"));
 	($mol_mem(($.$bog_vk_app.prototype), "show_my"));
@@ -8155,10 +8377,18 @@ var $;
                 this.Player().queue_index(idx >= 0 ? idx : 0);
                 this.Player().play_track(audio);
             }
+            auth_url() {
+                return 'https://oauth.vk.com/authorize?client_id=2685278&scope=audio,offline&redirect_uri=https://oauth.vk.com/blank.html&response_type=token&v=5.131';
+            }
+            Auth_block() {
+                if (this.token())
+                    return null;
+                return super.Auth_block();
+            }
             token_hint() {
                 if (this.token())
                     return '';
-                return 'Открой vk.com → F12 → Network → фильтр «api.vk.com»\n\nВ любом запросе скопируй параметр access_token (начинается с vk1.a.)\n\nИли: Console → вставь:\nperformance.getEntriesByType("resource").filter(e=>e.name.includes("api.vk.com")).map(e=>new URL(e.name).searchParams.get("access_token")).find(Boolean)';
+                return 'Или: vk.com → F12 → Network → фильтр «api.vk.com» → скопируй access_token';
             }
             Token_hint() {
                 if (this.token())
@@ -8239,6 +8469,44 @@ var $;
                     left: '0.5rem',
                     right: '0.5rem',
                 },
+            },
+            Auth_block: {
+                flex: {
+                    direction: 'column',
+                },
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: {
+                    top: '2rem',
+                    bottom: '1rem',
+                    left: '1rem',
+                    right: '1rem',
+                },
+            },
+            Auth_link: {
+                background: {
+                    color: '#0077FF',
+                },
+                color: '#fff',
+                padding: {
+                    top: '0.75rem',
+                    bottom: '0.75rem',
+                    left: '1.5rem',
+                    right: '1.5rem',
+                },
+                borderRadius: '0.5rem',
+                font: {
+                    weight: 'bold',
+                    size: '1rem',
+                },
+                textDecoration: 'none',
+            },
+            Auth_hint: {
+                font: {
+                    size: '0.8125rem',
+                },
+                color: $mol_theme.shade,
+                textAlign: 'center',
             },
             Token_hint: {
                 padding: {

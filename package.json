@@ -177,6 +177,7 @@
     "$mol_state_time",
     "$mol_svg_path",
     "$mol_locale",
+    "$mol_link",
     "$mol_paragraph",
     "$bog_vk_tracks",
     "$mol_list",
