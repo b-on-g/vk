@@ -2358,15 +2358,6 @@ declare namespace $ {
 //# sourceMappingURL=next.view.tree.d.ts.map
 declare namespace $ {
 
-	export class $mol_icon_volume_high extends $mol_icon {
-		path( ): string
-	}
-	
-}
-
-//# sourceMappingURL=high.view.tree.d.ts.map
-declare namespace $ {
-
 	type $mol_view__sub_bog_vk_player_1 = $mol_type_enforce<
 		readonly(any)[]
 		,
@@ -2447,22 +2438,12 @@ declare namespace $ {
 		,
 		ReturnType< $mol_paragraph['title'] >
 	>
-	type $mol_button_minor__click_bog_vk_player_17 = $mol_type_enforce<
-		ReturnType< $bog_vk_player['toggle_mute'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_button_minor__sub_bog_vk_player_18 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_button_minor['sub'] >
-	>
-	type $mol_view__sub_bog_vk_player_19 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_player_17 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_view__sub_bog_vk_player_20 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_player_18 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
@@ -2493,9 +2474,6 @@ declare namespace $ {
 		Center( ): $mol_view
 		time_text( ): string
 		Time( ): $mol_paragraph
-		toggle_mute( next?: any ): any
-		Volume_icon( ): $mol_icon_volume_high
-		Volume_btn( ): $mol_button_minor
 		Right( ): $mol_view
 		Controls( ): $mol_view
 		queue( ): readonly(any)[]
@@ -2509,13 +2487,12 @@ declare namespace $ {
 //# sourceMappingURL=player.view.tree.d.ts.map
 declare namespace $.$$ {
     class $bog_vk_player extends $.$bog_vk_player {
+        private _audio_el?;
         audio_el(): HTMLAudioElement;
         current_audio(next?: $bog_vk_api_audio | null): $bog_vk_api_audio | null;
         playing(next?: boolean): boolean;
         current_time(next?: number): number;
         duration(next?: number): number;
-        volume(next?: number): number;
-        muted(next?: boolean): boolean;
         title(): string;
         artist(): string;
         cover(): string;
@@ -2528,7 +2505,6 @@ declare namespace $.$$ {
         toggle(): void;
         prev(): void;
         next(): void;
-        toggle_mute(): void;
         sub(): readonly any[];
         Play(): any;
         Pause(): any;

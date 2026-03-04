@@ -7114,10 +7114,7 @@ var $;
                 return `${min}:${sec.toString().padStart(2, '0')}`;
             }
             event_click(event) {
-                const audio = this.audio();
-                console.log('[track] click, audio:', audio);
-                this.play(audio);
-                console.log('[track] play() called');
+                this.play(this.audio());
             }
         }
         $$.$bog_vk_track = $bog_vk_track;
@@ -7293,9 +7290,7 @@ var $;
                 return audio.id === current.id && audio.owner_id === current.owner_id;
             }
             track_play(index) {
-                console.log('[tracks] track_play called, index:', index);
                 const audio = this.track_audio(index);
-                console.log('[tracks] audio:', audio);
                 if (audio)
                     this.play_audio(audio);
             }
@@ -7347,17 +7342,6 @@ var $;
 	($.$mol_icon_skip_next) = class $mol_icon_skip_next extends ($.$mol_icon) {
 		path(){
 			return "M16,18H18V6H16M6,18L14.5,12L6,6V18Z";
-		}
-	};
-
-
-;
-"use strict";
-
-;
-	($.$mol_icon_volume_high) = class $mol_icon_volume_high extends ($.$mol_icon) {
-		path(){
-			return "M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z";
 		}
 	};
 
@@ -7488,23 +7472,9 @@ var $;
 			(obj.title) = () => ((this.time_text()));
 			return obj;
 		}
-		toggle_mute(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		Volume_icon(){
-			const obj = new this.$.$mol_icon_volume_high();
-			return obj;
-		}
-		Volume_btn(){
-			const obj = new this.$.$mol_button_minor();
-			(obj.click) = (next) => ((this.toggle_mute(next)));
-			(obj.sub) = () => ([(this.Volume_icon())]);
-			return obj;
-		}
 		Right(){
 			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([(this.Time()), (this.Volume_btn())]);
+			(obj.sub) = () => ([(this.Time())]);
 			return obj;
 		}
 		Controls(){
@@ -7552,9 +7522,6 @@ var $;
 	($mol_mem(($.$bog_vk_player.prototype), "Next"));
 	($mol_mem(($.$bog_vk_player.prototype), "Center"));
 	($mol_mem(($.$bog_vk_player.prototype), "Time"));
-	($mol_mem(($.$bog_vk_player.prototype), "toggle_mute"));
-	($mol_mem(($.$bog_vk_player.prototype), "Volume_icon"));
-	($mol_mem(($.$bog_vk_player.prototype), "Volume_btn"));
 	($mol_mem(($.$bog_vk_player.prototype), "Right"));
 	($mol_mem(($.$bog_vk_player.prototype), "Controls"));
 	($mol_mem(($.$bog_vk_player.prototype), "queue_index"));
@@ -7571,9 +7538,12 @@ var $;
     var $$;
     (function ($$) {
         class $bog_vk_player extends $.$bog_vk_player {
+            _audio_el;
             audio_el() {
+                if (this._audio_el)
+                    return this._audio_el;
                 const el = new Audio();
-                el.volume = this.volume();
+                el.volume = 0.7;
                 el.addEventListener('ended', () => this.next());
                 el.addEventListener('timeupdate', () => {
                     this.current_time(el.currentTime);
@@ -7581,6 +7551,10 @@ var $;
                 el.addEventListener('loadedmetadata', () => {
                     this.duration(el.duration);
                 });
+                el.addEventListener('error', (e) => {
+                    console.error('[player] audio error:', el.error);
+                });
+                this._audio_el = el;
                 return el;
             }
             current_audio(next) {
@@ -7594,15 +7568,6 @@ var $;
             }
             duration(next) {
                 return next ?? 0;
-            }
-            volume(next) {
-                if (next !== undefined) {
-                    $mol_state_local.value('vk_volume', next);
-                }
-                return $mol_state_local.value('vk_volume') ?? 0.7;
-            }
-            muted(next) {
-                return next ?? false;
             }
             title() {
                 return this.current_audio()?.title ?? '';
@@ -7640,14 +7605,13 @@ var $;
                 return (this.current_time() / dur) * 100;
             }
             play_track(audio) {
-                console.log('[player] play_track called, audio:', audio);
                 if (!audio)
                     return;
                 const el = this.audio_el();
+                el.pause();
                 this.current_audio(audio);
-                console.log('[player] setting src:', audio.url);
                 el.src = audio.url;
-                el.play().then(() => console.log('[player] play started')).catch((e) => console.error('[player] play error:', e));
+                el.play().catch((e) => console.error('[player] play error:', e));
                 this.playing(true);
             }
             toggle() {
@@ -7679,12 +7643,6 @@ var $;
                     this.play_track(audio);
                 }
             }
-            toggle_mute() {
-                const el = this.audio_el();
-                const muted = !this.muted();
-                this.muted(muted);
-                el.muted = muted;
-            }
             sub() {
                 if (!this.current_audio())
                     return [];
@@ -7707,9 +7665,6 @@ var $;
         }
         __decorate([
             $mol_mem
-        ], $bog_vk_player.prototype, "audio_el", null);
-        __decorate([
-            $mol_mem
         ], $bog_vk_player.prototype, "current_audio", null);
         __decorate([
             $mol_mem
@@ -7720,12 +7675,6 @@ var $;
         __decorate([
             $mol_mem
         ], $bog_vk_player.prototype, "duration", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_player.prototype, "volume", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_player.prototype, "muted", null);
         __decorate([
             $mol_action
         ], $bog_vk_player.prototype, "play_track", null);
@@ -7738,9 +7687,6 @@ var $;
         __decorate([
             $mol_action
         ], $bog_vk_player.prototype, "next", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_player.prototype, "toggle_mute", null);
         $$.$bog_vk_player = $bog_vk_player;
     })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));
@@ -8111,14 +8057,12 @@ var $;
                 return next ?? 0;
             }
             on_play_audio(audio) {
-                console.log('[app] on_play_audio called, audio:', audio);
                 if (!audio)
                     return;
                 this.current_audio(audio);
                 const audios = this.visible_audios();
                 const idx = audios.findIndex((a) => a.id === audio.id && a.owner_id === audio.owner_id);
                 this.queue_index(idx >= 0 ? idx : 0);
-                console.log('[app] calling play_track, url:', audio.url);
                 this.Player().play_track(audio);
             }
             token_hint() {
