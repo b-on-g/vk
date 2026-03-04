@@ -202,6 +202,8 @@ $mol_image $mol_view
 	minimal_width 16
 	minimal_height 16
 
+$mol_icon_music $mol_icon path \M21,3V15.5A3.5,3.5 0 0,1 17.5,19A3.5,3.5 0 0,1 14,15.5A3.5,3.5 0 0,1 17.5,12C18.04,12 18.55,12.12 19,12.34V6.47L9,8.6V17.5A3.5,3.5 0 0,1 5.5,21A3.5,3.5 0 0,1 2,17.5A3.5,3.5 0 0,1 5.5,14C6.04,14 6.55,14.12 7,14.34V6L21,3Z
+
 $bog_vk_track $mol_view
 	audio null
 	current false
@@ -211,6 +213,7 @@ $bog_vk_track $mol_view
 	sub /
 		<= Cover $mol_image
 			uri <= cover \
+		<= Cover_placeholder $mol_icon_music
 		<= Info $mol_view
 			sub /
 				<= Title $mol_paragraph
@@ -254,6 +257,7 @@ $bog_vk_player $mol_view
 					sub /
 						<= Cover $mol_image
 							uri <= cover \
+						<= Cover_placeholder $mol_icon_music
 						<= Track_info $mol_view
 							sub /
 								<= Title $mol_paragraph
@@ -288,7 +292,7 @@ $bog_vk_app $mol_page
 	title \VK Music
 	tools /
 		<= Token_input $mol_string
-			hint \Вставь remixsid из vk.com cookies
+			hint \access_token из vk.com (F12 → Network → api.vk.com)
 			value? <=> token? \
 		<= Lighter $mol_lights_toggle
 	body_scroll_top? <=> scroll? 0

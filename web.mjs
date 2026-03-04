@@ -6547,6 +6547,17 @@ var $;
 "use strict";
 
 ;
+	($.$mol_icon_music) = class $mol_icon_music extends ($.$mol_icon) {
+		path(){
+			return "M21,3V15.5A3.5,3.5 0 0,1 17.5,19A3.5,3.5 0 0,1 14,15.5A3.5,3.5 0 0,1 17.5,12C18.04,12 18.55,12.12 19,12.34V6.47L9,8.6V17.5A3.5,3.5 0 0,1 5.5,21A3.5,3.5 0 0,1 2,17.5A3.5,3.5 0 0,1 5.5,14C6.04,14 6.55,14.12 7,14.34V6L21,3Z";
+		}
+	};
+
+
+;
+"use strict";
+
+;
 	($.$bog_vk_track) = class $bog_vk_track extends ($.$mol_view) {
 		play(next){
 			if(next !== undefined) return next;
@@ -6558,6 +6569,10 @@ var $;
 		Cover(){
 			const obj = new this.$.$mol_image();
 			(obj.uri) = () => ((this.cover()));
+			return obj;
+		}
+		Cover_placeholder(){
+			const obj = new this.$.$mol_icon_music();
 			return obj;
 		}
 		title(){
@@ -6604,6 +6619,7 @@ var $;
 		sub(){
 			return [
 				(this.Cover()), 
+				(this.Cover_placeholder()), 
 				(this.Info()), 
 				(this.Duration())
 			];
@@ -6611,6 +6627,7 @@ var $;
 	};
 	($mol_mem(($.$bog_vk_track.prototype), "play"));
 	($mol_mem(($.$bog_vk_track.prototype), "Cover"));
+	($mol_mem(($.$bog_vk_track.prototype), "Cover_placeholder"));
 	($mol_mem(($.$bog_vk_track.prototype), "Title"));
 	($mol_mem(($.$bog_vk_track.prototype), "Artist"));
 	($mol_mem(($.$bog_vk_track.prototype), "Info"));
@@ -6622,31 +6639,56 @@ var $;
 var $;
 (function ($) {
     class $bog_vk_api extends $mol_object {
-        static worker = 'https://bog-vk-audio.cmyser-fast-i.workers.dev';
         static token(next) {
-            return $mol_state_local.value('vk_remixsid', next) ?? '';
+            return $mol_state_local.value('vk_token', next) ?? '';
         }
-        static async post_async(endpoint, body) {
-            const response = await fetch(`${this.worker}${endpoint}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ remixsid: this.token(), ...body }),
+        static async jsonp_async(method, params = {}) {
+            const token = this.token();
+            if (!token)
+                throw new Error('Token is not set');
+            const cbName = `vk_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+            const query = new URLSearchParams({
+                ...Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
+                access_token: token,
+                v: '5.131',
+                callback: cbName,
             });
-            const data = await response.json();
-            if (data.error)
-                throw new Error(data.error);
-            return data;
+            return new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => {
+                    delete globalThis[cbName];
+                    script.remove();
+                    reject(new Error('Request timeout'));
+                }, 15000);
+                globalThis[cbName] = (data) => {
+                    clearTimeout(timeout);
+                    delete globalThis[cbName];
+                    script.remove();
+                    if (data.error)
+                        reject(new Error(data.error.error_msg ?? 'VK API error'));
+                    else
+                        resolve(data.response);
+                };
+                const script = document.createElement('script');
+                script.src = `https://api.vk.com/method/${method}?${query}`;
+                script.onerror = () => {
+                    clearTimeout(timeout);
+                    delete globalThis[cbName];
+                    script.remove();
+                    reject(new Error('JSONP request failed'));
+                };
+                document.head.appendChild(script);
+            });
         }
-        static post(key) {
-            const [endpoint, bodyJson] = key.split('|');
-            const body = JSON.parse(bodyJson);
-            return $mol_wire_sync(this).post_async(endpoint, body);
+        static jsonp(key) {
+            const [method, paramsJson] = key.split('|');
+            const params = JSON.parse(paramsJson);
+            return $mol_wire_sync(this).jsonp_async(method, params);
         }
         static my_audios() {
-            return this.post('/audios|{}');
+            return this.jsonp('audio.get|{"count":200}');
         }
         static search_audios(query) {
-            return this.post(`/search|${JSON.stringify({ query })}`);
+            return this.jsonp(`audio.search|${JSON.stringify({ q: query, count: 100, sort: 2 })}`);
         }
     }
     __decorate([
@@ -6654,7 +6696,7 @@ var $;
     ], $bog_vk_api, "token", null);
     __decorate([
         $mol_mem_key
-    ], $bog_vk_api, "post", null);
+    ], $bog_vk_api, "jsonp", null);
     __decorate([
         $mol_mem
     ], $bog_vk_api, "my_audios", null);
@@ -6685,6 +6727,16 @@ var $;
             }
             cover() {
                 return this.audio_data()?.album?.thumb?.photo_300 ?? '';
+            }
+            Cover() {
+                if (!this.cover())
+                    return null;
+                return super.Cover();
+            }
+            Cover_placeholder() {
+                if (this.cover())
+                    return null;
+                return super.Cover_placeholder();
             }
             duration_text() {
                 const d = this.audio_data()?.duration ?? 0;
@@ -6731,6 +6783,25 @@ var $;
                 height: '3rem',
                 borderRadius: '4px',
                 objectFit: 'cover',
+            },
+            Cover_placeholder: {
+                flex: {
+                    shrink: 0,
+                    grow: 0,
+                },
+                width: '3rem',
+                height: '3rem',
+                borderRadius: '4px',
+                background: {
+                    color: $mol_theme.line,
+                },
+                color: $mol_theme.shade,
+                justify: {
+                    content: 'center',
+                },
+                align: {
+                    items: 'center',
+                },
             },
             Info: {
                 flex: {
@@ -6939,6 +7010,10 @@ var $;
 			(obj.uri) = () => ((this.cover()));
 			return obj;
 		}
+		Cover_placeholder(){
+			const obj = new this.$.$mol_icon_music();
+			return obj;
+		}
 		title(){
 			return "";
 		}
@@ -6962,7 +7037,11 @@ var $;
 		}
 		Left(){
 			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([(this.Cover()), (this.Track_info())]);
+			(obj.sub) = () => ([
+				(this.Cover()), 
+				(this.Cover_placeholder()), 
+				(this.Track_info())
+			]);
 			return obj;
 		}
 		prev(next){
@@ -7081,6 +7160,7 @@ var $;
 	($mol_mem(($.$bog_vk_player.prototype), "Progress_bar"));
 	($mol_mem(($.$bog_vk_player.prototype), "Progress"));
 	($mol_mem(($.$bog_vk_player.prototype), "Cover"));
+	($mol_mem(($.$bog_vk_player.prototype), "Cover_placeholder"));
 	($mol_mem(($.$bog_vk_player.prototype), "Title"));
 	($mol_mem(($.$bog_vk_player.prototype), "Artist"));
 	($mol_mem(($.$bog_vk_player.prototype), "Track_info"));
@@ -7158,6 +7238,16 @@ var $;
             }
             cover() {
                 return this.current_audio()?.album?.thumb?.photo_300 ?? '';
+            }
+            Cover() {
+                if (!this.cover())
+                    return null;
+                return super.Cover();
+            }
+            Cover_placeholder() {
+                if (this.cover())
+                    return null;
+                return super.Cover_placeholder();
             }
             time_text() {
                 const cur = this.current_time();
@@ -7347,6 +7437,24 @@ var $;
                 },
                 objectFit: 'cover',
             },
+            Cover_placeholder: {
+                width: '2.5rem',
+                height: '2.5rem',
+                borderRadius: '4px',
+                flex: {
+                    shrink: 0,
+                },
+                background: {
+                    color: $mol_theme.line,
+                },
+                color: $mol_theme.shade,
+                justify: {
+                    content: 'center',
+                },
+                align: {
+                    items: 'center',
+                },
+            },
             Track_info: {
                 flex: {
                     direction: 'column',
@@ -7422,7 +7530,7 @@ var $;
 		}
 		Token_input(){
 			const obj = new this.$.$mol_string();
-			(obj.hint) = () => ("Вставь remixsid из vk.com cookies");
+			(obj.hint) = () => ("access_token из vk.com (F12 → Network → api.vk.com)");
 			(obj.value) = (next) => ((this.token(next)));
 			return obj;
 		}
@@ -7623,7 +7731,7 @@ var $;
             token_hint() {
                 if (this.token())
                     return '';
-                return 'Открой vk.com → F12 → Console → вставь:\n\ndocument.cookie.match(/remixsid=([^;]+)/)?.[1]\n\nСкопируй результат и вставь сюда.\n\nИли: F12 → Application → Cookies → vk.com → remixsid → скопируй Value.';
+                return 'Открой vk.com → F12 → Network → фильтр «api.vk.com»\n\nВ любом запросе скопируй параметр access_token (начинается с vk1.a.)\n\nИли: Console → вставь:\nperformance.getEntriesByType("resource").filter(e=>e.name.includes("api.vk.com")).map(e=>new URL(e.name).searchParams.get("access_token")).find(Boolean)';
             }
             Token_hint() {
                 if (this.token())

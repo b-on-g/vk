@@ -184,6 +184,7 @@
     "$mol_support",
     "$bog_vk_track",
     "$mol_image",
+    "$mol_icon_music",
     "$bog_vk_api",
     "$bog_vk_player",
     "$mol_icon_skip_previous",

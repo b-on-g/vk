@@ -2125,11 +2125,19 @@ declare namespace $ {
 
 //# sourceMappingURL=image.view.tree.d.ts.map
 declare namespace $ {
+
+	export class $mol_icon_music extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=music.view.tree.d.ts.map
+declare namespace $ {
     class $bog_vk_api extends $mol_object {
-        static worker: string;
         static token(next?: string): string;
-        static post_async(endpoint: string, body: Record<string, any>): Promise<any>;
-        static post(key: string): any;
+        static jsonp_async(method: string, params?: Record<string, string | number>): Promise<any>;
+        static jsonp(key: string): any;
         static my_audios(): $bog_vk_api_audio_list;
         static search_audios(query: string): $bog_vk_api_audio_list;
     }
@@ -2140,6 +2148,7 @@ declare namespace $ {
         title: string;
         duration: number;
         url: string;
+        access_key?: string;
         album?: {
             id: number;
             title: string;
@@ -2186,6 +2195,7 @@ declare namespace $ {
 		play( next?: any ): any
 		cover( ): string
 		Cover( ): $mol_image
+		Cover_placeholder( ): $mol_icon_music
 		title( ): string
 		Title( ): $mol_paragraph
 		artist( ): string
@@ -2211,6 +2221,8 @@ declare namespace $.$$ {
         title(): string;
         artist(): string;
         cover(): string;
+        Cover(): any;
+        Cover_placeholder(): any;
         duration_text(): string;
         event_click(event: Event): void;
     }
@@ -2412,6 +2424,7 @@ declare namespace $ {
 		Progress( ): $mol_view
 		cover( ): string
 		Cover( ): $mol_image
+		Cover_placeholder( ): $mol_icon_music
 		title( ): string
 		Title( ): $mol_paragraph
 		artist( ): string
@@ -2458,6 +2471,8 @@ declare namespace $.$$ {
         title(): string;
         artist(): string;
         cover(): string;
+        Cover(): any;
+        Cover_placeholder(): any;
         time_text(): string;
         format_time(seconds: number): string;
         progress_percent(): number;
@@ -2609,7 +2624,7 @@ declare namespace $.$$ {
         current_audio(next?: $bog_vk_api_audio | null): $bog_vk_api_audio | null;
         queue_index(next?: number): number;
         on_play_audio(audio?: $bog_vk_api_audio | null): void;
-        token_hint(): "" | "Открой vk.com → F12 → Console → вставь:\n\ndocument.cookie.match(/remixsid=([^;]+)/)?.[1]\n\nСкопируй результат и вставь сюда.\n\nИли: F12 → Application → Cookies → vk.com → remixsid → скопируй Value.";
+        token_hint(): "" | "Открой vk.com → F12 → Network → фильтр «api.vk.com»\n\nВ любом запросе скопируй параметр access_token (начинается с vk1.a.)\n\nИли: Console → вставь:\nperformance.getEntriesByType(\"resource\").filter(e=>e.name.includes(\"api.vk.com\")).map(e=>new URL(e.name).searchParams.get(\"access_token\")).find(Boolean)";
         Token_hint(): any;
         Search_bar(): any;
     }

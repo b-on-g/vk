@@ -1,10 +1,17 @@
 {
-	"name": "bog_vk_app",
-	"short_name": "bog_vk_app",
-	"description": "",
+	"name": "VK Music",
+	"short_name": "VK Music",
+	"description": "VK Music Player",
 	"id": "bog_vk_app",
 	"start_url": ".",
 	"display": "standalone",
-	"background_color": "#000000",
-	"theme_color": "#000000"
+	"background_color": "#1a1a2e",
+	"theme_color": "#1a1a2e",
+	"icons": [
+		{
+			"src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a1a2e'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='%2345aaff'>♫</text></svg>",
+			"sizes": "any",
+			"type": "image/svg+xml"
+		}
+	]
 }
