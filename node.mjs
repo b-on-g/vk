@@ -7548,6 +7548,15 @@ var $;
                 const blob = await db.read('tracks').tracks.get(key);
                 db.destructor();
                 if (blob) {
+                    if (blob.size < 1000) {
+                        console.warn(`[cache] broken entry (${blob.size} bytes), deleting: ${audio.artist} — ${audio.title}`);
+                        const db2 = await this.db_async();
+                        const tx = db2.change('tracks', 'meta');
+                        await tx.stores.tracks.drop(key);
+                        await tx.stores.meta.drop(key);
+                        db2.destructor();
+                        return null;
+                    }
                     if (blob.type === 'audio/aac') {
                         console.log(`[cache] migrating ${audio.artist} — ${audio.title} from aac to m4a...`);
                         const adts = new Uint8Array(await blob.arrayBuffer());
