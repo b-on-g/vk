@@ -89,13 +89,24 @@ namespace $ {
 				const chCfg = ((adts[i + 2] & 0x01) << 2) | ((adts[i + 3] >> 6) & 0x03)
 				const frameLen = ((adts[i + 3] & 0x03) << 11) | (adts[i + 4] << 3) | ((adts[i + 5] >> 5) & 0x07)
 
-				if (frameLen < 7 || i + frameLen > adts.length) { i++; continue }
+				if (frameLen < 7 || frameLen > 8192 || i + frameLen > adts.length) { i++; continue }
 
-				audioObjectType = profile + 1
-				sampleRateIndex = srIdx
-				channelConfig = chCfg
+				// Verify next frame sync to filter false positives
+				if (i + frameLen + 1 < adts.length) {
+					if (adts[i + frameLen] !== 0xFF || (adts[i + frameLen + 1] & 0xF6) !== 0xF0) {
+						i++; continue
+					}
+				}
+
+				// Lock codec params from first valid frame
+				if (frames.length === 0) {
+					audioObjectType = profile + 1
+					sampleRateIndex = srIdx
+					channelConfig = chCfg
+				}
 
 				const hdrLen = protAbsent ? 7 : 9
+				if (hdrLen >= frameLen) { i++; continue }
 				const raw = adts.slice(i + hdrLen, i + frameLen)
 				frames.push(raw)
 				frameSizes.push(raw.length)

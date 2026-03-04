@@ -35,8 +35,7 @@ namespace $.$$ {
 		}
 
 		event_click(event: Event) {
-			const target = event.target as HTMLElement
-			if (target?.closest('.mol_button_minor') || target?.closest('.mol_button_typed')) return
+			if (this.Download().dom_node().contains(event.target as Node)) return
 			this.play(this.audio())
 		}
 

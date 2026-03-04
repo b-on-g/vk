@@ -28,6 +28,8 @@ namespace $.$$ {
 			if ('mediaSession' in navigator) {
 				navigator.mediaSession.setActionHandler('previoustrack', () => this.prev())
 				navigator.mediaSession.setActionHandler('nexttrack', () => this.next())
+				navigator.mediaSession.setActionHandler('seekbackward', null)
+				navigator.mediaSession.setActionHandler('seekforward', null)
 				navigator.mediaSession.setActionHandler('play', () => {
 					el.play()
 					this.playing(true)
