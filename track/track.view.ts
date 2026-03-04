@@ -53,17 +53,29 @@ namespace $.$$ {
 
 		event_click(event: Event) {
 			try {
-				if (this.Download().dom_node().contains(event.target as Node)) return
+				if (
+					this.Download()
+						.dom_node()
+						.contains(event.target as Node)
+				)
+					return
 			} catch {}
 			try {
-				if (this.Delete().dom_node().contains(event.target as Node)) return
+				if (
+					this.Delete()
+						.dom_node()
+						.contains(event.target as Node)
+				)
+					return
 			} catch {}
 			this.play(this.audio())
 		}
 
 		download() {
 			const audio = this.audio_data()
-			if (!audio) return
+			if (!audio || !audio.url) {
+				throw new Error(`Нет ссылки для скачивания`)
+			}
 			;($mol_wire_sync($bog_vk_cache) as any).save_hls(audio)
 			this.cached(true)
 		}

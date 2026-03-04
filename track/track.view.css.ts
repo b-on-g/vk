@@ -16,6 +16,7 @@ namespace $.$$ {
 		cursor: 'pointer',
 		borderRadius: '0.5rem',
 
+		overflow: 'clip',
 		Cover: {
 			flex: {
 				shrink: 0,
