@@ -1,46 +1,37 @@
 namespace $ {
 
-	const DB_NAME = 'vk_audio_cache'
-	const DB_VERSION = 1
-	const STORE_NAME = 'tracks'
-
-	function open_db(): Promise<IDBDatabase> {
-		return new Promise((resolve, reject) => {
-			const req = indexedDB.open(DB_NAME, DB_VERSION)
-			req.onupgradeneeded = () => {
-				const db = req.result
-				if (!db.objectStoreNames.contains(STORE_NAME)) {
-					db.createObjectStore(STORE_NAME)
-				}
-			}
-			req.onsuccess = () => resolve(req.result)
-			req.onerror = () => reject(req.error)
-		})
-	}
-
-	function cache_key(audio: $bog_vk_api_audio) {
-		return `${audio.owner_id}_${audio.id}`
+	type $bog_vk_cache_schema = {
+		tracks: {
+			Key: string
+			Doc: Blob
+			Indexes: {}
+		}
 	}
 
 	export class $bog_vk_cache extends $mol_object {
 
+		static db() {
+			return $mol_wire_sync(this).db_async()
+		}
+
+		static async db_async() {
+			return $$.$mol_db<$bog_vk_cache_schema>(
+				'vk_audio_cache',
+				mig => mig.store_make('tracks'),
+			)
+		}
+
+		static cache_key(audio: $bog_vk_api_audio) {
+			return `${audio.owner_id}_${audio.id}`
+		}
+
 		static async get(audio: $bog_vk_api_audio): Promise<string | null> {
 			try {
-				const db = await open_db()
-				return new Promise((resolve, reject) => {
-					const tx = db.transaction(STORE_NAME, 'readonly')
-					const store = tx.objectStore(STORE_NAME)
-					const req = store.get(cache_key(audio))
-					req.onsuccess = () => {
-						const blob = req.result as Blob | undefined
-						if (blob) {
-							resolve(URL.createObjectURL(blob))
-						} else {
-							resolve(null)
-						}
-					}
-					req.onerror = () => resolve(null)
-				})
+				const db = await this.db_async()
+				const blob = await db.read('tracks').tracks.get(this.cache_key(audio))
+				db.destructor()
+				if (blob) return URL.createObjectURL(blob)
+				return null
 			} catch {
 				return null
 			}
@@ -48,14 +39,10 @@ namespace $ {
 
 		static async has(audio: $bog_vk_api_audio): Promise<boolean> {
 			try {
-				const db = await open_db()
-				return new Promise((resolve) => {
-					const tx = db.transaction(STORE_NAME, 'readonly')
-					const store = tx.objectStore(STORE_NAME)
-					const req = store.count(cache_key(audio))
-					req.onsuccess = () => resolve(req.result > 0)
-					req.onerror = () => resolve(false)
-				})
+				const db = await this.db_async()
+				const count = await db.read('tracks').tracks.count(this.cache_key(audio))
+				db.destructor()
+				return count > 0
 			} catch {
 				return false
 			}
@@ -97,14 +84,10 @@ namespace $ {
 
 				const blob = new Blob([merged], { type: 'audio/mpeg' })
 
-				const db = await open_db()
-				await new Promise<void>((resolve, reject) => {
-					const tx = db.transaction(STORE_NAME, 'readwrite')
-					const store = tx.objectStore(STORE_NAME)
-					const req = store.put(blob, cache_key(audio))
-					req.onsuccess = () => resolve()
-					req.onerror = () => reject(req.error)
-				})
+				const db = await this.db_async()
+				const tx = db.change('tracks')
+				await tx.stores.tracks.put(blob, this.cache_key(audio))
+				db.destructor()
 
 				console.log('[cache] saved:', audio.title, `(${(total / 1024 / 1024).toFixed(1)} MB)`)
 			} catch (e) {
