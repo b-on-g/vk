@@ -12,7 +12,7 @@ $bog_vk_app $mol_page
 		<= Auth_block $mol_view
 			sub /
 				<= Auth_link $mol_link
-					uri \https://music.vk.com
+					uri \https://vk.com/audios374092255
 					target \_blank
 					sub / \Открыть VK Music
 				<= Auth_hint $mol_paragraph

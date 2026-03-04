@@ -66,7 +66,7 @@ namespace $.$$ {
 
 		@$mol_mem
 		my_audios() {
-			if (!this.token()) return []
+			if (!this.token()) return this.cached_audios()
 			if (!this.online()) return this.cached_audios()
 			try {
 				const result = this.$.$bog_vk_api.my_audios()?.items ?? []
