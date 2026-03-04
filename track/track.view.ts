@@ -35,7 +35,7 @@ namespace $.$$ {
 		}
 
 		event_click(event: Event) {
-			this.play()
+			this.play(this.audio())
 		}
 	}
 }
