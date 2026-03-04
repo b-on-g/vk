@@ -7109,7 +7109,7 @@ var $;
                 return `${min}:${sec.toString().padStart(2, '0')}`;
             }
             event_click(event) {
-                this.play();
+                this.play(this.audio());
             }
         }
         $$.$bog_vk_track = $bog_vk_track;
