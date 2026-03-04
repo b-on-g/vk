@@ -17,6 +17,16 @@ namespace $.$$ {
 			return this.audio_data()?.album?.thumb?.photo_300 ?? ''
 		}
 
+		Cover() {
+			if (!this.cover()) return null as any
+			return super.Cover()
+		}
+
+		Cover_placeholder() {
+			if (this.cover()) return null as any
+			return super.Cover_placeholder()
+		}
+
 		duration_text() {
 			const d = this.audio_data()?.duration ?? 0
 			const min = Math.floor(d / 60)

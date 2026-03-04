@@ -74,7 +74,7 @@ namespace $.$$ {
 
 		token_hint() {
 			if (this.token()) return ''
-			return 'Открой vk.com → F12 → Console → вставь:\n\ndocument.cookie.match(/remixsid=([^;]+)/)?.[1]\n\nСкопируй результат и вставь сюда.\n\nИли: F12 → Application → Cookies → vk.com → remixsid → скопируй Value.'
+			return 'Открой vk.com → F12 → Network → фильтр «api.vk.com»\n\nВ любом запросе скопируй параметр access_token (начинается с vk1.a.)\n\nИли: Console → вставь:\nperformance.getEntriesByType("resource").filter(e=>e.name.includes("api.vk.com")).map(e=>new URL(e.name).searchParams.get("access_token")).find(Boolean)'
 		}
 
 		Token_hint() {

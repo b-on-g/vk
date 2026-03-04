@@ -60,6 +60,16 @@ namespace $.$$ {
 			return this.current_audio()?.album?.thumb?.photo_300 ?? ''
 		}
 
+		Cover() {
+			if (!this.cover()) return null as any
+			return super.Cover()
+		}
+
+		Cover_placeholder() {
+			if (this.cover()) return null as any
+			return super.Cover_placeholder()
+		}
+
 		time_text() {
 			const cur = this.current_time()
 			const dur = this.duration()

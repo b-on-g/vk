@@ -27,6 +27,26 @@ namespace $.$$ {
 			objectFit: 'cover',
 		},
 
+		Cover_placeholder: {
+			flex: {
+				shrink: 0,
+				grow: 0,
+			},
+			width: '3rem',
+			height: '3rem',
+			borderRadius: '4px',
+			background: {
+				color: $mol_theme.line,
+			},
+			color: $mol_theme.shade,
+			justify: {
+				content: 'center',
+			},
+			align: {
+				items: 'center',
+			},
+		},
+
 		Info: {
 			flex: {
 				direction: 'column',

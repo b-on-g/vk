@@ -67,6 +67,25 @@ namespace $.$$ {
 			objectFit: 'cover',
 		},
 
+		Cover_placeholder: {
+			width: '2.5rem',
+			height: '2.5rem',
+			borderRadius: '4px',
+			flex: {
+				shrink: 0,
+			},
+			background: {
+				color: $mol_theme.line,
+			},
+			color: $mol_theme.shade,
+			justify: {
+				content: 'center',
+			},
+			align: {
+				items: 'center',
+			},
+		},
+
 		Track_info: {
 			flex: {
 				direction: 'column',

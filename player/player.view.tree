@@ -12,6 +12,7 @@ $bog_vk_player $mol_view
 					sub /
 						<= Cover $mol_image
 							uri <= cover \
+						<= Cover_placeholder $mol_icon_music
 						<= Track_info $mol_view
 							sub /
 								<= Title $mol_paragraph
