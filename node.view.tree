@@ -1,0 +1,319 @@
+$mol_scroll $mol_view
+	scroll_top? 0
+	scroll_left? 0
+	attr *
+		^
+		tabindex <= tabindex -1
+	event *
+		^
+		scroll?event <=> event_scroll?event null
+
+$mol_page $mol_view
+	dom_name \article
+	attr *
+		^
+		tabIndex <= tabindex -1
+	sub /
+		<= Head $mol_view
+			minimal_height 64
+			dom_name \header
+			sub <= head /
+				<= Title $mol_view
+					dom_name \h1
+					sub <= title_content /
+						<= Logo null
+						<= title
+				<= Tools $mol_view
+					sub <= tools /$mol_view_content
+		<= Body $mol_scroll
+			scroll_top? => body_scroll_top?
+			sub <= body_content /
+				<= Body_content $mol_view
+					sub <= body /$mol_view
+		<= Foot $mol_view
+			dom_name \footer
+			sub <= foot /$mol_view
+
+$mol_theme_auto $mol_plugin
+	light \$mol_theme_light
+	attr * mol_theme <= theme <= dark \$mol_theme_dark
+
+$mol_hotkey $mol_plugin
+	event *
+		^
+		keydown?event <=> keydown?event null
+	key *
+	mod_ctrl false
+	mod_alt false
+	mod_shift false
+
+$mol_string $mol_view
+	dom_name \input
+	enabled true
+	minimal_height 40
+	autocomplete false
+	selection? /number
+		0
+		0
+	auto /
+		<= selection_watcher null
+		<= error_report null
+	field *
+		^
+		disabled <= disabled false
+		value <= value_changed? <=> value? \
+		placeholder <= hint_visible <= hint \
+		spellcheck <= spellcheck true
+		autocomplete <= autocomplete_native \
+		selectionEnd <= selection_end 0
+		selectionStart <= selection_start 0
+		inputMode <= keyboard \text
+		enterkeyhint <= enter \go
+	attr *
+		^
+		maxlength <= length_max +Infinity
+		type <= type? \text
+	event *
+		^
+		input?event <=> event_change?event null
+	plugins /
+		<= Submit $mol_hotkey
+			mod_ctrl <= submit_with_ctrl false
+			key * enter?event <=> submit?event null
+
+$mol_speck $mol_view
+	theme \$mol_theme_accent
+	sub /
+		<= value null
+
+$mol_button $mol_view
+	enabled true
+	click?event null
+	event_click?event null
+	status? /
+	event *
+		^
+		click?event <=> activate?event <=> event_activate?event null
+		dblclick?event <=> clicks?event null
+		keydown?event <=> key_press?event <=> event_key_press?event null
+	attr *
+		^
+		disabled <= disabled false
+		role \button
+		tabindex <= tab_index 0
+		title <= hint_safe <= hint \
+	sub /$mol_view_content
+		<= title
+	Speck $mol_speck
+		value <= error \
+
+$mol_button_typed $mol_button
+	minimal_height 40
+	minimal_width 40
+
+$mol_button_minor $mol_button_typed
+
+$mol_check $mol_button_minor
+	attr *
+		^
+		mol_check_checked <= checked? false
+		aria-checked <= aria_checked \false
+		role <= aria_role \checkbox
+	sub /$mol_view_content
+		<= Icon null
+		<= label /
+			<= Title $mol_view
+				sub /
+					<= title \
+
+$mol_check_icon $mol_check
+
+$mol_svg $mol_view
+	dom_name \svg
+	dom_name_space \http://www.w3.org/2000/svg
+	font_size 16
+	font_family \
+	style_size *
+
+$mol_svg_root $mol_svg
+	dom_name \svg
+	attr *
+		^
+		viewBox <= view_box \0 0 100 100
+		preserveAspectRatio <= aspect \xMidYMid
+
+$mol_svg_path $mol_svg
+	dom_name \path
+	attr *
+		^
+		d <= geometry \
+
+
+$mol_icon $mol_svg_root
+	view_box \0 0 24 24
+	minimal_width 16
+	minimal_height 16
+	sub /
+		<= Path $mol_svg_path
+			geometry <= path \
+
+$mol_icon_brightness_4 $mol_icon path \M12,18C11.11,18 10.26,17.8 9.5,17.45C11.56,16.5 13,14.42 13,12C13,9.58 11.56,7.5 9.5,6.55C10.26,6.2 11.11,6 12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31L23.31,12L20,8.69Z
+
+$mol_lights_toggle $mol_check_icon
+	Icon <= Lights_icon $mol_icon_brightness_4
+	hint @ \Toggle lights
+	checked? <=> lights? false
+
+$mol_paragraph $mol_view
+	line_height 24
+	letter_width 7
+	width_limit +Infinity
+	row_width 0
+	sub / <= title
+
+$mol_list $mol_view
+	render_visible_only true
+	render_over 0.1
+	sub <= rows /$mol_view
+		<= Gap_before $mol_view style * paddingTop <= gap_before 0
+		<= Empty $mol_view
+		<= Gap_after $mol_view style * paddingTop <= gap_after 0
+	item_height_min* 1
+	item_width_min* 1
+	view_window_shift? 0
+	view_window /
+		0
+		0
+
+$mol_image $mol_view
+	dom_name \img
+	attr *any
+		^
+		src <= uri \
+		title <= hint
+		alt <= title \
+		loading <= loading \lazy
+		decoding <= decoding \async
+		crossOrigin <= cors null
+		width <= natural_width 0
+		height <= natural_height 0
+	event *any
+		load? <=> load? null
+	minimal_width 16
+	minimal_height 16
+
+$bog_vk_track $mol_view
+	audio null
+	current false
+	click? <=> play? null
+	attr *
+		bog_vk_track_current <= current
+	sub /
+		<= Cover $mol_image
+			uri <= cover \
+		<= Info $mol_view
+			sub /
+				<= Title $mol_paragraph
+					title <= title \
+				<= Artist $mol_paragraph
+					title <= artist \
+		<= Duration $mol_paragraph
+			title <= duration_text \
+
+$bog_vk_tracks $mol_list
+	audios /
+	current_audio null
+	play_audio? null
+	rows <= track_rows /
+		<= Track*0 $bog_vk_track
+			audio <= track_audio* null
+			current <= track_current* false
+			play? <=> track_play*? null
+
+$mol_icon_skip_previous $mol_icon path \M6,18V6H8V18H6M9.5,12L18,6V18L9.5,12Z
+
+$mol_icon_play $mol_icon path \M8,5.14V19.14L19,12.14L8,5.14Z
+
+$mol_icon_pause $mol_icon path \M14,19H18V5H14M6,19H10V5H6V19Z
+
+$mol_icon_skip_next $mol_icon path \M16,18H18V6H16M6,18L14.5,12L6,6V18Z
+
+$mol_icon_volume_high $mol_icon path \M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z
+
+$bog_vk_player $mol_view
+	queue /
+	queue_index? 0
+	play_track? null
+	sub /
+		<= Progress $mol_view
+			sub /
+				<= Progress_bar $mol_view
+		<= Controls $mol_view
+			sub /
+				<= Left $mol_view
+					sub /
+						<= Cover $mol_image
+							uri <= cover \
+						<= Track_info $mol_view
+							sub /
+								<= Title $mol_paragraph
+									title <= title \
+								<= Artist $mol_paragraph
+									title <= artist \
+				<= Center $mol_view
+					sub /
+						<= Prev $mol_button_minor
+							click? <=> prev? null
+							sub / <= Prev_icon $mol_icon_skip_previous
+						<= Play $mol_button_minor
+							click? <=> toggle? null
+							sub / <= Play_icon $mol_icon_play
+						<= Pause $mol_button_minor
+							click? <=> toggle? null
+							sub / <= Pause_icon $mol_icon_pause
+						<= Next $mol_button_minor
+							click? <=> next? null
+							sub / <= Next_icon $mol_icon_skip_next
+				<= Right $mol_view
+					sub /
+						<= Time $mol_paragraph
+							title <= time_text \
+						<= Volume_btn $mol_button_minor
+							click? <=> toggle_mute? null
+							sub / <= Volume_icon $mol_icon_volume_high
+
+$bog_vk_app $mol_page
+	plugins /
+		<= Theme $mol_theme_auto
+	title \VK Music
+	tools /
+		<= Token_input $mol_string
+			hint \Вставь токен — F12 → Console → скрипт
+			value? <=> token? \
+		<= Lighter $mol_lights_toggle
+	body_scroll_top? <=> scroll? 0
+	body /
+		<= Token_hint $mol_view
+			sub /
+				<= Token_hint_text $mol_paragraph
+					title <= token_hint \
+		<= Tabs $mol_view
+			sub /
+				<= Tab_my $mol_button_minor
+					click? <=> show_my? null
+					sub / \Моя музыка
+				<= Tab_search $mol_button_minor
+					click? <=> show_search? null
+					sub / \Поиск
+		<= Search_bar $mol_string
+			hint \Поиск музыки...
+			value? <=> search_query? \
+		<= Tracks $bog_vk_tracks
+			audios <= visible_audios /
+			current_audio <= current_audio null
+			play_audio? <=> on_play_audio? null
+	foot /
+		<= Player $bog_vk_player
+			queue <= visible_audios /
+			queue_index? <=> queue_index? 0
+			play_track? <=> player_play? null
