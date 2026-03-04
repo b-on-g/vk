@@ -32,10 +32,6 @@ namespace $ {
 					script.remove()
 					if (data.error) {
 						const msg = data.error.error_msg ?? 'VK API error'
-						if (msg.includes('expired') || data.error.error_code === 5) {
-							console.warn('[vk] token expired, clearing')
-							this.token('')
-						}
 						reject(new Error(msg))
 					} else {
 						resolve(data.response)

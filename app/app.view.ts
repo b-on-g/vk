@@ -2,10 +2,31 @@ namespace $.$$ {
 	export class $bog_vk_app extends $.$bog_vk_app {
 
 		@$mol_mem
+		online(next?: boolean) {
+			if (next !== undefined) return next
+			const val = navigator.onLine
+			window.addEventListener('online', () => this.online(true), { once: true })
+			window.addEventListener('offline', () => this.online(false), { once: true })
+			return val
+		}
+
+		@$mol_mem
+		token_expired(next?: boolean) {
+			return next ?? false
+		}
+
+		title() {
+			if (!this.online()) return 'VK Music (offline)'
+			if (this.token_expired()) return 'VK Music (токен протух)'
+			return 'VK Music'
+		}
+
+		@$mol_mem
 		token(next?: string) {
 			if (next !== undefined) {
 				const extracted = this.extract_token(next)
 				this.$.$bog_vk_api.token(extracted)
+				this.token_expired(false)
 			}
 			return this.$.$bog_vk_api.token()
 		}
@@ -39,15 +60,33 @@ namespace $.$$ {
 		}
 
 		@$mol_mem
+		cached_audios(): $bog_vk_api_audio[] {
+			return ($mol_wire_sync($bog_vk_cache) as any).all_cached()
+		}
+
+		@$mol_mem
 		my_audios() {
 			if (!this.token()) return []
-			return this.$.$bog_vk_api.my_audios()?.items ?? []
+			if (!this.online()) return this.cached_audios()
+			try {
+				const result = this.$.$bog_vk_api.my_audios()?.items ?? []
+				this.token_expired(false)
+				return result
+			} catch (e: any) {
+				if (e instanceof Promise || e?.constructor?.name === '$mol_fail_hidden') throw e
+				if (String(e?.message).includes('expired') || String(e?.message).includes('authorization')) {
+					this.token_expired(true)
+				}
+				console.warn('[app] API failed, using cache:', e?.message)
+				return this.cached_audios()
+			}
 		}
 
 		@$mol_mem
 		search_results() {
 			const query = this.search_query().trim()
 			if (!query) return []
+			if (!this.online()) return []
 			return this.$.$bog_vk_api.search_audios(query)?.items ?? []
 		}
 

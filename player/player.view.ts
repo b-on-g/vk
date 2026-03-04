@@ -9,11 +9,11 @@ namespace $.$$ {
 			const el = new Audio()
 			el.volume = 0.7
 			el.addEventListener('ended', () => {
-				const audio = this.current_audio()
-				if (audio) {
-					$bog_vk_cache.save_hls(audio)
-				}
+				const finished = this.current_audio()
 				this.next()
+				if (finished) {
+					$bog_vk_cache.save_hls(finished).catch(() => {})
+				}
 			})
 			el.addEventListener('timeupdate', () => {
 				this.current_time(el.currentTime)
@@ -122,12 +122,10 @@ namespace $.$$ {
 			}
 
 			$bog_vk_cache.get(audio).then(cached_url => {
-				if (cached_url) {
-					console.log('[player] from cache:', audio.title)
-					el.src = cached_url
-				} else {
-					el.src = audio.url
-				}
+				el.src = cached_url || audio.url
+				el.play().catch((e: any) => console.error('[player] play error:', e))
+			}).catch(() => {
+				el.src = audio.url
 				el.play().catch((e: any) => console.error('[player] play error:', e))
 			})
 

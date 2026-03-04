@@ -6,6 +6,11 @@ namespace $ {
 			Doc: Blob
 			Indexes: {}
 		}
+		meta: {
+			Key: string
+			Doc: $bog_vk_api_audio
+			Indexes: {}
+		}
 	}
 
 	export class $bog_vk_cache extends $mol_object {
@@ -18,6 +23,7 @@ namespace $ {
 			return $$.$mol_db<$bog_vk_cache_schema>(
 				'vk_audio_cache',
 				mig => mig.store_make('tracks'),
+				mig => mig.store_make('meta'),
 			)
 		}
 
@@ -37,26 +43,39 @@ namespace $ {
 			}
 		}
 
-		static async has(audio: $bog_vk_api_audio): Promise<boolean> {
+		static async all_cached(): Promise<$bog_vk_api_audio[]> {
 			try {
 				const db = await this.db_async()
-				const count = await db.read('tracks').tracks.count(this.cache_key(audio))
+				const all = await db.read('meta').meta.select()
 				db.destructor()
-				return count > 0
+				return all
 			} catch {
-				return false
+				return []
 			}
 		}
 
 		static async save_hls(audio: $bog_vk_api_audio): Promise<void> {
 			const url = audio.url
-			if (!url) return
+			if (!url) {
+				console.warn('[cache] skip — no URL:', audio.artist, '—', audio.title)
+				return
+			}
+
+			const key = this.cache_key(audio)
 
 			try {
-				console.log('[cache] downloading HLS:', audio.title)
+				const db_check = await this.db_async()
+				const existing = await db_check.read('tracks').tracks.count(key)
+				db_check.destructor()
+				if (existing > 0) {
+					console.log('[cache] already cached:', audio.artist, '—', audio.title)
+					return
+				}
+
+				console.log('[cache] start download:', audio.artist, '—', audio.title)
 
 				const m3u8_resp = await fetch(url)
-				if (!m3u8_resp.ok) throw new Error('Failed to fetch m3u8')
+				if (!m3u8_resp.ok) throw new Error(`m3u8 fetch ${m3u8_resp.status}`)
 				const m3u8_text = await m3u8_resp.text()
 
 				const base_url = url.substring(0, url.lastIndexOf('/') + 1)
@@ -65,12 +84,14 @@ namespace $ {
 					.filter(line => line.trim() && !line.startsWith('#'))
 					.map(seg => seg.startsWith('http') ? seg : base_url + seg)
 
-				if (!segments.length) throw new Error('No segments found')
+				if (!segments.length) throw new Error('No segments in m3u8')
+
+				console.log(`[cache] ${segments.length} segments to download`)
 
 				const chunks: ArrayBuffer[] = []
-				for (const seg_url of segments) {
-					const resp = await fetch(seg_url)
-					if (!resp.ok) throw new Error(`Segment fetch failed: ${seg_url}`)
+				for (let i = 0; i < segments.length; i++) {
+					const resp = await fetch(segments[i])
+					if (!resp.ok) throw new Error(`Segment ${i + 1}/${segments.length} failed: ${resp.status}`)
 					chunks.push(await resp.arrayBuffer())
 				}
 
@@ -83,15 +104,17 @@ namespace $ {
 				}
 
 				const blob = new Blob([merged], { type: 'audio/mpeg' })
+				const sizeMB = (total / 1024 / 1024).toFixed(1)
 
 				const db = await this.db_async()
-				const tx = db.change('tracks')
-				await tx.stores.tracks.put(blob, this.cache_key(audio))
+				const tx = db.change('tracks', 'meta')
+				await tx.stores.tracks.put(blob, key)
+				await tx.stores.meta.put({ ...audio, url: '' }, key)
 				db.destructor()
 
-				console.log('[cache] saved:', audio.title, `(${(total / 1024 / 1024).toFixed(1)} MB)`)
-			} catch (e) {
-				console.warn('[cache] failed to save:', audio.title, e)
+				console.log(`[cache] saved: ${audio.artist} — ${audio.title} (${sizeMB} MB)`)
+			} catch (e: any) {
+				console.warn(`[cache] FAILED: ${audio.artist} — ${audio.title}:`, e?.message ?? e)
 			}
 		}
 	}
