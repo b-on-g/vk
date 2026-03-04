@@ -7,7 +7,13 @@ namespace $.$$ {
 			if (this._audio_el) return this._audio_el
 			const el = new Audio()
 			el.volume = 0.7
-			el.addEventListener('ended', () => this.next())
+			el.addEventListener('ended', () => {
+				const audio = this.current_audio()
+				if (audio) {
+					$bog_vk_cache.save_hls(audio)
+				}
+				this.next()
+			})
 			el.addEventListener('timeupdate', () => {
 				this.current_time(el.currentTime)
 			})
@@ -19,11 +25,6 @@ namespace $.$$ {
 			})
 			this._audio_el = el
 			return el
-		}
-
-		@$mol_mem
-		current_audio(next?: $bog_vk_api_audio | null): $bog_vk_api_audio | null {
-			return next ?? null
 		}
 
 		@$mol_mem
@@ -87,8 +88,17 @@ namespace $.$$ {
 			const el = this.audio_el()
 			el.pause()
 			this.current_audio(audio)
-			el.src = audio.url
-			el.play().catch((e: any) => console.error('[player] play error:', e))
+
+			$bog_vk_cache.get(audio).then(cached_url => {
+				if (cached_url) {
+					console.log('[player] playing from cache:', audio.title)
+					el.src = cached_url
+				} else {
+					el.src = audio.url
+				}
+				el.play().catch((e: any) => console.error('[player] play error:', e))
+			})
+
 			this.playing(true)
 		}
 

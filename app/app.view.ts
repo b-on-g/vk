@@ -62,7 +62,6 @@ namespace $.$$ {
 		@$mol_action
 		on_play_audio(audio?: $bog_vk_api_audio | null) {
 			if (!audio) return
-			this.current_audio(audio)
 
 			const audios = this.visible_audios()
 			const idx = audios.findIndex(
