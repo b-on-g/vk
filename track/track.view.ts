@@ -33,20 +33,46 @@ namespace $.$$ {
 			return `${min}:${sec.toString().padStart(2, '0')}`
 		}
 
+		@$mol_mem
+		cached(next?: boolean) {
+			const audio = this.audio_data()
+			if (!audio) return false
+			if (next !== undefined) return next
+			return ($mol_wire_sync($bog_vk_cache) as any).is_cached(audio) as boolean
+		}
+
+		Download() {
+			if (this.cached()) return null as any
+			return super.Download()
+		}
+
+		Delete() {
+			if (!this.cached()) return null as any
+			return super.Delete()
+		}
+
 		event_click(event: Event) {
-			if (
-				this.Download()
-					.dom_node()
-					.contains(event.target as Node)
-			)
-				return
+			try {
+				if (this.Download().dom_node().contains(event.target as Node)) return
+			} catch {}
+			try {
+				if (this.Delete().dom_node().contains(event.target as Node)) return
+			} catch {}
 			this.play(this.audio())
 		}
 
 		download() {
 			const audio = this.audio_data()
 			if (!audio) return
-			$bog_vk_cache.save_hls(audio).catch(() => {})
+			;($mol_wire_sync($bog_vk_cache) as any).save_hls(audio)
+			this.cached(true)
+		}
+
+		delete_cached() {
+			const audio = this.audio_data()
+			if (!audio) return
+			;($mol_wire_sync($bog_vk_cache) as any).drop(audio)
+			this.cached(false)
 		}
 	}
 }

@@ -71,6 +71,28 @@ namespace $ {
 			}
 		}
 
+		static async is_cached(audio: $bog_vk_api_audio): Promise<boolean> {
+			const key = this.cache_key(audio)
+			try {
+				const db = await this.db_async()
+				const count = await db.read('tracks').tracks.count(key)
+				db.destructor()
+				return count > 0
+			} catch {
+				return false
+			}
+		}
+
+		static async drop(audio: $bog_vk_api_audio): Promise<void> {
+			const key = this.cache_key(audio)
+			const db = await this.db_async()
+			const tx = db.change('tracks', 'meta')
+			await tx.stores.tracks.drop(key)
+			await tx.stores.meta.drop(key)
+			db.destructor()
+			console.log(`[cache] dropped: ${audio.artist} — ${audio.title}`)
+		}
+
 		static async all_cached(): Promise<$bog_vk_api_audio[]> {
 			try {
 				const db = await this.db_async()

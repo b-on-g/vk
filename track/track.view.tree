@@ -22,3 +22,7 @@ $bog_vk_track $mol_view
 			click? <=> download? null
 			sub /
 				<= Download_icon $mol_icon_download
+		<= Delete $mol_button_minor
+			click? <=> delete_cached? null
+			sub /
+				<= Delete_icon $mol_icon_delete
