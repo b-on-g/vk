@@ -2561,7 +2561,9 @@ declare namespace $ {
 declare namespace $.$$ {
     class $bog_vk_player extends $.$bog_vk_player {
         private _audio_el?;
+        private _queue_idx;
         audio_el(): HTMLAudioElement;
+        queue_index(next?: number): number;
         playing(next?: boolean): boolean;
         current_time(next?: number): number;
         duration(next?: number): number;
@@ -2675,12 +2677,7 @@ declare namespace $ {
 		,
 		ReturnType< $bog_vk_player['queue'] >
 	>
-	type $bog_vk_player__queue_index_bog_vk_app_16 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['queue_index'] >
-		,
-		ReturnType< $bog_vk_player['queue_index'] >
-	>
-	type $bog_vk_player__current_audio_bog_vk_app_17 = $mol_type_enforce<
+	type $bog_vk_player__current_audio_bog_vk_app_16 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_player['current_audio'] >
@@ -2705,7 +2702,6 @@ declare namespace $ {
 		current_audio( next?: any ): any
 		on_play_audio( next?: any ): any
 		Tracks( ): $bog_vk_tracks
-		queue_index( next?: number ): number
 		Player( ): $bog_vk_player
 		plugins( ): readonly(any)[]
 		title( ): string
@@ -2729,7 +2725,6 @@ declare namespace $.$$ {
         search_results(): $bog_vk_api_audio[];
         visible_audios(): $bog_vk_api_audio[];
         current_audio(next?: $bog_vk_api_audio | null): $bog_vk_api_audio | null;
-        queue_index(next?: number): number;
         on_play_audio(audio?: $bog_vk_api_audio | null): void;
         token_hint(): "" | "Открой vk.com → F12 → Network → фильтр «api.vk.com»\n\nВ любом запросе скопируй параметр access_token (начинается с vk1.a.)\n\nИли: Console → вставь:\nperformance.getEntriesByType(\"resource\").filter(e=>e.name.includes(\"api.vk.com\")).map(e=>new URL(e.name).searchParams.get(\"access_token\")).find(Boolean)";
         Token_hint(): any;

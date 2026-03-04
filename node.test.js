@@ -7868,6 +7868,7 @@ var $;
     (function ($$) {
         class $bog_vk_player extends $.$bog_vk_player {
             _audio_el;
+            _queue_idx = 0;
             audio_el() {
                 if (this._audio_el)
                     return this._audio_el;
@@ -7889,8 +7890,25 @@ var $;
                 el.addEventListener('error', (e) => {
                     console.error('[player] audio error:', el.error);
                 });
+                if ('mediaSession' in navigator) {
+                    navigator.mediaSession.setActionHandler('previoustrack', () => this.prev());
+                    navigator.mediaSession.setActionHandler('nexttrack', () => this.next());
+                    navigator.mediaSession.setActionHandler('play', () => {
+                        el.play();
+                        this.playing(true);
+                    });
+                    navigator.mediaSession.setActionHandler('pause', () => {
+                        el.pause();
+                        this.playing(false);
+                    });
+                }
                 this._audio_el = el;
                 return el;
+            }
+            queue_index(next) {
+                if (next !== undefined)
+                    this._queue_idx = next;
+                return this._queue_idx;
             }
             playing(next) {
                 return next ?? false;
@@ -7942,9 +7960,21 @@ var $;
                 const el = this.audio_el();
                 el.pause();
                 this.current_audio(audio);
+                if ('mediaSession' in navigator) {
+                    const artwork = [];
+                    const thumb = audio.album?.thumb?.photo_300;
+                    if (thumb) {
+                        artwork.push({ src: thumb, sizes: '300x300' });
+                    }
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: audio.title,
+                        artist: audio.artist,
+                        artwork,
+                    });
+                }
                 $bog_vk_cache.get(audio).then(cached_url => {
                     if (cached_url) {
-                        console.log('[player] playing from cache:', audio.title);
+                        console.log('[player] from cache:', audio.title);
                         el.src = cached_url;
                     }
                     else {
@@ -7967,20 +7997,18 @@ var $;
             }
             prev() {
                 const queue = this.queue();
-                const idx = this.queue_index();
+                const idx = this._queue_idx;
                 if (idx > 0) {
-                    const audio = queue[idx - 1];
-                    this.queue_index(idx - 1);
-                    this.play_track(audio);
+                    this._queue_idx = idx - 1;
+                    this.play_track(queue[idx - 1]);
                 }
             }
             next() {
                 const queue = this.queue();
-                const idx = this.queue_index();
+                const idx = this._queue_idx;
                 if (idx < queue.length - 1) {
-                    const audio = queue[idx + 1];
-                    this.queue_index(idx + 1);
-                    this.play_track(audio);
+                    this._queue_idx = idx + 1;
+                    this.play_track(queue[idx + 1]);
                 }
             }
             sub() {
@@ -8012,18 +8040,6 @@ var $;
         __decorate([
             $mol_mem
         ], $bog_vk_player.prototype, "duration", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_player.prototype, "play_track", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_player.prototype, "toggle", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_player.prototype, "prev", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_player.prototype, "next", null);
         $$.$bog_vk_player = $bog_vk_player;
     })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));
@@ -8268,14 +8284,9 @@ var $;
 			(obj.play_audio) = (next) => ((this.on_play_audio(next)));
 			return obj;
 		}
-		queue_index(next){
-			if(next !== undefined) return next;
-			return 0;
-		}
 		Player(){
 			const obj = new this.$.$bog_vk_player();
 			(obj.queue) = () => ((this.visible_audios()));
-			(obj.queue_index) = (next) => ((this.queue_index(next)));
 			(obj.current_audio) = (next) => ((this.current_audio(next)));
 			return obj;
 		}
@@ -8320,7 +8331,6 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "current_audio"));
 	($mol_mem(($.$bog_vk_app.prototype), "on_play_audio"));
 	($mol_mem(($.$bog_vk_app.prototype), "Tracks"));
-	($mol_mem(($.$bog_vk_app.prototype), "queue_index"));
 	($mol_mem(($.$bog_vk_app.prototype), "Player"));
 
 
@@ -8404,15 +8414,12 @@ var $;
             current_audio(next) {
                 return next ?? null;
             }
-            queue_index(next) {
-                return next ?? 0;
-            }
             on_play_audio(audio) {
                 if (!audio)
                     return;
                 const audios = this.visible_audios();
                 const idx = audios.findIndex((a) => a.id === audio.id && a.owner_id === audio.owner_id);
-                this.queue_index(idx >= 0 ? idx : 0);
+                this.Player().queue_index(idx >= 0 ? idx : 0);
                 this.Player().play_track(audio);
             }
             token_hint() {
@@ -8456,9 +8463,6 @@ var $;
             $mol_mem
         ], $bog_vk_app.prototype, "current_audio", null);
         __decorate([
-            $mol_mem
-        ], $bog_vk_app.prototype, "queue_index", null);
-        __decorate([
             $mol_action
         ], $bog_vk_app.prototype, "on_play_audio", null);
         $$.$bog_vk_app = $bog_vk_app;
@@ -8493,6 +8497,9 @@ var $;
                 },
             },
             Search_bar: {
+                font: {
+                    size: '1rem',
+                },
                 margin: {
                     top: '0.25rem',
                     bottom: '0.25rem',
@@ -8529,7 +8536,7 @@ var $;
             Token_input: {
                 maxWidth: '12rem',
                 font: {
-                    size: '0.75rem',
+                    size: '1rem',
                 },
             },
             Player: {

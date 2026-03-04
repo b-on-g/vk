@@ -317,5 +317,4 @@ $bog_vk_app $mol_page
 	foot /
 		<= Player $bog_vk_player
 			queue <= visible_audios /
-			queue_index? <=> queue_index? 0
 			current_audio? <=> current_audio? null
