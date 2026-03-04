@@ -2469,13 +2469,18 @@ declare namespace $ {
             Doc: Blob;
             Indexes: {};
         };
+        meta: {
+            Key: string;
+            Doc: $bog_vk_api_audio;
+            Indexes: {};
+        };
     };
     export class $bog_vk_cache extends $mol_object {
         static db(): $mol_db_database<$bog_vk_cache_schema>;
         static db_async(): Promise<$mol_db_database<$bog_vk_cache_schema>>;
         static cache_key(audio: $bog_vk_api_audio): string;
         static get(audio: $bog_vk_api_audio): Promise<string | null>;
-        static has(audio: $bog_vk_api_audio): Promise<boolean>;
+        static all_cached(): Promise<$bog_vk_api_audio[]>;
         static save_hls(audio: $bog_vk_api_audio): Promise<void>;
     }
     export {};
@@ -2785,11 +2790,15 @@ declare namespace $ {
 //# sourceMappingURL=app.view.tree.d.ts.map
 declare namespace $.$$ {
     class $bog_vk_app extends $.$bog_vk_app {
+        online(next?: boolean): boolean;
+        token_expired(next?: boolean): boolean;
+        title(): "VK Music (offline)" | "VK Music (токен протух)" | "VK Music";
         token(next?: string): string;
         extract_token(input: string): string;
         page(next?: string): string;
         show_my(): void;
         show_search(): void;
+        cached_audios(): $bog_vk_api_audio[];
         my_audios(): $bog_vk_api_audio[];
         search_results(): $bog_vk_api_audio[];
         visible_audios(): $bog_vk_api_audio[];

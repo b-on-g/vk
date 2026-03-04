@@ -7223,10 +7223,6 @@ var $;
                     script.remove();
                     if (data.error) {
                         const msg = data.error.error_msg ?? 'VK API error';
-                        if (msg.includes('expired') || data.error.error_code === 5) {
-                            console.warn('[vk] token expired, clearing');
-                            this.token('');
-                        }
                         reject(new Error(msg));
                     }
                     else {
@@ -7980,7 +7976,7 @@ var $;
             return $mol_wire_sync(this).db_async();
         }
         static async db_async() {
-            return $$.$mol_db('vk_audio_cache', mig => mig.store_make('tracks'));
+            return $$.$mol_db('vk_audio_cache', mig => mig.store_make('tracks'), mig => mig.store_make('meta'));
         }
         static cache_key(audio) {
             return `${audio.owner_id}_${audio.id}`;
@@ -7998,26 +7994,36 @@ var $;
                 return null;
             }
         }
-        static async has(audio) {
+        static async all_cached() {
             try {
                 const db = await this.db_async();
-                const count = await db.read('tracks').tracks.count(this.cache_key(audio));
+                const all = await db.read('meta').meta.select();
                 db.destructor();
-                return count > 0;
+                return all;
             }
             catch {
-                return false;
+                return [];
             }
         }
         static async save_hls(audio) {
             const url = audio.url;
-            if (!url)
+            if (!url) {
+                console.warn('[cache] skip — no URL:', audio.artist, '—', audio.title);
                 return;
+            }
+            const key = this.cache_key(audio);
             try {
-                console.log('[cache] downloading HLS:', audio.title);
+                const db_check = await this.db_async();
+                const existing = await db_check.read('tracks').tracks.count(key);
+                db_check.destructor();
+                if (existing > 0) {
+                    console.log('[cache] already cached:', audio.artist, '—', audio.title);
+                    return;
+                }
+                console.log('[cache] start download:', audio.artist, '—', audio.title);
                 const m3u8_resp = await fetch(url);
                 if (!m3u8_resp.ok)
-                    throw new Error('Failed to fetch m3u8');
+                    throw new Error(`m3u8 fetch ${m3u8_resp.status}`);
                 const m3u8_text = await m3u8_resp.text();
                 const base_url = url.substring(0, url.lastIndexOf('/') + 1);
                 const segments = m3u8_text
@@ -8025,12 +8031,13 @@ var $;
                     .filter(line => line.trim() && !line.startsWith('#'))
                     .map(seg => seg.startsWith('http') ? seg : base_url + seg);
                 if (!segments.length)
-                    throw new Error('No segments found');
+                    throw new Error('No segments in m3u8');
+                console.log(`[cache] ${segments.length} segments to download`);
                 const chunks = [];
-                for (const seg_url of segments) {
-                    const resp = await fetch(seg_url);
+                for (let i = 0; i < segments.length; i++) {
+                    const resp = await fetch(segments[i]);
                     if (!resp.ok)
-                        throw new Error(`Segment fetch failed: ${seg_url}`);
+                        throw new Error(`Segment ${i + 1}/${segments.length} failed: ${resp.status}`);
                     chunks.push(await resp.arrayBuffer());
                 }
                 const total = chunks.reduce((s, c) => s + c.byteLength, 0);
@@ -8041,14 +8048,16 @@ var $;
                     offset += chunk.byteLength;
                 }
                 const blob = new Blob([merged], { type: 'audio/mpeg' });
+                const sizeMB = (total / 1024 / 1024).toFixed(1);
                 const db = await this.db_async();
-                const tx = db.change('tracks');
-                await tx.stores.tracks.put(blob, this.cache_key(audio));
+                const tx = db.change('tracks', 'meta');
+                await tx.stores.tracks.put(blob, key);
+                await tx.stores.meta.put({ ...audio, url: '' }, key);
                 db.destructor();
-                console.log('[cache] saved:', audio.title, `(${(total / 1024 / 1024).toFixed(1)} MB)`);
+                console.log(`[cache] saved: ${audio.artist} — ${audio.title} (${sizeMB} MB)`);
             }
             catch (e) {
-                console.warn('[cache] failed to save:', audio.title, e);
+                console.warn(`[cache] FAILED: ${audio.artist} — ${audio.title}:`, e?.message ?? e);
             }
         }
     }
@@ -8073,11 +8082,11 @@ var $;
                 const el = new Audio();
                 el.volume = 0.7;
                 el.addEventListener('ended', () => {
-                    const audio = this.current_audio();
-                    if (audio) {
-                        $bog_vk_cache.save_hls(audio);
-                    }
+                    const finished = this.current_audio();
                     this.next();
+                    if (finished) {
+                        $bog_vk_cache.save_hls(finished).catch(() => { });
+                    }
                 });
                 el.addEventListener('timeupdate', () => {
                     this.current_time(el.currentTime);
@@ -8171,13 +8180,10 @@ var $;
                     });
                 }
                 $bog_vk_cache.get(audio).then(cached_url => {
-                    if (cached_url) {
-                        console.log('[player] from cache:', audio.title);
-                        el.src = cached_url;
-                    }
-                    else {
-                        el.src = audio.url;
-                    }
+                    el.src = cached_url || audio.url;
+                    el.play().catch((e) => console.error('[player] play error:', e));
+                }).catch(() => {
+                    el.src = audio.url;
                     el.play().catch((e) => console.error('[player] play error:', e));
                 });
                 this.playing(true);
@@ -8570,10 +8576,29 @@ var $;
     var $$;
     (function ($$) {
         class $bog_vk_app extends $.$bog_vk_app {
+            online(next) {
+                if (next !== undefined)
+                    return next;
+                const val = navigator.onLine;
+                window.addEventListener('online', () => this.online(true), { once: true });
+                window.addEventListener('offline', () => this.online(false), { once: true });
+                return val;
+            }
+            token_expired(next) {
+                return next ?? false;
+            }
+            title() {
+                if (!this.online())
+                    return 'VK Music (offline)';
+                if (this.token_expired())
+                    return 'VK Music (токен протух)';
+                return 'VK Music';
+            }
             token(next) {
                 if (next !== undefined) {
                     const extracted = this.extract_token(next);
                     this.$.$bog_vk_api.token(extracted);
+                    this.token_expired(false);
                 }
                 return this.$.$bog_vk_api.token();
             }
@@ -8600,14 +8625,34 @@ var $;
             show_search() {
                 this.page('search');
             }
+            cached_audios() {
+                return $mol_wire_sync($bog_vk_cache).all_cached();
+            }
             my_audios() {
                 if (!this.token())
                     return [];
-                return this.$.$bog_vk_api.my_audios()?.items ?? [];
+                if (!this.online())
+                    return this.cached_audios();
+                try {
+                    const result = this.$.$bog_vk_api.my_audios()?.items ?? [];
+                    this.token_expired(false);
+                    return result;
+                }
+                catch (e) {
+                    if (e instanceof Promise || e?.constructor?.name === '$mol_fail_hidden')
+                        throw e;
+                    if (String(e?.message).includes('expired') || String(e?.message).includes('authorization')) {
+                        this.token_expired(true);
+                    }
+                    console.warn('[app] API failed, using cache:', e?.message);
+                    return this.cached_audios();
+                }
             }
             search_results() {
                 const query = this.search_query().trim();
                 if (!query)
+                    return [];
+                if (!this.online())
                     return [];
                 return this.$.$bog_vk_api.search_audios(query)?.items ?? [];
             }
@@ -8644,6 +8689,12 @@ var $;
         }
         __decorate([
             $mol_mem
+        ], $bog_vk_app.prototype, "online", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_app.prototype, "token_expired", null);
+        __decorate([
+            $mol_mem
         ], $bog_vk_app.prototype, "token", null);
         __decorate([
             $mol_mem
@@ -8654,6 +8705,9 @@ var $;
         __decorate([
             $mol_action
         ], $bog_vk_app.prototype, "show_search", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_app.prototype, "cached_audios", null);
         __decorate([
             $mol_mem
         ], $bog_vk_app.prototype, "my_audios", null);
