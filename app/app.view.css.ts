@@ -20,6 +20,9 @@ namespace $.$$ {
 		},
 
 		Search_bar: {
+			font: {
+				size: '1rem',
+			},
 			margin: {
 				top: '0.25rem',
 				bottom: '0.25rem',
@@ -59,7 +62,7 @@ namespace $.$$ {
 		Token_input: {
 			maxWidth: '12rem',
 			font: {
-				size: '0.75rem',
+				size: '1rem',
 			},
 		},
 

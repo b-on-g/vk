@@ -2,6 +2,7 @@ namespace $.$$ {
 	export class $bog_vk_player extends $.$bog_vk_player {
 
 		private _audio_el?: HTMLAudioElement
+		private _queue_idx = 0
 
 		audio_el() {
 			if (this._audio_el) return this._audio_el
@@ -23,8 +24,27 @@ namespace $.$$ {
 			el.addEventListener('error', (e) => {
 				console.error('[player] audio error:', el.error)
 			})
+
+			if ('mediaSession' in navigator) {
+				navigator.mediaSession.setActionHandler('previoustrack', () => this.prev())
+				navigator.mediaSession.setActionHandler('nexttrack', () => this.next())
+				navigator.mediaSession.setActionHandler('play', () => {
+					el.play()
+					this.playing(true)
+				})
+				navigator.mediaSession.setActionHandler('pause', () => {
+					el.pause()
+					this.playing(false)
+				})
+			}
+
 			this._audio_el = el
 			return el
+		}
+
+		queue_index(next?: number) {
+			if (next !== undefined) this._queue_idx = next
+			return this._queue_idx
 		}
 
 		@$mol_mem
@@ -82,16 +102,28 @@ namespace $.$$ {
 			return (this.current_time() / dur) * 100
 		}
 
-		@$mol_action
 		play_track(audio?: $bog_vk_api_audio | null) {
 			if (!audio) return
 			const el = this.audio_el()
 			el.pause()
 			this.current_audio(audio)
 
+			if ('mediaSession' in navigator) {
+				const artwork: MediaImage[] = []
+				const thumb = audio.album?.thumb?.photo_300
+				if (thumb) {
+					artwork.push({ src: thumb, sizes: '300x300' })
+				}
+				navigator.mediaSession.metadata = new MediaMetadata({
+					title: audio.title,
+					artist: audio.artist,
+					artwork,
+				})
+			}
+
 			$bog_vk_cache.get(audio).then(cached_url => {
 				if (cached_url) {
-					console.log('[player] playing from cache:', audio.title)
+					console.log('[player] from cache:', audio.title)
 					el.src = cached_url
 				} else {
 					el.src = audio.url
@@ -102,7 +134,6 @@ namespace $.$$ {
 			this.playing(true)
 		}
 
-		@$mol_action
 		toggle() {
 			const el = this.audio_el()
 			if (this.playing()) {
@@ -114,25 +145,21 @@ namespace $.$$ {
 			}
 		}
 
-		@$mol_action
 		prev() {
 			const queue = this.queue()
-			const idx = this.queue_index()
+			const idx = this._queue_idx
 			if (idx > 0) {
-				const audio = queue[idx - 1] as $bog_vk_api_audio
-				this.queue_index(idx - 1)
-				this.play_track(audio)
+				this._queue_idx = idx - 1
+				this.play_track(queue[idx - 1] as $bog_vk_api_audio)
 			}
 		}
 
-		@$mol_action
 		next() {
 			const queue = this.queue()
-			const idx = this.queue_index()
+			const idx = this._queue_idx
 			if (idx < queue.length - 1) {
-				const audio = queue[idx + 1] as $bog_vk_api_audio
-				this.queue_index(idx + 1)
-				this.play_track(audio)
+				this._queue_idx = idx + 1
+				this.play_track(queue[idx + 1] as $bog_vk_api_audio)
 			}
 		}
 

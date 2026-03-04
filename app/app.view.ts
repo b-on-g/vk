@@ -64,11 +64,6 @@ namespace $.$$ {
 			return next ?? null
 		}
 
-		@$mol_mem
-		queue_index(next?: number) {
-			return next ?? 0
-		}
-
 		@$mol_action
 		on_play_audio(audio?: $bog_vk_api_audio | null) {
 			if (!audio) return
@@ -77,7 +72,7 @@ namespace $.$$ {
 			const idx = audios.findIndex(
 				(a: $bog_vk_api_audio) => a.id === audio.id && a.owner_id === audio.owner_id
 			)
-			this.queue_index(idx >= 0 ? idx : 0)
+			this.Player().queue_index(idx >= 0 ? idx : 0)
 			this.Player().play_track(audio)
 		}
 
