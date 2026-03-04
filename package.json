@@ -192,6 +192,7 @@
     "$mol_icon_play",
     "$mol_icon_pause",
     "$mol_icon_skip_next",
+    "$bog_vk_cache",
     "$mol_offline_install",
     "$mol_offline"
   ],

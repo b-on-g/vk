@@ -7486,6 +7486,10 @@ var $;
 			]);
 			return obj;
 		}
+		current_audio(next){
+			if(next !== undefined) return next;
+			return null;
+		}
 		queue(){
 			return [];
 		}
@@ -7524,9 +7528,122 @@ var $;
 	($mol_mem(($.$bog_vk_player.prototype), "Time"));
 	($mol_mem(($.$bog_vk_player.prototype), "Right"));
 	($mol_mem(($.$bog_vk_player.prototype), "Controls"));
+	($mol_mem(($.$bog_vk_player.prototype), "current_audio"));
 	($mol_mem(($.$bog_vk_player.prototype), "queue_index"));
 	($mol_mem(($.$bog_vk_player.prototype), "play_track"));
 
+
+;
+"use strict";
+var $;
+(function ($) {
+    const DB_NAME = 'vk_audio_cache';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'tracks';
+    function open_db() {
+        return new Promise((resolve, reject) => {
+            const req = indexedDB.open(DB_NAME, DB_VERSION);
+            req.onupgradeneeded = () => {
+                const db = req.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    db.createObjectStore(STORE_NAME);
+                }
+            };
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+        });
+    }
+    function cache_key(audio) {
+        return `${audio.owner_id}_${audio.id}`;
+    }
+    class $bog_vk_cache extends $mol_object {
+        static async get(audio) {
+            try {
+                const db = await open_db();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(STORE_NAME, 'readonly');
+                    const store = tx.objectStore(STORE_NAME);
+                    const req = store.get(cache_key(audio));
+                    req.onsuccess = () => {
+                        const blob = req.result;
+                        if (blob) {
+                            resolve(URL.createObjectURL(blob));
+                        }
+                        else {
+                            resolve(null);
+                        }
+                    };
+                    req.onerror = () => resolve(null);
+                });
+            }
+            catch {
+                return null;
+            }
+        }
+        static async has(audio) {
+            try {
+                const db = await open_db();
+                return new Promise((resolve) => {
+                    const tx = db.transaction(STORE_NAME, 'readonly');
+                    const store = tx.objectStore(STORE_NAME);
+                    const req = store.count(cache_key(audio));
+                    req.onsuccess = () => resolve(req.result > 0);
+                    req.onerror = () => resolve(false);
+                });
+            }
+            catch {
+                return false;
+            }
+        }
+        static async save_hls(audio) {
+            const url = audio.url;
+            if (!url)
+                return;
+            try {
+                console.log('[cache] downloading HLS:', audio.title);
+                const m3u8_resp = await fetch(url);
+                if (!m3u8_resp.ok)
+                    throw new Error('Failed to fetch m3u8');
+                const m3u8_text = await m3u8_resp.text();
+                const base_url = url.substring(0, url.lastIndexOf('/') + 1);
+                const segments = m3u8_text
+                    .split('\n')
+                    .filter(line => line.trim() && !line.startsWith('#'))
+                    .map(seg => seg.startsWith('http') ? seg : base_url + seg);
+                if (!segments.length)
+                    throw new Error('No segments found');
+                const chunks = [];
+                for (const seg_url of segments) {
+                    const resp = await fetch(seg_url);
+                    if (!resp.ok)
+                        throw new Error(`Segment fetch failed: ${seg_url}`);
+                    chunks.push(await resp.arrayBuffer());
+                }
+                const total = chunks.reduce((s, c) => s + c.byteLength, 0);
+                const merged = new Uint8Array(total);
+                let offset = 0;
+                for (const chunk of chunks) {
+                    merged.set(new Uint8Array(chunk), offset);
+                    offset += chunk.byteLength;
+                }
+                const blob = new Blob([merged], { type: 'audio/mpeg' });
+                const db = await open_db();
+                await new Promise((resolve, reject) => {
+                    const tx = db.transaction(STORE_NAME, 'readwrite');
+                    const store = tx.objectStore(STORE_NAME);
+                    const req = store.put(blob, cache_key(audio));
+                    req.onsuccess = () => resolve();
+                    req.onerror = () => reject(req.error);
+                });
+                console.log('[cache] saved:', audio.title, `(${(total / 1024 / 1024).toFixed(1)} MB)`);
+            }
+            catch (e) {
+                console.warn('[cache] failed to save:', audio.title, e);
+            }
+        }
+    }
+    $.$bog_vk_cache = $bog_vk_cache;
+})($ || ($ = {}));
 
 ;
 "use strict";
@@ -7544,7 +7661,13 @@ var $;
                     return this._audio_el;
                 const el = new Audio();
                 el.volume = 0.7;
-                el.addEventListener('ended', () => this.next());
+                el.addEventListener('ended', () => {
+                    const audio = this.current_audio();
+                    if (audio) {
+                        $bog_vk_cache.save_hls(audio);
+                    }
+                    this.next();
+                });
                 el.addEventListener('timeupdate', () => {
                     this.current_time(el.currentTime);
                 });
@@ -7556,9 +7679,6 @@ var $;
                 });
                 this._audio_el = el;
                 return el;
-            }
-            current_audio(next) {
-                return next ?? null;
             }
             playing(next) {
                 return next ?? false;
@@ -7610,8 +7730,16 @@ var $;
                 const el = this.audio_el();
                 el.pause();
                 this.current_audio(audio);
-                el.src = audio.url;
-                el.play().catch((e) => console.error('[player] play error:', e));
+                $bog_vk_cache.get(audio).then(cached_url => {
+                    if (cached_url) {
+                        console.log('[player] playing from cache:', audio.title);
+                        el.src = cached_url;
+                    }
+                    else {
+                        el.src = audio.url;
+                    }
+                    el.play().catch((e) => console.error('[player] play error:', e));
+                });
                 this.playing(true);
             }
             toggle() {
@@ -7663,9 +7791,6 @@ var $;
                 style.width = `${this.progress_percent()}%`;
             }
         }
-        __decorate([
-            $mol_mem
-        ], $bog_vk_player.prototype, "current_audio", null);
         __decorate([
             $mol_mem
         ], $bog_vk_player.prototype, "playing", null);
@@ -7916,7 +8041,8 @@ var $;
 		visible_audios(){
 			return [];
 		}
-		current_audio(){
+		current_audio(next){
+			if(next !== undefined) return next;
 			return null;
 		}
 		on_play_audio(next){
@@ -7938,6 +8064,7 @@ var $;
 			const obj = new this.$.$bog_vk_player();
 			(obj.queue) = () => ((this.visible_audios()));
 			(obj.queue_index) = (next) => ((this.queue_index(next)));
+			(obj.current_audio) = (next) => ((this.current_audio(next)));
 			return obj;
 		}
 		plugins(){
@@ -7978,6 +8105,7 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "Tabs"));
 	($mol_mem(($.$bog_vk_app.prototype), "search_query"));
 	($mol_mem(($.$bog_vk_app.prototype), "Search_bar"));
+	($mol_mem(($.$bog_vk_app.prototype), "current_audio"));
 	($mol_mem(($.$bog_vk_app.prototype), "on_play_audio"));
 	($mol_mem(($.$bog_vk_app.prototype), "Tracks"));
 	($mol_mem(($.$bog_vk_app.prototype), "queue_index"));
@@ -8059,7 +8187,6 @@ var $;
             on_play_audio(audio) {
                 if (!audio)
                     return;
-                this.current_audio(audio);
                 const audios = this.visible_audios();
                 const idx = audios.findIndex((a) => a.id === audio.id && a.owner_id === audio.owner_id);
                 this.queue_index(idx >= 0 ? idx : 0);

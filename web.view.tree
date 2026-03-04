@@ -244,6 +244,7 @@ $mol_icon_pause $mol_icon path \M14,19H18V5H14M6,19H10V5H6V19Z
 $mol_icon_skip_next $mol_icon path \M16,18H18V6H16M6,18L14.5,12L6,6V18Z
 
 $bog_vk_player $mol_view
+	current_audio? null
 	queue /
 	queue_index? 0
 	play_track? null
@@ -317,3 +318,4 @@ $bog_vk_app $mol_page
 		<= Player $bog_vk_player
 			queue <= visible_audios /
 			queue_index? <=> queue_index? 0
+			current_audio? <=> current_audio? null

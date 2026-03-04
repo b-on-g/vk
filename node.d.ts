@@ -2357,6 +2357,14 @@ declare namespace $ {
 
 //# sourceMappingURL=next.view.tree.d.ts.map
 declare namespace $ {
+    class $bog_vk_cache extends $mol_object {
+        static get(audio: $bog_vk_api_audio): Promise<string | null>;
+        static has(audio: $bog_vk_api_audio): Promise<boolean>;
+        static save_hls(audio: $bog_vk_api_audio): Promise<void>;
+    }
+}
+
+declare namespace $ {
 
 	type $mol_view__sub_bog_vk_player_1 = $mol_type_enforce<
 		readonly(any)[]
@@ -2476,6 +2484,7 @@ declare namespace $ {
 		Time( ): $mol_paragraph
 		Right( ): $mol_view
 		Controls( ): $mol_view
+		current_audio( next?: any ): any
 		queue( ): readonly(any)[]
 		queue_index( next?: number ): number
 		play_track( next?: any ): any
@@ -2489,13 +2498,12 @@ declare namespace $.$$ {
     class $bog_vk_player extends $.$bog_vk_player {
         private _audio_el?;
         audio_el(): HTMLAudioElement;
-        current_audio(next?: $bog_vk_api_audio | null): $bog_vk_api_audio | null;
         playing(next?: boolean): boolean;
         current_time(next?: number): number;
         duration(next?: number): number;
-        title(): string;
-        artist(): string;
-        cover(): string;
+        title(): any;
+        artist(): any;
+        cover(): any;
         Cover(): any;
         Cover_placeholder(): any;
         time_text(): string;
@@ -2604,6 +2612,11 @@ declare namespace $ {
 		,
 		ReturnType< $bog_vk_player['queue_index'] >
 	>
+	type $bog_vk_player__current_audio_bog_vk_app_17 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['current_audio'] >
+		,
+		ReturnType< $bog_vk_player['current_audio'] >
+	>
 	export class $bog_vk_app extends $mol_page {
 		Theme( ): $mol_theme_auto
 		token( next?: string ): string
@@ -2621,7 +2634,7 @@ declare namespace $ {
 		search_query( next?: string ): string
 		Search_bar( ): $mol_string
 		visible_audios( ): readonly(any)[]
-		current_audio( ): any
+		current_audio( next?: any ): any
 		on_play_audio( next?: any ): any
 		Tracks( ): $bog_vk_tracks
 		queue_index( next?: number ): number
