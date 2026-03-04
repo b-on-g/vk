@@ -319,14 +319,10 @@ $bog_vk_app $mol_page
 		<= Auth_block $mol_view
 			sub /
 				<= Auth_link $mol_link
-					uri <= auth_url \
+					uri \https://music.vk.com
 					target \_blank
-					sub / \Войти через VK
+					sub / \Открыть VK Music
 				<= Auth_hint $mol_paragraph
-					title \После авторизации скопируй URL из адресной строки и вставь в поле токена
-		<= Token_hint $mol_view
-			sub /
-				<= Token_hint_text $mol_paragraph
 					title <= token_hint \
 		<= Tabs $mol_view
 			sub /

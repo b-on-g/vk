@@ -2710,7 +2710,7 @@ declare namespace $ {
 		ReturnType< $mol_string['value'] >
 	>
 	type $mol_link__uri_bog_vk_app_3 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['auth_url'] >
+		string
 		,
 		ReturnType< $mol_link['uri'] >
 	>
@@ -2725,7 +2725,7 @@ declare namespace $ {
 		ReturnType< $mol_link['sub'] >
 	>
 	type $mol_paragraph__title_bog_vk_app_6 = $mol_type_enforce<
-		string
+		ReturnType< $bog_vk_app['token_hint'] >
 		,
 		ReturnType< $mol_paragraph['title'] >
 	>
@@ -2734,18 +2734,18 @@ declare namespace $ {
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_paragraph__title_bog_vk_app_8 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['token_hint'] >
+	type $mol_button_minor__click_bog_vk_app_8 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['show_my'] >
 		,
-		ReturnType< $mol_paragraph['title'] >
+		ReturnType< $mol_button_minor['click'] >
 	>
-	type $mol_view__sub_bog_vk_app_9 = $mol_type_enforce<
+	type $mol_button_minor__sub_bog_vk_app_9 = $mol_type_enforce<
 		readonly(any)[]
 		,
-		ReturnType< $mol_view['sub'] >
+		ReturnType< $mol_button_minor['sub'] >
 	>
 	type $mol_button_minor__click_bog_vk_app_10 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['show_my'] >
+		ReturnType< $bog_vk_app['show_search'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
@@ -2754,52 +2754,42 @@ declare namespace $ {
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
-	type $mol_button_minor__click_bog_vk_app_12 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['show_search'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_button_minor__sub_bog_vk_app_13 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_button_minor['sub'] >
-	>
-	type $mol_view__sub_bog_vk_app_14 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_app_12 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_string__hint_bog_vk_app_15 = $mol_type_enforce<
+	type $mol_string__hint_bog_vk_app_13 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_string['hint'] >
 	>
-	type $mol_string__value_bog_vk_app_16 = $mol_type_enforce<
+	type $mol_string__value_bog_vk_app_14 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['search_query'] >
 		,
 		ReturnType< $mol_string['value'] >
 	>
-	type $bog_vk_tracks__audios_bog_vk_app_17 = $mol_type_enforce<
+	type $bog_vk_tracks__audios_bog_vk_app_15 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_tracks['audios'] >
 	>
-	type $bog_vk_tracks__current_audio_bog_vk_app_18 = $mol_type_enforce<
+	type $bog_vk_tracks__current_audio_bog_vk_app_16 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['current_audio'] >
 	>
-	type $bog_vk_tracks__play_audio_bog_vk_app_19 = $mol_type_enforce<
+	type $bog_vk_tracks__play_audio_bog_vk_app_17 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['on_play_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['play_audio'] >
 	>
-	type $bog_vk_player__queue_bog_vk_app_20 = $mol_type_enforce<
+	type $bog_vk_player__queue_bog_vk_app_18 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_player['queue'] >
 	>
-	type $bog_vk_player__current_audio_bog_vk_app_21 = $mol_type_enforce<
+	type $bog_vk_player__current_audio_bog_vk_app_19 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_player['current_audio'] >
@@ -2810,13 +2800,10 @@ declare namespace $ {
 		Token_input( ): $mol_string
 		Lighter( ): $mol_lights_toggle
 		scroll( next?: number ): number
-		auth_url( ): string
 		Auth_link( ): $mol_link
+		token_hint( ): string
 		Auth_hint( ): $mol_paragraph
 		Auth_block( ): $mol_view
-		token_hint( ): string
-		Token_hint_text( ): $mol_paragraph
-		Token_hint( ): $mol_view
 		show_my( next?: any ): any
 		Tab_my( ): $mol_button_minor
 		show_search( next?: any ): any
@@ -2852,10 +2839,8 @@ declare namespace $.$$ {
         visible_audios(): $bog_vk_api_audio[];
         current_audio(next?: $bog_vk_api_audio | null): $bog_vk_api_audio | null;
         on_play_audio(audio?: $bog_vk_api_audio | null): void;
-        auth_url(): string;
         Auth_block(): any;
-        token_hint(): "" | "Или: vk.com → F12 → Network → фильтр «api.vk.com» → скопируй access_token";
-        Token_hint(): any;
+        token_hint(): string;
         Search_bar(): any;
     }
 }

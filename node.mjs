@@ -8425,37 +8425,24 @@ var $;
 			if(next !== undefined) return next;
 			return 0;
 		}
-		auth_url(){
-			return "";
-		}
 		Auth_link(){
 			const obj = new this.$.$mol_link();
-			(obj.uri) = () => ((this.auth_url()));
+			(obj.uri) = () => ("https://music.vk.com");
 			(obj.target) = () => ("_blank");
-			(obj.sub) = () => (["Войти через VK"]);
-			return obj;
-		}
-		Auth_hint(){
-			const obj = new this.$.$mol_paragraph();
-			(obj.title) = () => ("После авторизации скопируй URL из адресной строки и вставь в поле токена");
-			return obj;
-		}
-		Auth_block(){
-			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([(this.Auth_link()), (this.Auth_hint())]);
+			(obj.sub) = () => (["Открыть VK Music"]);
 			return obj;
 		}
 		token_hint(){
 			return "";
 		}
-		Token_hint_text(){
+		Auth_hint(){
 			const obj = new this.$.$mol_paragraph();
 			(obj.title) = () => ((this.token_hint()));
 			return obj;
 		}
-		Token_hint(){
+		Auth_block(){
 			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([(this.Token_hint_text())]);
+			(obj.sub) = () => ([(this.Auth_link()), (this.Auth_hint())]);
 			return obj;
 		}
 		show_my(next){
@@ -8532,7 +8519,6 @@ var $;
 		body(){
 			return [
 				(this.Auth_block()), 
-				(this.Token_hint()), 
 				(this.Tabs()), 
 				(this.Search_bar()), 
 				(this.Tracks())
@@ -8550,8 +8536,6 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "Auth_link"));
 	($mol_mem(($.$bog_vk_app.prototype), "Auth_hint"));
 	($mol_mem(($.$bog_vk_app.prototype), "Auth_block"));
-	($mol_mem(($.$bog_vk_app.prototype), "Token_hint_text"));
-	($mol_mem(($.$bog_vk_app.prototype), "Token_hint"));
 	($mol_mem(($.$bog_vk_app.prototype), "show_my"));
 	($mol_mem(($.$bog_vk_app.prototype), "Tab_my"));
 	($mol_mem(($.$bog_vk_app.prototype), "show_search"));
@@ -8653,23 +8637,13 @@ var $;
                 this.Player().queue_index(idx >= 0 ? idx : 0);
                 this.Player().play_track(audio);
             }
-            auth_url() {
-                return 'https://oauth.vk.com/authorize?client_id=2685278&scope=audio,offline&redirect_uri=https://oauth.vk.com/blank.html&response_type=token&v=5.131';
-            }
             Auth_block() {
                 if (this.token())
                     return null;
                 return super.Auth_block();
             }
             token_hint() {
-                if (this.token())
-                    return '';
-                return 'Или: vk.com → F12 → Network → фильтр «api.vk.com» → скопируй access_token';
-            }
-            Token_hint() {
-                if (this.token())
-                    return null;
-                return super.Token_hint();
+                return 'Открой VK Music → F12 → Console → вставь:\nperformance.getEntriesByType("resource").filter(e=>e.name.includes("api.vk.com")).map(e=>new URL(e.name).searchParams.get("access_token")).find(Boolean)\n\nСкопируй результат и вставь в поле токена наверху';
             }
             Search_bar() {
                 if (this.page() !== 'search')
@@ -8778,31 +8752,6 @@ var $;
                 textDecoration: 'none',
             },
             Auth_hint: {
-                font: {
-                    size: '0.8125rem',
-                },
-                color: $mol_theme.shade,
-                textAlign: 'center',
-            },
-            Token_hint: {
-                padding: {
-                    top: '1rem',
-                    bottom: '1rem',
-                    left: '1rem',
-                    right: '1rem',
-                },
-                background: {
-                    color: $mol_theme.card,
-                },
-                borderRadius: '0.5rem',
-                margin: {
-                    top: '0.5rem',
-                    bottom: '0.5rem',
-                    left: '0.5rem',
-                    right: '0.5rem',
-                },
-            },
-            Token_hint_text: {
                 font: {
                     size: '0.8125rem',
                 },
