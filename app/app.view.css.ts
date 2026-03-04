@@ -69,33 +69,6 @@ namespace $.$$ {
 				size: '0.8125rem',
 			},
 			color: $mol_theme.shade,
-			textAlign: 'center',
-		},
-
-		Token_hint: {
-			padding: {
-				top: '1rem',
-				bottom: '1rem',
-				left: '1rem',
-				right: '1rem',
-			},
-			background: {
-				color: $mol_theme.card,
-			},
-			borderRadius: '0.5rem',
-			margin: {
-				top: '0.5rem',
-				bottom: '0.5rem',
-				left: '0.5rem',
-				right: '0.5rem',
-			},
-		},
-
-		Token_hint_text: {
-			font: {
-				size: '0.8125rem',
-			},
-			color: $mol_theme.shade,
 			whiteSpace: 'pre-wrap',
 			wordBreak: 'break-all',
 		},

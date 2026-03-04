@@ -76,23 +76,13 @@ namespace $.$$ {
 			this.Player().play_track(audio)
 		}
 
-		auth_url() {
-			return 'https://oauth.vk.com/authorize?client_id=2685278&scope=audio,offline&redirect_uri=https://oauth.vk.com/blank.html&response_type=token&v=5.131'
-		}
-
 		Auth_block() {
 			if (this.token()) return null as any
 			return super.Auth_block()
 		}
 
 		token_hint() {
-			if (this.token()) return ''
-			return 'Или: vk.com → F12 → Network → фильтр «api.vk.com» → скопируй access_token'
-		}
-
-		Token_hint() {
-			if (this.token()) return null as any
-			return super.Token_hint()
+			return 'Открой VK Music → F12 → Console → вставь:\nperformance.getEntriesByType("resource").filter(e=>e.name.includes("api.vk.com")).map(e=>new URL(e.name).searchParams.get("access_token")).find(Boolean)\n\nСкопируй результат и вставь в поле токена наверху'
 		}
 
 		Search_bar() {
