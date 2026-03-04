@@ -31,6 +31,47 @@ namespace $.$$ {
 			},
 		},
 
+		Auth_block: {
+			flex: {
+				direction: 'column',
+			},
+			alignItems: 'center',
+			gap: '0.5rem',
+			padding: {
+				top: '2rem',
+				bottom: '1rem',
+				left: '1rem',
+				right: '1rem',
+			},
+		},
+
+		Auth_link: {
+			background: {
+				color: '#0077FF',
+			},
+			color: '#fff',
+			padding: {
+				top: '0.75rem',
+				bottom: '0.75rem',
+				left: '1.5rem',
+				right: '1.5rem',
+			},
+			borderRadius: '0.5rem',
+			font: {
+				weight: 'bold',
+				size: '1rem',
+			},
+			textDecoration: 'none',
+		},
+
+		Auth_hint: {
+			font: {
+				size: '0.8125rem',
+			},
+			color: $mol_theme.shade,
+			textAlign: 'center',
+		},
+
 		Token_hint: {
 			padding: {
 				top: '1rem',

@@ -4,11 +4,19 @@ $bog_vk_app $mol_page
 	title \VK Music
 	tools /
 		<= Token_input $mol_string
-			hint \access_token из vk.com (F12 → Network → api.vk.com)
+			hint \Вставь токен или URL с access_token
 			value? <=> token? \
 		<= Lighter $mol_lights_toggle
 	body_scroll_top? <=> scroll? 0
 	body /
+		<= Auth_block $mol_view
+			sub /
+				<= Auth_link $mol_link
+					uri <= auth_url \
+					target \_blank
+					sub / \Войти через VK
+				<= Auth_hint $mol_paragraph
+					title \После авторизации скопируй URL из адресной строки и вставь в поле токена
 		<= Token_hint $mol_view
 			sub /
 				<= Token_hint_text $mol_paragraph
