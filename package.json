@@ -187,6 +187,7 @@
     "$bog_vk_track",
     "$mol_image",
     "$mol_icon_music",
+    "$mol_icon_delete",
     "$bog_vk_api",
     "$bog_vk_cache",
     "$mol_db",

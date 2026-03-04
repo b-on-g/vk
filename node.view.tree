@@ -227,6 +227,8 @@ $mol_image $mol_view
 
 $mol_icon_music $mol_icon path \M21,3V15.5A3.5,3.5 0 0,1 17.5,19A3.5,3.5 0 0,1 14,15.5A3.5,3.5 0 0,1 17.5,12C18.04,12 18.55,12.12 19,12.34V6.47L9,8.6V17.5A3.5,3.5 0 0,1 5.5,21A3.5,3.5 0 0,1 2,17.5A3.5,3.5 0 0,1 5.5,14C6.04,14 6.55,14.12 7,14.34V6L21,3Z
 
+$mol_icon_delete $mol_icon path \M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z
+
 $bog_vk_track $mol_view
 	audio null
 	current false
@@ -251,6 +253,10 @@ $bog_vk_track $mol_view
 			click? <=> download? null
 			sub /
 				<= Download_icon $mol_icon_download
+		<= Delete $mol_button_minor
+			click? <=> delete_cached? null
+			sub /
+				<= Delete_icon $mol_icon_delete
 
 $bog_vk_tracks $mol_list
 	audios /

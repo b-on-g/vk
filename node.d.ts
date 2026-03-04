@@ -2241,6 +2241,15 @@ declare namespace $ {
 
 //# sourceMappingURL=music.view.tree.d.ts.map
 declare namespace $ {
+
+	export class $mol_icon_delete extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=delete.view.tree.d.ts.map
+declare namespace $ {
     class $bog_vk_api extends $mol_object {
         static proxy_url: string;
         static token(next?: string): string;
@@ -2391,6 +2400,8 @@ declare namespace $ {
         static db_async(): Promise<$mol_db_database<$bog_vk_cache_schema>>;
         static cache_key(audio: $bog_vk_api_audio): string;
         static get(audio: $bog_vk_api_audio): Promise<string | null>;
+        static is_cached(audio: $bog_vk_api_audio): Promise<boolean>;
+        static drop(audio: $bog_vk_api_audio): Promise<void>;
         static all_cached(): Promise<$bog_vk_api_audio[]>;
         static adts_to_m4a(adts: Uint8Array): Uint8Array;
         static extract_audio(ts: Uint8Array): {
@@ -2446,6 +2457,16 @@ declare namespace $ {
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
+	type $mol_button_minor__click_bog_vk_track_8 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['delete_cached'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_bog_vk_track_9 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
 	export class $bog_vk_track extends $mol_view {
 		event_click( next?: any ): any
 		cover( ): string
@@ -2461,6 +2482,9 @@ declare namespace $ {
 		download( next?: any ): any
 		Download_icon( ): $mol_icon_download
 		Download( ): $mol_button_minor
+		delete_cached( next?: any ): any
+		Delete_icon( ): $mol_icon_delete
+		Delete( ): $mol_button_minor
 		audio( ): any
 		current( ): boolean
 		play( next?: any ): any
@@ -2485,8 +2509,12 @@ declare namespace $.$$ {
         Cover(): any;
         Cover_placeholder(): any;
         duration_text(): string;
+        cached(next?: boolean): boolean;
+        Download(): any;
+        Delete(): any;
         event_click(event: Event): void;
         download(): void;
+        delete_cached(): void;
     }
 }
 
@@ -2705,6 +2733,7 @@ declare namespace $.$$ {
         private _audio_el?;
         private _queue_idx;
         audio_el(): HTMLAudioElement;
+        private setup_media_session;
         queue_index(next?: number): number;
         playing(next?: boolean): boolean;
         current_time(next?: number): number;

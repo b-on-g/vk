@@ -7131,6 +7131,17 @@ var $;
 "use strict";
 
 ;
+	($.$mol_icon_delete) = class $mol_icon_delete extends ($.$mol_icon) {
+		path(){
+			return "M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z";
+		}
+	};
+
+
+;
+"use strict";
+
+;
 	($.$bog_vk_track) = class $bog_vk_track extends ($.$mol_view) {
 		event_click(next){
 			if(next !== undefined) return next;
@@ -7191,6 +7202,20 @@ var $;
 			(obj.sub) = () => ([(this.Download_icon())]);
 			return obj;
 		}
+		delete_cached(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Delete_icon(){
+			const obj = new this.$.$mol_icon_delete();
+			return obj;
+		}
+		Delete(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.click) = (next) => ((this.delete_cached(next)));
+			(obj.sub) = () => ([(this.Delete_icon())]);
+			return obj;
+		}
 		audio(){
 			return null;
 		}
@@ -7213,7 +7238,8 @@ var $;
 				(this.Cover_placeholder()), 
 				(this.Info()), 
 				(this.Duration()), 
-				(this.Download())
+				(this.Download()), 
+				(this.Delete())
 			];
 		}
 	};
@@ -7227,6 +7253,9 @@ var $;
 	($mol_mem(($.$bog_vk_track.prototype), "download"));
 	($mol_mem(($.$bog_vk_track.prototype), "Download_icon"));
 	($mol_mem(($.$bog_vk_track.prototype), "Download"));
+	($mol_mem(($.$bog_vk_track.prototype), "delete_cached"));
+	($mol_mem(($.$bog_vk_track.prototype), "Delete_icon"));
+	($mol_mem(($.$bog_vk_track.prototype), "Delete"));
 	($mol_mem(($.$bog_vk_track.prototype), "play"));
 
 
@@ -7579,12 +7608,33 @@ var $;
                 return null;
             }
         }
+        static async is_cached(audio) {
+            const key = this.cache_key(audio);
+            try {
+                const db = await this.db_async();
+                const count = await db.read('tracks').tracks.count(key);
+                db.destructor();
+                return count > 0;
+            }
+            catch {
+                return false;
+            }
+        }
+        static async drop(audio) {
+            const key = this.cache_key(audio);
+            const db = await this.db_async();
+            const tx = db.change('tracks', 'meta');
+            await tx.stores.tracks.drop(key);
+            await tx.stores.meta.drop(key);
+            db.destructor();
+            console.log(`[cache] dropped: ${audio.artist} — ${audio.title}`);
+        }
         static async all_cached() {
             try {
                 const db = await this.db_async();
                 const all = await db.read('meta').meta.select();
                 db.destructor();
-                return all;
+                return all.reverse();
             }
             catch {
                 return [];
@@ -7960,18 +8010,61 @@ var $;
                 const sec = d % 60;
                 return `${min}:${sec.toString().padStart(2, '0')}`;
             }
+            cached(next) {
+                const audio = this.audio_data();
+                if (!audio)
+                    return false;
+                if (next !== undefined)
+                    return next;
+                return $mol_wire_sync($bog_vk_cache).is_cached(audio);
+            }
+            Download() {
+                if (this.cached())
+                    return null;
+                return super.Download();
+            }
+            Delete() {
+                if (!this.cached())
+                    return null;
+                return super.Delete();
+            }
             event_click(event) {
-                if (this.Download().dom_node().contains(event.target))
-                    return;
+                try {
+                    if (this.Download()
+                        .dom_node()
+                        .contains(event.target))
+                        return;
+                }
+                catch { }
+                try {
+                    if (this.Delete()
+                        .dom_node()
+                        .contains(event.target))
+                        return;
+                }
+                catch { }
                 this.play(this.audio());
             }
             download() {
                 const audio = this.audio_data();
+                if (!audio || !audio.url) {
+                    throw new Error(`Нет ссылки для скачивания`);
+                }
+                ;
+                $mol_wire_sync($bog_vk_cache).save_hls(audio);
+                this.cached(true);
+            }
+            delete_cached() {
+                const audio = this.audio_data();
                 if (!audio)
                     return;
-                $bog_vk_cache.save_hls(audio).catch(() => { });
+                $mol_wire_sync($bog_vk_cache).drop(audio);
+                this.cached(false);
             }
         }
+        __decorate([
+            $mol_mem
+        ], $bog_vk_track.prototype, "cached", null);
         $$.$bog_vk_track = $bog_vk_track;
     })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));
@@ -7998,6 +8091,16 @@ var $;
             },
             cursor: 'pointer',
             borderRadius: '0.5rem',
+            Download: {
+                justify: {
+                    content: 'flex-end',
+                },
+            },
+            Delete: {
+                justify: {
+                    content: 'flex-end',
+                },
+            },
             Cover: {
                 flex: {
                     shrink: 0,
@@ -8068,18 +8171,6 @@ var $;
                     size: '0.8125rem',
                 },
                 color: $mol_theme.shade,
-            },
-            Download: {
-                flex: {
-                    shrink: 0,
-                },
-                color: $mol_theme.shade,
-                padding: {
-                    top: '0.25rem',
-                    bottom: '0.25rem',
-                    left: '0.25rem',
-                    right: '0.25rem',
-                },
             },
             '@': {
                 bog_vk_track_current: {
@@ -8433,22 +8524,25 @@ var $;
                 el.addEventListener('error', (e) => {
                     console.error('[player] audio error:', el.error?.code, el.error?.message, el.error);
                 });
-                if ('mediaSession' in navigator) {
-                    navigator.mediaSession.setActionHandler('previoustrack', () => this.prev());
-                    navigator.mediaSession.setActionHandler('nexttrack', () => this.next());
-                    navigator.mediaSession.setActionHandler('seekbackward', null);
-                    navigator.mediaSession.setActionHandler('seekforward', null);
-                    navigator.mediaSession.setActionHandler('play', () => {
-                        el.play();
-                        this.playing(true);
-                    });
-                    navigator.mediaSession.setActionHandler('pause', () => {
-                        el.pause();
-                        this.playing(false);
-                    });
-                }
                 this._audio_el = el;
                 return el;
+            }
+            setup_media_session() {
+                if (!('mediaSession' in navigator))
+                    return;
+                const el = this.audio_el();
+                const ms = navigator.mediaSession;
+                ms.setActionHandler('previoustrack', () => this.prev());
+                ms.setActionHandler('nexttrack', () => this.next());
+                ms.setActionHandler('seekbackward', () => { el.currentTime = Math.max(0, el.currentTime - 10); });
+                ms.setActionHandler('seekforward', () => { el.currentTime = Math.min(el.duration || 0, el.currentTime + 10); });
+                ms.setActionHandler('seekto', (details) => {
+                    if (details.seekTime != null)
+                        el.currentTime = details.seekTime;
+                });
+                ms.setActionHandler('play', () => { el.play(); this.playing(true); });
+                ms.setActionHandler('pause', () => { el.pause(); this.playing(false); });
+                ms.playbackState = 'playing';
             }
             queue_index(next) {
                 if (next !== undefined)
@@ -8516,6 +8610,7 @@ var $;
                         artist: audio.artist,
                         artwork,
                     });
+                    this.setup_media_session();
                 }
                 this.play_source(audio, el);
             }
@@ -8561,10 +8656,14 @@ var $;
                 if (this.playing()) {
                     el.pause();
                     this.playing(false);
+                    if ('mediaSession' in navigator)
+                        navigator.mediaSession.playbackState = 'paused';
                 }
                 else {
                     el.play();
                     this.playing(true);
+                    if ('mediaSession' in navigator)
+                        navigator.mediaSession.playbackState = 'playing';
                 }
             }
             prev() {
