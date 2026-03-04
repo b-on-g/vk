@@ -24,24 +24,24 @@ namespace $.$$ {
 			el.addEventListener('error', (e) => {
 				console.error('[player] audio error:', el.error?.code, el.error?.message, el.error)
 			})
-
-			if ('mediaSession' in navigator) {
-				navigator.mediaSession.setActionHandler('previoustrack', () => this.prev())
-				navigator.mediaSession.setActionHandler('nexttrack', () => this.next())
-				navigator.mediaSession.setActionHandler('seekbackward', null)
-				navigator.mediaSession.setActionHandler('seekforward', null)
-				navigator.mediaSession.setActionHandler('play', () => {
-					el.play()
-					this.playing(true)
-				})
-				navigator.mediaSession.setActionHandler('pause', () => {
-					el.pause()
-					this.playing(false)
-				})
-			}
-
 			this._audio_el = el
 			return el
+		}
+
+		private setup_media_session() {
+			if (!('mediaSession' in navigator)) return
+			const el = this.audio_el()
+			const ms = navigator.mediaSession
+			ms.setActionHandler('previoustrack', () => this.prev())
+			ms.setActionHandler('nexttrack', () => this.next())
+			ms.setActionHandler('seekbackward', () => { el.currentTime = Math.max(0, el.currentTime - 10) })
+			ms.setActionHandler('seekforward', () => { el.currentTime = Math.min(el.duration || 0, el.currentTime + 10) })
+			ms.setActionHandler('seekto', (details) => {
+				if (details.seekTime != null) el.currentTime = details.seekTime
+			})
+			ms.setActionHandler('play', () => { el.play(); this.playing(true) })
+			ms.setActionHandler('pause', () => { el.pause(); this.playing(false) })
+			ms.playbackState = 'playing'
 		}
 
 		queue_index(next?: number) {
@@ -121,6 +121,7 @@ namespace $.$$ {
 					artist: audio.artist,
 					artwork,
 				})
+				this.setup_media_session()
 			}
 
 			this.play_source(audio, el)
@@ -174,9 +175,11 @@ namespace $.$$ {
 			if (this.playing()) {
 				el.pause()
 				this.playing(false)
+				if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused'
 			} else {
 				el.play()
 				this.playing(true)
+				if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing'
 			}
 		}
 

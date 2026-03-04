@@ -1,6 +1,5 @@
 namespace $.$$ {
 	export class $bog_vk_track extends $.$bog_vk_track {
-
 		audio_data() {
 			return this.audio() as $bog_vk_api_audio | null
 		}
@@ -35,7 +34,12 @@ namespace $.$$ {
 		}
 
 		event_click(event: Event) {
-			if (this.Download().dom_node().contains(event.target as Node)) return
+			if (
+				this.Download()
+					.dom_node()
+					.contains(event.target as Node)
+			)
+				return
 			this.play(this.audio())
 		}
 
