@@ -2938,7 +2938,7 @@ declare namespace $.$$ {
         format_time(seconds: number): string;
         progress_percent(): number;
         play_track(audio?: $bog_vk_api_audio | null): void;
-        private play_source;
+        private play_from_cache;
         toggle(): void;
         prev(): void;
         next(): void;

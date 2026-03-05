@@ -8987,9 +8987,8 @@ var $;
                     if (details.seekTime != null)
                         el.currentTime = details.seekTime;
                 });
-                ms.setActionHandler('play', () => { el.play(); this.playing(true); });
-                ms.setActionHandler('pause', () => { el.pause(); this.playing(false); });
-                ms.playbackState = 'playing';
+                ms.setActionHandler('play', () => { el.play(); this.playing(true); ms.playbackState = 'playing'; });
+                ms.setActionHandler('pause', () => { el.pause(); this.playing(false); ms.playbackState = 'paused'; });
             }
             queue_index(next) {
                 if (next !== undefined)
@@ -9044,7 +9043,6 @@ var $;
                 if (!audio)
                     return;
                 const el = this.audio_el();
-                el.pause();
                 this.current_audio(audio);
                 if ('mediaSession' in navigator) {
                     const artwork = [];
@@ -9059,27 +9057,31 @@ var $;
                     });
                     this.setup_media_session();
                 }
-                this.play_source(audio, el);
+                if (audio.url) {
+                    el.src = audio.url;
+                    const p = el.play();
+                    this.playing(true);
+                    if ('mediaSession' in navigator)
+                        navigator.mediaSession.playbackState = 'playing';
+                    if (p)
+                        p.catch(() => {
+                            this.play_from_cache(audio, el);
+                        });
+                }
+                else {
+                    this.play_from_cache(audio, el);
+                }
             }
-            async play_source(audio, el) {
+            async play_from_cache(audio, el) {
                 try {
                     const cached = await $bog_vk_cache.get(audio);
                     if (cached) {
                         el.src = cached;
                         await el.play();
                         this.playing(true);
+                        if ('mediaSession' in navigator)
+                            navigator.mediaSession.playbackState = 'playing';
                         return;
-                    }
-                    if (audio.url) {
-                        el.src = audio.url;
-                        try {
-                            await el.play();
-                            this.playing(true);
-                            $bog_vk_cache.save_hls(audio).catch(() => { });
-                            return;
-                        }
-                        catch {
-                        }
                     }
                     if (audio.url) {
                         await $bog_vk_cache.save_hls(audio);
@@ -9088,6 +9090,8 @@ var $;
                             el.src = url;
                             await el.play();
                             this.playing(true);
+                            if ('mediaSession' in navigator)
+                                navigator.mediaSession.playbackState = 'playing';
                             return;
                         }
                     }
