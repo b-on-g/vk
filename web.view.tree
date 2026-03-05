@@ -110,7 +110,7 @@ $mol_icon $mol_svg_root
 		<= Path $mol_svg_path
 			geometry <= path \
 
-$mol_icon_download $mol_icon path \M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z
+$mol_icon_close $mol_icon path \M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z
 
 $mol_speck $mol_view
 	theme \$mol_theme_accent
@@ -143,6 +143,8 @@ $mol_button_typed $mol_button
 	minimal_width 40
 
 $mol_button_minor $mol_button_typed
+
+$mol_icon_download $mol_icon path \M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z
 
 $mol_check $mol_button_minor
 	attr *
@@ -325,6 +327,10 @@ $bog_vk_app $mol_page
 		<= Token_input $mol_string
 			hint \Вставь токен или URL с access_token
 			value? <=> token? \
+		<= Token_clear $mol_button_minor
+			click? <=> clear_token? null
+			sub /
+				<= Token_clear_icon $mol_icon_close
 		<= Download_all $mol_button_minor
 			click? <=> download_all? null
 			sub /

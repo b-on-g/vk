@@ -4671,9 +4671,9 @@ var $;
 "use strict";
 
 ;
-	($.$mol_icon_download) = class $mol_icon_download extends ($.$mol_icon) {
+	($.$mol_icon_close) = class $mol_icon_close extends ($.$mol_icon) {
 		path(){
-			return "M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z";
+			return "M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z";
 		}
 	};
 
@@ -4893,6 +4893,17 @@ var $;
 (function ($) {
     $mol_style_attach("mol/button/minor/minor.view.css", "[mol_button_minor]:where(:not([disabled])) {\n\tcolor: var(--mol_theme_control);\n}\n");
 })($ || ($ = {}));
+
+;
+"use strict";
+
+;
+	($.$mol_icon_download) = class $mol_icon_download extends ($.$mol_icon) {
+		path(){
+			return "M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z";
+		}
+	};
+
 
 ;
 "use strict";
@@ -8127,10 +8138,15 @@ var $;
                 const el = new Audio();
                 el.volume = 0.7;
                 el.addEventListener('ended', () => {
-                    const finished = this.current_audio();
-                    this.next();
-                    if (finished) {
-                        $bog_vk_cache.save_hls(finished).catch(() => { });
+                    try {
+                        const finished = this.current_audio();
+                        this.next();
+                        if (finished && navigator.onLine) {
+                            $bog_vk_cache.save_hls(finished).catch(() => { });
+                        }
+                    }
+                    catch (e) {
+                        console.warn('[player] ended handler error:', e);
                     }
                 });
                 el.addEventListener('timeupdate', () => {
@@ -8294,11 +8310,11 @@ var $;
             }
             next() {
                 const queue = this.queue();
-                const idx = this._queue_idx;
-                if (idx < queue.length - 1) {
-                    this._queue_idx = idx + 1;
-                    this.play_track(queue[idx + 1]);
-                }
+                if (!queue.length)
+                    return;
+                const next_idx = this._queue_idx + 1 < queue.length ? this._queue_idx + 1 : 0;
+                this._queue_idx = next_idx;
+                this.play_track(queue[next_idx]);
             }
             sub() {
                 if (!this.current_audio())
@@ -8499,6 +8515,20 @@ var $;
 			(obj.value) = (next) => ((this.token(next)));
 			return obj;
 		}
+		clear_token(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Token_clear_icon(){
+			const obj = new this.$.$mol_icon_close();
+			return obj;
+		}
+		Token_clear(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.click) = (next) => ((this.clear_token(next)));
+			(obj.sub) = () => ([(this.Token_clear_icon())]);
+			return obj;
+		}
 		download_all(next){
 			if(next !== undefined) return next;
 			return null;
@@ -8609,6 +8639,7 @@ var $;
 		tools(){
 			return [
 				(this.Token_input()), 
+				(this.Token_clear()), 
 				(this.Download_all()), 
 				(this.Lighter())
 			];
@@ -8631,6 +8662,9 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "Theme"));
 	($mol_mem(($.$bog_vk_app.prototype), "token"));
 	($mol_mem(($.$bog_vk_app.prototype), "Token_input"));
+	($mol_mem(($.$bog_vk_app.prototype), "clear_token"));
+	($mol_mem(($.$bog_vk_app.prototype), "Token_clear_icon"));
+	($mol_mem(($.$bog_vk_app.prototype), "Token_clear"));
 	($mol_mem(($.$bog_vk_app.prototype), "download_all"));
 	($mol_mem(($.$bog_vk_app.prototype), "Download_all_icon"));
 	($mol_mem(($.$bog_vk_app.prototype), "Download_all"));
@@ -8800,10 +8834,13 @@ var $;
                 return next ?? false;
             }
             title() {
+                const statuses = [];
                 if (!this.online())
-                    return 'Bog Music (offline)';
+                    statuses.push('offline');
                 if (this.token_expired())
-                    return 'Bog Music (токен протух)';
+                    statuses.push('токен протух');
+                if (statuses.length)
+                    return `Bog Music (${statuses.join(', ')})`;
                 return 'Bog Music';
             }
             token(next) {
@@ -8867,7 +8904,10 @@ var $;
                         throw e;
                     const msg = String(e?.message);
                     if (msg.includes('expired') || msg.includes('authorization') || msg.includes('User authorization failed')) {
-                        setTimeout(() => this.token_expired(true), 0);
+                        setTimeout(() => {
+                            this.token_expired(true);
+                            this.online(false);
+                        }, 0);
                     }
                     console.warn('[app] API failed, using cache:', msg);
                     return this.cached_audios();
@@ -8897,6 +8937,15 @@ var $;
                 const idx = audios.findIndex((a) => a.id === audio.id && a.owner_id === audio.owner_id);
                 this.Player().queue_index(idx >= 0 ? idx : 0);
                 this.Player().play_track(audio);
+            }
+            Token_clear() {
+                if (!this.token())
+                    return null;
+                return super.Token_clear();
+            }
+            clear_token() {
+                this.token('');
+                this.token_expired(false);
             }
             Auth_block() {
                 if (this.token())
@@ -8963,6 +9012,9 @@ var $;
         __decorate([
             $mol_action
         ], $bog_vk_app.prototype, "on_play_audio", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_app.prototype, "clear_token", null);
         $$.$bog_vk_app = $bog_vk_app;
     })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));
