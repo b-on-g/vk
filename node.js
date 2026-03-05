@@ -8096,6 +8096,7 @@ var $;
                     return false;
                 if (next !== undefined)
                     return next;
+                $bog_vk_cache.version();
                 return $mol_wire_sync($bog_vk_cache).is_cached(audio);
             }
             Download() {
@@ -9347,6 +9348,7 @@ var $;
                     if (!audio.url)
                         continue;
                     $mol_wire_sync($bog_vk_cache).save_hls(audio);
+                    $bog_vk_cache.version($bog_vk_cache.version() + 1);
                 }
             }
             Search_bar() {
