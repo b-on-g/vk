@@ -41,9 +41,8 @@ namespace $.$$ {
 			ms.setActionHandler('seekto', (details) => {
 				if (details.seekTime != null) el.currentTime = details.seekTime
 			})
-			ms.setActionHandler('play', () => { el.play(); this.playing(true) })
-			ms.setActionHandler('pause', () => { el.pause(); this.playing(false) })
-			ms.playbackState = 'playing'
+			ms.setActionHandler('play', () => { el.play(); this.playing(true); ms.playbackState = 'playing' })
+			ms.setActionHandler('pause', () => { el.pause(); this.playing(false); ms.playbackState = 'paused' })
 		}
 
 		queue_index(next?: number) {
@@ -109,7 +108,6 @@ namespace $.$$ {
 		play_track(audio?: $bog_vk_api_audio | null) {
 			if (!audio) return
 			const el = this.audio_el()
-			el.pause()
 			this.current_audio(audio)
 
 			if ('mediaSession' in navigator) {
@@ -126,34 +124,33 @@ namespace $.$$ {
 				this.setup_media_session()
 			}
 
-			this.play_source(audio, el)
+			// Try direct URL synchronously to keep user gesture context (lock screen)
+			if (audio.url) {
+				el.src = audio.url
+				const p = el.play()
+				this.playing(true)
+				if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing'
+				if (p) p.catch(() => {
+					// Direct play failed (HLS on Chrome) — fall back to cache
+					this.play_from_cache(audio, el)
+				})
+			} else {
+				this.play_from_cache(audio, el)
+			}
 		}
 
-		private async play_source(audio: $bog_vk_api_audio, el: HTMLAudioElement) {
+		private async play_from_cache(audio: $bog_vk_api_audio, el: HTMLAudioElement) {
 			try {
-				// 1. Try cache
 				const cached = await $bog_vk_cache.get(audio)
 				if (cached) {
 					el.src = cached
 					await el.play()
 					this.playing(true)
+					if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing'
 					return
 				}
 
-				// 2. Try direct URL (works in Safari / for non-HLS)
-				if (audio.url) {
-					el.src = audio.url
-					try {
-						await el.play()
-						this.playing(true)
-						$bog_vk_cache.save_hls(audio).catch(() => {})
-						return
-					} catch {
-						// Direct play failed (HLS on Chrome) — download first
-					}
-				}
-
-				// 3. Download HLS → cache → play
+				// Download HLS → cache → play
 				if (audio.url) {
 					await $bog_vk_cache.save_hls(audio)
 					const url = await $bog_vk_cache.get(audio)
@@ -161,6 +158,7 @@ namespace $.$$ {
 						el.src = url
 						await el.play()
 						this.playing(true)
+						if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing'
 						return
 					}
 				}
