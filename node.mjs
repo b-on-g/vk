@@ -9361,7 +9361,7 @@ var $;
 		Token_popup(){
 			const obj = new this.$.$mol_pop();
 			(obj.showed) = (next) => ((this.token_popup_open(next)));
-			(obj.align) = () => ("bottom_right");
+			(obj.align) = () => ("bottom_left");
 			(obj.Anchor) = () => ((this.Token_toggle()));
 			(obj.bubble_content) = () => ([(this.Token_panel())]);
 			return obj;
@@ -9789,7 +9789,7 @@ var $;
 })($ || ($ = {}));
 
 ;
-var $node = $node || {} ; $node[ "/bog/vk/app/favicon.svg" ] = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMCIgZmlsbD0iIzFhMWEyZSIvPgo8ZyBmaWxsPSIjNDVhYWZmIj4KPHJlY3QgeD0iMzAiIHk9IjIwIiB3aWR0aD0iNiIgaGVpZ2h0PSI0NSIgcng9IjMiLz4KPHJlY3QgeD0iNjQiIHk9IjE1IiB3aWR0aD0iNiIgaGVpZ2h0PSI1MCIgcng9IjMiLz4KPGNpcmNsZSBjeD0iMjIiIGN5PSI2NSIgcj0iMTIiLz4KPGNpcmNsZSBjeD0iNTYiIGN5PSI2NSIgcj0iMTIiLz4KPHBhdGggZD0iTTM2IDIyQzM2IDIyIDUyIDE0IDcwIDE3TDcwIDE1QzUyIDEyIDM2IDIwIDM2IDIwWiIvPgo8L2c+Cjwvc3ZnPgo="
+var $node = $node || {} ; $node[ "/bog/vk/app/favicon.svg" ] = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzZDNjNGRiIvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMzQjgyRjYiLz4KPC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJzaGluZSIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmZmZmZmIiBzdG9wLW9wYWNpdHk9IjAuMyIvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmZmZmZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTA4IiBmaWxsPSJ1cmwoI2JnKSIvPgo8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjI1NiIgcng9IjEwOCIgZmlsbD0idXJsKCNzaGluZSkiLz4KPGcgZmlsbD0iI2ZmZmZmZiI+CjxlbGxpcHNlIGN4PSIxNzUiIGN5PSIzNTUiIHJ4PSI1NSIgcnk9IjQ0Ii8+CjxlbGxpcHNlIGN4PSIzNDUiIGN5PSIzMjUiIHJ4PSI1NSIgcnk9IjQ0Ii8+CjxyZWN0IHg9IjIxOCIgeT0iMTA1IiB3aWR0aD0iMTQiIGhlaWdodD0iMjUwIiByeD0iNyIvPgo8cmVjdCB4PSIzODgiIHk9Ijc1IiB3aWR0aD0iMTQiIGhlaWdodD0iMjUwIiByeD0iNyIvPgo8cGF0aCBkPSJNMjMyIDEwNSBDMjMyIDEwNSAyOTUgNjUgNDAyIDc1IEw0MDIgMTE1IEMyOTUgMTA1IDIzMiAxNDUgMjMyIDE0NVoiLz4KPC9nPgo8L3N2Zz4K"
 
 ;
 "use strict";
@@ -9865,8 +9865,12 @@ var $;
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-all',
             },
+            Tools: {
+                alignItems: 'center',
+            },
             Token_panel: {
                 minWidth: '16rem',
+                maxWidth: '22rem',
                 padding: {
                     top: '0.5rem',
                     bottom: '0.5rem',
