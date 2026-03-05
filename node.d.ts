@@ -1964,13 +1964,31 @@ declare namespace $ {
 //# sourceMappingURL=minor.view.tree.d.ts.map
 declare namespace $ {
 
-	export class $mol_icon_download extends $mol_icon {
+	export class $mol_icon_help extends $mol_icon {
 		path( ): string
 	}
 	
 }
 
-//# sourceMappingURL=download.view.tree.d.ts.map
+//# sourceMappingURL=help.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_icon_help_circle extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=circle.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_icon_help_circle_outline extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=outline.view.tree.d.ts.map
 declare namespace $ {
     class $mol_dom_event<EventType extends Event> extends $mol_object {
         readonly native: EventType;
@@ -2029,6 +2047,15 @@ declare namespace $ {
 }
 
 //# sourceMappingURL=icon.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_icon_download extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=download.view.tree.d.ts.map
 declare namespace $ {
 
 	export class $mol_icon_brightness_4 extends $mol_icon {
@@ -2812,102 +2839,117 @@ declare namespace $ {
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
-	type $mol_button_minor__click_bog_vk_app_5 = $mol_type_enforce<
+	type $mol_check_icon__hint_bog_vk_app_5 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_check_icon['hint'] >
+	>
+	type $mol_check_icon__Icon_bog_vk_app_6 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['Help_icon'] >
+		,
+		ReturnType< $mol_check_icon['Icon'] >
+	>
+	type $mol_check_icon__checked_bog_vk_app_7 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['show_hint'] >
+		,
+		ReturnType< $mol_check_icon['checked'] >
+	>
+	type $mol_button_minor__click_bog_vk_app_8 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['download_all'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
-	type $mol_button_minor__sub_bog_vk_app_6 = $mol_type_enforce<
+	type $mol_button_minor__sub_bog_vk_app_9 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
-	type $mol_link__uri_bog_vk_app_7 = $mol_type_enforce<
+	type $mol_link__uri_bog_vk_app_10 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_link['uri'] >
 	>
-	type $mol_link__target_bog_vk_app_8 = $mol_type_enforce<
+	type $mol_link__target_bog_vk_app_11 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_link['target'] >
 	>
-	type $mol_link__sub_bog_vk_app_9 = $mol_type_enforce<
+	type $mol_link__sub_bog_vk_app_12 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_link['sub'] >
 	>
-	type $mol_paragraph__title_bog_vk_app_10 = $mol_type_enforce<
+	type $mol_paragraph__title_bog_vk_app_13 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['token_hint'] >
 		,
 		ReturnType< $mol_paragraph['title'] >
 	>
-	type $mol_view__sub_bog_vk_app_11 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_app_14 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_button_minor__click_bog_vk_app_12 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_app_15 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['show_my'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
-	type $mol_button_minor__sub_bog_vk_app_13 = $mol_type_enforce<
+	type $mol_button_minor__sub_bog_vk_app_16 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
-	type $mol_button_minor__click_bog_vk_app_14 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_app_17 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['show_search'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
-	type $mol_button_minor__sub_bog_vk_app_15 = $mol_type_enforce<
+	type $mol_button_minor__sub_bog_vk_app_18 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
-	type $mol_view__sub_bog_vk_app_16 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_app_19 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_string__hint_bog_vk_app_17 = $mol_type_enforce<
+	type $mol_string__hint_bog_vk_app_20 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_string['hint'] >
 	>
-	type $mol_string__value_bog_vk_app_18 = $mol_type_enforce<
+	type $mol_string__value_bog_vk_app_21 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['search_query'] >
 		,
 		ReturnType< $mol_string['value'] >
 	>
-	type $bog_vk_tracks__audios_bog_vk_app_19 = $mol_type_enforce<
+	type $bog_vk_tracks__audios_bog_vk_app_22 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_tracks['audios'] >
 	>
-	type $bog_vk_tracks__current_audio_bog_vk_app_20 = $mol_type_enforce<
+	type $bog_vk_tracks__current_audio_bog_vk_app_23 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['current_audio'] >
 	>
-	type $bog_vk_tracks__play_audio_bog_vk_app_21 = $mol_type_enforce<
+	type $bog_vk_tracks__play_audio_bog_vk_app_24 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['on_play_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['play_audio'] >
 	>
-	type $bog_vk_player__queue_bog_vk_app_22 = $mol_type_enforce<
+	type $bog_vk_player__queue_bog_vk_app_25 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_player['queue'] >
 	>
-	type $bog_vk_player__current_audio_bog_vk_app_23 = $mol_type_enforce<
+	type $bog_vk_player__current_audio_bog_vk_app_26 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_player['current_audio'] >
 	>
-	type $bog_version__version_bog_vk_app_24 = $mol_type_enforce<
+	type $bog_version__version_bog_vk_app_27 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $bog_version['version'] >
@@ -2919,6 +2961,9 @@ declare namespace $ {
 		clear_token( next?: any ): any
 		Token_clear_icon( ): $mol_icon_close
 		Token_clear( ): $mol_button_minor
+		Help_icon( ): $mol_icon_help_circle_outline
+		show_hint( next?: boolean ): boolean
+		Help_toggle( ): $mol_check_icon
 		download_all( next?: any ): any
 		Download_all_icon( ): $mol_icon_download
 		Download_all( ): $mol_button_minor
@@ -2972,6 +3017,7 @@ declare namespace $.$$ {
         on_play_audio(audio?: $bog_vk_api_audio | null): void;
         Token_clear(): any;
         clear_token(): void;
+        show_hint(next?: boolean): boolean;
         Auth_block(): any;
         token_hint(): string;
         download_all(): void;
