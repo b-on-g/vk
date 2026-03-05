@@ -5,7 +5,7 @@ $bog_vk_app $mol_page
 	tools /
 		<= Token_popup $mol_pop
 			showed? <=> token_popup_open? false
-			align \bottom_right
+			align \bottom_left
 			Anchor <= Token_toggle $mol_check_icon
 				hint \Токен
 				Icon <= Token_icon $mol_icon_key_variant

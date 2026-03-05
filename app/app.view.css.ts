@@ -73,8 +73,13 @@ namespace $.$$ {
 			wordBreak: 'break-all',
 		},
 
+		Tools: {
+			alignItems: 'center',
+		},
+
 		Token_panel: {
 			minWidth: '16rem',
+			maxWidth: 'calc(100vw - 2rem)',
 			padding: {
 				top: '0.5rem',
 				bottom: '0.5rem',
