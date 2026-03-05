@@ -73,8 +73,17 @@ namespace $.$$ {
 			wordBreak: 'break-all',
 		},
 
+		Token_panel: {
+			minWidth: '16rem',
+			padding: {
+				top: '0.5rem',
+				bottom: '0.5rem',
+				left: '0.5rem',
+				right: '0.5rem',
+			},
+		},
+
 		Token_input: {
-			maxWidth: '12rem',
 			font: {
 				size: '1rem',
 			},

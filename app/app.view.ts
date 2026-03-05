@@ -136,15 +136,11 @@ namespace $.$$ {
 			this.Player().play_track(audio)
 		}
 
-		Token_clear() {
-			if (!this.token()) return null as any
-			return super.Token_clear()
-		}
-
 		@$mol_action
 		clear_token() {
 			this.token('')
 			this.token_expired(false)
+			this.token_popup_open(false)
 		}
 
 		@$mol_mem
