@@ -2723,6 +2723,19 @@ declare namespace $.$$ {
 }
 
 declare namespace $ {
+
+	export class $bog_version extends $mol_paragraph {
+		version( ): string
+		title( ): ReturnType< $bog_version['version'] >
+	}
+	
+}
+
+//# sourceMappingURL=version.view.tree.d.ts.map
+declare namespace $.$$ {
+}
+
+declare namespace $ {
     function $mol_offline(): void;
 }
 
@@ -2850,6 +2863,11 @@ declare namespace $ {
 		,
 		ReturnType< $bog_vk_player['current_audio'] >
 	>
+	type $bog_version__version_bog_vk_app_24 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $bog_version['version'] >
+	>
 	export class $bog_vk_app extends $mol_page {
 		Theme( ): $mol_theme_auto
 		token( next?: string ): string
@@ -2878,6 +2896,7 @@ declare namespace $ {
 		on_play_audio( next?: any ): any
 		Tracks( ): $bog_vk_tracks
 		Player( ): $bog_vk_player
+		Version( ): $bog_version
 		plugins( ): readonly(any)[]
 		title( ): string
 		tools( ): readonly(any)[]

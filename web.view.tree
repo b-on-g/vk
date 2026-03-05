@@ -319,6 +319,9 @@ $bog_vk_player $mol_view
 						<= Time $mol_paragraph
 							title <= time_text \
 
+$bog_version $mol_paragraph
+	title <= version \0.0.0
+
 $bog_vk_app $mol_page
 	plugins /
 		<= Theme $mol_theme_auto
@@ -365,3 +368,5 @@ $bog_vk_app $mol_page
 		<= Player $bog_vk_player
 			queue <= visible_audios /
 			current_audio? <=> current_audio? null
+		<= Version $bog_version
+			version \0.1.0

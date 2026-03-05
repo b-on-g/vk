@@ -8882,6 +8882,36 @@ var $;
 })($ || ($ = {}));
 
 ;
+	($.$bog_version) = class $bog_version extends ($.$mol_paragraph) {
+		version(){
+			return "0.0.0";
+		}
+		title(){
+			return (this.version());
+		}
+	};
+
+
+;
+"use strict";
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        $mol_style_define($bog_version, {
+            font: {
+                size: '0.75rem',
+            },
+            color: $mol_theme.shade,
+            opacity: 0.6,
+        });
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
 	($.$bog_vk_app) = class $bog_vk_app extends ($.$mol_page) {
 		Theme(){
 			const obj = new this.$.$mol_theme_auto();
@@ -9012,6 +9042,11 @@ var $;
 			(obj.current_audio) = (next) => ((this.current_audio(next)));
 			return obj;
 		}
+		Version(){
+			const obj = new this.$.$bog_version();
+			(obj.version) = () => ("0.1.0");
+			return obj;
+		}
 		plugins(){
 			return [(this.Theme())];
 		}
@@ -9038,7 +9073,7 @@ var $;
 			];
 		}
 		foot(){
-			return [(this.Player())];
+			return [(this.Player()), (this.Version())];
 		}
 	};
 	($mol_mem(($.$bog_vk_app.prototype), "Theme"));
@@ -9066,6 +9101,7 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "on_play_audio"));
 	($mol_mem(($.$bog_vk_app.prototype), "Tracks"));
 	($mol_mem(($.$bog_vk_app.prototype), "Player"));
+	($mol_mem(($.$bog_vk_app.prototype), "Version"));
 
 
 ;
