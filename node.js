@@ -8550,8 +8550,6 @@ var $;
                 const ms = navigator.mediaSession;
                 ms.setActionHandler('previoustrack', () => this.prev());
                 ms.setActionHandler('nexttrack', () => this.next());
-                ms.setActionHandler('seekbackward', () => { el.currentTime = Math.max(0, el.currentTime - 10); });
-                ms.setActionHandler('seekforward', () => { el.currentTime = Math.min(el.duration || 0, el.currentTime + 10); });
                 ms.setActionHandler('seekto', (details) => {
                     if (details.seekTime != null)
                         el.currentTime = details.seekTime;
