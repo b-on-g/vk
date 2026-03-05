@@ -9048,22 +9048,9 @@ var $;
                     });
                     this.setup_media_session();
                 }
-                if (audio.url) {
-                    el.src = audio.url;
-                    const p = el.play();
-                    this.playing(true);
-                    if ('mediaSession' in navigator)
-                        navigator.mediaSession.playbackState = 'playing';
-                    if (p)
-                        p.catch(() => {
-                            this.play_from_cache(audio, el);
-                        });
-                }
-                else {
-                    this.play_from_cache(audio, el);
-                }
+                this.play_source(audio, el);
             }
-            async play_from_cache(audio, el) {
+            async play_source(audio, el) {
                 try {
                     const cached = await $bog_vk_cache.get(audio);
                     if (cached) {
@@ -9073,6 +9060,19 @@ var $;
                         if ('mediaSession' in navigator)
                             navigator.mediaSession.playbackState = 'playing';
                         return;
+                    }
+                    if (audio.url) {
+                        el.src = audio.url;
+                        try {
+                            await el.play();
+                            this.playing(true);
+                            if ('mediaSession' in navigator)
+                                navigator.mediaSession.playbackState = 'playing';
+                            $bog_vk_cache.save_hls(audio).catch(() => { });
+                            return;
+                        }
+                        catch {
+                        }
                     }
                     if (audio.url) {
                         await $bog_vk_cache.save_hls(audio);
