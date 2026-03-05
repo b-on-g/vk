@@ -2397,6 +2397,7 @@ declare namespace $ {
         };
     };
     export class $bog_vk_cache extends $mol_object {
+        static version(next?: number): number;
         static db(): $mol_db_database<$bog_vk_cache_schema>;
         static db_async(): Promise<$mol_db_database<$bog_vk_cache_schema>>;
         static cache_key(audio: $bog_vk_api_audio): string;

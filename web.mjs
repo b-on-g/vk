@@ -7253,6 +7253,9 @@ var $;
 var $;
 (function ($) {
     class $bog_vk_cache extends $mol_object {
+        static version(next) {
+            return next ?? 0;
+        }
         static db() {
             return $mol_wire_sync(this).db_async();
         }
@@ -7661,6 +7664,9 @@ var $;
             }
         }
     }
+    __decorate([
+        $mol_mem
+    ], $bog_vk_cache, "version", null);
     $.$bog_vk_cache = $bog_vk_cache;
 })($ || ($ = {}));
 
@@ -7752,6 +7758,7 @@ var $;
                     return;
                 $mol_wire_sync($bog_vk_cache).drop(audio);
                 this.cached(false);
+                $bog_vk_cache.version($bog_vk_cache.version() + 1);
             }
         }
         __decorate([
@@ -8980,6 +8987,7 @@ var $;
                 this.page('search');
             }
             cached_audios() {
+                $bog_vk_cache.version();
                 return $mol_wire_sync($bog_vk_cache).all_cached();
             }
             my_audios() {
