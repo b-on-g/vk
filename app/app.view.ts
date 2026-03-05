@@ -146,8 +146,14 @@ namespace $.$$ {
 			this.token_expired(false)
 		}
 
+		@$mol_mem
+		show_hint(next?: boolean) {
+			return $mol_state_local.value('vk_show_hint', next) ?? true
+		}
+
 		Auth_block() {
 			if (this.token()) return null as any
+			if (!this.show_hint()) return null as any
 			return super.Auth_block()
 		}
 

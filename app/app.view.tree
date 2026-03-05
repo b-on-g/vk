@@ -10,6 +10,10 @@ $bog_vk_app $mol_page
 			click? <=> clear_token? null
 			sub /
 				<= Token_clear_icon $mol_icon_close
+		<= Help_toggle $mol_check_icon
+			hint \Подсказка
+			Icon <= Help_icon $mol_icon_help_circle_outline
+			checked? <=> show_hint? true
 		<= Download_all $mol_button_minor
 			click? <=> download_all? null
 			sub /
