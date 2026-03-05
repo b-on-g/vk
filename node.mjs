@@ -9343,16 +9343,11 @@ var $;
                 const audios = this.visible_audios();
                 if (!audios.length)
                     return;
-                console.log(`[app] downloading all ${audios.length} tracks...`);
-                const download_next = async (i) => {
-                    if (i >= audios.length) {
-                        console.log('[app] all downloads complete');
-                        return;
-                    }
-                    await $bog_vk_cache.save_hls(audios[i]);
-                    await download_next(i + 1);
-                };
-                download_next(0).catch(e => console.warn('[app] download all error:', e));
+                for (const audio of audios) {
+                    if (!audio.url)
+                        continue;
+                    $mol_wire_sync($bog_vk_cache).save_hls(audio);
+                }
             }
             Search_bar() {
                 if (this.page() !== 'search')
