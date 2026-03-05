@@ -15,8 +15,10 @@ namespace $.$$ {
 		}
 
 		title() {
-			if (!this.online()) return 'Bog Music (offline)'
-			if (this.token_expired()) return 'Bog Music (токен протух)'
+			const statuses: string[] = []
+			if (!this.online()) statuses.push('offline')
+			if (this.token_expired()) statuses.push('токен протух')
+			if (statuses.length) return `Bog Music (${statuses.join(', ')})`
 			return 'Bog Music'
 		}
 
@@ -85,7 +87,10 @@ namespace $.$$ {
 				if (e instanceof Promise || e?.constructor?.name === '$mol_fail_hidden') throw e
 				const msg = String(e?.message)
 				if (msg.includes('expired') || msg.includes('authorization') || msg.includes('User authorization failed')) {
-					setTimeout(() => this.token_expired(true), 0)
+					setTimeout(() => {
+						this.token_expired(true)
+						this.online(false)
+					}, 0)
 				}
 				console.warn('[app] API failed, using cache:', msg)
 				return this.cached_audios()
@@ -121,6 +126,17 @@ namespace $.$$ {
 			const idx = audios.findIndex((a: $bog_vk_api_audio) => a.id === audio.id && a.owner_id === audio.owner_id)
 			this.Player().queue_index(idx >= 0 ? idx : 0)
 			this.Player().play_track(audio)
+		}
+
+		Token_clear() {
+			if (!this.token()) return null as any
+			return super.Token_clear()
+		}
+
+		@$mol_action
+		clear_token() {
+			this.token('')
+			this.token_expired(false)
 		}
 
 		Auth_block() {

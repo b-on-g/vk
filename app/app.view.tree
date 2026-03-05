@@ -6,6 +6,10 @@ $bog_vk_app $mol_page
 		<= Token_input $mol_string
 			hint \Вставь токен или URL с access_token
 			value? <=> token? \
+		<= Token_clear $mol_button_minor
+			click? <=> clear_token? null
+			sub /
+				<= Token_clear_icon $mol_icon_close
 		<= Download_all $mol_button_minor
 			click? <=> download_all? null
 			sub /

@@ -9,10 +9,14 @@ namespace $.$$ {
 			const el = new Audio()
 			el.volume = 0.7
 			el.addEventListener('ended', () => {
-				const finished = this.current_audio()
-				this.next()
-				if (finished) {
-					$bog_vk_cache.save_hls(finished).catch(() => {})
+				try {
+					const finished = this.current_audio()
+					this.next()
+					if (finished && navigator.onLine) {
+						$bog_vk_cache.save_hls(finished).catch(() => {})
+					}
+				} catch (e) {
+					console.warn('[player] ended handler error:', e)
 				}
 			})
 			el.addEventListener('timeupdate', () => {
@@ -194,11 +198,10 @@ namespace $.$$ {
 
 		next() {
 			const queue = this.queue()
-			const idx = this._queue_idx
-			if (idx < queue.length - 1) {
-				this._queue_idx = idx + 1
-				this.play_track(queue[idx + 1] as $bog_vk_api_audio)
-			}
+			if (!queue.length) return
+			const next_idx = this._queue_idx + 1 < queue.length ? this._queue_idx + 1 : 0
+			this._queue_idx = next_idx
+			this.play_track(queue[next_idx] as $bog_vk_api_audio)
 		}
 
 		sub() {
