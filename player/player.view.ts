@@ -124,23 +124,12 @@ namespace $.$$ {
 				this.setup_media_session()
 			}
 
-			// Try direct URL synchronously to keep user gesture context (lock screen)
-			if (audio.url) {
-				el.src = audio.url
-				const p = el.play()
-				this.playing(true)
-				if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing'
-				if (p) p.catch(() => {
-					// Direct play failed (HLS on Chrome) — fall back to cache
-					this.play_from_cache(audio, el)
-				})
-			} else {
-				this.play_from_cache(audio, el)
-			}
+			this.play_source(audio, el)
 		}
 
-		private async play_from_cache(audio: $bog_vk_api_audio, el: HTMLAudioElement) {
+		private async play_source(audio: $bog_vk_api_audio, el: HTMLAudioElement) {
 			try {
+				// 1. Try cache (has actual audio data, works offline)
 				const cached = await $bog_vk_cache.get(audio)
 				if (cached) {
 					el.src = cached
@@ -150,7 +139,21 @@ namespace $.$$ {
 					return
 				}
 
-				// Download HLS → cache → play
+				// 2. Try direct URL (Safari supports HLS natively)
+				if (audio.url) {
+					el.src = audio.url
+					try {
+						await el.play()
+						this.playing(true)
+						if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing'
+						$bog_vk_cache.save_hls(audio).catch(() => {})
+						return
+					} catch {
+						// Direct play failed — download first
+					}
+				}
+
+				// 3. Download HLS → cache → play
 				if (audio.url) {
 					await $bog_vk_cache.save_hls(audio)
 					const url = await $bog_vk_cache.get(audio)
