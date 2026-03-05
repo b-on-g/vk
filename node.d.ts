@@ -2058,6 +2058,45 @@ declare namespace $ {
 //# sourceMappingURL=download.view.tree.d.ts.map
 declare namespace $ {
 
+	export class $mol_paragraph extends $mol_view {
+		line_height( ): number
+		letter_width( ): number
+		width_limit( ): number
+		row_width( ): number
+		sub( ): readonly(any)[]
+	}
+	
+}
+
+//# sourceMappingURL=paragraph.view.tree.d.ts.map
+declare namespace $.$$ {
+    class $mol_paragraph extends $.$mol_paragraph {
+        maximal_width(): number;
+        width_limit(): number;
+        minimal_width(): number;
+        row_width(): number;
+        minimal_height(): number;
+    }
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
+
+	export class $bog_version extends $mol_paragraph {
+		version( ): string
+		title( ): ReturnType< $bog_version['version'] >
+	}
+	
+}
+
+//# sourceMappingURL=version.view.tree.d.ts.map
+declare namespace $.$$ {
+}
+
+declare namespace $ {
+
 	export class $mol_icon_brightness_4 extends $mol_icon {
 		path( ): string
 	}
@@ -2145,32 +2184,6 @@ declare namespace $.$$ {
         external(): boolean;
         target(): '_self' | '_blank' | '_top' | '_parent' | string;
         hint_safe(): string;
-    }
-}
-
-declare namespace $ {
-}
-
-declare namespace $ {
-
-	export class $mol_paragraph extends $mol_view {
-		line_height( ): number
-		letter_width( ): number
-		width_limit( ): number
-		row_width( ): number
-		sub( ): readonly(any)[]
-	}
-	
-}
-
-//# sourceMappingURL=paragraph.view.tree.d.ts.map
-declare namespace $.$$ {
-    class $mol_paragraph extends $.$mol_paragraph {
-        maximal_width(): number;
-        width_limit(): number;
-        minimal_width(): number;
-        row_width(): number;
-        minimal_height(): number;
     }
 }
 
@@ -2798,19 +2811,6 @@ declare namespace $.$$ {
 }
 
 declare namespace $ {
-
-	export class $bog_version extends $mol_paragraph {
-		version( ): string
-		title( ): ReturnType< $bog_version['version'] >
-	}
-	
-}
-
-//# sourceMappingURL=version.view.tree.d.ts.map
-declare namespace $.$$ {
-}
-
-declare namespace $ {
     function $mol_offline(): void;
 }
 
@@ -2864,95 +2864,95 @@ declare namespace $ {
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
-	type $mol_link__uri_bog_vk_app_10 = $mol_type_enforce<
+	type $bog_version__version_bog_vk_app_10 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $bog_version['version'] >
+	>
+	type $mol_link__uri_bog_vk_app_11 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_link['uri'] >
 	>
-	type $mol_link__target_bog_vk_app_11 = $mol_type_enforce<
+	type $mol_link__target_bog_vk_app_12 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_link['target'] >
 	>
-	type $mol_link__sub_bog_vk_app_12 = $mol_type_enforce<
+	type $mol_link__sub_bog_vk_app_13 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_link['sub'] >
 	>
-	type $mol_paragraph__title_bog_vk_app_13 = $mol_type_enforce<
+	type $mol_paragraph__title_bog_vk_app_14 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['token_hint'] >
 		,
 		ReturnType< $mol_paragraph['title'] >
 	>
-	type $mol_view__sub_bog_vk_app_14 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_app_15 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_button_minor__click_bog_vk_app_15 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_app_16 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['show_my'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
-	type $mol_button_minor__sub_bog_vk_app_16 = $mol_type_enforce<
+	type $mol_button_minor__sub_bog_vk_app_17 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
-	type $mol_button_minor__click_bog_vk_app_17 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_app_18 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['show_search'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
-	type $mol_button_minor__sub_bog_vk_app_18 = $mol_type_enforce<
+	type $mol_button_minor__sub_bog_vk_app_19 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
-	type $mol_view__sub_bog_vk_app_19 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_app_20 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_string__hint_bog_vk_app_20 = $mol_type_enforce<
+	type $mol_string__hint_bog_vk_app_21 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_string['hint'] >
 	>
-	type $mol_string__value_bog_vk_app_21 = $mol_type_enforce<
+	type $mol_string__value_bog_vk_app_22 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['search_query'] >
 		,
 		ReturnType< $mol_string['value'] >
 	>
-	type $bog_vk_tracks__audios_bog_vk_app_22 = $mol_type_enforce<
+	type $bog_vk_tracks__audios_bog_vk_app_23 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_tracks['audios'] >
 	>
-	type $bog_vk_tracks__current_audio_bog_vk_app_23 = $mol_type_enforce<
+	type $bog_vk_tracks__current_audio_bog_vk_app_24 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['current_audio'] >
 	>
-	type $bog_vk_tracks__play_audio_bog_vk_app_24 = $mol_type_enforce<
+	type $bog_vk_tracks__play_audio_bog_vk_app_25 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['on_play_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['play_audio'] >
 	>
-	type $bog_vk_player__queue_bog_vk_app_25 = $mol_type_enforce<
+	type $bog_vk_player__queue_bog_vk_app_26 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_player['queue'] >
 	>
-	type $bog_vk_player__current_audio_bog_vk_app_26 = $mol_type_enforce<
+	type $bog_vk_player__current_audio_bog_vk_app_27 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_player['current_audio'] >
-	>
-	type $bog_version__version_bog_vk_app_27 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $bog_version['version'] >
 	>
 	export class $bog_vk_app extends $mol_page {
 		Theme( ): $mol_theme_auto
@@ -2967,6 +2967,7 @@ declare namespace $ {
 		download_all( next?: any ): any
 		Download_all_icon( ): $mol_icon_download
 		Download_all( ): $mol_button_minor
+		Version( ): $bog_version
 		Lighter( ): $mol_lights_toggle
 		scroll( next?: number ): number
 		Auth_link( ): $mol_link
@@ -2985,7 +2986,6 @@ declare namespace $ {
 		on_play_audio( next?: any ): any
 		Tracks( ): $bog_vk_tracks
 		Player( ): $bog_vk_player
-		Version( ): $bog_version
 		plugins( ): readonly(any)[]
 		title( ): string
 		tools( ): readonly(any)[]

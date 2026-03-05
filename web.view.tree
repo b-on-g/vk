@@ -167,6 +167,16 @@ $mol_check_icon $mol_check
 
 $mol_icon_download $mol_icon path \M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z
 
+$mol_paragraph $mol_view
+	line_height 24
+	letter_width 7
+	width_limit +Infinity
+	row_width 0
+	sub / <= title
+
+$bog_version $mol_paragraph
+	title <= version \0.0.0
+
 $mol_icon_brightness_4 $mol_icon path \M12,18C11.11,18 10.26,17.8 9.5,17.45C11.56,16.5 13,14.42 13,12C13,9.58 11.56,7.5 9.5,6.55C10.26,6.2 11.11,6 12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31L23.31,12L20,8.69Z
 
 $mol_lights_toggle $mol_check_icon
@@ -194,13 +204,6 @@ $mol_link $mol_view
 	event *
 		^
 		click?event <=> click?event <=> event_click?event null
-
-$mol_paragraph $mol_view
-	line_height 24
-	letter_width 7
-	width_limit +Infinity
-	row_width 0
-	sub / <= title
 
 $mol_list $mol_view
 	render_visible_only true
@@ -325,9 +328,6 @@ $bog_vk_player $mol_view
 						<= Time $mol_paragraph
 							title <= time_text \
 
-$bog_version $mol_paragraph
-	title <= version \0.0.0
-
 $bog_vk_app $mol_page
 	plugins /
 		<= Theme $mol_theme_auto
@@ -348,6 +348,8 @@ $bog_vk_app $mol_page
 			click? <=> download_all? null
 			sub /
 				<= Download_all_icon $mol_icon_download
+		<= Version $bog_version
+			version \0.1.0
 		<= Lighter $mol_lights_toggle
 	body_scroll_top? <=> scroll? 0
 	body /
@@ -378,5 +380,3 @@ $bog_vk_app $mol_page
 		<= Player $bog_vk_player
 			queue <= visible_audios /
 			current_audio? <=> current_audio? null
-		<= Version $bog_version
-			version \0.1.0
