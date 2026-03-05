@@ -1,10 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-<rect width="100" height="100" rx="20" fill="#1a1a2e"/>
-<g fill="#45aaff">
-<rect x="30" y="20" width="6" height="45" rx="3"/>
-<rect x="64" y="15" width="6" height="50" rx="3"/>
-<circle cx="22" cy="65" r="12"/>
-<circle cx="56" cy="65" r="12"/>
-<path d="M36 22C36 22 52 14 70 17L70 15C52 12 36 20 36 20Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#6C63FF"/>
+<stop offset="100%" stop-color="#3B82F6"/>
+</linearGradient>
+<linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#ffffff" stop-opacity="0.3"/>
+<stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+</linearGradient>
+</defs>
+<rect width="512" height="512" rx="108" fill="url(#bg)"/>
+<rect width="512" height="256" rx="108" fill="url(#shine)"/>
+<g fill="#ffffff">
+<ellipse cx="175" cy="355" rx="55" ry="44"/>
+<ellipse cx="345" cy="325" rx="55" ry="44"/>
+<rect x="218" y="105" width="14" height="250" rx="7"/>
+<rect x="388" y="75" width="14" height="250" rx="7"/>
+<path d="M232 105 C232 105 295 65 402 75 L402 115 C295 105 232 145 232 145Z"/>
 </g>
 </svg>

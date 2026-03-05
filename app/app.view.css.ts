@@ -79,7 +79,7 @@ namespace $.$$ {
 
 		Token_panel: {
 			minWidth: '16rem',
-			maxWidth: 'calc(100vw - 2rem)',
+			maxWidth: '22rem',
 			padding: {
 				top: '0.5rem',
 				bottom: '0.5rem',
