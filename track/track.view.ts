@@ -38,6 +38,7 @@ namespace $.$$ {
 			const audio = this.audio_data()
 			if (!audio) return false
 			if (next !== undefined) return next
+			$bog_vk_cache.version()
 			return ($mol_wire_sync($bog_vk_cache) as any).is_cached(audio) as boolean
 		}
 

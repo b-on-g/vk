@@ -168,6 +168,7 @@ namespace $.$$ {
 			for (const audio of audios) {
 				if (!audio.url) continue
 				;($mol_wire_sync($bog_vk_cache) as any).save_hls(audio)
+				$bog_vk_cache.version($bog_vk_cache.version() + 1)
 			}
 		}
 
