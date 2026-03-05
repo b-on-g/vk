@@ -8964,6 +8964,22 @@ var $;
                         console.warn('[player] ended handler error:', e);
                     }
                 });
+                el.addEventListener('play', () => {
+                    try {
+                        this.playing(true);
+                    }
+                    catch { }
+                    if ('mediaSession' in navigator)
+                        navigator.mediaSession.playbackState = 'playing';
+                });
+                el.addEventListener('pause', () => {
+                    try {
+                        this.playing(false);
+                    }
+                    catch { }
+                    if ('mediaSession' in navigator)
+                        navigator.mediaSession.playbackState = 'paused';
+                });
                 el.addEventListener('timeupdate', () => {
                     this.current_time(el.currentTime);
                 });
@@ -8981,14 +8997,20 @@ var $;
                     return;
                 const el = this.audio_el();
                 const ms = navigator.mediaSession;
-                ms.setActionHandler('previoustrack', () => this.prev());
-                ms.setActionHandler('nexttrack', () => this.next());
+                ms.setActionHandler('previoustrack', () => { try {
+                    this.prev();
+                }
+                catch { } });
+                ms.setActionHandler('nexttrack', () => { try {
+                    this.next();
+                }
+                catch { } });
                 ms.setActionHandler('seekto', (details) => {
                     if (details.seekTime != null)
                         el.currentTime = details.seekTime;
                 });
-                ms.setActionHandler('play', () => { el.play(); this.playing(true); ms.playbackState = 'playing'; });
-                ms.setActionHandler('pause', () => { el.pause(); this.playing(false); ms.playbackState = 'paused'; });
+                ms.setActionHandler('play', () => { el.play().catch(() => { }); });
+                ms.setActionHandler('pause', () => { el.pause(); });
             }
             queue_index(next) {
                 if (next !== undefined)
@@ -9065,18 +9087,12 @@ var $;
                     if (cached) {
                         el.src = cached;
                         await el.play();
-                        this.playing(true);
-                        if ('mediaSession' in navigator)
-                            navigator.mediaSession.playbackState = 'playing';
                         return;
                     }
                     if (audio.url) {
                         el.src = audio.url;
                         try {
                             await el.play();
-                            this.playing(true);
-                            if ('mediaSession' in navigator)
-                                navigator.mediaSession.playbackState = 'playing';
                             $bog_vk_cache.save_hls(audio).catch(() => { });
                             return;
                         }
@@ -9089,9 +9105,6 @@ var $;
                         if (url) {
                             el.src = url;
                             await el.play();
-                            this.playing(true);
-                            if ('mediaSession' in navigator)
-                                navigator.mediaSession.playbackState = 'playing';
                             return;
                         }
                     }
@@ -9106,15 +9119,9 @@ var $;
                 const el = this.audio_el();
                 if (this.playing()) {
                     el.pause();
-                    this.playing(false);
-                    if ('mediaSession' in navigator)
-                        navigator.mediaSession.playbackState = 'paused';
                 }
                 else {
                     el.play();
-                    this.playing(true);
-                    if ('mediaSession' in navigator)
-                        navigator.mediaSession.playbackState = 'playing';
                 }
             }
             prev() {
