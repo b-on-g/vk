@@ -18,6 +18,8 @@ $bog_vk_app $mol_page
 			click? <=> download_all? null
 			sub /
 				<= Download_all_icon $mol_icon_download
+		<= Version $bog_version
+			version \0.1.0
 		<= Lighter $mol_lights_toggle
 	body_scroll_top? <=> scroll? 0
 	body /
@@ -48,5 +50,3 @@ $bog_vk_app $mol_page
 		<= Player $bog_vk_player
 			queue <= visible_audios /
 			current_audio? <=> current_audio? null
-		<= Version $bog_version
-			version \0.1.0
