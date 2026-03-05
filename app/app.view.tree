@@ -44,3 +44,5 @@ $bog_vk_app $mol_page
 		<= Player $bog_vk_player
 			queue <= visible_audios /
 			current_audio? <=> current_audio? null
+		<= Version $bog_version
+			version \0.1.0
