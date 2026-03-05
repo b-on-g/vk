@@ -9145,11 +9145,17 @@ var $;
             token_expired(next) {
                 return next ?? false;
             }
+            token_invalid() {
+                const t = this.token();
+                return !!t && !t.startsWith('vk1.a.');
+            }
             title() {
                 const statuses = [];
                 if (!this.online())
                     statuses.push('offline');
-                if (this.token_expired())
+                if (this.token_invalid())
+                    statuses.push('невалидный токен');
+                else if (this.token_expired())
                     statuses.push('токен протух');
                 if (statuses.length)
                     return `Bog Music (${statuses.join(', ')})`;
@@ -9203,6 +9209,8 @@ var $;
             }
             my_audios() {
                 if (!this.token())
+                    return this.cached_audios();
+                if (this.token_invalid())
                     return this.cached_audios();
                 if (!this.online())
                     return this.cached_audios();

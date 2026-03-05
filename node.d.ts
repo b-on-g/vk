@@ -2956,6 +2956,7 @@ declare namespace $.$$ {
     class $bog_vk_app extends $.$bog_vk_app {
         online(next?: boolean): boolean;
         token_expired(next?: boolean): boolean;
+        token_invalid(): boolean;
         title(): string;
         token(next?: string): string;
         extract_token(input: string): string;
