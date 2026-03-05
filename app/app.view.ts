@@ -78,6 +78,7 @@ namespace $.$$ {
 
 		@$mol_mem
 		cached_audios(): $bog_vk_api_audio[] {
+			$bog_vk_cache.version()
 			return ($mol_wire_sync($bog_vk_cache) as any).all_cached()
 		}
 

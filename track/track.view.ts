@@ -85,6 +85,7 @@ namespace $.$$ {
 			if (!audio) return
 			;($mol_wire_sync($bog_vk_cache) as any).drop(audio)
 			this.cached(false)
+			$bog_vk_cache.version($bog_vk_cache.version() + 1)
 		}
 	}
 }

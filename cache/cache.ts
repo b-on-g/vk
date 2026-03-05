@@ -15,6 +15,11 @@ namespace $ {
 
 	export class $bog_vk_cache extends $mol_object {
 
+		@$mol_mem
+		static version(next?: number) {
+			return next ?? 0
+		}
+
 		static db() {
 			return $mol_wire_sync(this).db_async()
 		}
