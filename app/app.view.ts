@@ -19,12 +19,12 @@ namespace $.$$ {
 			return !!t && !t.startsWith('vk1.a.')
 		}
 
+		offline_mode() {
+			return !this.token() || this.token_invalid() || !this.online() || this.token_expired()
+		}
+
 		title() {
-			const statuses: string[] = []
-			if (!this.online()) statuses.push('offline')
-			if (this.token_invalid()) statuses.push('невалидный токен')
-			else if (this.token_expired()) statuses.push('токен протух')
-			if (statuses.length) return `Bog Music (${statuses.join(', ')})`
+			if (this.offline_mode()) return 'Bog Music (offline)'
 			return 'Bog Music'
 		}
 
@@ -84,21 +84,16 @@ namespace $.$$ {
 
 		@$mol_mem
 		my_audios() {
-			if (!this.token()) return this.cached_audios()
-			if (this.token_invalid()) return this.cached_audios()
-			if (!this.online()) return this.cached_audios()
+			if (this.offline_mode()) return this.cached_audios()
 			try {
 				const result = this.$.$bog_vk_api.my_audios()?.items ?? []
-				setTimeout(() => this.token_expired(false), 0)
+				this.token_expired(false)
 				return result
 			} catch (e: any) {
 				if (e instanceof Promise || e?.constructor?.name === '$mol_fail_hidden') throw e
 				const msg = String(e?.message)
 				if (msg.includes('expired') || msg.includes('authorization') || msg.includes('User authorization failed')) {
-					setTimeout(() => {
-						this.token_expired(true)
-						this.online(false)
-					}, 0)
+					this.token_expired(true)
 				}
 				console.warn('[app] API failed, using cache:', msg)
 				return this.cached_audios()
@@ -109,7 +104,7 @@ namespace $.$$ {
 		search_results() {
 			const query = this.search_query().trim()
 			if (!query) return []
-			if (!this.online()) return []
+			if (this.offline_mode()) return []
 			return this.$.$bog_vk_api.search_audios(query)?.items ?? []
 		}
 
@@ -158,6 +153,21 @@ namespace $.$$ {
 			return '1. Открой аудио (ссылка выше)\n2. F12 → Network → фильтр «api»\n3. Любой запрос → ПКМ → Copy as cURL\n4. Вставь в поле токена наверху'
 		}
 
+		Download_all() {
+			if (this.offline_mode()) return null as any
+			return super.Download_all()
+		}
+
+		Tabs() {
+			if (this.offline_mode()) return null as any
+			return super.Tabs()
+		}
+
+		Search_bar() {
+			if (this.page() !== 'search') return null as any
+			return super.Search_bar()
+		}
+
 		download_all() {
 			const audios = this.visible_audios()
 			if (!audios.length) return
@@ -166,11 +176,6 @@ namespace $.$$ {
 				;($mol_wire_sync($bog_vk_cache) as any).save_hls(audio)
 				$bog_vk_cache.version($bog_vk_cache.version() + 1)
 			}
-		}
-
-		Search_bar() {
-			if (this.page() !== 'search') return null as any
-			return super.Search_bar()
 		}
 	}
 }
