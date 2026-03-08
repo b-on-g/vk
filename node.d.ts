@@ -3188,7 +3188,8 @@ declare namespace $.$$ {
         online(next?: boolean): boolean;
         token_expired(next?: boolean): boolean;
         token_invalid(): boolean;
-        title(): string;
+        offline_mode(): boolean;
+        title(): "Bog Music (offline)" | "Bog Music";
         token(next?: string): string;
         extract_token(input: string): string;
         extract_cookies(input: string): string;
@@ -3205,8 +3206,10 @@ declare namespace $.$$ {
         show_hint(next?: boolean): boolean;
         Auth_block(): any;
         token_hint(): string;
-        download_all(): void;
+        Download_all(): any;
+        Tabs(): any;
         Search_bar(): any;
+        download_all(): void;
     }
 }
 

@@ -9408,7 +9408,7 @@ var $;
 		}
 		Version(){
 			const obj = new this.$.$bog_version();
-			(obj.version) = () => ("0.1.0");
+			(obj.version) = () => ("0.2.0");
 			return obj;
 		}
 		Lighter(){
@@ -9608,16 +9608,12 @@ var $;
                 const t = this.token();
                 return !!t && !t.startsWith('vk1.a.');
             }
+            offline_mode() {
+                return !this.token() || this.token_invalid() || !this.online() || this.token_expired();
+            }
             title() {
-                const statuses = [];
-                if (!this.online())
-                    statuses.push('offline');
-                if (this.token_invalid())
-                    statuses.push('невалидный токен');
-                else if (this.token_expired())
-                    statuses.push('токен протух');
-                if (statuses.length)
-                    return `Bog Music (${statuses.join(', ')})`;
+                if (this.offline_mode())
+                    return 'Bog Music (offline)';
                 return 'Bog Music';
             }
             token(next) {
@@ -9668,15 +9664,11 @@ var $;
                 return $mol_wire_sync($bog_vk_cache).all_cached();
             }
             my_audios() {
-                if (!this.token())
-                    return this.cached_audios();
-                if (this.token_invalid())
-                    return this.cached_audios();
-                if (!this.online())
+                if (this.offline_mode())
                     return this.cached_audios();
                 try {
                     const result = this.$.$bog_vk_api.my_audios()?.items ?? [];
-                    setTimeout(() => this.token_expired(false), 0);
+                    this.token_expired(false);
                     return result;
                 }
                 catch (e) {
@@ -9684,10 +9676,7 @@ var $;
                         throw e;
                     const msg = String(e?.message);
                     if (msg.includes('expired') || msg.includes('authorization') || msg.includes('User authorization failed')) {
-                        setTimeout(() => {
-                            this.token_expired(true);
-                            this.online(false);
-                        }, 0);
+                        this.token_expired(true);
                     }
                     console.warn('[app] API failed, using cache:', msg);
                     return this.cached_audios();
@@ -9697,7 +9686,7 @@ var $;
                 const query = this.search_query().trim();
                 if (!query)
                     return [];
-                if (!this.online())
+                if (this.offline_mode())
                     return [];
                 return this.$.$bog_vk_api.search_audios(query)?.items ?? [];
             }
@@ -9736,6 +9725,21 @@ var $;
             token_hint() {
                 return '1. Открой аудио (ссылка выше)\n2. F12 → Network → фильтр «api»\n3. Любой запрос → ПКМ → Copy as cURL\n4. Вставь в поле токена наверху';
             }
+            Download_all() {
+                if (this.offline_mode())
+                    return null;
+                return super.Download_all();
+            }
+            Tabs() {
+                if (this.offline_mode())
+                    return null;
+                return super.Tabs();
+            }
+            Search_bar() {
+                if (this.page() !== 'search')
+                    return null;
+                return super.Search_bar();
+            }
             download_all() {
                 const audios = this.visible_audios();
                 if (!audios.length)
@@ -9746,11 +9750,6 @@ var $;
                     $mol_wire_sync($bog_vk_cache).save_hls(audio);
                     $bog_vk_cache.version($bog_vk_cache.version() + 1);
                 }
-            }
-            Search_bar() {
-                if (this.page() !== 'search')
-                    return null;
-                return super.Search_bar();
             }
         }
         __decorate([
