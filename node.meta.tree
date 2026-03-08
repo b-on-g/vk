@@ -39,6 +39,7 @@
 	pack tauri_mol_workflow_template git \https://github.com/b-on-g/tauri-mol-workflow-template.git
 	pack mol_prerender_action git \https://github.com/b-on-g/mol-prerender-action.git
 	pack quiz git \https://github.com/b-on-g/quiz.git
+	pack docs git \https://github.com/b-on-g/quiz.git
 \/mol
 	pack icon git \https://github.com/nin-jin/mol_icon.git
 \/mol/view
