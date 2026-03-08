@@ -28,7 +28,7 @@ $bog_vk_app $mol_page
 			sub /
 				<= Download_all_icon $mol_icon_download
 		<= Version $bog_version
-			version \0.2.0
+			version \0.2.1
 		<= Lighter $mol_lights_toggle
 	body_scroll_top? <=> scroll? 0
 	body /

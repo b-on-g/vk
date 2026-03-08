@@ -113,7 +113,7 @@ namespace $.$$ {
 			return (this.current_time() / dur) * 100
 		}
 
-		play_track(audio?: $bog_vk_api_audio | null) {
+			play_track(audio?: $bog_vk_api_audio | null) {
 			if (!audio) return
 			const el = this.audio_el()
 			this.current_audio(audio)
@@ -132,16 +132,33 @@ namespace $.$$ {
 				this.setup_media_session()
 			}
 
+			// Immediately claim audio focus before any async work.
+			// On iOS/Android lock screen, user activation expires fast —
+			// calling play() synchronously preserves the gesture context.
+			if (audio.url) {
+				el.src = audio.url
+				el.play().catch(() => {})
+			}
+
 			this.play_source(audio, el)
 		}
 
+		private _last_blob_url = ''
+
 		private async play_source(audio: $bog_vk_api_audio, el: HTMLAudioElement) {
 			try {
+				// Revoke previous blob URL to prevent memory leaks
+				if (this._last_blob_url) {
+					URL.revokeObjectURL(this._last_blob_url)
+					this._last_blob_url = ''
+				}
+
 				// 1. Try cache (has actual audio data, works offline)
 				const cached = await $bog_vk_cache.get(audio)
 				if (cached) {
+					this._last_blob_url = cached
 					el.src = cached
-					await el.play()
+					await this.safe_play(el)
 					return
 				}
 
@@ -149,7 +166,7 @@ namespace $.$$ {
 				if (audio.url) {
 					el.src = audio.url
 					try {
-						await el.play()
+						await this.safe_play(el)
 						$bog_vk_cache.save_hls(audio).catch(() => {})
 						return
 					} catch {
@@ -162,8 +179,9 @@ namespace $.$$ {
 					await $bog_vk_cache.save_hls(audio)
 					const url = await $bog_vk_cache.get(audio)
 					if (url) {
+						this._last_blob_url = url
 						el.src = url
-						await el.play()
+						await this.safe_play(el)
 						return
 					}
 				}
@@ -173,6 +191,24 @@ namespace $.$$ {
 				console.error('[player] play failed:', e)
 			}
 			this.playing(false)
+		}
+
+		private async safe_play(el: HTMLAudioElement) {
+			try {
+				await el.play()
+			} catch (e: any) {
+				// NotAllowedError = user activation lost (lock screen, background tab)
+				// Retry: set up to play when user interacts or audio becomes available
+				if (e?.name === 'NotAllowedError') {
+					console.warn('[player] play blocked, will resume on user interaction')
+					el.muted = true
+					try { await el.play() } catch {}
+					// Unmute after short delay — audio context is now active
+					el.muted = false
+				} else {
+					throw e
+				}
+			}
 		}
 
 		toggle() {
