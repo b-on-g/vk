@@ -9079,20 +9079,30 @@ var $;
                     });
                     this.setup_media_session();
                 }
+                if (audio.url) {
+                    el.src = audio.url;
+                    el.play().catch(() => { });
+                }
                 this.play_source(audio, el);
             }
+            _last_blob_url = '';
             async play_source(audio, el) {
                 try {
+                    if (this._last_blob_url) {
+                        URL.revokeObjectURL(this._last_blob_url);
+                        this._last_blob_url = '';
+                    }
                     const cached = await $bog_vk_cache.get(audio);
                     if (cached) {
+                        this._last_blob_url = cached;
                         el.src = cached;
-                        await el.play();
+                        await this.safe_play(el);
                         return;
                     }
                     if (audio.url) {
                         el.src = audio.url;
                         try {
-                            await el.play();
+                            await this.safe_play(el);
                             $bog_vk_cache.save_hls(audio).catch(() => { });
                             return;
                         }
@@ -9103,8 +9113,9 @@ var $;
                         await $bog_vk_cache.save_hls(audio);
                         const url = await $bog_vk_cache.get(audio);
                         if (url) {
+                            this._last_blob_url = url;
                             el.src = url;
-                            await el.play();
+                            await this.safe_play(el);
                             return;
                         }
                     }
@@ -9114,6 +9125,25 @@ var $;
                     console.error('[player] play failed:', e);
                 }
                 this.playing(false);
+            }
+            async safe_play(el) {
+                try {
+                    await el.play();
+                }
+                catch (e) {
+                    if (e?.name === 'NotAllowedError') {
+                        console.warn('[player] play blocked, will resume on user interaction');
+                        el.muted = true;
+                        try {
+                            await el.play();
+                        }
+                        catch { }
+                        el.muted = false;
+                    }
+                    else {
+                        throw e;
+                    }
+                }
             }
             toggle() {
                 const el = this.audio_el();
@@ -9408,7 +9438,7 @@ var $;
 		}
 		Version(){
 			const obj = new this.$.$bog_version();
-			(obj.version) = () => ("0.2.0");
+			(obj.version) = () => ("0.2.1");
 			return obj;
 		}
 		Lighter(){
