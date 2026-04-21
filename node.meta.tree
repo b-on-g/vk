@@ -49,6 +49,41 @@
 	pack icon git \https://github.com/nin-jin/mol_icon.git
 \/mol/view
 	include \/mol/view/tree/test
+\/giper
+	pack balls git \https://github.com/giper-dev/balls.git
+	pack baza git \https://github.com/giper-dev/baza.git
+	pack bot git \https://github.com/giper-dev/bot.git
+	pack canary git \https://github.com/giper-dev/canary.git
+	pack iq git \https://github.com/giper-dev/iq.git
+	pack lines git \https://github.com/giper-dev/lines.git
+	pack lingua git \https://github.com/giper-dev/lingua.git
+	pack player git \https://github.com/giper-dev/player.git
+	pack search git \https://github.com/giper-dev/search.git
+	pack web git \https://github.com/giper-dev/web.git
+\/giper/baza/glob
+	deploy \giper/baza/glob/glob.baza
+\/giper/baza/app
+	deploy \/giper/baza/logo/logo.svg
+	deploy \/giper/baza/logo/logo-512.png
+	deploy \/giper/baza/logo/bg.webp
+	deploy \/giper/baza/diagram/crus-reg.png
+	deploy \/giper/baza/diagram/crus-list.png
+	deploy \/giper/baza/diagram/crus-dict.png
+	deploy \/giper/baza/diagram/crus-tree.png
+	deploy \/giper/baza/diagram/crus-text.png
+	deploy \/giper/baza/diagram/crus-dom.png
+	deploy \/giper/baza/diagram/crus-json.png
+	deploy \/giper/baza/diagram/crus-sync.png
+	deploy \/giper/baza/diagram/crus-pack.png
+	deploy \/giper/baza/diagram/crus-units.png
+	deploy \/giper/baza/diagram/crus-units-pass.png
+	deploy \/giper/baza/diagram/crus-units-gift.png
+	deploy \/giper/baza/diagram/crus-units-sand.png
+	deploy \/giper/baza/diagram/crus-files.png
+	deploy \/giper/baza/diagram/crus-network.png
+	deploy \/giper/baza/diagram/crus-jepsen.png
+	deploy \/giper/baza/docker/deploy.sh
+	deploy \/giper/baza/docker/autopull_and_restart.sh
 \/bog/vk/app
 	include \/mol/offline/install
 	deploy \/bog/vk/app/favicon.svg
