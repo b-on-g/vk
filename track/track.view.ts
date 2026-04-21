@@ -79,6 +79,11 @@ namespace $.$$ {
 			}
 			;($mol_wire_sync($bog_vk_cache) as any).save_hls(audio)
 			this.cached(true)
+			// Синкаем трек в персональный Giper Baza home land.
+			try { $bog_vk_store.save_track(audio) } catch (e: any) {
+				if (e instanceof Promise) return
+				console.warn('[track] baza save failed:', e?.message)
+			}
 		}
 
 		delete_cached() {
@@ -87,6 +92,11 @@ namespace $.$$ {
 			;($mol_wire_sync($bog_vk_cache) as any).drop(audio)
 			this.cached(false)
 			$bog_vk_cache.version($bog_vk_cache.version() + 1)
+			// Мягкое удаление в baza (Archived=true), чтобы на других устройствах тоже пропал.
+			try { $bog_vk_store.archive_track(audio) } catch (e: any) {
+				if (e instanceof Promise) return
+				console.warn('[track] baza archive failed:', e?.message)
+			}
 		}
 	}
 }

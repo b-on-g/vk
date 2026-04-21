@@ -82,9 +82,34 @@ namespace $.$$ {
 			return ($mol_wire_sync($bog_vk_cache) as any).all_cached()
 		}
 
+		/**
+		 * Персональные треки пользователя из Giper Baza — синкаются между устройствами.
+		 * Возвращает массив примитивов, поэтому @$mol_mem безопасен.
+		 */
+		@$mol_mem
+		synced_audios(): $bog_vk_api_audio[] {
+			try {
+				return $bog_vk_store.saved_audios()
+			} catch (e: any) {
+				if (e instanceof Promise) throw e
+				console.warn('[app] baza read failed:', e?.message)
+				return []
+			}
+		}
+
+		/** Склейка cached + synced без дубликатов. cached приоритетнее (там есть реальный URL на HLS). */
+		merged_offline(): $bog_vk_api_audio[] {
+			const cached = this.cached_audios()
+			const synced = this.synced_audios()
+			if (!synced.length) return cached
+			const seen = new Set(cached.map(a => `${a.owner_id}_${a.id}`))
+			const extras = synced.filter(a => !seen.has(`${a.owner_id}_${a.id}`))
+			return [...cached, ...extras]
+		}
+
 		@$mol_mem
 		my_audios() {
-			if (this.offline_mode()) return this.cached_audios()
+			if (this.offline_mode()) return this.merged_offline()
 			try {
 				const result = this.$.$bog_vk_api.my_audios()?.items ?? []
 				this.token_expired(false)
@@ -96,7 +121,7 @@ namespace $.$$ {
 					this.token_expired(true)
 				}
 				console.warn('[app] API failed, using cache:', msg)
-				return this.cached_audios()
+				return this.merged_offline()
 			}
 		}
 
@@ -129,6 +154,12 @@ namespace $.$$ {
 			const idx = audios.findIndex((a: $bog_vk_api_audio) => a.id === audio.id && a.owner_id === audio.owner_id)
 			this.Player().queue_index(idx >= 0 ? idx : 0)
 			this.Player().play_track(audio)
+
+			// Сохраняем трек в персональный Giper Baza home land — для синка между устройствами.
+			try { $bog_vk_store.save_track(audio) } catch (e: any) {
+				if (e instanceof Promise) return
+				console.warn('[app] baza save failed:', e?.message)
+			}
 		}
 
 		@$mol_action
@@ -141,6 +172,15 @@ namespace $.$$ {
 		@$mol_mem
 		show_hint(next?: boolean) {
 			return $mol_state_local.value('vk_show_hint', next) ?? true
+		}
+
+		/**
+		 * Держим home land живым пока приложение в DOM —
+		 * чтобы $giper_baza_glob не вызвал destructor() и не порвал подписки.
+		 */
+		auto() {
+			try { $bog_vk_store.synced_audios() } catch {}
+			return super.auto()
 		}
 
 		Auth_block() {
@@ -175,6 +215,10 @@ namespace $.$$ {
 				if (!audio.url) continue
 				;($mol_wire_sync($bog_vk_cache) as any).save_hls(audio)
 				$bog_vk_cache.version($bog_vk_cache.version() + 1)
+				try { $bog_vk_store.save_track(audio) } catch (e: any) {
+					if (e instanceof Promise) return
+					console.warn('[app] baza save failed:', e?.message)
+				}
 			}
 		}
 	}
