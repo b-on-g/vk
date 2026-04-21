@@ -76,6 +76,12 @@ namespace $.$$ {
 			this.page('search')
 		}
 
+		@$mol_action
+		show_archive() {
+			this.page('archive')
+			this.search_query('')
+		}
+
 		@$mol_mem
 		cached_audios(): $bog_vk_api_audio[] {
 			$bog_vk_cache.version()
@@ -97,23 +103,59 @@ namespace $.$$ {
 			}
 		}
 
-		/** Склейка cached + synced без дубликатов. cached приоритетнее (там есть реальный URL на HLS). */
+		/** Архивные треки (мягко удалённые). */
+		@$mol_mem
+		archived_audios(): $bog_vk_api_audio[] {
+			try {
+				return $bog_vk_store.archived_audios()
+			} catch (e: any) {
+				if (e instanceof Promise) throw e
+				console.warn('[app] baza read failed:', e?.message)
+				return []
+			}
+		}
+
+		/** Множество ключей архивных треков — для фильтрации из VK-списка. */
+		@$mol_mem
+		archived_keys(): Set<string> {
+			return new Set(this.archived_audios().map(a => `${a.owner_id}_${a.id}`))
+		}
+
+		/** Склейка cached + synced без дубликатов, с сортировкой по Order из baza. */
 		merged_offline(): $bog_vk_api_audio[] {
 			const cached = this.cached_audios()
 			const synced = this.synced_audios()
-			if (!synced.length) return cached
-			const seen = new Set(cached.map(a => `${a.owner_id}_${a.id}`))
-			const extras = synced.filter(a => !seen.has(`${a.owner_id}_${a.id}`))
-			return [...cached, ...extras]
+			const archived = this.archived_keys()
+			// Убираем из cached то, что помечено Archived.
+			const cached_active = cached.filter(a => !archived.has(`${a.owner_id}_${a.id}`))
+			if (!synced.length) return cached_active
+			// synced уже отсортирован по Order. Берём его порядок, добавляем cached-only в конец.
+			const by_key = new Map<string, $bog_vk_api_audio>()
+			for (const a of cached_active) by_key.set(`${a.owner_id}_${a.id}`, a)
+			const out: $bog_vk_api_audio[] = []
+			const used = new Set<string>()
+			for (const a of synced) {
+				const key = `${a.owner_id}_${a.id}`
+				// Берём cached если есть (там реальный URL для HLS).
+				out.push(by_key.get(key) ?? a)
+				used.add(key)
+			}
+			for (const a of cached_active) {
+				const key = `${a.owner_id}_${a.id}`
+				if (!used.has(key)) out.push(a)
+			}
+			return out
 		}
 
 		@$mol_mem
 		my_audios() {
-			if (this.offline_mode()) return this.merged_offline()
+			if (this.offline_mode()) return this.ordered_online(this.merged_offline())
 			try {
 				const result = this.$.$bog_vk_api.my_audios()?.items ?? []
 				this.token_expired(false)
-				return result
+				const archived = this.archived_keys()
+				const active = result.filter((a: $bog_vk_api_audio) => !archived.has(`${a.owner_id}_${a.id}`))
+				return this.ordered_online(active)
 			} catch (e: any) {
 				if (e instanceof Promise || e?.constructor?.name === '$mol_fail_hidden') throw e
 				const msg = String(e?.message)
@@ -121,8 +163,34 @@ namespace $.$$ {
 					this.token_expired(true)
 				}
 				console.warn('[app] API failed, using cache:', msg)
-				return this.merged_offline()
+				return this.ordered_online(this.merged_offline())
 			}
+		}
+
+		/**
+		 * Переупорядочивает онлайн-список: сначала треки в порядке synced (Order из baza),
+		 * затем те, что есть только в VK-списке.
+		 */
+		ordered_online(source: $bog_vk_api_audio[]): $bog_vk_api_audio[] {
+			const synced = this.synced_audios()
+			if (!synced.length) return source
+			const by_key = new Map<string, $bog_vk_api_audio>()
+			for (const a of source) by_key.set(`${a.owner_id}_${a.id}`, a)
+			const out: $bog_vk_api_audio[] = []
+			const used = new Set<string>()
+			for (const s of synced) {
+				const key = `${s.owner_id}_${s.id}`
+				const found = by_key.get(key)
+				if (found) {
+					out.push(found)
+					used.add(key)
+				}
+			}
+			for (const a of source) {
+				const key = `${a.owner_id}_${a.id}`
+				if (!used.has(key)) out.push(a)
+			}
+			return out
 		}
 
 		@$mol_mem
@@ -135,15 +203,71 @@ namespace $.$$ {
 
 		@$mol_mem
 		visible_audios() {
+			if (this.page() === 'archive') return this.archived_audios()
 			if (this.page() === 'search' && this.search_query().trim()) {
 				return this.search_results()
 			}
 			return this.my_audios()
 		}
 
+		/** В архиве показываем архивные как "текущий контекст", но UI-кнопки разные. */
+		archive_mode() {
+			return this.page() === 'archive'
+		}
+
 		@$mol_mem
 		current_audio(next?: $bog_vk_api_audio | null): $bog_vk_api_audio | null {
 			return next ?? null
+		}
+
+		@$mol_action
+		reorder_up(audio: $bog_vk_api_audio | null) {
+			if (!audio) return
+			const list = this.visible_audios()
+			const idx = list.findIndex((a: $bog_vk_api_audio) => a.id === audio.id && a.owner_id === audio.owner_id)
+			if (idx <= 0) return
+			const prev = list[idx - 1]
+			// Для треков, которые есть в VK но не в baza — сначала сохраняем в baza, чтобы Order появился.
+			try { $bog_vk_store.save_track(audio) } catch (e: any) { if (e instanceof Promise) return }
+			try { $bog_vk_store.save_track(prev) } catch (e: any) { if (e instanceof Promise) return }
+			try { $bog_vk_store.swap_order(audio, prev) } catch (e: any) {
+				if (e instanceof Promise) return
+				console.warn('[app] baza reorder failed:', e?.message)
+			}
+		}
+
+		@$mol_action
+		reorder_down(audio: $bog_vk_api_audio | null) {
+			if (!audio) return
+			const list = this.visible_audios()
+			const idx = list.findIndex((a: $bog_vk_api_audio) => a.id === audio.id && a.owner_id === audio.owner_id)
+			if (idx < 0 || idx >= list.length - 1) return
+			const nxt = list[idx + 1]
+			try { $bog_vk_store.save_track(audio) } catch (e: any) { if (e instanceof Promise) return }
+			try { $bog_vk_store.save_track(nxt) } catch (e: any) { if (e instanceof Promise) return }
+			try { $bog_vk_store.swap_order(audio, nxt) } catch (e: any) {
+				if (e instanceof Promise) return
+				console.warn('[app] baza reorder failed:', e?.message)
+			}
+		}
+
+		@$mol_action
+		archive_audio(audio: $bog_vk_api_audio | null) {
+			if (!audio) return
+			try { $bog_vk_store.save_track(audio) } catch (e: any) { if (e instanceof Promise) return }
+			try { $bog_vk_store.archive_track(audio) } catch (e: any) {
+				if (e instanceof Promise) return
+				console.warn('[app] baza archive failed:', e?.message)
+			}
+		}
+
+		@$mol_action
+		restore_audio(audio: $bog_vk_api_audio | null) {
+			if (!audio) return
+			try { $bog_vk_store.restore_track(audio) } catch (e: any) {
+				if (e instanceof Promise) return
+				console.warn('[app] baza restore failed:', e?.message)
+			}
 		}
 
 		@$mol_action
@@ -179,7 +303,7 @@ namespace $.$$ {
 		 * чтобы $giper_baza_glob не вызвал destructor() и не порвал подписки.
 		 */
 		auto() {
-			try { $bog_vk_store.synced_audios() } catch {}
+			try { $bog_vk_store.saved_audios() } catch {}
 			return super.auto()
 		}
 

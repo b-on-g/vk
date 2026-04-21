@@ -28,6 +28,30 @@ namespace $.$$ {
 			},
 		},
 
+		Move_up: {
+			justify: {
+				content: 'flex-end',
+			},
+		},
+
+		Move_down: {
+			justify: {
+				content: 'flex-end',
+			},
+		},
+
+		Archive: {
+			justify: {
+				content: 'flex-end',
+			},
+		},
+
+		Restore: {
+			justify: {
+				content: 'flex-end',
+			},
+		},
+
 		Cover: {
 			flex: {
 				shrink: 0,

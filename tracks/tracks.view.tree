@@ -2,8 +2,20 @@ $bog_vk_tracks $mol_list
 	audios /
 	current_audio null
 	play_audio? null
+	archive_mode false
+	reorder_up? null
+	reorder_down? null
+	archive_audio? null
+	restore_audio? null
 	rows <= track_rows /
 		<= Track*0 $bog_vk_track
 			audio <= track_audio* null
 			current <= track_current* false
 			play? <=> track_play*? null
+			archive_mode <= archive_mode
+			can_move_up <= track_can_move_up* false
+			can_move_down <= track_can_move_down* false
+			move_up? <=> track_move_up*? null
+			move_down? <=> track_move_down*? null
+			archive? <=> track_archive*? null
+			restore? <=> track_restore*? null

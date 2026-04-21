@@ -42,33 +42,56 @@ namespace $.$$ {
 			return ($mol_wire_sync($bog_vk_cache) as any).is_cached(audio) as boolean
 		}
 
+		Move_up() {
+			if (this.archive_mode()) return null as any
+			if (!this.can_move_up()) return null as any
+			return super.Move_up()
+		}
+
+		Move_down() {
+			if (this.archive_mode()) return null as any
+			if (!this.can_move_down()) return null as any
+			return super.Move_down()
+		}
+
+		Archive() {
+			if (this.archive_mode()) return null as any
+			return super.Archive()
+		}
+
+		Restore() {
+			if (!this.archive_mode()) return null as any
+			return super.Restore()
+		}
+
 		Download() {
+			if (this.archive_mode()) return null as any
 			if (this.cached()) return null as any
 			return super.Download()
 		}
 
 		Delete() {
+			if (this.archive_mode()) return null as any
 			if (!this.cached()) return null as any
 			return super.Delete()
 		}
 
+		/** Был ли клик внутри какой-то кнопки-хэндлера — чтобы не проигрывать трек. */
+		private click_on_button(event: Event, getter: () => any): boolean {
+			try {
+				const node = getter().dom_node() as Node
+				if (node.contains(event.target as Node)) return true
+			} catch {}
+			return false
+		}
+
 		event_click(event: Event) {
-			try {
-				if (
-					this.Download()
-						.dom_node()
-						.contains(event.target as Node)
-				)
-					return
-			} catch {}
-			try {
-				if (
-					this.Delete()
-						.dom_node()
-						.contains(event.target as Node)
-				)
-					return
-			} catch {}
+			if (this.click_on_button(event, () => this.Download())) return
+			if (this.click_on_button(event, () => this.Delete())) return
+			if (this.click_on_button(event, () => this.Move_up())) return
+			if (this.click_on_button(event, () => this.Move_down())) return
+			if (this.click_on_button(event, () => this.Archive())) return
+			if (this.click_on_button(event, () => this.Restore())) return
 			this.play(this.audio())
 		}
 
@@ -92,11 +115,6 @@ namespace $.$$ {
 			;($mol_wire_sync($bog_vk_cache) as any).drop(audio)
 			this.cached(false)
 			$bog_vk_cache.version($bog_vk_cache.version() + 1)
-			// Мягкое удаление в baza (Archived=true), чтобы на других устройствах тоже пропал.
-			try { $bog_vk_store.archive_track(audio) } catch (e: any) {
-				if (e instanceof Promise) return
-				console.warn('[track] baza archive failed:', e?.message)
-			}
 		}
 	}
 }

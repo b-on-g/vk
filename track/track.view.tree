@@ -2,6 +2,13 @@ $bog_vk_track $mol_view
 	audio null
 	current false
 	play? null
+	archive_mode false
+	can_move_up false
+	can_move_down false
+	move_up? null
+	move_down? null
+	archive? null
+	restore? null
 	event *
 		click? <=> event_click? null
 	attr *
@@ -18,6 +25,16 @@ $bog_vk_track $mol_view
 					title <= artist \
 		<= Duration $mol_paragraph
 			title <= duration_text \
+		<= Move_up $mol_button_minor
+			hint \Вверх
+			click? <=> move_up? null
+			sub /
+				<= Move_up_icon $mol_icon_arrow_up
+		<= Move_down $mol_button_minor
+			hint \Вниз
+			click? <=> move_down? null
+			sub /
+				<= Move_down_icon $mol_icon_arrow_down
 		<= Download $mol_button_minor
 			click? <=> download? null
 			sub /
@@ -26,3 +43,13 @@ $bog_vk_track $mol_view
 			click? <=> delete_cached? null
 			sub /
 				<= Delete_icon $mol_icon_delete
+		<= Archive $mol_button_minor
+			hint \В архив
+			click? <=> archive? null
+			sub /
+				<= Archive_icon $mol_icon_archive
+		<= Restore $mol_button_minor
+			hint \Восстановить
+			click? <=> restore? null
+			sub /
+				<= Restore_icon $mol_icon_restore

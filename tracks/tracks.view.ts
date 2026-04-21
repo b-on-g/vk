@@ -22,5 +22,39 @@ namespace $.$$ {
 			const audio = this.track_audio(index)
 			if (audio) this.play_audio(audio)
 		}
+
+		track_can_move_up(index: number) {
+			if (this.archive_mode()) return false
+			return index > 0
+		}
+
+		track_can_move_down(index: number) {
+			if (this.archive_mode()) return false
+			return index < this.audios().length - 1
+		}
+
+		@$mol_action
+		track_move_up(index: number) {
+			const audio = this.track_audio(index)
+			if (audio) this.reorder_up(audio)
+		}
+
+		@$mol_action
+		track_move_down(index: number) {
+			const audio = this.track_audio(index)
+			if (audio) this.reorder_down(audio)
+		}
+
+		@$mol_action
+		track_archive(index: number) {
+			const audio = this.track_audio(index)
+			if (audio) this.archive_audio(audio)
+		}
+
+		@$mol_action
+		track_restore(index: number) {
+			const audio = this.track_audio(index)
+			if (audio) this.restore_audio(audio)
+		}
 	}
 }

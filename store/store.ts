@@ -30,11 +30,11 @@ namespace $ {
 		}
 
 		/**
-		 * Читает список сохранённых треков как $bog_vk_api_audio[].
-		 * Можно безопасно ставить @$mol_mem — возвращает массив примитивов.
+		 * Собирает треки из baza. archived=false → активные, archived=true → архивные.
+		 * Сортирует по Order (asc, с fallback на Added).
 		 */
-		@$mol_mem
-		static saved_audios(): $bog_vk_api_audio[] {
+		@$mol_mem_key
+		static list_audios(archived: boolean): $bog_vk_api_audio[] {
 			this.version()
 			let dict: ReturnType<typeof $bog_vk_store.tracks_dict>
 			try {
@@ -44,39 +44,72 @@ namespace $ {
 				return []
 			}
 			const keys = (dict.keys() ?? []) as string[]
-			const out: $bog_vk_api_audio[] = []
+			type Row = { audio: $bog_vk_api_audio, order: number, added: number }
+			const rows: Row[] = []
 			for (const key of keys) {
 				const track = dict.key(key)
 				if (!track) continue
-				if (track.Archived()?.val() === true) continue
+				const is_arch = track.Archived()?.val() === true
+				if (is_arch !== archived) continue
 				const vk_id = track.Vk_id()?.val() ?? String(key)
 				const parts = vk_id.split('_')
 				const owner_id = Number(parts[0])
 				const id = Number(parts[1])
 				if (!Number.isFinite(owner_id) || !Number.isFinite(id)) continue
-				out.push({
-					id,
-					owner_id,
-					artist: track.Artist()?.val() ?? '',
-					title: track.Title()?.val() ?? '',
-					duration: track.Duration()?.val() ?? 0,
-					url: track.Url()?.val() ?? '',
+				const added = Number(track.Added()?.val() ?? 0)
+				const order_val = track.Order()?.val()
+				// Если Order не задан — fallback на Added (делим, чтобы был в том же порядке).
+				const order = order_val == null ? added : Number(order_val)
+				rows.push({
+					audio: {
+						id,
+						owner_id,
+						artist: track.Artist()?.val() ?? '',
+						title: track.Title()?.val() ?? '',
+						duration: track.Duration()?.val() ?? 0,
+						url: track.Url()?.val() ?? '',
+					},
+					order,
+					added,
 				})
 			}
-			// Сортируем по Order (asc), потом по Added (desc).
-			out.sort((a, b) => {
-				const ka = this.cache_key(a)
-				const kb = this.cache_key(b)
-				const ta = dict.key(ka)
-				const tb = dict.key(kb)
-				const oa = ta?.Order()?.val() ?? 0
-				const ob = tb?.Order()?.val() ?? 0
-				if (oa !== ob) return oa - ob
-				const aa = ta?.Added()?.val() ?? 0
-				const ab = tb?.Added()?.val() ?? 0
-				return ab - aa
+			rows.sort((a, b) => {
+				if (a.order !== b.order) return a.order - b.order
+				return b.added - a.added
 			})
-			return out
+			return rows.map(r => r.audio)
+		}
+
+		/** Активные (не архивные) треки. */
+		static saved_audios(): $bog_vk_api_audio[] {
+			return this.list_audios(false)
+		}
+
+		/** Архивные треки. */
+		static archived_audios(): $bog_vk_api_audio[] {
+			return this.list_audios(true)
+		}
+
+		/** Максимальный Order среди всех треков (для добавления новых). */
+		static max_order(): number {
+			let dict: ReturnType<typeof $bog_vk_store.tracks_dict>
+			try {
+				dict = this.tracks_dict()
+			} catch (e) {
+				if (e instanceof Promise) throw e
+				return 0
+			}
+			const keys = (dict.keys() ?? []) as string[]
+			let max = 0
+			for (const key of keys) {
+				const track = dict.key(key)
+				if (!track) continue
+				const o = Number(track.Order()?.val() ?? 0)
+				if (o > max) max = o
+				const a = Number(track.Added()?.val() ?? 0)
+				if (a > max) max = a
+			}
+			return max
 		}
 
 		/** Сохраняет/обновляет трек в baza. Идемпотентно. */
@@ -103,8 +136,40 @@ namespace $ {
 			if (track.Duration()?.val() !== dur) track.Duration('auto')!.val(dur)
 			if (audio.url && track.Url()?.val() !== audio.url) track.Url('auto')!.val(audio.url)
 			if (track.Added()?.val() == null) track.Added('auto')!.val(Date.now())
+			// Назначаем Order для новых треков (max + 1), чтобы в списке шли последними.
+			if (track.Order()?.val() == null) {
+				track.Order('auto')!.val(this.max_order() + 1)
+			}
 			// Снимаем флаг Archived при повторном добавлении.
 			if (track.Archived()?.val() === true) track.Archived('auto')!.val(false)
+			this.version(this.version() + 1)
+		}
+
+		/** Меняет Order двух треков местами. */
+		@$mol_action
+		static swap_order(a: $bog_vk_api_audio, b: $bog_vk_api_audio): void {
+			if (!a || !b) return
+			let dict: ReturnType<typeof $bog_vk_store.tracks_dict>
+			try {
+				dict = this.tracks_dict()
+			} catch (e) {
+				if (e instanceof Promise) throw e
+				return
+			}
+			const ta = dict.key(this.cache_key(a), 'auto')
+			const tb = dict.key(this.cache_key(b), 'auto')
+			if (!ta || !tb) return
+			const oa_raw = ta.Order()?.val()
+			const ob_raw = tb.Order()?.val()
+			const aa = Number(ta.Added()?.val() ?? 0)
+			const ab = Number(tb.Added()?.val() ?? 0)
+			const oa = oa_raw == null ? aa : Number(oa_raw)
+			const ob = ob_raw == null ? ab : Number(ob_raw)
+			// Если значения равны — сдвигаем на 1, чтобы порядок действительно поменялся.
+			const next_a = ob === oa ? oa + 1 : ob
+			const next_b = ob === oa ? oa : oa
+			ta.Order('auto')!.val(next_a)
+			tb.Order('auto')!.val(next_b)
 			this.version(this.version() + 1)
 		}
 

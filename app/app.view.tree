@@ -48,6 +48,9 @@ $bog_vk_app $mol_page
 				<= Tab_search $mol_button_minor
 					click? <=> show_search? null
 					sub / \Поиск
+				<= Tab_archive $mol_button_minor
+					click? <=> show_archive? null
+					sub / \Архив
 		<= Search_bar $mol_string
 			hint \Поиск музыки...
 			value? <=> search_query? \
@@ -55,6 +58,11 @@ $bog_vk_app $mol_page
 			audios <= visible_audios /
 			current_audio <= current_audio null
 			play_audio? <=> on_play_audio? null
+			archive_mode <= archive_mode false
+			reorder_up? <=> reorder_up? null
+			reorder_down? <=> reorder_down? null
+			archive_audio? <=> archive_audio? null
+			restore_audio? <=> restore_audio? null
 	foot /
 		<= Player $bog_vk_player
 			queue <= visible_audios /
