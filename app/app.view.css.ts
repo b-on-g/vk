@@ -94,6 +94,68 @@ namespace $.$$ {
 			},
 		},
 
+		Settings_panel: {
+			minWidth: '18rem',
+			maxWidth: '24rem',
+			padding: {
+				top: '0.5rem',
+				bottom: '0.5rem',
+				left: '0.5rem',
+				right: '0.5rem',
+			},
+		},
+
+		Proxy_input: {
+			font: {
+				size: '0.875rem',
+			},
+		},
+
+		Proxy_hint: {
+			font: {
+				size: '0.8125rem',
+			},
+			color: $mol_theme.shade,
+		},
+
+		Account_panel: {
+			minWidth: '18rem',
+			maxWidth: '26rem',
+			padding: {
+				top: '0.5rem',
+				bottom: '0.5rem',
+				left: '0.5rem',
+				right: '0.5rem',
+			},
+		},
+
+		Account_id: {
+			font: {
+				family: 'monospace',
+				size: '0.875rem',
+			},
+			padding: {
+				top: '0.25rem',
+				bottom: '0.25rem',
+			},
+			gap: '0.5rem',
+		},
+
+		Account_warning: {
+			font: {
+				size: '0.8125rem',
+			},
+			color: '#d33',
+		},
+
+		Account_copy_status: {
+			font: {
+				size: '0.8125rem',
+			},
+			color: $mol_theme.shade,
+			minHeight: '1rem',
+		},
+
 		Player: {
 			position: 'sticky',
 			bottom: 0,

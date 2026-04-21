@@ -1,4 +1,34 @@
 namespace $.$$ {
+
+	/**
+	 * Импорт ЛК из URL вида `#account=<key>` — ровно как в piterjs $hyoo_meta_safe.
+	 * Должен сработать ДО первого обращения к $giper_baza_auth.current(),
+	 * поэтому выполняется на уровне модуля (IIFE).
+	 * Ключ пишется в localStorage под `$giper_baza_auth`, а хэш чистится.
+	 */
+	;(function import_account_from_hash() {
+		try {
+			if (typeof location === 'undefined') return
+			const hash = location.hash || ''
+			const match = hash.match(/[#&]account=([^&]+)/)
+			if (!match) return
+			const key = decodeURIComponent(match[1])
+			// Должен быть 4 × 43 = 172 символа base64_url
+			if (key.length < 172) {
+				console.warn('[app] account key too short, ignoring')
+				return
+			}
+			$mol_state_local.value('$giper_baza_auth', key)
+			// Убираем секрет из адресной строки
+			const clean_hash = hash.replace(/[#&]?account=[^&]*/, '').replace(/^#&/, '#')
+			const new_url = location.origin + location.pathname + location.search + (clean_hash && clean_hash !== '#' ? clean_hash : '')
+			history.replaceState(null, '', new_url)
+			console.info('[app] account imported from URL')
+		} catch (e: any) {
+			console.warn('[app] account import failed:', e?.message)
+		}
+	})()
+
 	export class $bog_vk_app extends $.$bog_vk_app {
 		@$mol_mem
 		online(next?: boolean) {
@@ -296,6 +326,72 @@ namespace $.$$ {
 		@$mol_mem
 		show_hint(next?: boolean) {
 			return $mol_state_local.value('vk_show_hint', next) ?? true
+		}
+
+		/**
+		 * Пользовательский URL прокси (для обхода блокировок VK API).
+		 * Пустая строка — дефолтный прокси.
+		 */
+		@$mol_mem
+		proxy_url(next?: string) {
+			if (next !== undefined) {
+				$mol_state_local.value('vk_proxy_url', next || null)
+				return next
+			}
+			return $mol_state_local.value('vk_proxy_url') as string ?? ''
+		}
+
+		@$mol_action
+		reset_proxy() {
+			this.proxy_url('')
+		}
+
+		/** Полный ключ $giper_baza_auth в виде строки (pub + priv). */
+		account_key(): string {
+			return String($mol_state_local.value('$giper_baza_auth') ?? '')
+		}
+
+		/** Первые 8 символов lord (для отображения). */
+		@$mol_mem
+		account_lord_short(): string {
+			try {
+				const auth = $giper_baza_auth.current()
+				if (!auth) return '—'
+				const lord = auth.pass().lord().str
+				return lord.slice(0, 8) + '…'
+			} catch (e) {
+				if (e instanceof Promise) throw e
+				return '—'
+			}
+		}
+
+		/** URL с текущим ключом аккаунта для переноса на другое устройство. */
+		account_link(): string {
+			const key = this.account_key()
+			if (!key) return ''
+			const base = location.origin + location.pathname + location.search
+			return base + '#account=' + encodeURIComponent(key)
+		}
+
+		@$mol_mem
+		copy_status(next?: string) {
+			return next ?? ''
+		}
+
+		@$mol_action
+		copy_account_link() {
+			const link = this.account_link()
+			if (!link) {
+				this.copy_status('Ключ не найден')
+				return
+			}
+			try {
+				navigator.clipboard.writeText(link)
+				this.copy_status('Скопировано. Не делись публично!')
+			} catch (e: any) {
+				console.warn('[app] clipboard failed:', e?.message)
+				this.copy_status('Не удалось — скопируй из адресной строки: ' + link)
+			}
 		}
 
 		/**

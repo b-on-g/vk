@@ -1,7 +1,7 @@
 namespace $ {
 	export class $bog_vk_api extends $mol_object {
 
-		static proxy_url = 'https://bog-vk-audio.cmyser-fast-i.workers.dev'
+		static default_proxy_url = 'https://bog-vk-audio.cmyser-fast-i.workers.dev'
 
 		@$mol_mem
 		static token(next?: string) {
@@ -13,8 +13,19 @@ namespace $ {
 			return $mol_state_local.value('vk_cookies', next) ?? ''
 		}
 
+		/**
+		 * Конфигурируемый URL прокси. Пустое значение — дефолт.
+		 * Позволяет обходить блокировки VK API через свой / альтернативный хост.
+		 */
+		@$mol_mem
+		static proxy_url(next?: string) {
+			const custom = $mol_state_local.value('vk_proxy_url', next) ?? ''
+			return custom || this.default_proxy_url
+		}
+
 		static async fetch_proxy(endpoint: string, body: Record<string, any>): Promise<any> {
-			const resp = await fetch(`${this.proxy_url}${endpoint}`, {
+			const base = this.proxy_url().replace(/\/$/, '')
+			const resp = await fetch(`${base}${endpoint}`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(body),
