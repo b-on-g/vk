@@ -45,6 +45,7 @@
 	pack wiki git \https://github.com/b-on-g/wiki.git
 	pack wysiwyg git \https://github.com/b-on-g/wysiwyg.git
 	pack metrics git \https://github.com/b-on-g/metrics.git
+	pack tracker git \https://github.com/b-on-g/tracker.git
 \/mol
 	pack icon git \https://github.com/nin-jin/mol_icon.git
 \/mol/view
