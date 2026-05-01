@@ -19,6 +19,10 @@ declare namespace $ {
 }
 
 declare namespace $ {
+    function $node_internal_check(name: string): boolean;
+}
+
+declare namespace $ {
     function $mol_promise_like(val: any): val is Promise<any>;
 }
 
@@ -41,6 +45,15 @@ declare namespace $ {
 declare namespace $ {
     function $mol_fail_log(error: unknown): boolean;
 }
+
+declare namespace $ {
+    function $node_autoinstall(this: typeof $, name: string): void;
+}
+
+interface $node {
+    [key: string]: any;
+}
+declare var $node: $node;
 
 declare namespace $ {
     function $mol_func_name(this: $, func: Function): string;
@@ -118,6 +131,13 @@ declare namespace $ {
     class $mol_object extends $mol_object2 {
         static make<This extends typeof $mol_object>(this: This, config: Partial<InstanceType<This>>): InstanceType<This>;
     }
+}
+
+declare namespace $ {
+    function $mol_env(): Record<string, string | undefined>;
+}
+
+declare namespace $ {
 }
 
 declare namespace $ {
@@ -419,6 +439,10 @@ declare namespace $ {
 }
 
 declare namespace $ {
+    function $mol_log3_node_make(level: keyof Console, output: 'stdout' | 'stderr', type: string, color: (str: string) => string): (this: $, event: $mol_log3_event<{}>) => () => void;
+}
+
+declare namespace $ {
     class $mol_wire_task<Host, Args extends readonly unknown[], Result> extends $mol_wire_fiber<Host, Args, Result> {
         static getter<Host, Args extends readonly unknown[], Result>(task: (this: Host, ...args: Args) => Result): (host: Host, args: Args) => $mol_wire_task<Host, Args, Result>;
         get temp(): boolean;
@@ -437,6 +461,44 @@ declare namespace $ {
     };
     type ObjectOrFunctionResultAwaited<Some> = (Some extends (...args: any) => unknown ? FunctionResultAwaited<Some> : {}) & (Some extends Object ? MethodsResultAwaited<Some> & ConstructorResultAwaited<Some> : Some);
     export {};
+}
+
+declare namespace $ {
+    type $mol_run_error_context = {
+        pid?: number;
+        stdout: Buffer | string;
+        stderr: Buffer | string;
+    };
+    class $mol_run_error extends $mol_error_mix<{
+        timeout_kill?: boolean;
+        pid?: number;
+        signal?: NodeJS.Signals | null;
+        status?: number | null;
+        command: string;
+        dir: string;
+    }> {
+    }
+    const $mol_run_spawn: (...args: Parameters<(typeof $node)["child_process"]["spawn"]>) => import("node:child_process").ChildProcess;
+    const $mol_run_spawn_sync: (...args: Parameters<(typeof $node)["child_process"]["spawnSync"]>) => import("node:child_process").SpawnSyncReturns<string | NonSharedBuffer>;
+    type $mol_run_options = {
+        command: readonly string[] | string;
+        dir: string;
+        timeout?: number;
+        env?: Record<string, string | undefined>;
+    };
+    class $mol_run extends $mol_object {
+        static async_enabled(): boolean;
+        static spawn(options: $mol_run_options): import("node:child_process").SpawnSyncReturns<string | NonSharedBuffer> | $mol_run_error_context;
+        static spawn_async({ dir, sync, timeout, command, env }: $mol_run_options & {
+            sync?: boolean;
+        }): import("node:child_process").SpawnSyncReturns<string | NonSharedBuffer> | (Promise<$mol_run_error_context> & {
+            destructor: () => void;
+        });
+        static error_message(res?: $mol_run_error_context): string;
+    }
+}
+
+declare namespace $ {
 }
 
 declare namespace $ {
@@ -781,6 +843,15 @@ declare namespace $ {
 }
 
 declare namespace $ {
+    class $mol_window extends $mol_object {
+        static size(): {
+            width: number;
+            height: number;
+        };
+    }
+}
+
+declare namespace $ {
     function $mol_key<Value>(value: Value): string;
 }
 
@@ -791,6 +862,13 @@ declare namespace $ {
         id: any;
         constructor(delay: number, task: () => void);
         destructor(): void;
+    }
+}
+
+declare namespace $ {
+    class $mol_after_frame extends $mol_after_timeout {
+        task: () => void;
+        constructor(task: () => void);
     }
 }
 
@@ -1226,6 +1304,32 @@ declare namespace $ {
 }
 
 declare namespace $ {
+    class $mol_state_arg extends $mol_object {
+        prefix: string;
+        static prolog: string;
+        static separator: string;
+        static href(next?: string): string;
+        static href_normal(): string;
+        static dict(next?: {
+            [key: string]: string | null;
+        }): Readonly<{
+            [key: string]: string;
+        }>;
+        static value(key: string, next?: string | null): string | null;
+        static link(next: Record<string, string | null>): string;
+        static make_link(next: Record<string, string | null>): string;
+        static go(next: {
+            [key: string]: string | null;
+        }): void;
+        static commit(): void;
+        constructor(prefix?: string);
+        value(key: string, next?: string): string | null;
+        sub(postfix: string): $mol_state_arg;
+        link(next: Record<string, string | null>): string;
+    }
+}
+
+declare namespace $ {
     class $mol_media extends $mol_object2 {
         static match(query: string, next?: boolean): boolean;
     }
@@ -1319,6 +1423,22 @@ declare namespace $ {
 }
 
 declare namespace $ {
+    class $mol_file_transaction_node extends $mol_file_transaction {
+        protected descr(): number;
+        write({ buffer, offset, length, position }: {
+            buffer: ArrayBufferView | string | readonly ArrayBufferView[];
+            offset?: number | null;
+            length?: number | null;
+            position?: number | null;
+        }): number;
+        truncate(size: number): void;
+        read(): Uint8Array<ArrayBuffer>;
+        flush(): void;
+        close(): void;
+    }
+}
+
+declare namespace $ {
     class $mol_file_base extends $mol_object {
         static absolute<This extends typeof $mol_file_base>(this: This, path: string): InstanceType<This>;
         static relative<This extends typeof $mol_file_base>(this: This, path: string): InstanceType<This>;
@@ -1392,6 +1512,39 @@ declare namespace $ {
         ctime: Date;
     }
     class $mol_file extends $mol_file_base {
+    }
+}
+
+declare namespace $ {
+    function $mol_file_node_buffer_normalize(buf: Buffer<ArrayBuffer>): Uint8Array<ArrayBuffer>;
+    class $mol_file_node extends $mol_file {
+        static relative<This extends typeof $mol_file>(this: This, path: string): InstanceType<This>;
+        watcher(reset?: null): {
+            destructor(): void;
+        };
+        protected info(path: string): $mol_file_stat | null;
+        protected ensure(): null | undefined;
+        protected copy(to: string): void;
+        protected drop(): void;
+        protected read(): Uint8Array<ArrayBuffer>;
+        protected write(buffer: Uint8Array<ArrayBuffer>): undefined;
+        protected kids(): this[];
+        resolve(path: string): this;
+        relate(base?: $mol_file): string;
+        readable(opts: {
+            start?: number;
+            end?: number;
+        }): ReadableStream<Uint8Array<ArrayBuffer>>;
+        writable(opts?: {
+            start?: number;
+        }): WritableStream<Uint8Array<ArrayBuffer>>;
+    }
+}
+
+declare namespace $ {
+    class $mol_state_local_node<Value> extends $mol_state_local<Value> {
+        static dir(): $mol_file;
+        static value<Value>(key: string, next?: Value | null): Value | null;
     }
 }
 
@@ -2456,6 +2609,9 @@ declare namespace $ {
 }
 
 declare namespace $ {
+}
+
+declare namespace $ {
     type $mol_db_schema = Record<string, $mol_db_store_schema>;
 }
 
@@ -2533,7 +2689,15 @@ declare namespace $ {
 }
 
 declare namespace $ {
+    function $mol_base64_encode_node(str: Uint8Array<ArrayBuffer>): string;
+}
+
+declare namespace $ {
     function $mol_base64_decode(base64: string): Uint8Array<ArrayBuffer>;
+}
+
+declare namespace $ {
+    function $mol_base64_decode_node(base64Str: string): Uint8Array<ArrayBuffer>;
 }
 
 declare namespace $ {
@@ -2609,6 +2773,11 @@ declare namespace $ {
 }
 
 declare namespace $ {
+    function $mol_base64_url_encode_node(str: Uint8Array<ArrayBuffer>): string;
+    function $mol_base64_url_decode_node(str: string): Uint8Array<ArrayBuffer>;
+}
+
+declare namespace $ {
     class $mol_crypto2_key extends $mol_buffer {
         static size_str: number;
         static size_bin: number;
@@ -2616,6 +2785,10 @@ declare namespace $ {
         asArray(): Uint8Array<ArrayBuffer>;
         toString(): string;
     }
+}
+
+declare namespace $ {
+    var $mol_crypto_native: Crypto;
 }
 
 declare namespace $ {
@@ -5361,8 +5534,54 @@ declare namespace $ {
 }
 
 declare namespace $ {
+    enum $mol_websocket_frame_op {
+        con = 0,
+        txt = 1,
+        bin = 2,
+        stop = 8,
+        ping = 9,
+        pong = 10
+    }
+    class $mol_websocket_frame extends $mol_buffer {
+        kind(next?: {
+            op: keyof typeof $mol_websocket_frame_op;
+            fin: boolean;
+        }): {
+            op: keyof typeof $mol_websocket_frame_op;
+            fin: boolean;
+        } | {
+            op: "stop" | "con" | "txt" | "bin" | "ping" | "pong";
+            fin: number;
+        };
+        data(next?: {
+            size: number;
+            mask: boolean;
+        }): {
+            size: number;
+            mask: boolean;
+        } | {
+            size: number;
+            mask: number;
+        };
+        size(): number;
+        mask(): Uint8Array<ArrayBuffer>;
+        toString(): string;
+        static make(op: keyof typeof $mol_websocket_frame_op, size?: number, mask?: boolean, fin?: boolean): $mol_websocket_frame;
+    }
+}
+
+declare namespace $ {
     class $mol_rest_port_ws_std extends $mol_rest_port_ws {
         socket: WebSocket;
+        send_nil(): void;
+        send_bin(data: Uint8Array<ArrayBuffer>): void;
+        send_text(data: string): void;
+    }
+}
+
+declare namespace $ {
+    class $mol_rest_port_ws_node extends $mol_rest_port_ws {
+        socket: InstanceType<$node['stream']['Duplex']>;
         send_nil(): void;
         send_bin(data: Uint8Array<ArrayBuffer>): void;
         send_text(data: string): void;
@@ -5464,6 +5683,40 @@ declare namespace $ {
         ball_load(sand: $giper_baza_unit_sand): Uint8Array<ArrayBuffer>;
     }
     let $giper_baza_mine: typeof $giper_baza_mine_temp;
+}
+
+declare namespace $ {
+    class $giper_baza_mine_fs_yym_act extends $mol_object2 {
+        yym: $giper_baza_mine_fs_yym;
+        constructor(yym: $giper_baza_mine_fs_yym);
+        transaction: $mol_file_transaction;
+        offsets_del: WeakMap<ArrayBuffer, number>;
+        offsets_ins: WeakMap<ArrayBuffer, number>;
+        save(...data: [ArrayBufferView<ArrayBuffer>, ...ArrayBufferView<ArrayBuffer>[]]): number;
+        free(data: ArrayBufferView<ArrayBuffer>, size?: number): undefined;
+    }
+    class $giper_baza_mine_fs_yym extends $mol_object2 {
+        readonly sides: [$mol_file, $mol_file];
+        pool(reset?: null): $mol_memory_pool;
+        offsets(reset?: null): Map<ArrayBuffer, number>;
+        constructor(sides: [$mol_file, $mol_file]);
+        destructor(): void;
+        load_init(): void;
+        load(): Uint8Array<ArrayBuffer>;
+        atomic(task: (act: $giper_baza_mine_fs_yym_act) => void): void;
+        save_init(): void;
+        empty(): boolean;
+    }
+    class $giper_baza_mine_fs extends $giper_baza_mine_temp {
+        store(): $giper_baza_mine_fs_yym;
+        store_init(): void;
+        units_save(diff: $giper_baza_mine_diff): void;
+        units_load(): readonly $giper_baza_unit[];
+        destructor(): void;
+    }
+}
+
+declare namespace $ {
 }
 
 declare namespace $ {
@@ -6557,9 +6810,120 @@ declare namespace $ {
 }
 
 declare namespace $ {
+    class $mol_rest_message extends $mol_object {
+        port: $mol_rest_port;
+        method(): string;
+        uri(): URL;
+        type(): $mol_rest_port_mime;
+        origin(): string;
+        address(): string;
+        protocols(): readonly string[];
+        data(): null | string | Uint8Array<ArrayBuffer> | Element | object;
+        bin(): Uint8Array<ArrayBuffer>;
+        text(): string;
+        reply(data: null | string | Uint8Array<ArrayBuffer> | Element | object, meta?: {
+            type?: $mol_rest_port_mime;
+            code?: $mol_rest_code;
+        }): void;
+        route(uri: URL): $mol_rest_message;
+        derive(method: string, data: null | string | Uint8Array<ArrayBuffer> | Element | object): $mol_rest_message;
+        static make<This extends typeof $mol_object>(this: This, config: Partial<InstanceType<This>>): InstanceType<This>;
+    }
+}
+
+declare namespace $ {
+    class $mol_rest_resource extends $mol_object {
+        REQUEST(msg: $mol_rest_message): any;
+        _protocols: readonly string[];
+        OPEN(msg: $mol_rest_message): string;
+        CLOSE(msg: $mol_rest_message): void;
+        HEAD(msg: $mol_rest_message): void;
+        GET(msg: $mol_rest_message): void;
+        PUT(msg: $mol_rest_message): void;
+        PATCH(msg: $mol_rest_message): void;
+        POST(msg: $mol_rest_message): void;
+        DELETE(msg: $mol_rest_message): void;
+        _auto(): void;
+        static port(port: number): $mol_rest_server;
+        static serve(): $mol_rest_server | null;
+    }
+}
+
+declare namespace $ {
+    let $mol_file_extensions: Record<string, $mol_rest_port_mime>;
+}
+
+declare namespace $ {
+    class $mol_rest_port_http extends $mol_rest_port {
+        output: InstanceType<$node['http']['ServerResponse']>;
+        send_code(code: $mol_rest_code): void;
+        send_type(mime: $mol_rest_port_mime): void;
+        send_bin(data: Uint8Array<ArrayBuffer>): void;
+    }
+}
+
+declare namespace $ {
+    class $mol_rest_message_http extends $mol_rest_message {
+        input: InstanceType<$node['http']['IncomingMessage']>;
+        method(): string;
+        uri(): URL;
+        type(): $mol_rest_port_mime;
+        origin(): string;
+        address(): string;
+        protocols(): string[];
+        data(): null | string | Uint8Array<ArrayBuffer> | Element | object;
+        route(uri: URL): $mol_rest_message_http;
+    }
+}
+
+declare namespace $ {
+    class $mol_rest_server extends $mol_object {
+        log(): boolean;
+        port(): number;
+        start(): void;
+        http_server(): import("node:http").Server<typeof import("node:http").IncomingMessage, typeof import("node:http").ServerResponse>;
+        http_income(req: InstanceType<$node['http']['IncomingMessage']>, res: InstanceType<$node['http']['ServerResponse']>): void;
+        ws_upgrade(req: InstanceType<$node['http']['IncomingMessage']>, socket: InstanceType<$node['stream']['Duplex']>, head: Buffer<ArrayBuffer>): void;
+        _ws_income_chunks: WeakMap<import("node:stream").Duplex, Uint8Array<ArrayBuffer>[]>;
+        _ws_income_frames: WeakMap<import("node:stream").Duplex, (string | Uint8Array<ArrayBuffer>)[]>;
+        ws_income(chunk: Buffer<ArrayBuffer>, upgrade: $mol_rest_message, sock: InstanceType<typeof $node.stream.Duplex>): Promise<void>;
+        root(resource?: $mol_rest_resource): $mol_rest_resource;
+    }
+}
+
+declare namespace $ {
+    class $mol_rest_resource_fs extends $mol_rest_resource {
+        _root(): $mol_file;
+        GET(msg: $mol_rest_message): void;
+    }
+}
+
+declare namespace $ {
     class $giper_baza_app_home extends $giper_baza_flex_peer {
         init(): void;
         tick(): void;
+    }
+}
+
+declare namespace $ {
+    class $giper_baza_app_home_node extends $giper_baza_app_home {
+        init(): void;
+    }
+}
+
+declare namespace $ {
+    class $giper_baza_app_node extends $mol_rest_resource_fs {
+        link(): $giper_baza_app_node_link;
+        _protocols: string[];
+        OPEN(msg: $mol_rest_message): string;
+        POST(msg: $mol_rest_message): void;
+        CLOSE(msg: $mol_rest_message): void;
+        _auto(): void;
+        _home(): $giper_baza_app_home;
+        _stat_update(): void;
+    }
+    class $giper_baza_app_node_link extends $mol_rest_resource {
+        GET(msg: $mol_rest_message): void;
     }
 }
 
@@ -8786,6 +9150,10 @@ declare namespace $ {
         unit(): $hyoo_crowd_unit;
     }
     function $hyoo_crowd_unit_compare(left: $hyoo_crowd_unit, right: $hyoo_crowd_unit): number;
+}
+
+declare namespace $ {
+    function $hyoo_sync_peer(path: string, next?: string): Promise<$hyoo_crowd_peer>;
 }
 
 declare namespace $ {
