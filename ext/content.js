@@ -9,6 +9,8 @@
 (function () {
 	'use strict'
 
+	console.info('[bog_vk_ext] content_script loaded on', location.host)
+
 	// --- 1) Page-world hooks: forward token + audios via postMessage --------------------------
 
 	const PAGE_PATCH = function () {
@@ -437,9 +439,14 @@
 
 	function scan() {
 		// VK ставит data-audio на сам ряд — самый надёжный селектор.
-		document.querySelectorAll('[data-audio]').forEach(add_button_to)
+		const rows = document.querySelectorAll('[data-audio]')
+		rows.forEach(add_button_to)
 		// Запасной — для контекстов без data-audio (нечасто).
 		document.querySelectorAll('[data-full-id][class*="audio_row"], [data-full-id][class*="AudioRow"]').forEach(add_button_to)
+		if (rows.length && !window.__bog_vk_scan_logged) {
+			console.info('[bog_vk_ext] found', rows.length, 'audio rows on', location.host)
+			window.__bog_vk_scan_logged = true
+		}
 	}
 
 	function start_observer() {
