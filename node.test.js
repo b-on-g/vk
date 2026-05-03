@@ -7118,6 +7118,128 @@ var $;
 "use strict";
 
 ;
+	($.$mol_icon_upload) = class $mol_icon_upload extends ($.$mol_icon) {
+		path(){
+			return "M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z";
+		}
+	};
+
+
+;
+"use strict";
+
+;
+	($.$mol_button_open) = class $mol_button_open extends ($.$mol_button_minor) {
+		Icon(){
+			const obj = new this.$.$mol_icon_upload();
+			return obj;
+		}
+		files(next){
+			if(next !== undefined) return next;
+			return [];
+		}
+		files_handled(next){
+			return (this.files(next));
+		}
+		accept(){
+			return "";
+		}
+		multiple(){
+			return true;
+		}
+		Native(){
+			const obj = new this.$.$mol_button_open_native();
+			(obj.files) = (next) => ((this.files_handled(next)));
+			(obj.accept) = () => ((this.accept()));
+			(obj.multiple) = () => ((this.multiple()));
+			return obj;
+		}
+		sub(){
+			return [(this.Icon()), (this.Native())];
+		}
+	};
+	($mol_mem(($.$mol_button_open.prototype), "Icon"));
+	($mol_mem(($.$mol_button_open.prototype), "files"));
+	($mol_mem(($.$mol_button_open.prototype), "Native"));
+	($.$mol_button_open_native) = class $mol_button_open_native extends ($.$mol_view) {
+		accept(){
+			return "";
+		}
+		multiple(){
+			return true;
+		}
+		picked(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		dom_name(){
+			return "input";
+		}
+		files(next){
+			if(next !== undefined) return next;
+			return [];
+		}
+		attr(){
+			return {
+				"type": "file", 
+				"accept": (this.accept()), 
+				"multiple": (this.multiple())
+			};
+		}
+		event(){
+			return {"change": (next) => (this.picked(next))};
+		}
+	};
+	($mol_mem(($.$mol_button_open_native.prototype), "picked"));
+	($mol_mem(($.$mol_button_open_native.prototype), "files"));
+
+
+;
+"use strict";
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        class $mol_button_open extends $.$mol_button_open {
+            files_handled(next) {
+                try {
+                    const files = this.files(next);
+                    this.status([null]);
+                    return files;
+                }
+                catch (error) {
+                    Promise.resolve().then(() => this.status([error]));
+                    $mol_fail_hidden(error);
+                }
+            }
+        }
+        $$.$mol_button_open = $mol_button_open;
+        class $mol_button_open_native extends $.$mol_button_open_native {
+            dom_node() {
+                return super.dom_node();
+            }
+            picked() {
+                const files = this.dom_node().files;
+                if (!files || !files.length)
+                    return;
+                this.files([...files]);
+            }
+        }
+        $$.$mol_button_open_native = $mol_button_open_native;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_style_attach("mol/button/open/open.view.css", "[mol_button_open_native] {\n\tposition: absolute;\n\tleft: 0;\n\ttop: -100%;\n\twidth: 100%;\n\theight: 200%;\n\tcursor: pointer;\n\topacity: 0;\n}\n");
+})($ || ($ = {}));
+
+;
 	($.$mol_icon_download) = class $mol_icon_download extends ($.$mol_icon) {
 		path(){
 			return "M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z";
@@ -14355,6 +14477,106 @@ var $;
 
 ;
 "use strict";
+var $;
+(function ($) {
+    $.$mol_blob = ($node.buffer?.Blob ?? $mol_dom_context.Blob);
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    function $mol_offline() { }
+    $.$mol_offline = $mol_offline;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    try {
+        $mol_offline();
+    }
+    catch (error) {
+        console.error(error);
+    }
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    class $giper_baza_file extends $giper_baza_dict.with({
+        Name: $giper_baza_atom_text,
+        Type: $giper_baza_atom_text,
+        Chunks: $giper_baza_list_bin,
+    }) {
+        uri() {
+            return `?BAZA:file=${this.link()};name=${this.name()}`;
+        }
+        name(next) {
+            const ext = {
+                'text/plain': 'txt',
+                'application/json': 'json',
+            }[this.type()] ?? 'bin';
+            return this.Name(next)?.val(next) ?? `${this.link()}.${ext}`;
+        }
+        type(next) {
+            return this.Type(next)?.val(next) ?? 'application/octet-stream';
+        }
+        blob(next) {
+            if (!next)
+                return new $mol_blob(this.chunks(), { type: this.type() });
+            const buffer = new Uint8Array($mol_wire_sync(next).arrayBuffer());
+            this.buffer(buffer);
+            this.type(next.type);
+            if (next instanceof $mol_dom_context.File)
+                this.name(next.name);
+            return next;
+        }
+        buffer(next) {
+            if (next) {
+                const chunks = [];
+                for (let offset = 0; offset < next.byteLength;) {
+                    chunks.push(next.slice(offset, offset += 2 ** 15));
+                }
+                this.chunks(chunks);
+                return next;
+            }
+            else {
+                const chunks = this.chunks();
+                const size = chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0);
+                const res = new Uint8Array(size);
+                let offset = 0;
+                for (const chunk of chunks) {
+                    res.set(chunk, offset);
+                    offset += chunk.byteLength;
+                }
+                return res;
+            }
+        }
+        chunks(next) {
+            return (this.Chunks(next)?.items(next)?.filter($mol_guard_defined) ?? []);
+        }
+        str(next, type = 'text/plain') {
+            if (next === undefined)
+                return $mol_charset_decode(this.buffer());
+            this.buffer($mol_charset_encode(next));
+            this.type(type);
+            return next;
+        }
+        json(next, type = 'application/json') {
+            if (next === undefined)
+                return JSON.parse(this.str());
+            this.str(JSON.stringify(next), type);
+            return next;
+        }
+    }
+    $.$giper_baza_file = $giper_baza_file;
+})($ || ($ = {}));
+
+;
+"use strict";
 
 ;
 "use strict";
@@ -14424,8 +14646,13 @@ var $;
                     return null;
                 return super.Restore();
             }
+            is_local() {
+                return this.audio_data()?.owner_id === 0;
+            }
             Download() {
                 if (this.archive_mode())
+                    return null;
+                if (this.is_local())
                     return null;
                 if (this.cached())
                     return null;
@@ -14433,6 +14660,8 @@ var $;
             }
             Delete() {
                 if (this.archive_mode())
+                    return null;
+                if (this.is_local())
                     return null;
                 if (!this.cached())
                     return null;
@@ -14508,6 +14737,7 @@ var $;
         Added: $giper_baza_atom_real,
         Order: $giper_baza_atom_real,
         Archived: $giper_baza_atom_bool,
+        File: $giper_baza_atom_link_to(() => $giper_baza_file),
     }) {
     }
     $.$bog_vk_track_baza = $bog_vk_track_baza;
@@ -17461,6 +17691,16 @@ var $;
                 const added = Number(track.Added()?.val() ?? 0);
                 const order_val = track.Order()?.val();
                 const order = order_val == null ? added : Number(order_val);
+                let url = track.Url()?.val() ?? '';
+                try {
+                    const file = track.File()?.remote();
+                    if (file)
+                        url = file.uri();
+                }
+                catch (e) {
+                    if (e instanceof Promise)
+                        throw e;
+                }
                 rows.push({
                     audio: {
                         id,
@@ -17468,7 +17708,7 @@ var $;
                         artist: track.Artist()?.val() ?? '',
                         title: track.Title()?.val() ?? '',
                         duration: track.Duration()?.val() ?? 0,
-                        url: track.Url()?.val() ?? '',
+                        url,
                     },
                     order,
                     added,
@@ -17597,6 +17837,50 @@ var $;
             track.Archived('auto').val(true);
             this.version(this.version() + 1);
         }
+        static parse_filename(name) {
+            const base = name.replace(/\.[^.]+$/, '').trim();
+            const m = base.match(/^(.+?)\s*[-–—]\s*(.+)$/);
+            if (m)
+                return { artist: m[1].trim(), title: m[2].trim() };
+            return { artist: '', title: base };
+        }
+        static save_local_track(file) {
+            const { artist, title } = this.parse_filename(file.name);
+            const audio = {
+                id: Date.now() + Math.floor(Math.random() * 1000),
+                owner_id: 0,
+                artist,
+                title,
+                duration: 0,
+                url: '',
+            };
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return null;
+            }
+            const key = this.cache_key(audio);
+            const track = dict.key(key, 'auto');
+            if (!track)
+                return null;
+            track.Vk_id('auto').val(key);
+            track.Title('auto').val(title);
+            track.Artist('auto').val(artist);
+            track.Added('auto').val(Date.now());
+            track.Order('auto').val(this.max_order() + 1);
+            track.Archived('auto').val(false);
+            const store = track.File('auto').ensure(null);
+            if (store) {
+                store.blob(file);
+                track.File('auto').remote(store);
+            }
+            this.version(this.version() + 1);
+            return audio;
+        }
         static restore_track(audio) {
             if (!audio)
                 return;
@@ -17632,6 +17916,9 @@ var $;
     __decorate([
         $mol_action
     ], $bog_vk_store, "archive_track", null);
+    __decorate([
+        $mol_action
+    ], $bog_vk_store, "save_local_track", null);
     __decorate([
         $mol_action
     ], $bog_vk_store, "restore_track", null);
@@ -18657,6 +18944,17 @@ var $;
 			(obj.checked) = (next) => ((this.show_hint(next)));
 			return obj;
 		}
+		upload_files(next){
+			if(next !== undefined) return next;
+			return [];
+		}
+		Upload(){
+			const obj = new this.$.$mol_button_open();
+			(obj.hint) = () => ("Загрузить с устройства");
+			(obj.accept) = () => ("audio/*");
+			(obj.files) = (next) => ((this.upload_files(next)));
+			return obj;
+		}
 		download_all(next){
 			if(next !== undefined) return next;
 			return null;
@@ -18813,6 +19111,7 @@ var $;
 				(this.Settings_popup()), 
 				(this.Account_popup()), 
 				(this.Help_toggle()), 
+				(this.Upload()), 
 				(this.Download_all()), 
 				(this.Version()), 
 				(this.Lighter())
@@ -18867,6 +19166,8 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "Help_icon"));
 	($mol_mem(($.$bog_vk_app.prototype), "show_hint"));
 	($mol_mem(($.$bog_vk_app.prototype), "Help_toggle"));
+	($mol_mem(($.$bog_vk_app.prototype), "upload_files"));
+	($mol_mem(($.$bog_vk_app.prototype), "Upload"));
 	($mol_mem(($.$bog_vk_app.prototype), "download_all"));
 	($mol_mem(($.$bog_vk_app.prototype), "Download_all_icon"));
 	($mol_mem(($.$bog_vk_app.prototype), "Download_all"));
@@ -19687,13 +19988,6 @@ var $;
             },
         });
     })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $.$mol_blob = ($node.buffer?.Blob ?? $mol_dom_context.Blob);
 })($ || ($ = {}));
 
 ;
@@ -24514,26 +24808,6 @@ var $;
 
 ;
 "use strict";
-var $;
-(function ($) {
-    function $mol_offline() { }
-    $.$mol_offline = $mol_offline;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    try {
-        $mol_offline();
-    }
-    catch (error) {
-        console.error(error);
-    }
-})($ || ($ = {}));
-
-;
-"use strict";
 
 ;
 "use strict";
@@ -24722,8 +24996,8 @@ var $;
                 for (const s of synced) {
                     const key = `${s.owner_id}_${s.id}`;
                     const found = by_key.get(key);
-                    if (found) {
-                        out.push(found);
+                    if (found || s.owner_id === 0) {
+                        out.push(found ?? s);
                         used.add(key);
                     }
                 }
@@ -24865,6 +25139,21 @@ var $;
                     console.warn('[app] baza save failed:', e?.message);
                 }
             }
+            upload_files(next) {
+                if (next?.length) {
+                    for (const file of next) {
+                        try {
+                            $bog_vk_store.save_local_track(file);
+                        }
+                        catch (e) {
+                            if (e instanceof Promise)
+                                return next;
+                            console.warn('[app] upload failed:', file.name, e?.message);
+                        }
+                    }
+                }
+                return next ?? [];
+            }
             clear_token() {
                 this.token('');
                 this.token_expired(false);
@@ -24964,6 +25253,8 @@ var $;
                 for (const audio of audios) {
                     if (!audio.url)
                         continue;
+                    if (audio.owner_id === 0)
+                        continue;
                     $mol_wire_sync($bog_vk_cache).save_hls(audio);
                     $bog_vk_cache.version($bog_vk_cache.version() + 1);
                     try {
@@ -25037,6 +25328,9 @@ var $;
         __decorate([
             $mol_action
         ], $bog_vk_app.prototype, "on_play_audio", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_app.prototype, "upload_files", null);
         __decorate([
             $mol_action
         ], $bog_vk_app.prototype, "clear_token", null);
@@ -30850,6 +31144,32 @@ var $;
             },
         });
     })($$ = $_1.$$ || ($_1.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($_1) {
+    $mol_test({
+        'save and load buffers'($) {
+            const land = $giper_baza_land.make({ $ });
+            const file = land.Data($giper_baza_file);
+            const source = new Uint8Array(2 ** 15 + 1);
+            source[2 ** 15] = 255;
+            file.buffer(source);
+            $mol_assert_equal(file.chunks().length, 2);
+            $mol_assert_equal(file.buffer(), source);
+        },
+        async 'save and load blobs'($) {
+            const land = $giper_baza_land.make({ $ });
+            const file = land.Data($giper_baza_file);
+            const source = new Uint8Array(2 ** 16 + 1);
+            source[2 ** 16 + 1] = 255;
+            await $mol_wire_async(file).blob(new $mol_blob([source], { type: 'test/test' }));
+            $mol_assert_equal('test/test', file.blob().type);
+            $mol_assert_equal(source, new Uint8Array(await file.blob().arrayBuffer()));
+        },
+    });
 })($ || ($ = {}));
 
 ;

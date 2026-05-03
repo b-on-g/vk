@@ -61,6 +61,8 @@
 	pack player git \https://github.com/giper-dev/player.git
 	pack search git \https://github.com/giper-dev/search.git
 	pack web git \https://github.com/giper-dev/web.git
+\/giper/baza/file
+	include \/mol/offline/install
 \/giper/baza/glob
 	deploy \giper/baza/glob/glob.baza
 \/giper/baza/app

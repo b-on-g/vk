@@ -188,6 +188,8 @@
     "$mol_icon_help_circle_outline",
     "$mol_icon_help_circle",
     "$mol_icon_help",
+    "$mol_button_open",
+    "$mol_icon_upload",
     "$mol_icon_download",
     "$bog_version",
     "$mol_lights_toggle",
@@ -323,6 +325,10 @@
     "$mol_memory_pool",
     "$mol_memory",
     "$mol_bus",
+    "$giper_baza_file",
+    "$mol_blob",
+    "$mol_offline_install",
+    "$mol_offline",
     "$bog_vk_player",
     "$mol_icon_skip_previous",
     "$mol_icon_skip",
@@ -348,7 +354,6 @@
     "$mol_syntax2_md",
     "$mol_syntax2",
     "$mol_button_copy",
-    "$mol_blob",
     "$mol_icon_clipboard_outline",
     "$mol_icon_clipboard",
     "$mol_html_encode",
@@ -401,9 +406,7 @@
     "$hyoo_sync_masters",
     "$mol_crypto_secret",
     "$mol_wait_rest",
-    "$mol_after_work",
-    "$mol_offline_install",
-    "$mol_offline"
+    "$mol_after_work"
   ],
   "dependencies": {
     "autoinstall": "*",
