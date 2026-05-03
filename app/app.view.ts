@@ -18,12 +18,18 @@ namespace $.$$ {
 				console.warn('[app] account key too short, ignoring')
 				return
 			}
+			const current = $mol_state_local.value('$giper_baza_auth')
 			$mol_state_local.value('$giper_baza_auth', key)
 			// Убираем секрет из адресной строки
 			const clean_hash = hash.replace(/[#&]?account=[^&]*/, '').replace(/^#&/, '#')
 			const new_url = location.origin + location.pathname + location.search + (clean_hash && clean_hash !== '#' ? clean_hash : '')
 			history.replaceState(null, '', new_url)
 			console.info('[app] account imported from URL')
+			// Если ключ реально менялся — перезагружаем, чтобы yard/glob/auth
+			// перечитали состояние с нуля и не зависли в connecting со старым lord.
+			if (current !== key) {
+				location.reload()
+			}
 		} catch (e: any) {
 			console.warn('[app] account import failed:', e?.message)
 		}

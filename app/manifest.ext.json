@@ -1,0 +1,22 @@
+{
+	"manifest_version": 3,
+	"name": "Bog VK Music",
+	"short_name": "Bog VK",
+	"description": "VK music player with offline cache and Giper Baza sync",
+	"version": "0.2.2",
+	"action": {
+		"default_popup": "index.html",
+		"default_title": "Bog VK Music",
+		"default_icon": "bog/vk/app/favicon.svg"
+	},
+	"permissions": ["storage"],
+	"host_permissions": [
+		"https://api.vk.com/*",
+		"https://*.vk.com/*"
+	],
+	"icons": {
+		"16": "bog/vk/app/favicon.svg",
+		"48": "bog/vk/app/favicon.svg",
+		"128": "bog/vk/app/favicon.svg"
+	}
+}
