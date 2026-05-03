@@ -434,9 +434,9 @@ namespace $.$$ {
 			return super.Download_all()
 		}
 
-		Tabs() {
+		Tab_search() {
 			if (this.offline_mode()) return null as any
-			return super.Tabs()
+			return super.Tab_search()
 		}
 
 		Search_bar() {
