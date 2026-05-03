@@ -1,7 +1,7 @@
 $bog_vk_app $mol_page
 	plugins /
 		<= Theme $mol_theme_auto
-		<= Popup_fix $bog_popup_fix
+		<= Popup_fix $bog_popup_plugin
 	title \Bog Music
 	tools /
 		<= Token_popup $mol_pop
