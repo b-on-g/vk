@@ -20150,7 +20150,7 @@ var $;
                         this._last_blob_url = '';
                     }
                     if (audio.owner_id === 0) {
-                        const blob = $bog_vk_store.local_blob(audio);
+                        const blob = await $mol_wire_sync($bog_vk_store).local_blob(audio);
                         if (blob) {
                             const url = URL.createObjectURL(blob);
                             this._last_blob_url = url;
