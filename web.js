@@ -4192,7 +4192,7 @@ var $;
 })($ || ($ = {}));
 
 ;
-	($.$bog_popup_fix) = class $bog_popup_fix extends ($.$mol_plugin) {};
+	($.$bog_popup_plugin) = class $bog_popup_plugin extends ($.$mol_plugin) {};
 
 
 ;
@@ -29470,7 +29470,7 @@ var $;
 			return obj;
 		}
 		Popup_fix(){
-			const obj = new this.$.$bog_popup_fix();
+			const obj = new this.$.$bog_popup_plugin();
 			return obj;
 		}
 		token_popup_open(next){
