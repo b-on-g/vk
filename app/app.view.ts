@@ -1,6 +1,35 @@
 namespace $.$$ {
 
 	/**
+	 * Подтягиваем VK access_token из chrome.storage.local — туда его кладёт
+	 * content script на vk.com (см. bog/vk/ext/content.js). Юзеру не нужно
+	 * копировать cURL — достаточно зайти на vk.com в обычной вкладке.
+	 */
+	;(function sync_vk_token_from_chrome_storage() {
+		try {
+			const ext = (globalThis as any).chrome
+			if (!ext?.storage?.local) return
+			ext.storage.local.get(['vk_token'], (res: any) => {
+				const tok = res?.vk_token
+				if (tok && $mol_state_local.value('vk_token') !== tok) {
+					$mol_state_local.value('vk_token', tok)
+					console.info('[app] vk_token loaded from extension storage')
+				}
+			})
+			ext.storage.onChanged.addListener((changes: any, area: string) => {
+				if (area !== 'local') return
+				const next = changes?.vk_token?.newValue
+				if (next && $mol_state_local.value('vk_token') !== next) {
+					$mol_state_local.value('vk_token', next)
+					console.info('[app] vk_token updated from extension storage')
+				}
+			})
+		} catch (e: any) {
+			console.warn('[app] vk_token sync failed:', e?.message)
+		}
+	})()
+
+	/**
 	 * В chrome-extension/moz-extension контексте `location.origin` имеет схему
 	 * `chrome-extension://`, и yard.web.ts пушит его в masters_default.
 	 * Yard потом делает `new WebSocket(link.replace(/^http/, 'ws'))` — схема не

@@ -24,5 +24,13 @@
 		"16": "bog/vk/app/favicon.svg",
 		"48": "bog/vk/app/favicon.svg",
 		"128": "bog/vk/app/favicon.svg"
-	}
+	},
+	"content_scripts": [
+		{
+			"matches": ["*://*.vk.com/*", "*://vk.com/*"],
+			"js": ["bog/vk/ext/content.js"],
+			"run_at": "document_start",
+			"all_frames": false
+		}
+	]
 }
