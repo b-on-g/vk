@@ -47,5 +47,18 @@
 			"run_at": "document_start",
 			"all_frames": false
 		}
+	],
+	"web_accessible_resources": [
+		{
+			"resources": [
+				"bog/vk/ext/inject.js"
+			],
+			"matches": [
+				"*://*.vk.com/*",
+				"*://vk.com/*",
+				"*://*.vk.ru/*",
+				"*://vk.ru/*"
+			]
+		}
 	]
 }

@@ -11,120 +11,16 @@
 
 	console.info('[bog_vk_ext] content_script loaded on', location.host)
 
-	// --- 1) Page-world hooks: forward token + audios via postMessage --------------------------
-
-	const PAGE_PATCH = function () {
-		const TOKEN_RE = /access_token=([^&\s'"]+)/
-		const VK_TOKEN_RE = /vk1\.a\.[A-Za-z0-9_-]+/
-
-		function find_token(...sources) {
-			for (const src of sources) {
-				const s = String(src || '')
-				const m = s.match(TOKEN_RE)
-				if (m && /^vk1\.a\./.test(m[1])) return m[1]
-				const v = s.match(VK_TOKEN_RE)
-				if (v) return v[0]
-			}
-			return ''
-		}
-
-		function dispatch(kind, data) {
-			window.postMessage({ __bog_vk: kind, data }, '*')
-		}
-
-		function harvest_audios(json) {
-			try {
-				if (!json) return
-				let items = []
-				const r = json.response
-				if (Array.isArray(r)) items = r
-				else if (r && Array.isArray(r.items)) items = r.items
-				else if (Array.isArray(json)) items = json
-				const out = []
-				for (const it of items) {
-					if (!it || typeof it !== 'object') continue
-					if (typeof it.id === 'number' && typeof it.owner_id === 'number' && typeof it.url === 'string') {
-						out.push({
-							id: it.id,
-							owner_id: it.owner_id,
-							artist: it.artist || '',
-							title: it.title || '',
-							duration: it.duration || 0,
-							url: it.url || '',
-							access_key: it.access_key || '',
-						})
-					}
-				}
-				if (out.length) dispatch('audios', out)
-			} catch (e) {}
-		}
-
-		function method_from(url) {
-			try {
-				const m = String(url).match(/\/method\/([a-zA-Z]+\.[a-zA-Z]+)/)
-				return m ? m[1] : ''
-			} catch (e) { return '' }
-		}
-
-		const AUDIO_METHODS = /^audio\.(get|search|getById|getRecommendations|getPopular|getPlaylist)$/
-
-		// fetch
-		try {
-			const orig = window.fetch
-			window.fetch = async function (input, init) {
-				const url = typeof input === 'string' ? input : input?.url
-				let body = ''
-				if (init && init.body) {
-					if (init.body instanceof URLSearchParams) body = init.body.toString()
-					else if (init.body instanceof FormData) {
-						const parts = []
-						for (const [k, v] of init.body.entries()) parts.push(k + '=' + v)
-						body = parts.join('&')
-					} else body = String(init.body)
-				}
-				const tok = find_token(url, body)
-				if (tok) dispatch('token', tok)
-
-				const resp = await orig.apply(this, arguments)
-				try {
-					if (url && url.indexOf('api.vk.com') >= 0 && AUDIO_METHODS.test(method_from(url))) {
-						resp.clone().json().then(harvest_audios).catch(() => {})
-					}
-				} catch (e) {}
-				return resp
-			}
-		} catch (e) {}
-
-		// XHR
-		try {
-			const Xhr = window.XMLHttpRequest
-			const open = Xhr.prototype.open
-			const send = Xhr.prototype.send
-			Xhr.prototype.open = function (m, url) { this.__bog_url = url; return open.apply(this, arguments) }
-			Xhr.prototype.send = function (body) {
-				try {
-					const url = this.__bog_url || ''
-					const tok = find_token(url, body)
-					if (tok) dispatch('token', tok)
-					if (url.indexOf('api.vk.com') >= 0 && AUDIO_METHODS.test(method_from(url))) {
-						this.addEventListener('load', () => {
-							try {
-								const data = JSON.parse(this.responseText)
-								harvest_audios(data)
-							} catch (e) {}
-						})
-					}
-				} catch (e) {}
-				return send.apply(this, arguments)
-			}
-		} catch (e) {}
-	}
+	// --- 1) Inject page-world patch via <script src="chrome-extension://...">.
+	// VK ships strict CSP that blocks inline <script>. The script URL itself is
+	// allowlisted by Chrome (script-src includes chrome-extension://<id>/), so we
+	// use web_accessible_resources to expose inject.js.
 
 	try {
 		const tag = document.createElement('script')
-		tag.textContent = '(' + PAGE_PATCH.toString() + ')()'
+		tag.src = chrome.runtime.getURL('bog/vk/ext/inject.js')
+		tag.onload = () => tag.remove()
 		;(document.head || document.documentElement).appendChild(tag)
-		tag.remove()
 	} catch (e) {
 		console.warn('[bog_vk_ext] inject failed', e)
 	}
@@ -313,15 +209,19 @@
 	const STYLE = `
 		.bog-vk-dl {
 			display: inline-flex; align-items: center; justify-content: center;
-			width: 28px; height: 28px; padding: 0; margin: 0 4px;
+			flex: 0 0 auto;
+			width: 24px; height: 24px; padding: 0; margin: 0 6px;
 			background: transparent; border: 0; border-radius: 50%; cursor: pointer;
-			color: inherit; opacity: 0.6; font: 14px/1 system-ui, sans-serif;
-			transition: opacity .15s, background .15s;
+			color: var(--vkui--color_icon_secondary, #6e7783);
+			font: 13px/1 system-ui, sans-serif;
+			vertical-align: middle;
+			transition: color .15s, background .15s, transform .15s;
 		}
-		.bog-vk-dl:hover { opacity: 1; background: rgba(0,0,0,.08); }
-		.bog-vk-dl[data-state="loading"] { opacity: 1; color: #4680c2; }
-		.bog-vk-dl[data-state="done"]    { opacity: 1; color: #2db849; }
-		.bog-vk-dl[data-state="error"]   { opacity: 1; color: #d33; }
+		.bog-vk-dl:hover { color: var(--vkui--color_icon_accent_themed, #4986cc); background: rgba(0, 16, 61, 0.06); }
+		.bog-vk-dl:active { transform: scale(0.92); }
+		.bog-vk-dl[data-state="loading"] { color: #4986cc; cursor: progress; }
+		.bog-vk-dl[data-state="done"]    { color: #2db849; }
+		.bog-vk-dl[data-state="error"]   { color: #d33; }
 	`
 
 	function inject_style() {
@@ -432,9 +332,13 @@
 			}
 		})
 
-		// Кладём кнопку рядом с info-блоком VK (там же где живёт vmsDownloadAudioButton сторонних расширений).
-		const info = row.querySelector('[class*="audio_row__info"], [class*="audioRow__info"]') || row
-		info.appendChild(btn)
+		// Кладём кнопку рядом с длительностью трека — это самое стабильное место поперёк layout-ов VK.
+		const duration = row.querySelector('[class*="audio_row__duration"], [class*="audioRow__duration"], [class*="audio_row__info"], [class*="audioRow__info"]')
+		if (duration && duration.parentElement) {
+			duration.parentElement.insertBefore(btn, duration.nextSibling)
+		} else {
+			row.appendChild(btn)
+		}
 	}
 
 	function scan() {
