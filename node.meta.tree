@@ -158,3 +158,4 @@
 \/bog/vk/app
 	include \/mol/offline/install
 	deploy \/bog/vk/app/favicon.svg
+	deploy \/bog/vk/app/manifest.ext.json
