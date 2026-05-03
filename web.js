@@ -28363,16 +28363,26 @@ var $;
                 return { artist: m[1].trim(), title: m[2].trim() };
             return { artist: '', title: base };
         }
+        static hash_str(s) {
+            let h = 2166136261;
+            for (let i = 0; i < s.length; i++) {
+                h ^= s.charCodeAt(i);
+                h = Math.imul(h, 16777619);
+            }
+            return h >>> 0;
+        }
         static save_local_track(file, buffer) {
             const { artist, title } = this.parse_filename(file.name);
+            const id = this.hash_str(`${file.name}|${file.size}|${file.lastModified}`);
             const audio = {
-                id: Date.now() + Math.floor(Math.random() * 1000),
+                id,
                 owner_id: 0,
                 artist,
                 title,
                 duration: 0,
                 url: '',
             };
+            console.log('[store] save_local_track:', file.name, file.size, 'bytes, type:', file.type, 'key:', `0_${id}`);
             let dict;
             try {
                 dict = this.tracks_dict();
@@ -28380,17 +28390,22 @@ var $;
             catch (e) {
                 if (e instanceof Promise)
                     throw e;
+                console.warn('[store] tracks_dict failed:', e);
                 return null;
             }
             const key = this.cache_key(audio);
             const track = dict.key(key, 'auto');
-            if (!track)
+            if (!track) {
+                console.warn('[store] dict.key returned null for', key);
                 return null;
+            }
             track.Vk_id('auto').val(key);
             track.Title('auto').val(title);
             track.Artist('auto').val(artist);
-            track.Added('auto').val(Date.now());
-            track.Order('auto').val(this.max_order() + 1);
+            if (track.Added()?.val() == null)
+                track.Added('auto').val(Date.now());
+            if (track.Order()?.val() == null)
+                track.Order('auto').val(this.max_order() + 1);
             track.Archived('auto').val(false);
             const store = track.File('auto').ensure(null);
             if (store) {
@@ -28398,6 +28413,10 @@ var $;
                 store.type(file.type || 'audio/mpeg');
                 if (file.name)
                     store.name(file.name);
+                console.log('[store] file written, type:', store.type(), 'chunks:', store.chunks().length);
+            }
+            else {
+                console.warn('[store] File ensure returned null');
             }
             this.fresh_files.set(key, file);
             this.version(this.version() + 1);
@@ -33769,15 +33788,20 @@ var $;
             }
             upload_files(next) {
                 if (next?.length) {
+                    console.log('[app] upload_files received:', next.length, 'file(s):', next.map(f => `${f.name} (${f.size}B, ${f.type})`).join(', '));
                     for (const file of next) {
                         try {
                             const buffer = new Uint8Array($mol_wire_sync(file).arrayBuffer());
-                            $bog_vk_store.save_local_track(file, buffer);
+                            console.log('[app] arrayBuffer ready for', file.name, buffer.byteLength, 'bytes');
+                            const audio = $bog_vk_store.save_local_track(file, buffer);
+                            console.log('[app] save_local_track ok:', audio?.title, 'id:', audio?.id);
                         }
                         catch (e) {
-                            if (e instanceof Promise)
-                                return next;
-                            console.warn('[app] upload failed:', file.name, e?.message);
+                            if (e instanceof Promise) {
+                                console.log('[app] upload waiting on promise:', file.name);
+                                throw e;
+                            }
+                            console.warn('[app] upload failed:', file.name, e?.message, e);
                         }
                     }
                 }

@@ -14703,6 +14703,7 @@ declare namespace $ {
             artist: string;
             title: string;
         };
+        static hash_str(s: string): number;
         static save_local_track(file: File, buffer: Uint8Array): $bog_vk_api_audio | null;
         static delete_track(audio: $bog_vk_api_audio): void;
         static restore_track(audio: $bog_vk_api_audio): void;
