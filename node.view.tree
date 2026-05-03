@@ -239,6 +239,87 @@ $mol_icon_account $mol_icon path \M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1
 
 $mol_icon_account_circle $mol_icon path \M12,19.2C9.5,19.2 7.29,17.92 6,16C6.03,14 10,12.9 12,12.9C14,12.9 17.97,14 18,16C16.71,17.92 14.5,19.2 12,19.2M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z
 
+$mol_labeler $mol_list
+	rows /
+		<= Label $mol_view
+			minimal_height 32
+			sub <= label /$mol_view_content
+				<= title
+		<= Content $mol_view
+			minimal_height 24
+			sub <= content /
+
+$mol_form_field $mol_labeler
+	bids /string
+	label /
+		<= name \
+		<= Bid $mol_view
+			sub / <= bid \
+	content / <= control null
+
+$mol_button_major $mol_button_minor
+	theme \$mol_theme_base
+
+$mol_status $mol_view
+	status <= title
+	minimal_height 24
+	minimal_width 0
+	sub /
+		<= message \
+
+$mol_row $mol_view
+
+$mol_form $mol_list
+	submit_allowed true
+	submit_blocked false
+	event *
+		^
+		keydown?event <=> keydown?event null
+	save?event null
+	message_done @ \Saved
+	errors *string
+		\Form invalid
+			<= form_invalid @ \Form is not valid
+	rows /
+		<= Body $mol_list
+			sub <= body <= form_fields /$mol_form_field
+		<= Foot $mol_row
+			sub <= foot <= buttons /$mol_view
+				<= Submit $mol_button_major
+					title <= submit_title @ \Save
+					hint <= submit_hint \
+					activate? => submit_activate?
+					click? <=> submit? null
+				<= Result $mol_status
+					message <= result? null
+
+$bog_vk_account $mol_list
+	rows /
+		<= Nickname_field $mol_form_field
+			name \Имя
+			Content <= Nickname_input $mol_string
+				value? <=> nickname? \
+				hint \Как тебя зовут?
+		<= Lord $mol_view
+			sub /
+				\ЛК:
+				<= Lord_text $mol_view sub / <= lord_short \
+		<= Warning $mol_paragraph
+			title \Ссылка ниже — СЕКРЕТ. Не делись ей публично.
+		<= Copy $mol_button_minor
+			title \Скопировать ссылку для переноса
+			click? <=> copy? null
+		<= Copy_status $mol_view sub / <= copy_status \
+		<= Import_hint $mol_paragraph
+			title \Перенести с другого устройства — вставь ссылку:
+		<= Import_input $mol_string
+			hint \https://.../vk/#account=...
+			value? <=> import_link? \
+		<= Import_apply $mol_button_minor
+			title \Применить
+			click? <=> apply_import? null
+		<= Import_status $mol_view sub / <= import_status \
+
 $mol_icon_help $mol_icon path \M10,19H13V22H10V19M12,2C17.35,2.22 19.68,7.62 16.5,11.67C15.67,12.67 14.33,13.33 13.67,14.17C13,15 13,16 13,17H10C10,15.33 10,13.92 10.67,12.92C11.33,11.92 12.67,11.33 13.5,10.67C15.92,8.43 15.32,5.26 12,5A3,3 0 0,0 9,8H6A6,6 0 0,1 12,2Z
 
 $mol_icon_help_circle $mol_icon path \M15.07,11.25L14.17,12.17C13.45,12.89 13,13.5 13,15H11V14.5C11,13.39 11.45,12.39 12.17,11.67L13.41,10.41C13.78,10.05 14,9.55 14,9C14,7.89 13.1,7 12,7A2,2 0 0,0 10,9H8A4,4 0 0,1 12,5A4,4 0 0,1 16,9C16,9.88 15.64,10.67 15.07,11.25M13,19H11V17H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z
@@ -672,6 +753,8 @@ $bog_vk_app $mol_page
 						<= Proxy_reset $mol_button_minor
 							title \Сбросить на дефолтный
 							click? <=> reset_proxy? null
+		<= Nickname_label $mol_view
+			sub / <= nickname_label \
 		<= Account_popup $mol_pop
 			showed? <=> account_popup_open? false
 			align \bottom_left
@@ -680,27 +763,7 @@ $bog_vk_app $mol_page
 				Icon <= Account_icon $mol_icon_account_circle
 				checked? <=> account_popup_open? false
 			bubble_content /
-				<= Account_panel $mol_list
-					rows /
-						<= Account_id $mol_view
-							sub /
-								\ЛК:
-								<= Account_id_text $mol_view sub / <= account_lord_short \
-						<= Account_warning $mol_paragraph
-							title \Ссылка ниже — СЕКРЕТ. Не делись ей публично.
-						<= Account_copy $mol_button_minor
-							title \Скопировать ссылку для переноса
-							click? <=> copy_account_link? null
-						<= Account_copy_status $mol_view sub / <= copy_status \
-						<= Account_import_hint $mol_paragraph
-							title \Перенести с другого устройства — вставь ссылку:
-						<= Account_import_input $mol_string
-							hint \https://.../vk/#account=...
-							value? <=> import_link? \
-						<= Account_import_apply $mol_button_minor
-							title \Применить
-							click? <=> apply_account_link? null
-						<= Account_import_status $mol_view sub / <= import_status \
+				<= Account $bog_vk_account
 		<= Help_toggle $mol_check_icon
 			hint \Подсказка
 			Icon <= Help_icon $mol_icon_help_circle_outline
@@ -1104,24 +1167,6 @@ $mol_password $mol_view
 			checked? <=> checked? true
 			Icon <= Show_icon $mol_icon_eye
 
-$mol_labeler $mol_list
-	rows /
-		<= Label $mol_view
-			minimal_height 32
-			sub <= label /$mol_view_content
-				<= title
-		<= Content $mol_view
-			minimal_height 24
-			sub <= content /
-
-$mol_form_field $mol_labeler
-	bids /string
-	label /
-		<= name \
-		<= Bid $mol_view
-			sub / <= bid \
-	content / <= control null
-
 $mol_text_list $mol_text
 	auto_scroll null
 	attr *
@@ -1135,42 +1180,6 @@ $mol_text_list_item $mol_paragraph
 	attr *
 		^
 		mol_text_list_item_index <= index 0
-
-$mol_button_major $mol_button_minor
-	theme \$mol_theme_base
-
-$mol_status $mol_view
-	status <= title
-	minimal_height 24
-	minimal_width 0
-	sub /
-		<= message \
-
-$mol_row $mol_view
-
-$mol_form $mol_list
-	submit_allowed true
-	submit_blocked false
-	event *
-		^
-		keydown?event <=> keydown?event null
-	save?event null
-	message_done @ \Saved
-	errors *string
-		\Form invalid
-			<= form_invalid @ \Form is not valid
-	rows /
-		<= Body $mol_list
-			sub <= body <= form_fields /$mol_form_field
-		<= Foot $mol_row
-			sub <= foot <= buttons /$mol_view
-				<= Submit $mol_button_major
-					title <= submit_title @ \Save
-					hint <= submit_hint \
-					activate? => submit_activate?
-					click? <=> submit? null
-				<= Result $mol_status
-					message <= result? null
 
 $hyoo_meta_safe $mol_page
 	title @ \Private keys
