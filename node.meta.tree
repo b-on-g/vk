@@ -61,8 +61,6 @@
 	pack player git \https://github.com/giper-dev/player.git
 	pack search git \https://github.com/giper-dev/search.git
 	pack web git \https://github.com/giper-dev/web.git
-\/giper/baza/file
-	include \/mol/offline/install
 \/giper/baza/glob
 	deploy \giper/baza/glob/glob.baza
 \/giper/baza/app
@@ -87,6 +85,8 @@
 	deploy \/giper/baza/diagram/crus-jepsen.png
 	deploy \/giper/baza/docker/deploy.sh
 	deploy \/giper/baza/docker/autopull_and_restart.sh
+\/giper/baza/file
+	include \/mol/offline/install
 \/hyoo
 	pack about git \https://github.com/hyoo-ru/about.hyoo.ru.git
 	pack artist git \https://github.com/hyoo-ru/artist.hyoo.ru.git

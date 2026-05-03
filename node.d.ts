@@ -784,7 +784,7 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    const $mol_theme: Record<"image" | "line" | "text" | "focus" | "hue" | "back" | "hover" | "card" | "current" | "special" | "control" | "shade" | "field" | "spirit" | "hue_spread", $mol_style_func<"var", unknown>>;
+    const $mol_theme: Record<"image" | "line" | "text" | "field" | "current" | "focus" | "hue" | "back" | "hover" | "card" | "special" | "control" | "shade" | "spirit" | "hue_spread", $mol_style_func<"var", unknown>>;
 }
 
 declare namespace $ {
@@ -2400,13 +2400,211 @@ declare namespace $.$$ {
 
 declare namespace $ {
 
-	export class $mol_icon_brightness_4 extends $mol_icon {
-		path( ): string
+	type $mol_check__minimal_width_mol_pick_1 = $mol_type_enforce<
+		number
+		,
+		ReturnType< $mol_check['minimal_width'] >
+	>
+	type $mol_check__minimal_height_mol_pick_2 = $mol_type_enforce<
+		number
+		,
+		ReturnType< $mol_check['minimal_height'] >
+	>
+	type $mol_check__enabled_mol_pick_3 = $mol_type_enforce<
+		ReturnType< $mol_pick['trigger_enabled'] >
+		,
+		ReturnType< $mol_check['enabled'] >
+	>
+	type $mol_check__checked_mol_pick_4 = $mol_type_enforce<
+		ReturnType< $mol_pick['showed'] >
+		,
+		ReturnType< $mol_check['checked'] >
+	>
+	type $mol_check__clicks_mol_pick_5 = $mol_type_enforce<
+		ReturnType< $mol_pick['clicks'] >
+		,
+		ReturnType< $mol_check['clicks'] >
+	>
+	type $mol_check__sub_mol_pick_6 = $mol_type_enforce<
+		ReturnType< $mol_pick['trigger_content'] >
+		,
+		ReturnType< $mol_check['sub'] >
+	>
+	type $mol_check__hint_mol_pick_7 = $mol_type_enforce<
+		ReturnType< $mol_pick['hint'] >
+		,
+		ReturnType< $mol_check['hint'] >
+	>
+	export class $mol_pick extends $mol_pop {
+		keydown( next?: any ): any
+		trigger_enabled( ): boolean
+		clicks( next?: any ): any
+		trigger_content( ): readonly($mol_view_content)[]
+		hint( ): string
+		Trigger( ): $mol_check
+		event( ): ({ 
+			keydown( next?: ReturnType< $mol_pick['keydown'] > ): ReturnType< $mol_pick['keydown'] >,
+		})  & ReturnType< $mol_pop['event'] >
+		Anchor( ): ReturnType< $mol_pick['Trigger'] >
 	}
 	
 }
 
-//# sourceMappingURL=4.view.tree.d.ts.map
+//# sourceMappingURL=pick.view.tree.d.ts.map
+declare namespace $.$$ {
+    class $mol_pick extends $.$mol_pick {
+        keydown(event: KeyboardEvent): void;
+    }
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
+    type $mol_type_equals<A, B> = (<X>() => X extends A ? 1 : 2) extends (<X>() => X extends B ? 1 : 2) ? unknown : never;
+}
+
+declare namespace $ {
+    type $mol_type_merge<Intersection> = Intersection extends (...a: any[]) => any ? Intersection : Intersection extends new (...a: any[]) => any ? Intersection : Intersection extends object ? $mol_type_merge_object<Intersection> extends Intersection ? unknown extends $mol_type_equals<{
+        [Key in keyof Intersection]: Intersection[Key];
+    }, Intersection> ? Intersection : {
+        [Key in keyof Intersection]: $mol_type_merge<Intersection[Key]>;
+    } : Intersection : Intersection;
+    type $mol_type_merge_object<Intersection> = {
+        [Key in keyof Intersection]: Intersection[Key];
+    };
+}
+
+declare namespace $ {
+    type $mol_type_intersect<Union> = (Union extends any ? (_: Union) => void : never) extends ((_: infer Intersection) => void) ? Intersection : never;
+}
+
+declare namespace $ {
+    type $mol_unicode_category = [$mol_unicode_category_binary] | ['General_Category', $mol_char_category_general] | ['Script', $mol_unicode_category_script] | ['Script_Extensions', $mol_unicode_category_script];
+    type $mol_unicode_category_binary = 'ASCII' | 'ASCII_Hex_Digit' | 'Alphabetic' | 'Any' | 'Assigned' | 'Bidi_Control' | 'Bidi_Mirrored' | 'Case_Ignorable' | 'Cased' | 'Changes_When_Casefolded' | 'Changes_When_Casemapped' | 'Changes_When_Lowercased' | 'Changes_When_NFKC_Casefolded' | 'Changes_When_Titlecased' | 'Changes_When_Uppercased' | 'Dash' | 'Default_Ignorable_Code_Point' | 'Deprecated' | 'Diacritic' | 'Emoji' | 'Emoji_Component' | 'Emoji_Modifier' | 'Emoji_Modifier_Base' | 'Emoji_Presentation' | 'Extended_Pictographic' | 'Extender' | 'Grapheme_Base' | 'Grapheme_Extend' | 'Hex_Digit' | 'IDS_Binary_Operator' | 'IDS_Trinary_Operator' | 'ID_Continue' | 'ID_Start' | 'Ideographic' | 'Join_Control' | 'Logical_Order_Exception' | 'Lowercase' | 'Math' | 'Noncharacter_Code_Point' | 'Pattern_Syntax' | 'Pattern_White_Space' | 'Quotation_Mark' | 'Radical' | 'Regional_Indicator' | 'Sentence_Terminal' | 'Soft_Dotted' | 'Terminal_Punctuation' | 'Unified_Ideograph' | 'Uppercase' | 'Variation_Selector' | 'White_Space' | 'XID_Continue' | 'XID_Start';
+    type $mol_char_category_general = 'Cased_Letter' | 'Close_Punctuation' | 'Connector_Punctuation' | 'Control' | 'Currency_Symbol' | 'Dash_Punctuation' | 'Decimal_Number' | 'Enclosing_Mark' | 'Final_Punctuation' | 'Format' | 'Initial_Punctuation' | 'Letter' | 'Letter_Number' | 'Line_Separator' | 'Lowercase_Letter' | 'Mark' | 'Math_Symbol' | 'Modifier_Letter' | 'Modifier_Symbol' | 'Nonspacing_Mark' | 'Number' | 'Open_Punctuation' | 'Other' | 'Other_Letter' | 'Other_Number' | 'Other_Punctuation' | 'Other_Symbol' | 'Paragraph_Separator' | 'Private_Use' | 'Punctuation' | 'Separator' | 'Space_Separator' | 'Spacing_Mark' | 'Surrogate' | 'Symbol' | 'Titlecase_Letter' | 'Unassigned' | 'Uppercase_Letter';
+    type $mol_unicode_category_script = 'Adlam' | 'Ahom' | 'Anatolian_Hieroglyphs' | 'Arabic' | 'Armenian' | 'Avestan' | 'Balinese' | 'Bamum' | 'Bassa_Vah' | 'Batak' | 'Bengali' | 'Bhaiksuki' | 'Bopomofo' | 'Brahmi' | 'Braille' | 'Buginese' | 'Buhid' | 'Canadian_Aboriginal' | 'Carian' | 'Caucasian_Albanian' | 'Chakma' | 'Cham' | 'Chorasmian' | 'Cherokee' | 'Common' | 'Coptic' | 'Cuneiform' | 'Cypriot' | 'Cyrillic' | 'Deseret' | 'Devanagari' | 'Dives_Akuru' | 'Dogra' | 'Duployan' | 'Egyptian_Hieroglyphs' | 'Elbasan' | 'Elymaic' | 'Ethiopic' | 'Georgian' | 'Glagolitic' | 'Gothic' | 'Grantha' | 'Greek' | 'Gujarati' | 'Gunjala_Gondi' | 'Gurmukhi' | 'Han' | 'Hangul' | 'Hanifi_Rohingya' | 'Hanunoo' | 'Hatran' | 'Hebrew' | 'Hiragana' | 'Imperial_Aramaic' | 'Inherited' | 'Inscriptional_Pahlavi' | 'Inscriptional_Parthian' | 'Javanese' | 'Kaithi' | 'Kannada' | 'Katakana' | 'Kayah_Li' | 'Kharoshthi' | 'Khitan_Small_Script' | 'Khmer' | 'Khojki' | 'Khudawadi' | 'Lao' | 'Latin' | 'Lepcha' | 'Limbu' | 'Linear_A' | 'Linear_B' | 'Lisu' | 'Lycian' | 'Lydian' | 'Mahajani' | 'Makasar' | 'Malayalam' | 'Mandaic' | 'Manichaean' | 'Marchen' | 'Medefaidrin' | 'Masaram_Gondi' | 'Meetei_Mayek' | 'Mende_Kikakui' | 'Meroitic_Cursive' | 'Meroitic_Hieroglyphs' | 'Miao' | 'Modi' | 'Mongolian' | 'Mro' | 'Multani' | 'Myanmar' | 'Nabataean' | 'Nandinagari' | 'New_Tai_Lue' | 'Newa' | 'Nko' | 'Nushu' | 'Nyiakeng_Puachue_Hmong' | 'Ogham' | 'Ol_Chiki' | 'Old_Hungarian' | 'Old_Italic' | 'Old_North_Arabian' | 'Old_Permic' | 'Old_Persian' | 'Old_Sogdian' | 'Old_South_Arabian' | 'Old_Turkic' | 'Oriya' | 'Osage' | 'Osmanya' | 'Pahawh_Hmong' | 'Palmyrene' | 'Pau_Cin_Hau' | 'Phags_Pa' | 'Phoenician' | 'Psalter_Pahlavi' | 'Rejang' | 'Runic' | 'Samaritan' | 'Saurashtra' | 'Sharada' | 'Shavian' | 'Siddham' | 'SignWriting' | 'Sinhala' | 'Sogdian' | 'Sora_Sompeng' | 'Soyombo' | 'Sundanese' | 'Syloti_Nagri' | 'Syriac' | 'Tagalog' | 'Tagbanwa' | 'Tai_Le' | 'Tai_Tham' | 'Tai_Viet' | 'Takri' | 'Tamil' | 'Tangut' | 'Telugu' | 'Thaana' | 'Thai' | 'Tibetan' | 'Tifinagh' | 'Tirhuta' | 'Ugaritic' | 'Vai' | 'Wancho' | 'Warang_Citi' | 'Yezidi' | 'Yi' | 'Zanabazar_Square';
+}
+
+interface String {
+    match<RE extends RegExp>(regexp: RE): ReturnType<RE[typeof Symbol.match]>;
+    matchAll<RE extends RegExp>(regexp: RE): ReturnType<RE[typeof Symbol.matchAll]>;
+}
+declare namespace $ {
+    type Groups_to_params<T> = {
+        [P in keyof T]?: T[P] | boolean | undefined;
+    };
+    export type $mol_regexp_source = number | string | RegExp | {
+        [key in string]: $mol_regexp_source;
+    } | readonly [$mol_regexp_source, ...$mol_regexp_source[]];
+    export type $mol_regexp_groups<Source extends $mol_regexp_source> = Source extends number ? {} : Source extends string ? {} : Source extends $mol_regexp_source[] ? $mol_type_merge<$mol_type_intersect<{
+        [key in Extract<keyof Source, number>]: $mol_regexp_groups<Source[key]>;
+    }[Extract<keyof Source, number>]>> : Source extends RegExp ? Record<string, string> extends NonNullable<NonNullable<ReturnType<Source['exec']>>['groups']> ? {} : NonNullable<NonNullable<ReturnType<Source['exec']>>['groups']> : Source extends {
+        readonly [key in string]: $mol_regexp_source;
+    } ? $mol_type_merge<$mol_type_intersect<{
+        [key in keyof Source]: $mol_type_merge<$mol_type_override<{
+            readonly [k in Extract<keyof Source, string>]: string;
+        }, {
+            readonly [k in key]: Source[key] extends string ? Source[key] : string;
+        }> & $mol_regexp_groups<Source[key]>>;
+    }[keyof Source]>> : never;
+    export class $mol_regexp<Groups extends Record<string, string>> extends RegExp {
+        readonly groups: (Extract<keyof Groups, string>)[];
+        constructor(source: string, flags?: string, groups?: (Extract<keyof Groups, string>)[]);
+        [Symbol.matchAll](str: string): RegExpStringIterator<RegExpExecArray & $mol_type_override<RegExpExecArray, {
+            groups?: {
+                [key in keyof Groups]: string;
+            };
+        }>>;
+        [Symbol.match](str: string): null | RegExpMatchArray;
+        [Symbol.split](str: string): string[];
+        test(str: string): boolean;
+        exec(str: string): RegExpExecArray & $mol_type_override<RegExpExecArray, {
+            groups?: {
+                [key in keyof Groups]: string;
+            };
+        }> | null;
+        generate(params: Groups_to_params<Groups>): string | null;
+        get native(): RegExp;
+        static separated<Chunk extends $mol_regexp_source, Sep extends $mol_regexp_source>(chunk: Chunk, sep: Sep): $mol_regexp<[$mol_regexp<[[Chunk], Sep] extends infer T ? T extends [[Chunk], Sep] ? T extends $mol_regexp_source[] ? $mol_type_merge<$mol_type_intersect<{ [key in Extract<keyof T, number>]: $mol_regexp_groups<T[key]>; }[Extract<keyof T, number>]>> : T extends RegExp ? Record<string, string> extends NonNullable<NonNullable<ReturnType<T["exec"]>>["groups"]> ? {} : NonNullable<NonNullable<ReturnType<T["exec"]>>["groups"]> : T extends {
+            readonly [x: string]: $mol_regexp_source;
+        } ? $mol_type_merge<$mol_type_intersect<{ [key_1 in keyof T]: $mol_type_merge<Omit<{ readonly [k in Extract<keyof T, string>]: string; }, key_1> & { readonly [k_1 in key_1]: T[key_1] extends string ? T[key_1] : string; } & $mol_regexp_groups<T[key_1]>>; }[keyof T]>> : never : never : never>, Chunk] extends infer T_1 ? T_1 extends [$mol_regexp<[[Chunk], Sep] extends infer T_2 ? T_2 extends [[Chunk], Sep] ? T_2 extends $mol_regexp_source[] ? $mol_type_merge<$mol_type_intersect<{ [key_4 in Extract<keyof T_2, number>]: $mol_regexp_groups<T_2[key_4]>; }[Extract<keyof T_2, number>]>> : T_2 extends RegExp ? Record<string, string> extends NonNullable<NonNullable<ReturnType<T_2["exec"]>>["groups"]> ? {} : NonNullable<NonNullable<ReturnType<T_2["exec"]>>["groups"]> : T_2 extends {
+            readonly [x: string]: $mol_regexp_source;
+        } ? $mol_type_merge<$mol_type_intersect<{ [key_5 in keyof T_2]: $mol_type_merge<Omit<{ readonly [k in Extract<keyof T_2, string>]: string; }, key_5> & { readonly [k_1 in key_5]: T_2[key_5] extends string ? T_2[key_5] : string; } & $mol_regexp_groups<T_2[key_5]>>; }[keyof T_2]>> : never : never : never>, Chunk] ? T_1 extends $mol_regexp_source[] ? $mol_type_merge<$mol_type_intersect<{ [key_2 in Extract<keyof T_1, number>]: $mol_regexp_groups<T_1[key_2]>; }[Extract<keyof T_1, number>]>> : T_1 extends RegExp ? Record<string, string> extends NonNullable<NonNullable<ReturnType<T_1["exec"]>>["groups"]> ? {} : NonNullable<NonNullable<ReturnType<T_1["exec"]>>["groups"]> : T_1 extends {
+            readonly [x: string]: $mol_regexp_source;
+        } ? $mol_type_merge<$mol_type_intersect<{ [key_3 in keyof T_1]: $mol_type_merge<Omit<{ readonly [k in Extract<keyof T_1, string>]: string; }, key_3> & { readonly [k_1 in key_3]: T_1[key_3] extends string ? T_1[key_3] : string; } & $mol_regexp_groups<T_1[key_3]>>; }[keyof T_1]>> : never : never : never>;
+        static repeat<Source extends $mol_regexp_source>(source: Source, min?: number, max?: number): $mol_regexp<$mol_regexp_groups<Source>>;
+        static repeat_greedy<Source extends $mol_regexp_source>(source: Source, min?: number, max?: number): $mol_regexp<$mol_regexp_groups<Source>>;
+        static vary<Sources extends readonly $mol_regexp_source[]>(sources: Sources, flags?: string): $mol_regexp<$mol_regexp_groups<Sources[number]>>;
+        static optional<Source extends $mol_regexp_source>(source: Source): $mol_regexp<$mol_regexp_groups<Source>>;
+        static force_after(source: $mol_regexp_source): $mol_regexp<Record<string, string>>;
+        static forbid_after(source: $mol_regexp_source): $mol_regexp<Record<string, string>>;
+        static from<Source extends $mol_regexp_source>(source: Source, { ignoreCase, multiline }?: Partial<Pick<RegExp, 'ignoreCase' | 'multiline'>>): $mol_regexp<$mol_regexp_groups<Source>>;
+        static unicode_only(...category: $mol_unicode_category): $mol_regexp<Record<string, string>>;
+        static unicode_except(...category: $mol_unicode_category): $mol_regexp<Record<string, string>>;
+        static char_range(from: number, to: number): $mol_regexp<{}>;
+        static char_only(...allowed: readonly [$mol_regexp_source, ...$mol_regexp_source[]]): $mol_regexp<{}>;
+        static char_except(...forbidden: readonly [$mol_regexp_source, ...$mol_regexp_source[]]): $mol_regexp<{}>;
+        static decimal_only: $mol_regexp<{}>;
+        static decimal_except: $mol_regexp<{}>;
+        static latin_only: $mol_regexp<{}>;
+        static latin_except: $mol_regexp<{}>;
+        static space_only: $mol_regexp<{}>;
+        static space_except: $mol_regexp<{}>;
+        static word_break_only: $mol_regexp<{}>;
+        static word_break_except: $mol_regexp<{}>;
+        static tab: $mol_regexp<{}>;
+        static slash_back: $mol_regexp<{}>;
+        static nul: $mol_regexp<{}>;
+        static char_any: $mol_regexp<{}>;
+        static begin: $mol_regexp<{}>;
+        static end: $mol_regexp<{}>;
+        static or: $mol_regexp<{}>;
+        static line_end: $mol_regexp<{
+            readonly win_end: string;
+            readonly mac_end: string;
+        }>;
+    }
+    export {};
+}
+
+declare namespace $ {
+
+	type $mol_paragraph__sub_mol_dimmer_1 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_paragraph['sub'] >
+	>
+	type $mol_paragraph__sub_mol_dimmer_2 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_paragraph['sub'] >
+	>
+	export class $mol_dimmer extends $mol_paragraph {
+		parts( ): readonly($mol_view_content)[]
+		string( id: any): string
+		haystack( ): string
+		needle( ): string
+		sub( ): ReturnType< $mol_dimmer['parts'] >
+		Low( id: any): $mol_paragraph
+		High( id: any): $mol_paragraph
+	}
+	
+}
+
+//# sourceMappingURL=dimmer.view.tree.d.ts.map
+declare namespace $.$$ {
+    class $mol_dimmer extends $.$mol_dimmer {
+        parts(): any[];
+        strings(): string[];
+        string(index: number): string;
+        view_find(check: (path: $mol_view, text?: string) => boolean, path?: $mol_view[]): Generator<$mol_view[]>;
+    }
+}
+
+declare namespace $ {
+}
+
 declare namespace $ {
     interface $mol_locale_dict {
         [key: string]: string;
@@ -2423,23 +2621,401 @@ declare namespace $ {
 
 declare namespace $ {
 
-	export class $mol_lights_toggle extends $mol_check_icon {
-		Lights_icon( ): $mol_icon_brightness_4
-		lights( next?: boolean ): boolean
-		Icon( ): ReturnType< $mol_lights_toggle['Lights_icon'] >
-		hint( ): string
-		checked( next?: ReturnType< $mol_lights_toggle['lights'] > ): ReturnType< $mol_lights_toggle['lights'] >
+	export class $mol_nav extends $mol_plugin {
+		event_key( next?: any ): any
+		cycle( next?: boolean ): boolean
+		mod_ctrl( ): boolean
+		mod_shift( ): boolean
+		mod_alt( ): boolean
+		keys_x( next?: readonly(any)[] ): readonly(any)[]
+		keys_y( next?: readonly(any)[] ): readonly(any)[]
+		current_x( next?: any ): any
+		current_y( next?: any ): any
+		event_up( next?: any ): any
+		event_down( next?: any ): any
+		event_left( next?: any ): any
+		event_right( next?: any ): any
+		event( ): ({ 
+			keydown( next?: ReturnType< $mol_nav['event_key'] > ): ReturnType< $mol_nav['event_key'] >,
+		})  & ReturnType< $mol_plugin['event'] >
 	}
 	
 }
 
-//# sourceMappingURL=toggle.view.tree.d.ts.map
+//# sourceMappingURL=nav.view.tree.d.ts.map
 declare namespace $.$$ {
-    class $mol_lights_toggle extends $.$mol_lights_toggle {
-        lights(next?: boolean): boolean;
+    class $mol_nav extends $.$mol_nav {
+        event_key(event?: KeyboardEvent): undefined;
+        event_up(event?: KeyboardEvent): undefined;
+        event_down(event?: KeyboardEvent): undefined;
+        event_left(event?: KeyboardEvent): undefined;
+        event_right(event?: KeyboardEvent): undefined;
+        index_y(): number | null;
+        index_x(): number | null;
     }
 }
 
+declare namespace $ {
+
+	export class $mol_icon_close extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=close.view.tree.d.ts.map
+declare namespace $ {
+
+	type $mol_hotkey__key_mol_search_1 = $mol_type_enforce<
+		({ 
+			escape( next?: ReturnType< $mol_search['clear'] > ): ReturnType< $mol_search['clear'] >,
+		}) 
+		,
+		ReturnType< $mol_hotkey['key'] >
+	>
+	type $mol_nav__keys_y_mol_search_2 = $mol_type_enforce<
+		ReturnType< $mol_search['nav_components'] >
+		,
+		ReturnType< $mol_nav['keys_y'] >
+	>
+	type $mol_nav__current_y_mol_search_3 = $mol_type_enforce<
+		ReturnType< $mol_search['nav_focused'] >
+		,
+		ReturnType< $mol_nav['current_y'] >
+	>
+	type $mol_string__value_mol_search_4 = $mol_type_enforce<
+		ReturnType< $mol_search['query'] >
+		,
+		ReturnType< $mol_string['value'] >
+	>
+	type $mol_string__hint_mol_search_5 = $mol_type_enforce<
+		ReturnType< $mol_search['hint'] >
+		,
+		ReturnType< $mol_string['hint'] >
+	>
+	type $mol_string__submit_mol_search_6 = $mol_type_enforce<
+		ReturnType< $mol_search['submit'] >
+		,
+		ReturnType< $mol_string['submit'] >
+	>
+	type $mol_string__enabled_mol_search_7 = $mol_type_enforce<
+		ReturnType< $mol_search['enabled'] >
+		,
+		ReturnType< $mol_string['enabled'] >
+	>
+	type $mol_string__keyboard_mol_search_8 = $mol_type_enforce<
+		ReturnType< $mol_search['keyboard'] >
+		,
+		ReturnType< $mol_string['keyboard'] >
+	>
+	type $mol_string__enter_mol_search_9 = $mol_type_enforce<
+		ReturnType< $mol_search['enter'] >
+		,
+		ReturnType< $mol_string['enter'] >
+	>
+	type $mol_button_minor__hint_mol_search_10 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_button_minor['hint'] >
+	>
+	type $mol_button_minor__enabled_mol_search_11 = $mol_type_enforce<
+		ReturnType< $mol_search['enabled'] >
+		,
+		ReturnType< $mol_button_minor['enabled'] >
+	>
+	type $mol_button_minor__click_mol_search_12 = $mol_type_enforce<
+		ReturnType< $mol_search['clear'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_mol_search_13 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	type $mol_list__rows_mol_search_14 = $mol_type_enforce<
+		ReturnType< $mol_search['menu_items'] >
+		,
+		ReturnType< $mol_list['rows'] >
+	>
+	type $mol_scroll__sub_mol_search_15 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_scroll['sub'] >
+	>
+	type $mol_dimmer__haystack_mol_search_16 = $mol_type_enforce<
+		ReturnType< $mol_search['suggest_label'] >
+		,
+		ReturnType< $mol_dimmer['haystack'] >
+	>
+	type $mol_dimmer__needle_mol_search_17 = $mol_type_enforce<
+		ReturnType< $mol_search['query'] >
+		,
+		ReturnType< $mol_dimmer['needle'] >
+	>
+	type $mol_search_plugins__18 = $mol_type_enforce<
+		ReturnType< $mol_pop['plugins'] >[number]
+		,
+		$mol_plugin
+	>
+	type $mol_view__sub_mol_search_19 = $mol_type_enforce<
+		ReturnType< $mol_search['anchor_content'] >
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_button_minor__click_mol_search_20 = $mol_type_enforce<
+		ReturnType< $mol_search['suggest_select'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_mol_search_21 = $mol_type_enforce<
+		ReturnType< $mol_search['suggest_content'] >
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	export class $mol_search extends $mol_pop {
+		clear( next?: any ): any
+		Hotkey( ): $mol_hotkey
+		nav_components( ): readonly($mol_view)[]
+		nav_focused( next?: any ): any
+		Nav( ): $mol_nav
+		suggests_showed( next?: boolean ): boolean
+		query( next?: string ): string
+		hint( ): string
+		submit( next?: any ): any
+		enabled( ): boolean
+		keyboard( ): string
+		enter( ): string
+		bring( ): ReturnType< ReturnType< $mol_search['Query'] >['bring'] >
+		Query( ): $mol_string
+		Clear_icon( ): $mol_icon_close
+		Clear( ): $mol_button_minor
+		anchor_content( ): readonly(any)[]
+		menu_items( ): readonly($mol_view)[]
+		Menu( ): $mol_list
+		Bubble_pane( ): $mol_scroll
+		suggest_select( id: any, next?: any ): any
+		suggest_label( id: any): string
+		Suggest_label( id: any): $mol_dimmer
+		suggest_content( id: any): readonly($mol_view_content)[]
+		suggests( ): readonly(string)[]
+		plugins( ): readonly($mol_plugin)[]
+		showed( next?: ReturnType< $mol_search['suggests_showed'] > ): ReturnType< $mol_search['suggests_showed'] >
+		align_hor( ): string
+		Anchor( ): $mol_view
+		bubble_content( ): readonly($mol_view_content)[]
+		Suggest( id: any): $mol_button_minor
+	}
+	
+}
+
+//# sourceMappingURL=search.view.tree.d.ts.map
+declare namespace $.$$ {
+    class $mol_search extends $.$mol_search {
+        anchor_content(): ($mol_button_minor | $.$mol_string)[];
+        suggests_showed(next?: boolean): boolean;
+        suggest_selected(next?: string): void;
+        nav_components(): ($mol_button_minor | $.$mol_string)[];
+        nav_focused(component?: $mol_view): $mol_view | $.$mol_string | null;
+        suggest_label(key: string): string;
+        menu_items(): $mol_button_minor[];
+        suggest_select(id: string, event?: MouseEvent): void;
+        clear(event?: Event): void;
+    }
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
+
+	export class $mol_icon_dots_vertical extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=vertical.view.tree.d.ts.map
+declare namespace $ {
+    function $mol_match_text<Variant>(query: string, values: (variant: Variant) => readonly string[]): (variant: Variant) => boolean;
+}
+
+declare namespace $ {
+
+	type $mol_dimmer__haystack_mol_select_1 = $mol_type_enforce<
+		ReturnType< $mol_select['option_label'] >
+		,
+		ReturnType< $mol_dimmer['haystack'] >
+	>
+	type $mol_dimmer__needle_mol_select_2 = $mol_type_enforce<
+		ReturnType< $mol_select['filter_pattern'] >
+		,
+		ReturnType< $mol_dimmer['needle'] >
+	>
+	type $mol_nav__keys_y_mol_select_3 = $mol_type_enforce<
+		ReturnType< $mol_select['nav_components'] >
+		,
+		ReturnType< $mol_nav['keys_y'] >
+	>
+	type $mol_nav__current_y_mol_select_4 = $mol_type_enforce<
+		ReturnType< $mol_select['option_focused'] >
+		,
+		ReturnType< $mol_nav['current_y'] >
+	>
+	type $mol_nav__cycle_mol_select_5 = $mol_type_enforce<
+		ReturnType< $mol_select['nav_cycle'] >
+		,
+		ReturnType< $mol_nav['cycle'] >
+	>
+	type $mol_list__rows_mol_select_6 = $mol_type_enforce<
+		ReturnType< $mol_select['menu_content'] >
+		,
+		ReturnType< $mol_list['rows'] >
+	>
+	type $mol_scroll__sub_mol_select_7 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_scroll['sub'] >
+	>
+	type $mol_button_minor__enabled_mol_select_8 = $mol_type_enforce<
+		ReturnType< $mol_select['enabled'] >
+		,
+		ReturnType< $mol_button_minor['enabled'] >
+	>
+	type $mol_button_minor__event_click_mol_select_9 = $mol_type_enforce<
+		ReturnType< $mol_select['event_select'] >
+		,
+		ReturnType< $mol_button_minor['event_click'] >
+	>
+	type $mol_button_minor__sub_mol_select_10 = $mol_type_enforce<
+		ReturnType< $mol_select['option_content'] >
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	type $mol_view__sub_mol_select_11 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_search__query_mol_select_12 = $mol_type_enforce<
+		ReturnType< $mol_select['filter_pattern'] >
+		,
+		ReturnType< $mol_search['query'] >
+	>
+	type $mol_search__hint_mol_select_13 = $mol_type_enforce<
+		ReturnType< $mol_select['filter_hint'] >
+		,
+		ReturnType< $mol_search['hint'] >
+	>
+	type $mol_search__submit_mol_select_14 = $mol_type_enforce<
+		ReturnType< $mol_select['submit'] >
+		,
+		ReturnType< $mol_search['submit'] >
+	>
+	type $mol_search__enabled_mol_select_15 = $mol_type_enforce<
+		ReturnType< $mol_select['enabled'] >
+		,
+		ReturnType< $mol_search['enabled'] >
+	>
+	export class $mol_select extends $mol_pick {
+		enabled( ): boolean
+		event_select( id: any, next?: any ): any
+		option_label( id: any): string
+		filter_pattern( next?: string ): string
+		Option_label( id: any): $mol_dimmer
+		option_content( id: any): readonly(any)[]
+		no_options_message( ): string
+		nav_components( ): readonly($mol_view)[]
+		option_focused( next?: any ): any
+		nav_cycle( next?: boolean ): boolean
+		Nav( ): $mol_nav
+		menu_content( ): readonly($mol_view)[]
+		Menu( ): $mol_list
+		Bubble_pane( ): $mol_scroll
+		filter_hint( ): string
+		submit( next?: any ): any
+		dictionary( next?: Record<string, any> ): Record<string, any>
+		options( ): readonly(string)[]
+		value( next?: string ): string
+		option_label_default( ): string
+		Option_row( id: any): $mol_button_minor
+		No_options( ): $mol_view
+		plugins( ): readonly(any)[]
+		hint( ): string
+		bubble_content( ): readonly(any)[]
+		Filter( ): $mol_search
+		Trigger_icon( ): $mol_icon_dots_vertical
+		trigger_enabled( ): ReturnType< $mol_select['enabled'] >
+	}
+	
+}
+
+//# sourceMappingURL=select.view.tree.d.ts.map
+declare namespace $.$$ {
+    class $mol_select extends $.$mol_select {
+        filter_pattern(next?: string): string;
+        open(): void;
+        options(): readonly string[];
+        options_filtered(): readonly string[];
+        option_label(id: string): any;
+        option_rows(): $mol_button_minor[];
+        option_focused(component?: $mol_view): $mol_view | $.$mol_search | null;
+        event_select(id: string, event?: MouseEvent): void;
+        nav_components(): ($mol_button_minor | $.$mol_search)[];
+        trigger_content(): readonly $mol_view_content[];
+        menu_content(): $mol_view[];
+    }
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
+    function $mol_hash_numbers(buff: ArrayLike<number>, seed?: number): number;
+}
+
+declare namespace $ {
+    function $mol_hash_string(str: string, seed?: number): number;
+}
+
+declare namespace $ {
+
+	export class $mol_avatar extends $mol_icon {
+		view_box( ): string
+		id( ): string
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=avatar.view.tree.d.ts.map
+declare namespace $.$$ {
+    class $mol_avatar extends $.$mol_avatar {
+        path(): string;
+    }
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
+
+	export class $mol_icon_sync extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=sync.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_icon_sync_off extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=off.view.tree.d.ts.map
 declare namespace $ {
 
 	export class $mol_link extends $mol_view {
@@ -2494,271 +3070,104 @@ declare namespace $ {
 }
 
 declare namespace $ {
-
-	export class $mol_image extends $mol_view {
-		uri( ): string
-		title( ): string
-		loading( ): string
-		decoding( ): string
-		cors( ): any
-		natural_width( ): number
-		natural_height( ): number
-		load( next?: any ): any
-		dom_name( ): string
-		attr( ): Record<string, any> & ReturnType< $mol_view['attr'] >
-		event( ): Record<string, any>
-		minimal_width( ): number
-		minimal_height( ): number
-	}
-	
-}
-
-//# sourceMappingURL=image.view.tree.d.ts.map
-declare namespace $.$$ {
-    class $mol_image extends $.$mol_image {
-        natural_width(next?: null): number;
-        natural_height(next?: null): number;
-        load(): void;
+    class $mol_wire_set<Value> extends Set<Value> {
+        pub: $mol_wire_pub;
+        has(value: Value): boolean;
+        entries(): SetIterator<[Value, Value]>;
+        keys(): SetIterator<Value>;
+        values(): SetIterator<Value>;
+        forEach(task: (value: Value, value2: Value, set: Set<Value>) => void, self?: any): void;
+        [Symbol.iterator](): SetIterator<Value>;
+        get size(): number;
+        add(value: Value): this;
+        delete(value: Value): boolean;
+        clear(): void;
+        item(val: Value, next?: boolean): boolean;
     }
 }
 
 declare namespace $ {
-}
-
-declare namespace $ {
-
-	export class $mol_icon_music extends $mol_icon {
-		path( ): string
-	}
-	
-}
-
-//# sourceMappingURL=music.view.tree.d.ts.map
-declare namespace $ {
-
-	export class $mol_icon_arrow_up extends $mol_icon {
-		path( ): string
-	}
-	
-}
-
-//# sourceMappingURL=up.view.tree.d.ts.map
-declare namespace $ {
-
-	export class $mol_icon_arrow_down extends $mol_icon {
-		path( ): string
-	}
-	
-}
-
-//# sourceMappingURL=down.view.tree.d.ts.map
-declare namespace $ {
-
-	export class $mol_icon_delete extends $mol_icon {
-		path( ): string
-	}
-	
-}
-
-//# sourceMappingURL=delete.view.tree.d.ts.map
-declare namespace $ {
-
-	export class $mol_icon_archive extends $mol_icon {
-		path( ): string
-	}
-	
-}
-
-//# sourceMappingURL=archive.view.tree.d.ts.map
-declare namespace $ {
-
-	export class $mol_icon_restore extends $mol_icon {
-		path( ): string
-	}
-	
-}
-
-//# sourceMappingURL=restore.view.tree.d.ts.map
-declare namespace $ {
-
-	export class $mol_icon_delete_forever extends $mol_icon {
-		path( ): string
-	}
-	
-}
-
-//# sourceMappingURL=forever.view.tree.d.ts.map
-declare namespace $ {
-    class $bog_vk_api extends $mol_object {
-        static default_proxy_url: string;
-        static token(next?: string): string;
-        static cookies(next?: string): string;
-        static proxy_url(next?: string): string;
-        static fetch_proxy(endpoint: string, body: Record<string, any>): Promise<any>;
-        static my_audios(): $bog_vk_api_audio_list;
-        static search_audios(query: string): $bog_vk_api_audio_list;
-    }
-    interface $bog_vk_api_audio {
-        id: number;
-        owner_id: number;
-        artist: string;
-        title: string;
-        duration: number;
-        url: string;
-        access_key?: string;
-        album?: {
-            id: number;
-            title: string;
-            thumb?: {
-                photo_300?: string;
-                photo_600?: string;
-            };
-        };
-    }
-    interface $bog_vk_api_audio_list {
-        count: number;
-        items: $bog_vk_api_audio[];
+    enum $mol_rest_code {
+        'Continue' = 100,
+        'Switching protocols' = 101,
+        'Processing' = 102,
+        'OK' = 200,
+        'Created' = 201,
+        'Accepted' = 202,
+        'Non-Authoritative Information' = 203,
+        'No Content' = 204,
+        'Reset Content' = 205,
+        'Partial Content' = 206,
+        'Multi Status' = 207,
+        'Already Reported' = 208,
+        'IM Used' = 226,
+        'Multiple Choices' = 300,
+        'Moved Permanently' = 301,
+        'Found' = 302,
+        'See Other' = 303,
+        'Not Modified' = 304,
+        'Use Proxy' = 305,
+        'Temporary Redirect' = 307,
+        'Bad Request' = 400,
+        'Unauthorized' = 401,
+        'Payment Required' = 402,
+        'Forbidden' = 403,
+        'Not Found' = 404,
+        'Method Not Allowed' = 405,
+        'Not Acceptable' = 406,
+        'Proxy Authentication Required' = 407,
+        'Request Timeout' = 408,
+        'Conflict' = 409,
+        'Gone' = 410,
+        'Length Required' = 411,
+        'Precondition Failed' = 412,
+        'Request Entity Too Large' = 413,
+        'Request URI Too Long' = 414,
+        'Unsupported Media Type' = 415,
+        'Requested Range Not Satisfiable' = 416,
+        'Expectation Failed' = 417,
+        'Teapot' = 418,
+        'Unprocessable Entity' = 422,
+        'Locked' = 423,
+        'Failed Dependency' = 424,
+        'Upgrade Required' = 426,
+        'Precondition Required' = 428,
+        'Too Many Requests' = 429,
+        'Request Header Fields Too Large' = 431,
+        'Unavailable For Legal Reasons' = 451,
+        'Internal Server Error' = 500,
+        'Not Implemented' = 501,
+        'Bad Gateway' = 502,
+        'Service Unavailable' = 503,
+        'Gateway Timeout' = 504,
+        'HTTP Version Not Supported' = 505,
+        'Insufficient Storage' = 507,
+        'Loop Detected' = 508,
+        'Not Extended' = 510,
+        'Network Authentication Required' = 511,
+        'Network Read Timeout Error' = 598,
+        'Network Connect Timeout Error' = 599
     }
 }
 
 declare namespace $ {
-    function $mol_db_response<Result>(request: IDBRequest<Result>): Promise<Result>;
+    function $mol_dom_serialize(node: Node): string;
 }
 
 declare namespace $ {
-    function $mol_db<Schema extends $mol_db_schema>(this: $, name: string, ...migrations: ((transaction: $mol_db_transaction<$mol_db_schema>) => void)[]): Promise<$mol_db_database<Schema>>;
-}
-
-declare namespace $ {
-    class $mol_db_store<Schema extends $mol_db_store_schema> {
-        readonly native: IDBObjectStore;
-        constructor(native: IDBObjectStore);
-        get name(): string;
-        get path(): string | string[] | null;
-        get incremental(): boolean;
-        get indexes(): { [Name in keyof Schema["Indexes"]]: $mol_db_index<{
-            Key: Schema["Indexes"][Name];
-            Doc: Schema["Doc"];
-        }>; };
-        index_make(name: string, path?: string[], unique?: boolean, multiEntry?: boolean): IDBIndex;
-        index_drop(name: string): this;
-        get transaction(): $mol_db_transaction<$mol_db_schema>;
-        get db(): $mol_db_database<$mol_db_schema>;
-        clear(): Promise<undefined>;
-        count(keys?: Schema['Key'] | IDBKeyRange): Promise<number>;
-        put(doc: Schema['Doc'], key?: Schema['Key']): Promise<IDBValidKey>;
-        get(key: Schema['Key']): Promise<Schema["Doc"] | undefined>;
-        select(key?: Schema['Key'] | IDBKeyRange | null, count?: number): Promise<Schema["Doc"][]>;
-        drop(keys: Schema['Key'] | IDBKeyRange): Promise<undefined>;
+    type $mol_rest_port_mime_hi = 'text' | 'application' | 'font' | 'audio' | 'video' | 'image' | 'model';
+    type $mol_rest_port_mime = `${$mol_rest_port_mime_hi}/${string}`;
+    class $mol_rest_port extends $mol_object {
+        send_code(code: $mol_rest_code): void;
+        send_type(mime: $mol_rest_port_mime): void;
+        send_data(data: null | string | Uint8Array<ArrayBuffer> | Element | object): void;
+        send_nil(): void;
+        send_bin(data: Uint8Array<ArrayBuffer>): void;
+        send_text(data: string): void;
+        send_json(data: object): void;
+        send_dom(data: Element): void;
+        static make<This extends typeof $mol_object>(this: This, config: Partial<InstanceType<This>>): InstanceType<This>;
     }
-}
-
-declare namespace $ {
-    type $mol_db_store_schema = {
-        Key: IDBValidKey;
-        Doc: unknown;
-        Indexes: Record<string, IDBValidKey[]>;
-    };
-}
-
-declare namespace $ {
-    class $mol_db_index<Schema extends $mol_db_index_schema> {
-        readonly native: IDBIndex;
-        constructor(native: IDBIndex);
-        get name(): string;
-        get paths(): string[];
-        get unique(): boolean;
-        get multiple(): boolean;
-        get store(): $mol_db_store<$mol_db_store_schema>;
-        get transaction(): $mol_db_transaction<$mol_db_schema>;
-        get db(): $mol_db_database<$mol_db_schema>;
-        count(keys?: Schema['Key'] | IDBKeyRange): Promise<number>;
-        get(key: Schema['Key']): Promise<Schema["Doc"] | undefined>;
-        select(key?: Schema['Key'] | IDBKeyRange | null, count?: number): Promise<Schema["Doc"][]>;
-    }
-}
-
-declare namespace $ {
-    type $mol_db_index_schema = {
-        Key: IDBValidKey[];
-        Doc: unknown;
-    };
-}
-
-declare namespace $ {
-}
-
-declare namespace $ {
-    type $mol_db_schema = Record<string, $mol_db_store_schema>;
-}
-
-declare namespace $ {
-    class $mol_db_database<Schema extends $mol_db_schema> {
-        readonly native: IDBDatabase;
-        constructor(native: IDBDatabase);
-        get name(): string;
-        get version(): number;
-        get stores(): (keyof Schema)[];
-        read<Names extends Exclude<keyof Schema, symbol | number>>(...names: Names[]): Pick<Schema, Names> extends infer T extends $mol_db_schema ? { [Name in keyof T]: $mol_db_store<T[Name]>; } : never;
-        change<Names extends Exclude<keyof Schema, symbol | number>>(...names: Names[]): $mol_db_transaction<Pick<Schema, Names>>;
-        kill(): Promise<IDBDatabase>;
-        destructor(): void;
-    }
-}
-
-interface IDBTransaction {
-    commit(): void;
-}
-declare namespace $ {
-    class $mol_db_transaction<Schema extends $mol_db_schema> {
-        readonly native: IDBTransaction;
-        constructor(native: IDBTransaction);
-        get stores(): { [Name in keyof Schema]: $mol_db_store<Schema[Name]>; };
-        store_make(name: string): IDBObjectStore;
-        store_drop(name: string): this;
-        abort(): void;
-        commit(): Promise<void>;
-        get db(): $mol_db_database<$mol_db_schema>;
-    }
-}
-
-declare namespace $ {
-    type $bog_vk_cache_schema = {
-        tracks: {
-            Key: string;
-            Doc: Blob;
-            Indexes: {};
-        };
-        meta: {
-            Key: string;
-            Doc: $bog_vk_api_audio;
-            Indexes: {};
-        };
-    };
-    export class $bog_vk_cache extends $mol_object {
-        static version(next?: number): number;
-        static db(): $mol_db_database<$bog_vk_cache_schema>;
-        static db_async(): Promise<$mol_db_database<$bog_vk_cache_schema>>;
-        static cache_key(audio: $bog_vk_api_audio): string;
-        static get(audio: $bog_vk_api_audio): Promise<string | null>;
-        static is_cached(audio: $bog_vk_api_audio): Promise<boolean>;
-        static drop(audio: $bog_vk_api_audio): Promise<void>;
-        static all_cached(): Promise<$bog_vk_api_audio[]>;
-        static adts_to_m4a(adts: Uint8Array): Uint8Array;
-        static extract_audio(ts: Uint8Array): {
-            data: Uint8Array;
-            mime: string;
-        };
-        static demux_ts_audio(ts: Uint8Array): Uint8Array | null;
-        static parse_m3u8(text: string, base_url: string): {
-            segments: string[];
-            key_url: string;
-            key_iv: string;
-        };
-        static decrypt_segment(data: ArrayBuffer, cryptoKey: CryptoKey, index: number, iv_hex: string): Promise<ArrayBuffer>;
-        static save_hls(audio: $bog_vk_api_audio): Promise<void>;
-    }
-    export {};
 }
 
 declare namespace $ {
@@ -2780,44 +3189,6 @@ declare namespace $ {
 declare namespace $ {
     function $mol_base64_ae_encode(buffer: Uint8Array<ArrayBuffer>): string;
     function $mol_base64_ae_decode(str: string): Uint8Array<ArrayBuffer>;
-}
-
-declare namespace $ {
-    function $mol_crypto2_hash(input: ArrayBufferView): Uint8Array<ArrayBuffer>;
-}
-
-declare namespace $ {
-    let $mol_crypto_hash: typeof $mol_crypto2_hash;
-}
-
-declare namespace $ {
-    function $giper_baza_link_compare(left: $giper_baza_link, right: $giper_baza_link): 1 | -1 | 0;
-    class $giper_baza_link extends Object {
-        readonly str: string;
-        constructor(str: string);
-        static hole: $giper_baza_link;
-        static check(val: string): string | null;
-        [$mol_key_handle](): string;
-        toString(): string;
-        toJSON(): string;
-        [Symbol.toPrimitive](): string;
-        [$mol_dev_format_head](): any[];
-        toBin(): Uint8Array<ArrayBuffer>;
-        static from_int(int: number): $giper_baza_link;
-        static from_bin(bin: Uint8Array<ArrayBuffer>): $giper_baza_link;
-        static _hash_cache: WeakMap<ArrayBufferView<ArrayBufferLike>, $giper_baza_link>;
-        static hash_bin(bin: ArrayBufferView): $giper_baza_link;
-        static hash_str(str: string): $giper_baza_link;
-        peer(): $giper_baza_link;
-        area(): $giper_baza_link;
-        head(): $giper_baza_link;
-        lord(): $giper_baza_link;
-        land(): $giper_baza_link;
-        relate(base: $giper_baza_link): $giper_baza_link;
-        resolve(base: $giper_baza_link): $giper_baza_link;
-        mix(mixin: Uint8Array<ArrayBuffer> | $giper_baza_link): Uint8Array<ArrayBuffer>;
-    }
-    function $giper_baza_link_base<Res>(base: $giper_baza_link, task: () => Res): Res;
 }
 
 declare namespace $ {
@@ -2893,6 +3264,44 @@ declare namespace $ {
         socket(): $mol_crypto2_socket;
         toString(): string;
     }
+}
+
+declare namespace $ {
+    function $mol_crypto2_hash(input: ArrayBufferView): Uint8Array<ArrayBuffer>;
+}
+
+declare namespace $ {
+    let $mol_crypto_hash: typeof $mol_crypto2_hash;
+}
+
+declare namespace $ {
+    function $giper_baza_link_compare(left: $giper_baza_link, right: $giper_baza_link): 1 | -1 | 0;
+    class $giper_baza_link extends Object {
+        readonly str: string;
+        constructor(str: string);
+        static hole: $giper_baza_link;
+        static check(val: string): string | null;
+        [$mol_key_handle](): string;
+        toString(): string;
+        toJSON(): string;
+        [Symbol.toPrimitive](): string;
+        [$mol_dev_format_head](): any[];
+        toBin(): Uint8Array<ArrayBuffer>;
+        static from_int(int: number): $giper_baza_link;
+        static from_bin(bin: Uint8Array<ArrayBuffer>): $giper_baza_link;
+        static _hash_cache: WeakMap<ArrayBufferView<ArrayBufferLike>, $giper_baza_link>;
+        static hash_bin(bin: ArrayBufferView): $giper_baza_link;
+        static hash_str(str: string): $giper_baza_link;
+        peer(): $giper_baza_link;
+        area(): $giper_baza_link;
+        head(): $giper_baza_link;
+        lord(): $giper_baza_link;
+        land(): $giper_baza_link;
+        relate(base: $giper_baza_link): $giper_baza_link;
+        resolve(base: $giper_baza_link): $giper_baza_link;
+        mix(mixin: Uint8Array<ArrayBuffer> | $giper_baza_link): Uint8Array<ArrayBuffer>;
+    }
+    function $giper_baza_link_base<Res>(base: $giper_baza_link, task: () => Res): Res;
 }
 
 declare namespace $ {
@@ -2979,6 +3388,97 @@ declare namespace $ {
         pass(): $giper_baza_auth_pass;
         secret_mutual(pass: $giper_baza_auth_pass): $mol_crypto_sacred;
         [$mol_dev_format_head](): any[];
+    }
+}
+
+declare namespace $ {
+    class $mol_rest_port_ws extends $mol_rest_port {
+    }
+}
+
+declare namespace $ {
+    enum $mol_websocket_frame_op {
+        con = 0,
+        txt = 1,
+        bin = 2,
+        stop = 8,
+        ping = 9,
+        pong = 10
+    }
+    class $mol_websocket_frame extends $mol_buffer {
+        kind(next?: {
+            op: keyof typeof $mol_websocket_frame_op;
+            fin: boolean;
+        }): {
+            op: keyof typeof $mol_websocket_frame_op;
+            fin: boolean;
+        } | {
+            op: "stop" | "con" | "txt" | "bin" | "ping" | "pong";
+            fin: number;
+        };
+        data(next?: {
+            size: number;
+            mask: boolean;
+        }): {
+            size: number;
+            mask: boolean;
+        } | {
+            size: number;
+            mask: number;
+        };
+        size(): number;
+        mask(): Uint8Array<ArrayBuffer>;
+        toString(): string;
+        static make(op: keyof typeof $mol_websocket_frame_op, size?: number, mask?: boolean, fin?: boolean): $mol_websocket_frame;
+    }
+}
+
+declare namespace $ {
+    class $mol_rest_port_ws_std extends $mol_rest_port_ws {
+        socket: WebSocket;
+        send_nil(): void;
+        send_bin(data: Uint8Array<ArrayBuffer>): void;
+        send_text(data: string): void;
+    }
+}
+
+declare namespace $ {
+    class $mol_rest_port_ws_node extends $mol_rest_port_ws {
+        socket: InstanceType<$node['stream']['Duplex']>;
+        send_nil(): void;
+        send_bin(data: Uint8Array<ArrayBuffer>): void;
+        send_text(data: string): void;
+    }
+}
+
+declare namespace $ {
+    enum $giper_baza_slot_kind {
+        free = 0,
+        land = 76,
+        sand = 252,
+        gift = 253,
+        seal = 254,
+        pass = 255
+    }
+}
+
+declare namespace $ {
+    class $mol_graph<Node, Edge> {
+        nodes: Set<Node>;
+        edges_out: Map<Node, Map<Node, Edge>>;
+        edges_in: Map<Node, Map<Node, Edge>>;
+        link(from: Node, to: Node, edge: Edge): void;
+        unlink(from: Node, to: Node): void;
+        link_out(from: Node, to: Node, edge: Edge): void;
+        link_in(to: Node, from: Node, edge: Edge): void;
+        edge(from: Node, to: Node): NonNullable<Edge> | null;
+        edge_out(from: Node, to: Node): NonNullable<Edge> | null;
+        edge_in(to: Node, from: Node): NonNullable<Edge> | null;
+        acyclic(get_weight: (edge: Edge) => number): void;
+        get sorted(): Set<Node>;
+        get roots(): Node[];
+        nodes_depth(select: (left: number, right: number) => number): Map<Node, number>;
+        depth_nodes(select: (left: number, right: number) => number): Node[][];
     }
 }
 
@@ -3115,166 +3615,6 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    type $mol_time_interval_config = string | {
-        start?: $mol_time_moment_config;
-        end?: $mol_time_moment_config;
-        duration?: $mol_time_duration_config;
-    };
-    class $mol_time_interval extends $mol_time_base {
-        constructor(config: $mol_time_interval_config);
-        private _start;
-        get start(): $mol_time_moment;
-        private _end;
-        get end(): $mol_time_moment;
-        private _duration;
-        get duration(): $mol_time_duration;
-        toJSON(): string;
-        toString(): string;
-        [Symbol.toPrimitive](mode: 'default' | 'number' | 'string'): string;
-    }
-}
-
-declare namespace $ {
-    function $mol_bigint_encode(num: bigint): Uint8Array<ArrayBuffer>;
-}
-
-declare namespace $ {
-    function $mol_charset_ucf_encode(str: string): Uint8Array<ArrayBuffer>;
-    function $mol_charset_ucf_encode_to(str: string, buf: Uint8Array<ArrayBuffer>, from?: number): number;
-    function $mol_charset_ucf_decode(buffer: Uint8Array<ArrayBuffer>, mode?: number): string;
-}
-
-declare namespace $ {
-    function $mol_bigint_decode(buf: Uint8Array<ArrayBuffer>): bigint;
-}
-
-declare namespace $ {
-    function $mol_dom_serialize(node: Node): string;
-}
-
-declare namespace $ {
-    function $mol_dom_parse(text: string, type?: DOMParserSupportedType): Document;
-}
-
-declare namespace $ {
-    enum $mol_vary_tip {
-        uint = 0,
-        link = 32,
-        spec = 64,
-        list = 96,
-        blob = 128,
-        text = 160,
-        tupl = 192,
-        sint = 224
-    }
-    enum $mol_vary_len {
-        L1 = 28,
-        L2 = 29,
-        L4 = 30,
-        L8 = 31,
-        LA = 32
-    }
-    enum $mol_vary_spec {
-        none,
-        true,
-        fake,
-        both,
-        fp16,
-        fp32,
-        fp64,
-        f128,
-        f256
-    }
-    class $mol_vary_class extends Object {
-        lean_symbol: symbol;
-        array: Uint8Array<ArrayBuffer>;
-        buffer: DataView<ArrayBuffer>;
-        pack(data: readonly unknown[]): Uint8Array<ArrayBuffer>;
-        take(array: Uint8Array<ArrayBuffer>): unknown;
-        rich_index: Map<string | null, any>;
-        zone(): $mol_vary_class;
-        rich_node(keys: readonly string[]): Map<string | null, any>;
-        lean_find(val: any): any;
-        type<const Instance extends object, const Keys extends readonly any[], const Vals extends readonly any[]>({ type, keys, rich, lean }: {
-            type: new (...vals: any[]) => Instance;
-            keys: Keys;
-            lean: (obj: Instance) => Vals;
-            rich: (vals: Vals) => Instance;
-        }): void;
-    }
-    let $mol_vary: $mol_vary_class;
-}
-
-declare namespace $ {
-    type $mol_type_result<Func> = Func extends (...params: any) => infer Result ? Result : Func extends new (...params: any) => infer Result ? Result : never;
-}
-
-declare namespace $ {
-    type $giper_baza_vary_type = null | boolean | number | bigint | string | Uint8Array<ArrayBuffer> | Uint16Array<ArrayBuffer> | Uint32Array<ArrayBuffer> | BigUint64Array<ArrayBuffer> | Int8Array<ArrayBuffer> | Int16Array<ArrayBuffer> | Int32Array<ArrayBuffer> | BigInt64Array<ArrayBuffer> | Float64Array<ArrayBuffer> | Float32Array<ArrayBuffer> | Float64Array<ArrayBuffer> | $mol_time_moment | $mol_time_duration | $mol_time_interval | $mol_tree2 | $giper_baza_link | Element | readonly $giper_baza_vary_type[] | Readonly<{
-        [key in string]: $giper_baza_vary_type;
-    }>;
-    let $giper_baza_vary: $mol_vary_class;
-    function $giper_baza_vary_switch<Ways extends {
-        none: (vary: null) => any;
-        blob: (vary: ArrayBufferView<ArrayBuffer>) => any;
-        bool: (vary: boolean) => any;
-        bint: (vary: bigint) => any;
-        real: (vary: number) => any;
-        link: (vary: $giper_baza_link) => any;
-        text: (vary: string) => any;
-        time: (vary: $mol_time_moment) => any;
-        dura: (vary: $mol_time_duration) => any;
-        span: (vary: $mol_time_interval) => any;
-        dict: (vary: {}) => any;
-        list: (vary: any[]) => any;
-        elem: (vary: Element) => any;
-        tree: (vary: $mol_tree2) => any;
-    }>(vary: $giper_baza_vary_type, ways: Ways): $mol_type_result<Ways[keyof Ways]>;
-}
-
-declare namespace $ {
-    function $mol_tree2_bin_to_bytes(tree: $mol_tree2): Uint8Array<ArrayBuffer>;
-    function $mol_tree2_bin_from_bytes(bytes: ArrayLike<number>, span?: $mol_span): $mol_tree2;
-    function $mol_tree2_bin_from_string(str: string, span?: $mol_span): $mol_tree2;
-}
-
-declare namespace $ {
-    function $mol_tree2_xml_from_dom(dom: Node): $mol_tree2;
-}
-
-declare namespace $ {
-    function $giper_baza_vary_cast_blob(vary: $giper_baza_vary_type): ArrayLike<number | bigint> | null;
-    function $giper_baza_vary_cast_bool(vary: $giper_baza_vary_type): boolean | null;
-    function $giper_baza_vary_cast_bint(vary: $giper_baza_vary_type): bigint | null;
-    function $giper_baza_vary_cast_real(vary: $giper_baza_vary_type): number | null;
-    function $giper_baza_vary_cast_link(vary: $giper_baza_vary_type): $giper_baza_link | null;
-    function $giper_baza_vary_cast_text(vary: $giper_baza_vary_type): string | null;
-    function $giper_baza_vary_cast_time(vary: $giper_baza_vary_type): $mol_time_moment | null;
-    function $giper_baza_vary_cast_dura(vary: $giper_baza_vary_type): $mol_time_duration | null;
-    function $giper_baza_vary_cast_span(vary: $giper_baza_vary_type): $mol_time_interval | null;
-    function $giper_baza_vary_cast_dict(vary: $giper_baza_vary_type): {} | null;
-    function $giper_baza_vary_cast_list(vary: $giper_baza_vary_type): readonly any[] | null;
-    function $giper_baza_vary_cast_elem(vary: $giper_baza_vary_type): Element | null;
-    function $giper_baza_vary_cast_tree(vary: $giper_baza_vary_type): $mol_tree2 | null;
-    const $giper_baza_vary_cast_funcs: {
-        readonly none: () => null;
-        readonly blob: typeof $giper_baza_vary_cast_blob;
-        readonly bool: typeof $giper_baza_vary_cast_bool;
-        readonly bint: typeof $giper_baza_vary_cast_bint;
-        readonly real: typeof $giper_baza_vary_cast_real;
-        readonly link: typeof $giper_baza_vary_cast_link;
-        readonly text: typeof $giper_baza_vary_cast_text;
-        readonly time: typeof $giper_baza_vary_cast_time;
-        readonly dura: typeof $giper_baza_vary_cast_dura;
-        readonly span: typeof $giper_baza_vary_cast_span;
-        readonly dict: typeof $giper_baza_vary_cast_dict;
-        readonly list: typeof $giper_baza_vary_cast_list;
-        readonly elem: typeof $giper_baza_vary_cast_elem;
-        readonly tree: typeof $giper_baza_vary_cast_tree;
-    };
-}
-
-declare namespace $ {
     type $mol_data_value<Input = any, Output = any> = (val: Input) => Output;
 }
 
@@ -3308,6 +3648,10 @@ declare namespace $ {
 
 declare namespace $ {
     function $mol_func_is_class<Func extends Function>(func: Func): func is Func & (new (...args: any[]) => any);
+}
+
+declare namespace $ {
+    type $mol_type_result<Func> = Func extends (...params: any) => infer Result ? Result : Func extends new (...params: any) => infer Result ? Result : never;
 }
 
 declare namespace $ {
@@ -3389,60 +3733,6 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    class $giper_baza_pawn extends $mol_object {
-        static tag: keyof typeof $giper_baza_unit_sand_tag;
-        static meta: null | $giper_baza_link;
-        land(): $giper_baza_land;
-        head(): $giper_baza_link;
-        land_link(): $giper_baza_link;
-        link(): $giper_baza_link;
-        toJSON(): string;
-        cast<Pawn extends typeof $giper_baza_pawn>(Pawn: Pawn): InstanceType<Pawn>;
-        pawns<Pawn extends typeof $giper_baza_pawn>(Pawn: Pawn | null): readonly InstanceType<Pawn>[];
-        units(): $giper_baza_unit_sand[];
-        units_of(peer: $giper_baza_link | null): $giper_baza_unit_sand[];
-        meta(next?: $giper_baza_link): $giper_baza_link | null;
-        meta_of(peer: $giper_baza_link | null): $giper_baza_link | null;
-        filled(): boolean;
-        can_change(): boolean;
-        last_change(): $mol_time_moment | null;
-        authors(): $giper_baza_auth_pass[];
-        [$mol_dev_format_head](): any[];
-    }
-}
-
-declare namespace $ {
-    enum $giper_baza_slot_kind {
-        free = 0,
-        land = 76,
-        sand = 252,
-        gift = 253,
-        seal = 254,
-        pass = 255
-    }
-}
-
-declare namespace $ {
-    class $mol_graph<Node, Edge> {
-        nodes: Set<Node>;
-        edges_out: Map<Node, Map<Node, Edge>>;
-        edges_in: Map<Node, Map<Node, Edge>>;
-        link(from: Node, to: Node, edge: Edge): void;
-        unlink(from: Node, to: Node): void;
-        link_out(from: Node, to: Node, edge: Edge): void;
-        link_in(to: Node, from: Node, edge: Edge): void;
-        edge(from: Node, to: Node): NonNullable<Edge> | null;
-        edge_out(from: Node, to: Node): NonNullable<Edge> | null;
-        edge_in(to: Node, from: Node): NonNullable<Edge> | null;
-        acyclic(get_weight: (edge: Edge) => number): void;
-        get sorted(): Set<Node>;
-        get roots(): Node[];
-        nodes_depth(select: (left: number, right: number) => number): Map<Node, number>;
-        depth_nodes(select: (left: number, right: number) => number): Node[][];
-    }
-}
-
-declare namespace $ {
     type $giper_baza_face_data = Iterable<readonly [peer: string, face: $giper_baza_face]>;
     class $giper_baza_face extends Object {
         time: number;
@@ -3493,7 +3783,178 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    function $mol_hash_numbers(buff: ArrayLike<number>, seed?: number): number;
+    type $mol_time_interval_config = string | {
+        start?: $mol_time_moment_config;
+        end?: $mol_time_moment_config;
+        duration?: $mol_time_duration_config;
+    };
+    class $mol_time_interval extends $mol_time_base {
+        constructor(config: $mol_time_interval_config);
+        private _start;
+        get start(): $mol_time_moment;
+        private _end;
+        get end(): $mol_time_moment;
+        private _duration;
+        get duration(): $mol_time_duration;
+        toJSON(): string;
+        toString(): string;
+        [Symbol.toPrimitive](mode: 'default' | 'number' | 'string'): string;
+    }
+}
+
+declare namespace $ {
+    function $mol_bigint_encode(num: bigint): Uint8Array<ArrayBuffer>;
+}
+
+declare namespace $ {
+    function $mol_charset_ucf_encode(str: string): Uint8Array<ArrayBuffer>;
+    function $mol_charset_ucf_encode_to(str: string, buf: Uint8Array<ArrayBuffer>, from?: number): number;
+    function $mol_charset_ucf_decode(buffer: Uint8Array<ArrayBuffer>, mode?: number): string;
+}
+
+declare namespace $ {
+    function $mol_bigint_decode(buf: Uint8Array<ArrayBuffer>): bigint;
+}
+
+declare namespace $ {
+    function $mol_dom_parse(text: string, type?: DOMParserSupportedType): Document;
+}
+
+declare namespace $ {
+    enum $mol_vary_tip {
+        uint = 0,
+        link = 32,
+        spec = 64,
+        list = 96,
+        blob = 128,
+        text = 160,
+        tupl = 192,
+        sint = 224
+    }
+    enum $mol_vary_len {
+        L1 = 28,
+        L2 = 29,
+        L4 = 30,
+        L8 = 31,
+        LA = 32
+    }
+    enum $mol_vary_spec {
+        none,
+        true,
+        fake,
+        both,
+        fp16,
+        fp32,
+        fp64,
+        f128,
+        f256
+    }
+    class $mol_vary_class extends Object {
+        lean_symbol: symbol;
+        array: Uint8Array<ArrayBuffer>;
+        buffer: DataView<ArrayBuffer>;
+        pack(data: readonly unknown[]): Uint8Array<ArrayBuffer>;
+        take(array: Uint8Array<ArrayBuffer>): unknown;
+        rich_index: Map<string | null, any>;
+        zone(): $mol_vary_class;
+        rich_node(keys: readonly string[]): Map<string | null, any>;
+        lean_find(val: any): any;
+        type<const Instance extends object, const Keys extends readonly any[], const Vals extends readonly any[]>({ type, keys, rich, lean }: {
+            type: new (...vals: any[]) => Instance;
+            keys: Keys;
+            lean: (obj: Instance) => Vals;
+            rich: (vals: Vals) => Instance;
+        }): void;
+    }
+    let $mol_vary: $mol_vary_class;
+}
+
+declare namespace $ {
+    type $giper_baza_vary_type = null | boolean | number | bigint | string | Uint8Array<ArrayBuffer> | Uint16Array<ArrayBuffer> | Uint32Array<ArrayBuffer> | BigUint64Array<ArrayBuffer> | Int8Array<ArrayBuffer> | Int16Array<ArrayBuffer> | Int32Array<ArrayBuffer> | BigInt64Array<ArrayBuffer> | Float64Array<ArrayBuffer> | Float32Array<ArrayBuffer> | Float64Array<ArrayBuffer> | $mol_time_moment | $mol_time_duration | $mol_time_interval | $mol_tree2 | $giper_baza_link | Element | readonly $giper_baza_vary_type[] | Readonly<{
+        [key in string]: $giper_baza_vary_type;
+    }>;
+    let $giper_baza_vary: $mol_vary_class;
+    function $giper_baza_vary_switch<Ways extends {
+        none: (vary: null) => any;
+        blob: (vary: ArrayBufferView<ArrayBuffer>) => any;
+        bool: (vary: boolean) => any;
+        bint: (vary: bigint) => any;
+        real: (vary: number) => any;
+        link: (vary: $giper_baza_link) => any;
+        text: (vary: string) => any;
+        time: (vary: $mol_time_moment) => any;
+        dura: (vary: $mol_time_duration) => any;
+        span: (vary: $mol_time_interval) => any;
+        dict: (vary: {}) => any;
+        list: (vary: any[]) => any;
+        elem: (vary: Element) => any;
+        tree: (vary: $mol_tree2) => any;
+    }>(vary: $giper_baza_vary_type, ways: Ways): $mol_type_result<Ways[keyof Ways]>;
+}
+
+declare namespace $ {
+    function $mol_tree2_bin_to_bytes(tree: $mol_tree2): Uint8Array<ArrayBuffer>;
+    function $mol_tree2_bin_from_bytes(bytes: ArrayLike<number>, span?: $mol_span): $mol_tree2;
+    function $mol_tree2_bin_from_string(str: string, span?: $mol_span): $mol_tree2;
+}
+
+declare namespace $ {
+    function $mol_tree2_xml_from_dom(dom: Node): $mol_tree2;
+}
+
+declare namespace $ {
+    function $giper_baza_vary_cast_blob(vary: $giper_baza_vary_type): ArrayLike<number | bigint> | null;
+    function $giper_baza_vary_cast_bool(vary: $giper_baza_vary_type): boolean | null;
+    function $giper_baza_vary_cast_bint(vary: $giper_baza_vary_type): bigint | null;
+    function $giper_baza_vary_cast_real(vary: $giper_baza_vary_type): number | null;
+    function $giper_baza_vary_cast_link(vary: $giper_baza_vary_type): $giper_baza_link | null;
+    function $giper_baza_vary_cast_text(vary: $giper_baza_vary_type): string | null;
+    function $giper_baza_vary_cast_time(vary: $giper_baza_vary_type): $mol_time_moment | null;
+    function $giper_baza_vary_cast_dura(vary: $giper_baza_vary_type): $mol_time_duration | null;
+    function $giper_baza_vary_cast_span(vary: $giper_baza_vary_type): $mol_time_interval | null;
+    function $giper_baza_vary_cast_dict(vary: $giper_baza_vary_type): {} | null;
+    function $giper_baza_vary_cast_list(vary: $giper_baza_vary_type): readonly any[] | null;
+    function $giper_baza_vary_cast_elem(vary: $giper_baza_vary_type): Element | null;
+    function $giper_baza_vary_cast_tree(vary: $giper_baza_vary_type): $mol_tree2 | null;
+    const $giper_baza_vary_cast_funcs: {
+        readonly none: () => null;
+        readonly blob: typeof $giper_baza_vary_cast_blob;
+        readonly bool: typeof $giper_baza_vary_cast_bool;
+        readonly bint: typeof $giper_baza_vary_cast_bint;
+        readonly real: typeof $giper_baza_vary_cast_real;
+        readonly link: typeof $giper_baza_vary_cast_link;
+        readonly text: typeof $giper_baza_vary_cast_text;
+        readonly time: typeof $giper_baza_vary_cast_time;
+        readonly dura: typeof $giper_baza_vary_cast_dura;
+        readonly span: typeof $giper_baza_vary_cast_span;
+        readonly dict: typeof $giper_baza_vary_cast_dict;
+        readonly list: typeof $giper_baza_vary_cast_list;
+        readonly elem: typeof $giper_baza_vary_cast_elem;
+        readonly tree: typeof $giper_baza_vary_cast_tree;
+    };
+}
+
+declare namespace $ {
+    class $giper_baza_pawn extends $mol_object {
+        static tag: keyof typeof $giper_baza_unit_sand_tag;
+        static meta: null | $giper_baza_link;
+        land(): $giper_baza_land;
+        head(): $giper_baza_link;
+        land_link(): $giper_baza_link;
+        link(): $giper_baza_link;
+        toJSON(): string;
+        cast<Pawn extends typeof $giper_baza_pawn>(Pawn: Pawn): InstanceType<Pawn>;
+        pawns<Pawn extends typeof $giper_baza_pawn>(Pawn: Pawn | null): readonly InstanceType<Pawn>[];
+        units(): $giper_baza_unit_sand[];
+        units_of(peer: $giper_baza_link | null): $giper_baza_unit_sand[];
+        meta(next?: $giper_baza_link): $giper_baza_link | null;
+        meta_of(peer: $giper_baza_link | null): $giper_baza_link | null;
+        filled(): boolean;
+        can_change(): boolean;
+        last_change(): $mol_time_moment | null;
+        authors(): $giper_baza_auth_pass[];
+        [$mol_dev_format_head](): any[];
+    }
 }
 
 declare namespace $ {
@@ -3627,7 +4088,7 @@ declare namespace $ {
     function $giper_baza_unit_sort(units: readonly $giper_baza_unit[]): $giper_baza_unit[];
     class $giper_baza_unit_base extends $mol_buffer {
         static compare(left: $giper_baza_unit_base | undefined, right: $giper_baza_unit_base | undefined): number;
-        static narrow(buf: ArrayBuffer): $giper_baza_auth_pass | $giper_baza_unit_gift | $giper_baza_unit_seal | $giper_baza_unit_sand;
+        static narrow(buf: ArrayBuffer): $giper_baza_auth_pass | $giper_baza_unit_sand | $giper_baza_unit_gift | $giper_baza_unit_seal;
         constructor(buffer: ArrayBuffer, byteOffset?: number, byteLength?: number);
         kind(next?: keyof typeof $giper_baza_unit_kind): Exclude<keyof typeof $giper_baza_unit_kind, 'pass'>;
         choose<Res>(ways: {
@@ -3653,6 +4114,53 @@ declare namespace $ {
         inspect(): string;
         toJSON(): string;
         toString(): string;
+    }
+}
+
+declare namespace $ {
+    type Block = {
+        from: number;
+        size: number;
+        next: Block;
+    };
+    export class $mol_memory_pool extends Object {
+        _free: Block;
+        constructor(size?: number);
+        acquire(size: number): number;
+        release(from: number, size: number): void;
+        empty(): boolean;
+        acquired(): void;
+    }
+    export {};
+}
+
+declare namespace $ {
+    let $giper_baza_unit_seal_limit: number;
+    class $giper_baza_unit_seal extends $giper_baza_unit_base {
+        static length(size: number): number;
+        static make(size: number, wide: boolean): $giper_baza_unit_seal;
+        meta(next?: {
+            size: number;
+            wide: boolean;
+        }): number;
+        size(): number;
+        wide(): boolean;
+        alive_items: Set<string>;
+        alive_full(): boolean;
+        alive_list(): $giper_baza_link[];
+        hash_item(index: number, next?: $giper_baza_link): $giper_baza_link;
+        _hash_list: readonly $giper_baza_link[];
+        hash_list(next?: $giper_baza_link[]): $giper_baza_link[];
+        shot(): $giper_baza_link;
+        sign(next?: Uint8Array<ArrayBuffer>): Uint8Array<ArrayBuffer>;
+        work(): number;
+        rate_min(): 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15;
+        tier_min(): $giper_baza_rank_tier;
+        rank_min(): number;
+        path(): string;
+        inspect(): string;
+        toString(): string;
+        [$mol_dev_format_head](): any[];
     }
 }
 
@@ -3702,6 +4210,36 @@ declare namespace $ {
             time: string;
         };
         tier_min(): $giper_baza_rank_tier.post | $giper_baza_rank_tier.pull;
+        inspect(): string;
+        toString(): string;
+        [$mol_dev_format_head](): any[];
+    }
+}
+
+declare namespace $ {
+    function $giper_baza_unit_gift_sort(gifts: $giper_baza_unit_gift[]): $giper_baza_unit_gift[];
+    class $giper_baza_unit_gift extends $giper_baza_unit_base {
+        static length(): number;
+        static make(): $giper_baza_unit_gift;
+        rank(next?: typeof $giper_baza_rank.Value): number & {
+            $giper_baza_rank: number;
+        };
+        tier(): $giper_baza_rank_tier;
+        rate(): $giper_baza_rank_rate;
+        mate(next?: $giper_baza_link): $giper_baza_link;
+        path(): string;
+        _code: Uint8Array<ArrayBuffer>;
+        code(): Uint8Array<ArrayBuffer>;
+        code_exists(): boolean;
+        dump(): {
+            kind: "seal" | "sand" | "gift";
+            lord: $giper_baza_link;
+            mate: $giper_baza_link;
+            tier: string;
+            rate: $giper_baza_rank_rate;
+            time: string;
+        };
+        tier_min(): $giper_baza_rank_tier;
         inspect(): string;
         toString(): string;
         [$mol_dev_format_head](): any[];
@@ -4478,6 +5016,60 @@ declare namespace $ {
 }
 
 declare namespace $ {
+    type $giper_baza_mine_diff = {
+        ins: readonly $giper_baza_unit[];
+        del: readonly $giper_baza_unit[];
+    };
+    class $giper_baza_mine_temp extends $mol_object {
+        static land(land: $giper_baza_link): $giper_baza_mine_temp;
+        land(): $giper_baza_link;
+        unit_deletes: number;
+        unit_inserts: number;
+        ball_inserts: number;
+        ball_deletes: number;
+        units_persisted: WeakSet<$giper_baza_unit>;
+        units_save(diff: $giper_baza_mine_diff): void;
+        units_load(): readonly $giper_baza_unit[];
+        ball_load(sand: $giper_baza_unit_sand): Uint8Array<ArrayBuffer>;
+    }
+    let $giper_baza_mine: typeof $giper_baza_mine_temp;
+}
+
+declare namespace $ {
+    class $giper_baza_mine_fs_yym_act extends $mol_object2 {
+        yym: $giper_baza_mine_fs_yym;
+        constructor(yym: $giper_baza_mine_fs_yym);
+        transaction: $mol_file_transaction;
+        offsets_del: WeakMap<ArrayBuffer, number>;
+        offsets_ins: WeakMap<ArrayBuffer, number>;
+        save(...data: [ArrayBufferView<ArrayBuffer>, ...ArrayBufferView<ArrayBuffer>[]]): number;
+        free(data: ArrayBufferView<ArrayBuffer>, size?: number): undefined;
+    }
+    class $giper_baza_mine_fs_yym extends $mol_object2 {
+        readonly sides: [$mol_file, $mol_file];
+        pool(reset?: null): $mol_memory_pool;
+        offsets(reset?: null): Map<ArrayBuffer, number>;
+        constructor(sides: [$mol_file, $mol_file]);
+        destructor(): void;
+        load_init(): void;
+        load(): Uint8Array<ArrayBuffer>;
+        atomic(task: (act: $giper_baza_mine_fs_yym_act) => void): void;
+        save_init(): void;
+        empty(): boolean;
+    }
+    class $giper_baza_mine_fs extends $giper_baza_mine_temp {
+        store(): $giper_baza_mine_fs_yym;
+        store_init(): void;
+        units_save(diff: $giper_baza_mine_diff): void;
+        units_load(): readonly $giper_baza_unit[];
+        destructor(): void;
+    }
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
     class $giper_baza_dict extends $giper_baza_list_vary {
         static tag: keyof typeof $giper_baza_unit_sand_tag;
         keys(): readonly $giper_baza_vary_type[];
@@ -4564,7 +5156,55 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    function $mol_hash_string(str: string, seed?: number): number;
+    const $giper_baza_pack_four_code: Uint8Array<ArrayBuffer>;
+    const $giper_baza_pack_head_size: number;
+    type $giper_baza_pack_parts = [string, $giper_baza_pack_part][];
+    class $giper_baza_pack_part extends $mol_object {
+        units: readonly $giper_baza_unit[];
+        faces: $giper_baza_face_map;
+        constructor(units?: readonly $giper_baza_unit[], faces?: $giper_baza_face_map);
+        static from(units: $giper_baza_unit[], faces?: $giper_baza_face_map): $giper_baza_pack_part;
+        [Symbol.iterator](): Generator<never, {
+            units: readonly $giper_baza_unit[];
+            faces: $giper_baza_face_map;
+        }, unknown>;
+    }
+    class $giper_baza_pack extends $mol_buffer {
+        toBlob(): Blob;
+        parts(offsets?: WeakMap<ArrayBuffer, number>, pool?: $mol_memory_pool): [string, $giper_baza_pack_part][];
+        static length(parts: $giper_baza_pack_parts): number;
+        static make(parts: $giper_baza_pack_parts): $giper_baza_pack;
+    }
+}
+
+declare namespace $ {
+    class $giper_baza_yard extends $mol_object {
+        glob(): $giper_baza_glob;
+        lands_news: $mol_wire_set<string>;
+        static masters_default: string[];
+        static masters(): string[];
+        master_cursor(next?: number): number;
+        master_current(): string;
+        master_next(): void;
+        reconnects(reset?: null): number;
+        master(): $mol_rest_port | null;
+        slaves: $mol_wire_set<$mol_rest_port>;
+        sync(): void;
+        sync_news(): void;
+        sync_port(): void;
+        sync_port_lands(port: $mol_rest_port): void;
+        ports(): $mol_rest_port[];
+        masters(): $mol_rest_port[];
+        port_lands_active(port: $mol_rest_port): $mol_wire_set<string>;
+        port_lands_passive(port: $mol_rest_port): Set<string>;
+        port_income(port: $mol_rest_port, msg: Uint8Array<ArrayBuffer>): void;
+        face_port_sync(port: $mol_rest_port, income: $giper_baza_pack_parts): void;
+        sync_land(land: $giper_baza_link): void;
+        forget_land(land: $giper_baza_land): void;
+        sync_port_land([port, land]: [$mol_rest_port, $giper_baza_link]): void;
+        init_port_land([port, land]: [$mol_rest_port, $giper_baza_link]): void;
+        face_port_land([port, land]: [$mol_rest_port, $giper_baza_link], next?: null | $giper_baza_face_map): $giper_baza_face_map | null;
+    }
 }
 
 declare namespace $ {
@@ -5296,718 +5936,6 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    type $mol_blob = Blob;
-    let $mol_blob: {
-        prototype: Blob;
-        new (blobParts?: readonly BlobPart[], options?: BlobPropertyBag): Blob;
-    };
-}
-
-declare namespace $ {
-    function $mol_offline(): void;
-}
-
-declare namespace $ {
-}
-
-declare namespace $ {
-    const $giper_baza_file_base: Omit<typeof $giper_baza_dict, "prototype"> & {
-        new (...args: any[]): $mol_type_override<$giper_baza_dict, {
-            readonly Name: (auto?: any) => $giper_baza_atom_text | null;
-            readonly Type: (auto?: any) => $giper_baza_atom_text | null;
-            readonly Chunks: (auto?: any) => $giper_baza_list_bin | null;
-        }>;
-        path: string;
-    } & {
-        schema: {
-            [x: string]: typeof $giper_baza_pawn;
-        } & {
-            readonly Name: typeof $giper_baza_atom_text;
-            readonly Type: typeof $giper_baza_atom_text;
-            readonly Chunks: typeof $giper_baza_list_bin;
-        };
-    };
-    export class $giper_baza_file extends $giper_baza_file_base {
-        uri(): string;
-        name(next?: string | null): string;
-        type(next?: string | null): string;
-        blob(next?: $mol_blob): $mol_blob;
-        buffer(next?: Uint8Array<ArrayBuffer>): Uint8Array<ArrayBuffer>;
-        chunks(next?: readonly (Uint8Array<ArrayBuffer> | null)[]): Uint8Array<ArrayBuffer>[];
-        str(next?: string, type?: string): string;
-        json(next?: any, type?: string): any;
-    }
-    export {};
-}
-
-declare namespace $ {
-
-	type $mol_image__uri_bog_vk_track_1 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['cover'] >
-		,
-		ReturnType< $mol_image['uri'] >
-	>
-	type $mol_paragraph__title_bog_vk_track_2 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['title'] >
-		,
-		ReturnType< $mol_paragraph['title'] >
-	>
-	type $mol_paragraph__title_bog_vk_track_3 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['artist'] >
-		,
-		ReturnType< $mol_paragraph['title'] >
-	>
-	type $mol_view__sub_bog_vk_track_4 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
-	>
-	type $mol_paragraph__title_bog_vk_track_5 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['duration_text'] >
-		,
-		ReturnType< $mol_paragraph['title'] >
-	>
-	type $mol_button_minor__hint_bog_vk_track_6 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_button_minor['hint'] >
-	>
-	type $mol_button_minor__click_bog_vk_track_7 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['move_up'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_button_minor__sub_bog_vk_track_8 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_button_minor['sub'] >
-	>
-	type $mol_button_minor__hint_bog_vk_track_9 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_button_minor['hint'] >
-	>
-	type $mol_button_minor__click_bog_vk_track_10 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['move_down'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_button_minor__sub_bog_vk_track_11 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_button_minor['sub'] >
-	>
-	type $mol_button_minor__click_bog_vk_track_12 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['download'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_button_minor__sub_bog_vk_track_13 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_button_minor['sub'] >
-	>
-	type $mol_button_minor__click_bog_vk_track_14 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['delete_cached'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_button_minor__sub_bog_vk_track_15 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_button_minor['sub'] >
-	>
-	type $mol_button_minor__hint_bog_vk_track_16 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_button_minor['hint'] >
-	>
-	type $mol_button_minor__click_bog_vk_track_17 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['archive'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_button_minor__sub_bog_vk_track_18 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_button_minor['sub'] >
-	>
-	type $mol_button_minor__hint_bog_vk_track_19 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_button_minor['hint'] >
-	>
-	type $mol_button_minor__click_bog_vk_track_20 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['restore'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_button_minor__sub_bog_vk_track_21 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_button_minor['sub'] >
-	>
-	type $mol_button_minor__hint_bog_vk_track_22 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_button_minor['hint'] >
-	>
-	type $mol_button_minor__click_bog_vk_track_23 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['delete_forever'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_button_minor__sub_bog_vk_track_24 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_button_minor['sub'] >
-	>
-	export class $bog_vk_track extends $mol_view {
-		event_click( next?: any ): any
-		cover( ): string
-		Cover( ): $mol_image
-		Cover_placeholder( ): $mol_icon_music
-		title( ): string
-		Title( ): $mol_paragraph
-		artist( ): string
-		Artist( ): $mol_paragraph
-		Info( ): $mol_view
-		duration_text( ): string
-		Duration( ): $mol_paragraph
-		move_up( next?: any ): any
-		Move_up_icon( ): $mol_icon_arrow_up
-		Move_up( ): $mol_button_minor
-		move_down( next?: any ): any
-		Move_down_icon( ): $mol_icon_arrow_down
-		Move_down( ): $mol_button_minor
-		download( next?: any ): any
-		Download_icon( ): $mol_icon_download
-		Download( ): $mol_button_minor
-		delete_cached( next?: any ): any
-		Delete_icon( ): $mol_icon_delete
-		Delete( ): $mol_button_minor
-		archive( next?: any ): any
-		Archive_icon( ): $mol_icon_archive
-		Archive( ): $mol_button_minor
-		restore( next?: any ): any
-		Restore_icon( ): $mol_icon_restore
-		Restore( ): $mol_button_minor
-		delete_forever( next?: any ): any
-		Delete_forever_icon( ): $mol_icon_delete_forever
-		Delete_forever( ): $mol_button_minor
-		audio( ): any
-		current( ): boolean
-		play( next?: any ): any
-		archive_mode( ): boolean
-		can_move_up( ): boolean
-		can_move_down( ): boolean
-		event( ): ({ 
-			click( next?: ReturnType< $bog_vk_track['event_click'] > ): ReturnType< $bog_vk_track['event_click'] >,
-		}) 
-		attr( ): ({ 
-			'bog_vk_track_current': ReturnType< $bog_vk_track['current'] >,
-		}) 
-		sub( ): readonly(any)[]
-	}
-	
-}
-
-//# sourceMappingURL=track.view.tree.d.ts.map
-declare namespace $.$$ {
-    class $bog_vk_track extends $.$bog_vk_track {
-        audio_data(): $bog_vk_api_audio | null;
-        title(): string;
-        artist(): string;
-        cover(): string;
-        Cover(): any;
-        Cover_placeholder(): any;
-        duration_text(): string;
-        cached(next?: boolean): boolean;
-        Move_up(): any;
-        Move_down(): any;
-        Archive(): any;
-        Restore(): any;
-        Delete_forever(): any;
-        is_local(): boolean;
-        Download(): any;
-        Delete(): any;
-        private click_on_button;
-        event_click(event: Event): void;
-        download(): void;
-        delete_cached(): void;
-    }
-}
-
-declare namespace $ {
-    const $bog_vk_track_baza_base: Omit<typeof $giper_baza_dict, "prototype"> & {
-        new (...args: any[]): $mol_type_override<$giper_baza_dict, {
-            readonly Vk_id: (auto?: any) => $giper_baza_atom_text | null;
-            readonly Title: (auto?: any) => $giper_baza_atom_text | null;
-            readonly Artist: (auto?: any) => $giper_baza_atom_text | null;
-            readonly Duration: (auto?: any) => $giper_baza_atom_real | null;
-            readonly Url: (auto?: any) => $giper_baza_atom_text | null;
-            readonly Added: (auto?: any) => $giper_baza_atom_real | null;
-            readonly Order: (auto?: any) => $giper_baza_atom_real | null;
-            readonly Archived: (auto?: any) => $giper_baza_atom_bool | null;
-            readonly File: (auto?: any) => {
-                Value: Value;
-                remote(next?: $giper_baza_file | null | undefined): $giper_baza_file | null;
-                remote_of(peer: $giper_baza_link | null, next?: $giper_baza_file | null | undefined): $giper_baza_file | null;
-                ensure(config?: null | $giper_baza_rank_preset | $giper_baza_land): $giper_baza_file | null;
-                ensure_of(peer: $giper_baza_link | null, config?: null | $giper_baza_rank_preset | $giper_baza_land): $giper_baza_file | null;
-                ensure_here(peer: $giper_baza_link | null): void;
-                ensure_area(peer: $giper_baza_link | null, land: $giper_baza_land): void;
-                ensure_lord(peer: $giper_baza_link | null, preset: $giper_baza_rank_preset): void;
-                remote_ensure(preset?: $giper_baza_rank_preset): $giper_baza_file | null;
-                local_ensure(): $giper_baza_file | null;
-                val(next?: $giper_baza_link | null | undefined): $giper_baza_link | null;
-                val_of(peer: $giper_baza_link | null, next?: $giper_baza_link | null | undefined): $giper_baza_link | null;
-                pick_unit(peer: $giper_baza_link | null): $giper_baza_unit_sand | undefined;
-                vary(next?: $giper_baza_vary_type): $giper_baza_vary_type;
-                vary_of(peer: $giper_baza_link | null, next?: $giper_baza_vary_type): $giper_baza_vary_type;
-                [$mol_dev_format_head](): any[];
-                land(): $giper_baza_land;
-                head(): $giper_baza_link;
-                land_link(): $giper_baza_link;
-                link(): $giper_baza_link;
-                toJSON(): string;
-                cast<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1): InstanceType<Pawn_1>;
-                pawns<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1 | null): readonly InstanceType<Pawn_1>[];
-                units(): $giper_baza_unit_sand[];
-                units_of(peer: $giper_baza_link | null): $giper_baza_unit_sand[];
-                meta(next?: $giper_baza_link): $giper_baza_link | null;
-                meta_of(peer: $giper_baza_link | null): $giper_baza_link | null;
-                filled(): boolean;
-                can_change(): boolean;
-                last_change(): $mol_time_moment | null;
-                authors(): $giper_baza_auth_pass[];
-                get $(): $;
-                set $(next: $);
-                destructor(): void;
-                toString(): string;
-                [Symbol.toStringTag]: string;
-                [$mol_ambient_ref]: $;
-                [Symbol.dispose](): void;
-            } | null;
-        }>;
-        path: string;
-    } & {
-        schema: {
-            [x: string]: typeof $giper_baza_pawn;
-        } & {
-            readonly Vk_id: typeof $giper_baza_atom_text;
-            readonly Title: typeof $giper_baza_atom_text;
-            readonly Artist: typeof $giper_baza_atom_text;
-            readonly Duration: typeof $giper_baza_atom_real;
-            readonly Url: typeof $giper_baza_atom_text;
-            readonly Added: typeof $giper_baza_atom_real;
-            readonly Order: typeof $giper_baza_atom_real;
-            readonly Archived: typeof $giper_baza_atom_bool;
-            readonly File: {
-                new (): {
-                    Value: () => typeof $giper_baza_file;
-                    remote(next?: $giper_baza_file | null | undefined): $giper_baza_file | null;
-                    remote_of(peer: $giper_baza_link | null, next?: $giper_baza_file | null | undefined): $giper_baza_file | null;
-                    ensure(config?: null | $giper_baza_rank_preset | $giper_baza_land): $giper_baza_file | null;
-                    ensure_of(peer: $giper_baza_link | null, config?: null | $giper_baza_rank_preset | $giper_baza_land): $giper_baza_file | null;
-                    ensure_here(peer: $giper_baza_link | null): void;
-                    ensure_area(peer: $giper_baza_link | null, land: $giper_baza_land): void;
-                    ensure_lord(peer: $giper_baza_link | null, preset: $giper_baza_rank_preset): void;
-                    remote_ensure(preset?: $giper_baza_rank_preset): $giper_baza_file | null;
-                    local_ensure(): $giper_baza_file | null;
-                    val(next?: $giper_baza_link | null | undefined): $giper_baza_link | null;
-                    val_of(peer: $giper_baza_link | null, next?: $giper_baza_link | null | undefined): $giper_baza_link | null;
-                    pick_unit(peer: $giper_baza_link | null): $giper_baza_unit_sand | undefined;
-                    vary(next?: $giper_baza_vary_type): $giper_baza_vary_type;
-                    vary_of(peer: $giper_baza_link | null, next?: $giper_baza_vary_type): $giper_baza_vary_type;
-                    [$mol_dev_format_head](): any[];
-                    land(): $giper_baza_land;
-                    head(): $giper_baza_link;
-                    land_link(): $giper_baza_link;
-                    link(): $giper_baza_link;
-                    toJSON(): string;
-                    cast<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1): InstanceType<Pawn_1>;
-                    pawns<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1 | null): readonly InstanceType<Pawn_1>[];
-                    units(): $giper_baza_unit_sand[];
-                    units_of(peer: $giper_baza_link | null): $giper_baza_unit_sand[];
-                    meta(next?: $giper_baza_link): $giper_baza_link | null;
-                    meta_of(peer: $giper_baza_link | null): $giper_baza_link | null;
-                    filled(): boolean;
-                    can_change(): boolean;
-                    last_change(): $mol_time_moment | null;
-                    authors(): $giper_baza_auth_pass[];
-                    get $(): $;
-                    set $(next: $);
-                    destructor(): void;
-                    toString(): string;
-                    [Symbol.toStringTag]: string;
-                    [$mol_ambient_ref]: $;
-                    [Symbol.dispose](): void;
-                };
-                toString(): any;
-                Value: typeof $giper_baza_dict;
-                parse: typeof $giper_baza_vary_cast_link;
-                tag: keyof typeof $giper_baza_unit_sand_tag;
-                meta: null | $giper_baza_link;
-                make<This extends typeof $mol_object>(this: This, config: Partial<InstanceType<This>>): InstanceType<This>;
-                $: $;
-                create<Instance>(this: new (init?: (instance: any) => void) => Instance, init?: (instance: $mol_type_writable<Instance>) => void): Instance;
-                toJSON(): any;
-                destructor(): void;
-                [Symbol.toPrimitive](): any;
-                [$mol_key_handle](): any;
-            };
-        };
-    };
-    export class $bog_vk_track_baza extends $bog_vk_track_baza_base {
-    }
-    export {};
-}
-
-declare namespace $.$$ {
-}
-
-declare namespace $ {
-    class $mol_wire_set<Value> extends Set<Value> {
-        pub: $mol_wire_pub;
-        has(value: Value): boolean;
-        entries(): SetIterator<[Value, Value]>;
-        keys(): SetIterator<Value>;
-        values(): SetIterator<Value>;
-        forEach(task: (value: Value, value2: Value, set: Set<Value>) => void, self?: any): void;
-        [Symbol.iterator](): SetIterator<Value>;
-        get size(): number;
-        add(value: Value): this;
-        delete(value: Value): boolean;
-        clear(): void;
-        item(val: Value, next?: boolean): boolean;
-    }
-}
-
-declare namespace $ {
-    enum $mol_rest_code {
-        'Continue' = 100,
-        'Switching protocols' = 101,
-        'Processing' = 102,
-        'OK' = 200,
-        'Created' = 201,
-        'Accepted' = 202,
-        'Non-Authoritative Information' = 203,
-        'No Content' = 204,
-        'Reset Content' = 205,
-        'Partial Content' = 206,
-        'Multi Status' = 207,
-        'Already Reported' = 208,
-        'IM Used' = 226,
-        'Multiple Choices' = 300,
-        'Moved Permanently' = 301,
-        'Found' = 302,
-        'See Other' = 303,
-        'Not Modified' = 304,
-        'Use Proxy' = 305,
-        'Temporary Redirect' = 307,
-        'Bad Request' = 400,
-        'Unauthorized' = 401,
-        'Payment Required' = 402,
-        'Forbidden' = 403,
-        'Not Found' = 404,
-        'Method Not Allowed' = 405,
-        'Not Acceptable' = 406,
-        'Proxy Authentication Required' = 407,
-        'Request Timeout' = 408,
-        'Conflict' = 409,
-        'Gone' = 410,
-        'Length Required' = 411,
-        'Precondition Failed' = 412,
-        'Request Entity Too Large' = 413,
-        'Request URI Too Long' = 414,
-        'Unsupported Media Type' = 415,
-        'Requested Range Not Satisfiable' = 416,
-        'Expectation Failed' = 417,
-        'Teapot' = 418,
-        'Unprocessable Entity' = 422,
-        'Locked' = 423,
-        'Failed Dependency' = 424,
-        'Upgrade Required' = 426,
-        'Precondition Required' = 428,
-        'Too Many Requests' = 429,
-        'Request Header Fields Too Large' = 431,
-        'Unavailable For Legal Reasons' = 451,
-        'Internal Server Error' = 500,
-        'Not Implemented' = 501,
-        'Bad Gateway' = 502,
-        'Service Unavailable' = 503,
-        'Gateway Timeout' = 504,
-        'HTTP Version Not Supported' = 505,
-        'Insufficient Storage' = 507,
-        'Loop Detected' = 508,
-        'Not Extended' = 510,
-        'Network Authentication Required' = 511,
-        'Network Read Timeout Error' = 598,
-        'Network Connect Timeout Error' = 599
-    }
-}
-
-declare namespace $ {
-    type $mol_rest_port_mime_hi = 'text' | 'application' | 'font' | 'audio' | 'video' | 'image' | 'model';
-    type $mol_rest_port_mime = `${$mol_rest_port_mime_hi}/${string}`;
-    class $mol_rest_port extends $mol_object {
-        send_code(code: $mol_rest_code): void;
-        send_type(mime: $mol_rest_port_mime): void;
-        send_data(data: null | string | Uint8Array<ArrayBuffer> | Element | object): void;
-        send_nil(): void;
-        send_bin(data: Uint8Array<ArrayBuffer>): void;
-        send_text(data: string): void;
-        send_json(data: object): void;
-        send_dom(data: Element): void;
-        static make<This extends typeof $mol_object>(this: This, config: Partial<InstanceType<This>>): InstanceType<This>;
-    }
-}
-
-declare namespace $ {
-    class $mol_rest_port_ws extends $mol_rest_port {
-    }
-}
-
-declare namespace $ {
-    enum $mol_websocket_frame_op {
-        con = 0,
-        txt = 1,
-        bin = 2,
-        stop = 8,
-        ping = 9,
-        pong = 10
-    }
-    class $mol_websocket_frame extends $mol_buffer {
-        kind(next?: {
-            op: keyof typeof $mol_websocket_frame_op;
-            fin: boolean;
-        }): {
-            op: keyof typeof $mol_websocket_frame_op;
-            fin: boolean;
-        } | {
-            op: "stop" | "con" | "txt" | "bin" | "ping" | "pong";
-            fin: number;
-        };
-        data(next?: {
-            size: number;
-            mask: boolean;
-        }): {
-            size: number;
-            mask: boolean;
-        } | {
-            size: number;
-            mask: number;
-        };
-        size(): number;
-        mask(): Uint8Array<ArrayBuffer>;
-        toString(): string;
-        static make(op: keyof typeof $mol_websocket_frame_op, size?: number, mask?: boolean, fin?: boolean): $mol_websocket_frame;
-    }
-}
-
-declare namespace $ {
-    class $mol_rest_port_ws_std extends $mol_rest_port_ws {
-        socket: WebSocket;
-        send_nil(): void;
-        send_bin(data: Uint8Array<ArrayBuffer>): void;
-        send_text(data: string): void;
-    }
-}
-
-declare namespace $ {
-    class $mol_rest_port_ws_node extends $mol_rest_port_ws {
-        socket: InstanceType<$node['stream']['Duplex']>;
-        send_nil(): void;
-        send_bin(data: Uint8Array<ArrayBuffer>): void;
-        send_text(data: string): void;
-    }
-}
-
-declare namespace $ {
-    type Block = {
-        from: number;
-        size: number;
-        next: Block;
-    };
-    export class $mol_memory_pool extends Object {
-        _free: Block;
-        constructor(size?: number);
-        acquire(size: number): number;
-        release(from: number, size: number): void;
-        empty(): boolean;
-        acquired(): void;
-    }
-    export {};
-}
-
-declare namespace $ {
-    let $giper_baza_unit_seal_limit: number;
-    class $giper_baza_unit_seal extends $giper_baza_unit_base {
-        static length(size: number): number;
-        static make(size: number, wide: boolean): $giper_baza_unit_seal;
-        meta(next?: {
-            size: number;
-            wide: boolean;
-        }): number;
-        size(): number;
-        wide(): boolean;
-        alive_items: Set<string>;
-        alive_full(): boolean;
-        alive_list(): $giper_baza_link[];
-        hash_item(index: number, next?: $giper_baza_link): $giper_baza_link;
-        _hash_list: readonly $giper_baza_link[];
-        hash_list(next?: $giper_baza_link[]): $giper_baza_link[];
-        shot(): $giper_baza_link;
-        sign(next?: Uint8Array<ArrayBuffer>): Uint8Array<ArrayBuffer>;
-        work(): number;
-        rate_min(): 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15;
-        tier_min(): $giper_baza_rank_tier;
-        rank_min(): number;
-        path(): string;
-        inspect(): string;
-        toString(): string;
-        [$mol_dev_format_head](): any[];
-    }
-}
-
-declare namespace $ {
-    function $giper_baza_unit_gift_sort(gifts: $giper_baza_unit_gift[]): $giper_baza_unit_gift[];
-    class $giper_baza_unit_gift extends $giper_baza_unit_base {
-        static length(): number;
-        static make(): $giper_baza_unit_gift;
-        rank(next?: typeof $giper_baza_rank.Value): number & {
-            $giper_baza_rank: number;
-        };
-        tier(): $giper_baza_rank_tier;
-        rate(): $giper_baza_rank_rate;
-        mate(next?: $giper_baza_link): $giper_baza_link;
-        path(): string;
-        _code: Uint8Array<ArrayBuffer>;
-        code(): Uint8Array<ArrayBuffer>;
-        code_exists(): boolean;
-        dump(): {
-            kind: "seal" | "sand" | "gift";
-            lord: $giper_baza_link;
-            mate: $giper_baza_link;
-            tier: string;
-            rate: $giper_baza_rank_rate;
-            time: string;
-        };
-        tier_min(): $giper_baza_rank_tier;
-        inspect(): string;
-        toString(): string;
-        [$mol_dev_format_head](): any[];
-    }
-}
-
-declare namespace $ {
-    type $giper_baza_mine_diff = {
-        ins: readonly $giper_baza_unit[];
-        del: readonly $giper_baza_unit[];
-    };
-    class $giper_baza_mine_temp extends $mol_object {
-        static land(land: $giper_baza_link): $giper_baza_mine_temp;
-        land(): $giper_baza_link;
-        unit_deletes: number;
-        unit_inserts: number;
-        ball_inserts: number;
-        ball_deletes: number;
-        units_persisted: WeakSet<$giper_baza_unit>;
-        units_save(diff: $giper_baza_mine_diff): void;
-        units_load(): readonly $giper_baza_unit[];
-        ball_load(sand: $giper_baza_unit_sand): Uint8Array<ArrayBuffer>;
-    }
-    let $giper_baza_mine: typeof $giper_baza_mine_temp;
-}
-
-declare namespace $ {
-    class $giper_baza_mine_fs_yym_act extends $mol_object2 {
-        yym: $giper_baza_mine_fs_yym;
-        constructor(yym: $giper_baza_mine_fs_yym);
-        transaction: $mol_file_transaction;
-        offsets_del: WeakMap<ArrayBuffer, number>;
-        offsets_ins: WeakMap<ArrayBuffer, number>;
-        save(...data: [ArrayBufferView<ArrayBuffer>, ...ArrayBufferView<ArrayBuffer>[]]): number;
-        free(data: ArrayBufferView<ArrayBuffer>, size?: number): undefined;
-    }
-    class $giper_baza_mine_fs_yym extends $mol_object2 {
-        readonly sides: [$mol_file, $mol_file];
-        pool(reset?: null): $mol_memory_pool;
-        offsets(reset?: null): Map<ArrayBuffer, number>;
-        constructor(sides: [$mol_file, $mol_file]);
-        destructor(): void;
-        load_init(): void;
-        load(): Uint8Array<ArrayBuffer>;
-        atomic(task: (act: $giper_baza_mine_fs_yym_act) => void): void;
-        save_init(): void;
-        empty(): boolean;
-    }
-    class $giper_baza_mine_fs extends $giper_baza_mine_temp {
-        store(): $giper_baza_mine_fs_yym;
-        store_init(): void;
-        units_save(diff: $giper_baza_mine_diff): void;
-        units_load(): readonly $giper_baza_unit[];
-        destructor(): void;
-    }
-}
-
-declare namespace $ {
-}
-
-declare namespace $ {
-    const $giper_baza_pack_four_code: Uint8Array<ArrayBuffer>;
-    const $giper_baza_pack_head_size: number;
-    type $giper_baza_pack_parts = [string, $giper_baza_pack_part][];
-    class $giper_baza_pack_part extends $mol_object {
-        units: readonly $giper_baza_unit[];
-        faces: $giper_baza_face_map;
-        constructor(units?: readonly $giper_baza_unit[], faces?: $giper_baza_face_map);
-        static from(units: $giper_baza_unit[], faces?: $giper_baza_face_map): $giper_baza_pack_part;
-        [Symbol.iterator](): Generator<never, {
-            units: readonly $giper_baza_unit[];
-            faces: $giper_baza_face_map;
-        }, unknown>;
-    }
-    class $giper_baza_pack extends $mol_buffer {
-        toBlob(): Blob;
-        parts(offsets?: WeakMap<ArrayBuffer, number>, pool?: $mol_memory_pool): [string, $giper_baza_pack_part][];
-        static length(parts: $giper_baza_pack_parts): number;
-        static make(parts: $giper_baza_pack_parts): $giper_baza_pack;
-    }
-}
-
-declare namespace $ {
-    class $giper_baza_yard extends $mol_object {
-        glob(): $giper_baza_glob;
-        lands_news: $mol_wire_set<string>;
-        static masters_default: string[];
-        static masters(): string[];
-        master_cursor(next?: number): number;
-        master_current(): string;
-        master_next(): void;
-        reconnects(reset?: null): number;
-        master(): $mol_rest_port | null;
-        slaves: $mol_wire_set<$mol_rest_port>;
-        sync(): void;
-        sync_news(): void;
-        sync_port(): void;
-        sync_port_lands(port: $mol_rest_port): void;
-        ports(): $mol_rest_port[];
-        masters(): $mol_rest_port[];
-        port_lands_active(port: $mol_rest_port): $mol_wire_set<string>;
-        port_lands_passive(port: $mol_rest_port): Set<string>;
-        port_income(port: $mol_rest_port, msg: Uint8Array<ArrayBuffer>): void;
-        face_port_sync(port: $mol_rest_port, income: $giper_baza_pack_parts): void;
-        sync_land(land: $giper_baza_link): void;
-        forget_land(land: $giper_baza_land): void;
-        sync_port_land([port, land]: [$mol_rest_port, $giper_baza_link]): void;
-        init_port_land([port, land]: [$mol_rest_port, $giper_baza_link]): void;
-        face_port_land([port, land]: [$mol_rest_port, $giper_baza_link], next?: null | $giper_baza_face_map): $giper_baza_face_map | null;
-    }
-}
-
-declare namespace $ {
     class $giper_baza_stat_series extends $giper_baza_atom_list {
         tick(key: number, val: number, count: number): void;
         _initial: number;
@@ -6584,7 +6512,7 @@ declare namespace $ {
         static meta: $giper_baza_link;
         path(next?: string): string;
         type(next?: string): string;
-        base(next?: $giper_baza_vary_type): string | number | bigint | boolean | Element | Uint8Array<ArrayBuffer> | $mol_tree2 | Uint16Array<ArrayBuffer> | $giper_baza_link | $mol_time_duration | $mol_time_moment | $mol_time_interval | Uint32Array<ArrayBuffer> | BigUint64Array<ArrayBuffer> | Int8Array<ArrayBuffer> | Int16Array<ArrayBuffer> | Int32Array<ArrayBuffer> | BigInt64Array<ArrayBuffer> | Float64Array<ArrayBuffer> | Float32Array<ArrayBuffer> | readonly $giper_baza_vary_type[] | Readonly<{
+        base(next?: $giper_baza_vary_type): string | number | bigint | boolean | Element | $giper_baza_link | Uint8Array<ArrayBuffer> | Uint16Array<ArrayBuffer> | Uint32Array<ArrayBuffer> | BigUint64Array<ArrayBuffer> | Int8Array<ArrayBuffer> | Int16Array<ArrayBuffer> | Int32Array<ArrayBuffer> | BigInt64Array<ArrayBuffer> | Float64Array<ArrayBuffer> | Float32Array<ArrayBuffer> | $mol_time_moment | $mol_time_duration | $mol_time_interval | $mol_tree2 | readonly $giper_baza_vary_type[] | Readonly<{
             [x: string]: $giper_baza_vary_type;
         }> | null;
         kind(next?: $giper_baza_flex_meta): $giper_baza_flex_meta | null;
@@ -7164,6 +7092,827 @@ declare namespace $ {
 }
 
 declare namespace $ {
+
+	type $mol_avatar__id_giper_baza_status_1 = $mol_type_enforce<
+		ReturnType< $giper_baza_status['master_id'] >
+		,
+		ReturnType< $mol_avatar['id'] >
+	>
+	type $mol_avatar__id_giper_baza_status_2 = $mol_type_enforce<
+		ReturnType< $giper_baza_status['master_link'] >
+		,
+		ReturnType< $mol_avatar['id'] >
+	>
+	type $mol_link__uri_giper_baza_status_3 = $mol_type_enforce<
+		ReturnType< $giper_baza_status['master_link'] >
+		,
+		ReturnType< $mol_link['uri'] >
+	>
+	type $mol_link__sub_giper_baza_status_4 = $mol_type_enforce<
+		ReturnType< $giper_baza_status['link_content'] >
+		,
+		ReturnType< $mol_link['sub'] >
+	>
+	type $mol_link__hint_giper_baza_status_5 = $mol_type_enforce<
+		ReturnType< $giper_baza_status['message'] >
+		,
+		ReturnType< $mol_link['hint'] >
+	>
+	export class $giper_baza_status extends $mol_select {
+		master_id( id: any): string
+		Option_logo( id: any): $mol_avatar
+		master_link( ): string
+		Well( ): $mol_avatar
+		Fail( ): $mol_icon_sync_off
+		link_content( ): readonly(any)[]
+		hint( ): string
+		message( ): ReturnType< $giper_baza_status['hint'] >
+		Link( ): $mol_link
+		minimal_width( ): number
+		minimal_height( ): number
+		Filter( ): any
+		option_content( id: any): readonly(any)[]
+		trigger_content( ): readonly(any)[]
+	}
+	
+}
+
+//# sourceMappingURL=status.view.tree.d.ts.map
+declare namespace $.$$ {
+    class $giper_baza_status extends $.$giper_baza_status {
+        message(): string;
+        link_content(): $mol_icon_sync_off[];
+        options(): string[];
+        master_link(): string;
+        master_id(uri: string): string;
+        option_label(uri: string): string;
+        value(next?: string): string;
+    }
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
+
+	export class $mol_icon_brightness_4 extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=4.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_lights_toggle extends $mol_check_icon {
+		Lights_icon( ): $mol_icon_brightness_4
+		lights( next?: boolean ): boolean
+		Icon( ): ReturnType< $mol_lights_toggle['Lights_icon'] >
+		hint( ): string
+		checked( next?: ReturnType< $mol_lights_toggle['lights'] > ): ReturnType< $mol_lights_toggle['lights'] >
+	}
+	
+}
+
+//# sourceMappingURL=toggle.view.tree.d.ts.map
+declare namespace $.$$ {
+    class $mol_lights_toggle extends $.$mol_lights_toggle {
+        lights(next?: boolean): boolean;
+    }
+}
+
+declare namespace $ {
+
+	type $mol_check__checked_mol_check_list_1 = $mol_type_enforce<
+		ReturnType< $mol_check_list['option_checked'] >
+		,
+		ReturnType< $mol_check['checked'] >
+	>
+	type $mol_check__label_mol_check_list_2 = $mol_type_enforce<
+		ReturnType< $mol_check_list['option_label'] >
+		,
+		ReturnType< $mol_check['label'] >
+	>
+	type $mol_check__enabled_mol_check_list_3 = $mol_type_enforce<
+		ReturnType< $mol_check_list['option_enabled'] >
+		,
+		ReturnType< $mol_check['enabled'] >
+	>
+	type $mol_check__hint_mol_check_list_4 = $mol_type_enforce<
+		ReturnType< $mol_check_list['option_hint'] >
+		,
+		ReturnType< $mol_check['hint'] >
+	>
+	type $mol_check__minimal_height_mol_check_list_5 = $mol_type_enforce<
+		number
+		,
+		ReturnType< $mol_check['minimal_height'] >
+	>
+	export class $mol_check_list extends $mol_view {
+		option_checked( id: any, next?: boolean ): boolean
+		option_title( id: any): string
+		option_label( id: any): readonly(any)[]
+		enabled( ): boolean
+		option_enabled( id: any): ReturnType< $mol_check_list['enabled'] >
+		option_hint( id: any): string
+		items( ): readonly($mol_check)[]
+		dictionary( ): Record<string, any>
+		Option( id: any): $mol_check
+		options( ): Record<string, any>
+		keys( ): readonly(string)[]
+		sub( ): ReturnType< $mol_check_list['items'] >
+	}
+	
+}
+
+//# sourceMappingURL=list.view.tree.d.ts.map
+declare namespace $.$$ {
+    class $mol_check_list extends $.$mol_check_list {
+        options(): {
+            [key: string]: string;
+        };
+        dictionary(next?: Record<string, boolean>): Record<string, boolean>;
+        option_checked(id: string, next?: boolean | null): boolean;
+        keys(): readonly string[];
+        items(): $.$mol_check[];
+        option_title(key: string): string;
+    }
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
+    class $mol_state_session<Value> extends $mol_object {
+        static 'native()': Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
+        static native(): Storage | {
+            getItem(key: string): any;
+            setItem(key: string, value: string): void;
+            removeItem(key: string): void;
+        };
+        static value<Value>(key: string, next?: Value): Value;
+        prefix(): string;
+        value(key: string, next?: Value): Value;
+    }
+}
+
+declare namespace $ {
+
+	export class $mol_switch extends $mol_check_list {
+		value( next?: string ): string
+	}
+	
+}
+
+//# sourceMappingURL=switch.view.tree.d.ts.map
+declare namespace $.$$ {
+    class $mol_switch extends $.$mol_switch {
+        value(next?: string): string;
+        option_checked(key: string, next?: boolean): boolean;
+    }
+}
+
+declare namespace $ {
+
+	export class $mol_image extends $mol_view {
+		uri( ): string
+		title( ): string
+		loading( ): string
+		decoding( ): string
+		cors( ): any
+		natural_width( ): number
+		natural_height( ): number
+		load( next?: any ): any
+		dom_name( ): string
+		attr( ): Record<string, any> & ReturnType< $mol_view['attr'] >
+		event( ): Record<string, any>
+		minimal_width( ): number
+		minimal_height( ): number
+	}
+	
+}
+
+//# sourceMappingURL=image.view.tree.d.ts.map
+declare namespace $.$$ {
+    class $mol_image extends $.$mol_image {
+        natural_width(next?: null): number;
+        natural_height(next?: null): number;
+        load(): void;
+    }
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
+
+	export class $mol_icon_music extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=music.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_icon_arrow_up extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=up.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_icon_arrow_down extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=down.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_icon_delete extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=delete.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_icon_archive extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=archive.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_icon_restore extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=restore.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_icon_delete_forever extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=forever.view.tree.d.ts.map
+declare namespace $ {
+    class $bog_vk_api extends $mol_object {
+        static default_proxy_url: string;
+        static token(next?: string): string;
+        static cookies(next?: string): string;
+        static proxy_url(next?: string): string;
+        static fetch_proxy(endpoint: string, body: Record<string, any>): Promise<any>;
+        static my_audios(): $bog_vk_api_audio_list;
+        static search_audios(query: string): $bog_vk_api_audio_list;
+    }
+    interface $bog_vk_api_audio {
+        id: number;
+        owner_id: number;
+        artist: string;
+        title: string;
+        duration: number;
+        url: string;
+        access_key?: string;
+        album?: {
+            id: number;
+            title: string;
+            thumb?: {
+                photo_300?: string;
+                photo_600?: string;
+            };
+        };
+    }
+    interface $bog_vk_api_audio_list {
+        count: number;
+        items: $bog_vk_api_audio[];
+    }
+}
+
+declare namespace $ {
+    function $mol_db_response<Result>(request: IDBRequest<Result>): Promise<Result>;
+}
+
+declare namespace $ {
+    function $mol_db<Schema extends $mol_db_schema>(this: $, name: string, ...migrations: ((transaction: $mol_db_transaction<$mol_db_schema>) => void)[]): Promise<$mol_db_database<Schema>>;
+}
+
+declare namespace $ {
+    class $mol_db_store<Schema extends $mol_db_store_schema> {
+        readonly native: IDBObjectStore;
+        constructor(native: IDBObjectStore);
+        get name(): string;
+        get path(): string | string[] | null;
+        get incremental(): boolean;
+        get indexes(): { [Name in keyof Schema["Indexes"]]: $mol_db_index<{
+            Key: Schema["Indexes"][Name];
+            Doc: Schema["Doc"];
+        }>; };
+        index_make(name: string, path?: string[], unique?: boolean, multiEntry?: boolean): IDBIndex;
+        index_drop(name: string): this;
+        get transaction(): $mol_db_transaction<$mol_db_schema>;
+        get db(): $mol_db_database<$mol_db_schema>;
+        clear(): Promise<undefined>;
+        count(keys?: Schema['Key'] | IDBKeyRange): Promise<number>;
+        put(doc: Schema['Doc'], key?: Schema['Key']): Promise<IDBValidKey>;
+        get(key: Schema['Key']): Promise<Schema["Doc"] | undefined>;
+        select(key?: Schema['Key'] | IDBKeyRange | null, count?: number): Promise<Schema["Doc"][]>;
+        drop(keys: Schema['Key'] | IDBKeyRange): Promise<undefined>;
+    }
+}
+
+declare namespace $ {
+    type $mol_db_store_schema = {
+        Key: IDBValidKey;
+        Doc: unknown;
+        Indexes: Record<string, IDBValidKey[]>;
+    };
+}
+
+declare namespace $ {
+    class $mol_db_index<Schema extends $mol_db_index_schema> {
+        readonly native: IDBIndex;
+        constructor(native: IDBIndex);
+        get name(): string;
+        get paths(): string[];
+        get unique(): boolean;
+        get multiple(): boolean;
+        get store(): $mol_db_store<$mol_db_store_schema>;
+        get transaction(): $mol_db_transaction<$mol_db_schema>;
+        get db(): $mol_db_database<$mol_db_schema>;
+        count(keys?: Schema['Key'] | IDBKeyRange): Promise<number>;
+        get(key: Schema['Key']): Promise<Schema["Doc"] | undefined>;
+        select(key?: Schema['Key'] | IDBKeyRange | null, count?: number): Promise<Schema["Doc"][]>;
+    }
+}
+
+declare namespace $ {
+    type $mol_db_index_schema = {
+        Key: IDBValidKey[];
+        Doc: unknown;
+    };
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
+    type $mol_db_schema = Record<string, $mol_db_store_schema>;
+}
+
+declare namespace $ {
+    class $mol_db_database<Schema extends $mol_db_schema> {
+        readonly native: IDBDatabase;
+        constructor(native: IDBDatabase);
+        get name(): string;
+        get version(): number;
+        get stores(): (keyof Schema)[];
+        read<Names extends Exclude<keyof Schema, symbol | number>>(...names: Names[]): Pick<Schema, Names> extends infer T extends $mol_db_schema ? { [Name in keyof T]: $mol_db_store<T[Name]>; } : never;
+        change<Names extends Exclude<keyof Schema, symbol | number>>(...names: Names[]): $mol_db_transaction<Pick<Schema, Names>>;
+        kill(): Promise<IDBDatabase>;
+        destructor(): void;
+    }
+}
+
+interface IDBTransaction {
+    commit(): void;
+}
+declare namespace $ {
+    class $mol_db_transaction<Schema extends $mol_db_schema> {
+        readonly native: IDBTransaction;
+        constructor(native: IDBTransaction);
+        get stores(): { [Name in keyof Schema]: $mol_db_store<Schema[Name]>; };
+        store_make(name: string): IDBObjectStore;
+        store_drop(name: string): this;
+        abort(): void;
+        commit(): Promise<void>;
+        get db(): $mol_db_database<$mol_db_schema>;
+    }
+}
+
+declare namespace $ {
+    type $bog_vk_cache_schema = {
+        tracks: {
+            Key: string;
+            Doc: Blob;
+            Indexes: {};
+        };
+        meta: {
+            Key: string;
+            Doc: $bog_vk_api_audio;
+            Indexes: {};
+        };
+    };
+    export class $bog_vk_cache extends $mol_object {
+        static version(next?: number): number;
+        static db(): $mol_db_database<$bog_vk_cache_schema>;
+        static db_async(): Promise<$mol_db_database<$bog_vk_cache_schema>>;
+        static cache_key(audio: $bog_vk_api_audio): string;
+        static get(audio: $bog_vk_api_audio): Promise<string | null>;
+        static is_cached(audio: $bog_vk_api_audio): Promise<boolean>;
+        static drop(audio: $bog_vk_api_audio): Promise<void>;
+        static all_cached(): Promise<$bog_vk_api_audio[]>;
+        static adts_to_m4a(adts: Uint8Array): Uint8Array;
+        static extract_audio(ts: Uint8Array): {
+            data: Uint8Array;
+            mime: string;
+        };
+        static demux_ts_audio(ts: Uint8Array): Uint8Array | null;
+        static parse_m3u8(text: string, base_url: string): {
+            segments: string[];
+            key_url: string;
+            key_iv: string;
+        };
+        static decrypt_segment(data: ArrayBuffer, cryptoKey: CryptoKey, index: number, iv_hex: string): Promise<ArrayBuffer>;
+        static save_hls(audio: $bog_vk_api_audio): Promise<void>;
+    }
+    export {};
+}
+
+declare namespace $ {
+    type $mol_blob = Blob;
+    let $mol_blob: {
+        prototype: Blob;
+        new (blobParts?: readonly BlobPart[], options?: BlobPropertyBag): Blob;
+    };
+}
+
+declare namespace $ {
+    function $mol_offline(): void;
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
+    const $giper_baza_file_base: Omit<typeof $giper_baza_dict, "prototype"> & {
+        new (...args: any[]): $mol_type_override<$giper_baza_dict, {
+            readonly Name: (auto?: any) => $giper_baza_atom_text | null;
+            readonly Type: (auto?: any) => $giper_baza_atom_text | null;
+            readonly Chunks: (auto?: any) => $giper_baza_list_bin | null;
+        }>;
+        path: string;
+    } & {
+        schema: {
+            [x: string]: typeof $giper_baza_pawn;
+        } & {
+            readonly Name: typeof $giper_baza_atom_text;
+            readonly Type: typeof $giper_baza_atom_text;
+            readonly Chunks: typeof $giper_baza_list_bin;
+        };
+    };
+    export class $giper_baza_file extends $giper_baza_file_base {
+        uri(): string;
+        name(next?: string | null): string;
+        type(next?: string | null): string;
+        blob(next?: $mol_blob): $mol_blob;
+        buffer(next?: Uint8Array<ArrayBuffer>): Uint8Array<ArrayBuffer>;
+        chunks(next?: readonly (Uint8Array<ArrayBuffer> | null)[]): Uint8Array<ArrayBuffer>[];
+        str(next?: string, type?: string): string;
+        json(next?: any, type?: string): any;
+    }
+    export {};
+}
+
+declare namespace $ {
+
+	type $mol_image__uri_bog_vk_track_1 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['cover'] >
+		,
+		ReturnType< $mol_image['uri'] >
+	>
+	type $mol_paragraph__title_bog_vk_track_2 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['title'] >
+		,
+		ReturnType< $mol_paragraph['title'] >
+	>
+	type $mol_paragraph__title_bog_vk_track_3 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['artist'] >
+		,
+		ReturnType< $mol_paragraph['title'] >
+	>
+	type $mol_view__sub_bog_vk_track_4 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_paragraph__title_bog_vk_track_5 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['duration_text'] >
+		,
+		ReturnType< $mol_paragraph['title'] >
+	>
+	type $mol_button_minor__hint_bog_vk_track_6 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_button_minor['hint'] >
+	>
+	type $mol_button_minor__click_bog_vk_track_7 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['move_up'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_bog_vk_track_8 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	type $mol_button_minor__hint_bog_vk_track_9 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_button_minor['hint'] >
+	>
+	type $mol_button_minor__click_bog_vk_track_10 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['move_down'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_bog_vk_track_11 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	type $mol_button_minor__click_bog_vk_track_12 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['download'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_bog_vk_track_13 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	type $mol_button_minor__click_bog_vk_track_14 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['delete_cached'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_bog_vk_track_15 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	type $mol_button_minor__hint_bog_vk_track_16 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_button_minor['hint'] >
+	>
+	type $mol_button_minor__click_bog_vk_track_17 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['archive'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_bog_vk_track_18 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	type $mol_button_minor__hint_bog_vk_track_19 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_button_minor['hint'] >
+	>
+	type $mol_button_minor__click_bog_vk_track_20 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['restore'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_bog_vk_track_21 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	type $mol_button_minor__hint_bog_vk_track_22 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_button_minor['hint'] >
+	>
+	type $mol_button_minor__click_bog_vk_track_23 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['delete_forever'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_bog_vk_track_24 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	export class $bog_vk_track extends $mol_view {
+		event_click( next?: any ): any
+		cover( ): string
+		Cover( ): $mol_image
+		Cover_placeholder( ): $mol_icon_music
+		title( ): string
+		Title( ): $mol_paragraph
+		artist( ): string
+		Artist( ): $mol_paragraph
+		Info( ): $mol_view
+		duration_text( ): string
+		Duration( ): $mol_paragraph
+		move_up( next?: any ): any
+		Move_up_icon( ): $mol_icon_arrow_up
+		Move_up( ): $mol_button_minor
+		move_down( next?: any ): any
+		Move_down_icon( ): $mol_icon_arrow_down
+		Move_down( ): $mol_button_minor
+		download( next?: any ): any
+		Download_icon( ): $mol_icon_download
+		Download( ): $mol_button_minor
+		delete_cached( next?: any ): any
+		Delete_icon( ): $mol_icon_delete
+		Delete( ): $mol_button_minor
+		archive( next?: any ): any
+		Archive_icon( ): $mol_icon_archive
+		Archive( ): $mol_button_minor
+		restore( next?: any ): any
+		Restore_icon( ): $mol_icon_restore
+		Restore( ): $mol_button_minor
+		delete_forever( next?: any ): any
+		Delete_forever_icon( ): $mol_icon_delete_forever
+		Delete_forever( ): $mol_button_minor
+		audio( ): any
+		current( ): boolean
+		play( next?: any ): any
+		archive_mode( ): boolean
+		can_move_up( ): boolean
+		can_move_down( ): boolean
+		event( ): ({ 
+			click( next?: ReturnType< $bog_vk_track['event_click'] > ): ReturnType< $bog_vk_track['event_click'] >,
+		}) 
+		attr( ): ({ 
+			'bog_vk_track_current': ReturnType< $bog_vk_track['current'] >,
+		}) 
+		sub( ): readonly(any)[]
+	}
+	
+}
+
+//# sourceMappingURL=track.view.tree.d.ts.map
+declare namespace $.$$ {
+    class $bog_vk_track extends $.$bog_vk_track {
+        audio_data(): $bog_vk_api_audio | null;
+        title(): string;
+        artist(): string;
+        cover(): string;
+        Cover(): any;
+        Cover_placeholder(): any;
+        duration_text(): string;
+        cached(next?: boolean): boolean;
+        Move_up(): any;
+        Move_down(): any;
+        Archive(): any;
+        Restore(): any;
+        Delete_forever(): any;
+        is_local(): boolean;
+        Download(): any;
+        Delete(): any;
+        private click_on_button;
+        event_click(event: Event): void;
+        download(): void;
+        delete_cached(): void;
+    }
+}
+
+declare namespace $ {
+    const $bog_vk_track_baza_base: Omit<typeof $giper_baza_dict, "prototype"> & {
+        new (...args: any[]): $mol_type_override<$giper_baza_dict, {
+            readonly Vk_id: (auto?: any) => $giper_baza_atom_text | null;
+            readonly Title: (auto?: any) => $giper_baza_atom_text | null;
+            readonly Artist: (auto?: any) => $giper_baza_atom_text | null;
+            readonly Duration: (auto?: any) => $giper_baza_atom_real | null;
+            readonly Url: (auto?: any) => $giper_baza_atom_text | null;
+            readonly Added: (auto?: any) => $giper_baza_atom_real | null;
+            readonly Order: (auto?: any) => $giper_baza_atom_real | null;
+            readonly Archived: (auto?: any) => $giper_baza_atom_bool | null;
+            readonly File: (auto?: any) => {
+                Value: Value;
+                remote(next?: $giper_baza_file | null | undefined): $giper_baza_file | null;
+                remote_of(peer: $giper_baza_link | null, next?: $giper_baza_file | null | undefined): $giper_baza_file | null;
+                ensure(config?: null | $giper_baza_rank_preset | $giper_baza_land): $giper_baza_file | null;
+                ensure_of(peer: $giper_baza_link | null, config?: null | $giper_baza_rank_preset | $giper_baza_land): $giper_baza_file | null;
+                ensure_here(peer: $giper_baza_link | null): void;
+                ensure_area(peer: $giper_baza_link | null, land: $giper_baza_land): void;
+                ensure_lord(peer: $giper_baza_link | null, preset: $giper_baza_rank_preset): void;
+                remote_ensure(preset?: $giper_baza_rank_preset): $giper_baza_file | null;
+                local_ensure(): $giper_baza_file | null;
+                val(next?: $giper_baza_link | null | undefined): $giper_baza_link | null;
+                val_of(peer: $giper_baza_link | null, next?: $giper_baza_link | null | undefined): $giper_baza_link | null;
+                pick_unit(peer: $giper_baza_link | null): $giper_baza_unit_sand | undefined;
+                vary(next?: $giper_baza_vary_type): $giper_baza_vary_type;
+                vary_of(peer: $giper_baza_link | null, next?: $giper_baza_vary_type): $giper_baza_vary_type;
+                [$mol_dev_format_head](): any[];
+                land(): $giper_baza_land;
+                head(): $giper_baza_link;
+                land_link(): $giper_baza_link;
+                link(): $giper_baza_link;
+                toJSON(): string;
+                cast<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1): InstanceType<Pawn_1>;
+                pawns<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1 | null): readonly InstanceType<Pawn_1>[];
+                units(): $giper_baza_unit_sand[];
+                units_of(peer: $giper_baza_link | null): $giper_baza_unit_sand[];
+                meta(next?: $giper_baza_link): $giper_baza_link | null;
+                meta_of(peer: $giper_baza_link | null): $giper_baza_link | null;
+                filled(): boolean;
+                can_change(): boolean;
+                last_change(): $mol_time_moment | null;
+                authors(): $giper_baza_auth_pass[];
+                get $(): $;
+                set $(next: $);
+                destructor(): void;
+                toString(): string;
+                [Symbol.toStringTag]: string;
+                [$mol_ambient_ref]: $;
+                [Symbol.dispose](): void;
+            } | null;
+        }>;
+        path: string;
+    } & {
+        schema: {
+            [x: string]: typeof $giper_baza_pawn;
+        } & {
+            readonly Vk_id: typeof $giper_baza_atom_text;
+            readonly Title: typeof $giper_baza_atom_text;
+            readonly Artist: typeof $giper_baza_atom_text;
+            readonly Duration: typeof $giper_baza_atom_real;
+            readonly Url: typeof $giper_baza_atom_text;
+            readonly Added: typeof $giper_baza_atom_real;
+            readonly Order: typeof $giper_baza_atom_real;
+            readonly Archived: typeof $giper_baza_atom_bool;
+            readonly File: {
+                new (): {
+                    Value: () => typeof $giper_baza_file;
+                    remote(next?: $giper_baza_file | null | undefined): $giper_baza_file | null;
+                    remote_of(peer: $giper_baza_link | null, next?: $giper_baza_file | null | undefined): $giper_baza_file | null;
+                    ensure(config?: null | $giper_baza_rank_preset | $giper_baza_land): $giper_baza_file | null;
+                    ensure_of(peer: $giper_baza_link | null, config?: null | $giper_baza_rank_preset | $giper_baza_land): $giper_baza_file | null;
+                    ensure_here(peer: $giper_baza_link | null): void;
+                    ensure_area(peer: $giper_baza_link | null, land: $giper_baza_land): void;
+                    ensure_lord(peer: $giper_baza_link | null, preset: $giper_baza_rank_preset): void;
+                    remote_ensure(preset?: $giper_baza_rank_preset): $giper_baza_file | null;
+                    local_ensure(): $giper_baza_file | null;
+                    val(next?: $giper_baza_link | null | undefined): $giper_baza_link | null;
+                    val_of(peer: $giper_baza_link | null, next?: $giper_baza_link | null | undefined): $giper_baza_link | null;
+                    pick_unit(peer: $giper_baza_link | null): $giper_baza_unit_sand | undefined;
+                    vary(next?: $giper_baza_vary_type): $giper_baza_vary_type;
+                    vary_of(peer: $giper_baza_link | null, next?: $giper_baza_vary_type): $giper_baza_vary_type;
+                    [$mol_dev_format_head](): any[];
+                    land(): $giper_baza_land;
+                    head(): $giper_baza_link;
+                    land_link(): $giper_baza_link;
+                    link(): $giper_baza_link;
+                    toJSON(): string;
+                    cast<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1): InstanceType<Pawn_1>;
+                    pawns<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1 | null): readonly InstanceType<Pawn_1>[];
+                    units(): $giper_baza_unit_sand[];
+                    units_of(peer: $giper_baza_link | null): $giper_baza_unit_sand[];
+                    meta(next?: $giper_baza_link): $giper_baza_link | null;
+                    meta_of(peer: $giper_baza_link | null): $giper_baza_link | null;
+                    filled(): boolean;
+                    can_change(): boolean;
+                    last_change(): $mol_time_moment | null;
+                    authors(): $giper_baza_auth_pass[];
+                    get $(): $;
+                    set $(next: $);
+                    destructor(): void;
+                    toString(): string;
+                    [Symbol.toStringTag]: string;
+                    [$mol_ambient_ref]: $;
+                    [Symbol.dispose](): void;
+                };
+                toString(): any;
+                Value: typeof $giper_baza_dict;
+                parse: typeof $giper_baza_vary_cast_link;
+                tag: keyof typeof $giper_baza_unit_sand_tag;
+                meta: null | $giper_baza_link;
+                make<This extends typeof $mol_object>(this: This, config: Partial<InstanceType<This>>): InstanceType<This>;
+                $: $;
+                create<Instance>(this: new (init?: (instance: any) => void) => Instance, init?: (instance: $mol_type_writable<Instance>) => void): Instance;
+                toJSON(): any;
+                destructor(): void;
+                [Symbol.toPrimitive](): any;
+                [$mol_key_handle](): any;
+            };
+        };
+    };
+    export class $bog_vk_track_baza extends $bog_vk_track_baza_base {
+    }
+    export {};
+}
+
+declare namespace $.$$ {
+}
+
+declare namespace $ {
     class $bog_vk_store extends $mol_object2 {
         static version(next?: number): number;
         static land(): $giper_baza_land;
@@ -7539,151 +8288,6 @@ declare namespace $ {
 }
 
 //# sourceMappingURL=stack.view.tree.d.ts.map
-declare namespace $ {
-    type $mol_type_equals<A, B> = (<X>() => X extends A ? 1 : 2) extends (<X>() => X extends B ? 1 : 2) ? unknown : never;
-}
-
-declare namespace $ {
-    type $mol_type_merge<Intersection> = Intersection extends (...a: any[]) => any ? Intersection : Intersection extends new (...a: any[]) => any ? Intersection : Intersection extends object ? $mol_type_merge_object<Intersection> extends Intersection ? unknown extends $mol_type_equals<{
-        [Key in keyof Intersection]: Intersection[Key];
-    }, Intersection> ? Intersection : {
-        [Key in keyof Intersection]: $mol_type_merge<Intersection[Key]>;
-    } : Intersection : Intersection;
-    type $mol_type_merge_object<Intersection> = {
-        [Key in keyof Intersection]: Intersection[Key];
-    };
-}
-
-declare namespace $ {
-    type $mol_type_intersect<Union> = (Union extends any ? (_: Union) => void : never) extends ((_: infer Intersection) => void) ? Intersection : never;
-}
-
-declare namespace $ {
-    type $mol_unicode_category = [$mol_unicode_category_binary] | ['General_Category', $mol_char_category_general] | ['Script', $mol_unicode_category_script] | ['Script_Extensions', $mol_unicode_category_script];
-    type $mol_unicode_category_binary = 'ASCII' | 'ASCII_Hex_Digit' | 'Alphabetic' | 'Any' | 'Assigned' | 'Bidi_Control' | 'Bidi_Mirrored' | 'Case_Ignorable' | 'Cased' | 'Changes_When_Casefolded' | 'Changes_When_Casemapped' | 'Changes_When_Lowercased' | 'Changes_When_NFKC_Casefolded' | 'Changes_When_Titlecased' | 'Changes_When_Uppercased' | 'Dash' | 'Default_Ignorable_Code_Point' | 'Deprecated' | 'Diacritic' | 'Emoji' | 'Emoji_Component' | 'Emoji_Modifier' | 'Emoji_Modifier_Base' | 'Emoji_Presentation' | 'Extended_Pictographic' | 'Extender' | 'Grapheme_Base' | 'Grapheme_Extend' | 'Hex_Digit' | 'IDS_Binary_Operator' | 'IDS_Trinary_Operator' | 'ID_Continue' | 'ID_Start' | 'Ideographic' | 'Join_Control' | 'Logical_Order_Exception' | 'Lowercase' | 'Math' | 'Noncharacter_Code_Point' | 'Pattern_Syntax' | 'Pattern_White_Space' | 'Quotation_Mark' | 'Radical' | 'Regional_Indicator' | 'Sentence_Terminal' | 'Soft_Dotted' | 'Terminal_Punctuation' | 'Unified_Ideograph' | 'Uppercase' | 'Variation_Selector' | 'White_Space' | 'XID_Continue' | 'XID_Start';
-    type $mol_char_category_general = 'Cased_Letter' | 'Close_Punctuation' | 'Connector_Punctuation' | 'Control' | 'Currency_Symbol' | 'Dash_Punctuation' | 'Decimal_Number' | 'Enclosing_Mark' | 'Final_Punctuation' | 'Format' | 'Initial_Punctuation' | 'Letter' | 'Letter_Number' | 'Line_Separator' | 'Lowercase_Letter' | 'Mark' | 'Math_Symbol' | 'Modifier_Letter' | 'Modifier_Symbol' | 'Nonspacing_Mark' | 'Number' | 'Open_Punctuation' | 'Other' | 'Other_Letter' | 'Other_Number' | 'Other_Punctuation' | 'Other_Symbol' | 'Paragraph_Separator' | 'Private_Use' | 'Punctuation' | 'Separator' | 'Space_Separator' | 'Spacing_Mark' | 'Surrogate' | 'Symbol' | 'Titlecase_Letter' | 'Unassigned' | 'Uppercase_Letter';
-    type $mol_unicode_category_script = 'Adlam' | 'Ahom' | 'Anatolian_Hieroglyphs' | 'Arabic' | 'Armenian' | 'Avestan' | 'Balinese' | 'Bamum' | 'Bassa_Vah' | 'Batak' | 'Bengali' | 'Bhaiksuki' | 'Bopomofo' | 'Brahmi' | 'Braille' | 'Buginese' | 'Buhid' | 'Canadian_Aboriginal' | 'Carian' | 'Caucasian_Albanian' | 'Chakma' | 'Cham' | 'Chorasmian' | 'Cherokee' | 'Common' | 'Coptic' | 'Cuneiform' | 'Cypriot' | 'Cyrillic' | 'Deseret' | 'Devanagari' | 'Dives_Akuru' | 'Dogra' | 'Duployan' | 'Egyptian_Hieroglyphs' | 'Elbasan' | 'Elymaic' | 'Ethiopic' | 'Georgian' | 'Glagolitic' | 'Gothic' | 'Grantha' | 'Greek' | 'Gujarati' | 'Gunjala_Gondi' | 'Gurmukhi' | 'Han' | 'Hangul' | 'Hanifi_Rohingya' | 'Hanunoo' | 'Hatran' | 'Hebrew' | 'Hiragana' | 'Imperial_Aramaic' | 'Inherited' | 'Inscriptional_Pahlavi' | 'Inscriptional_Parthian' | 'Javanese' | 'Kaithi' | 'Kannada' | 'Katakana' | 'Kayah_Li' | 'Kharoshthi' | 'Khitan_Small_Script' | 'Khmer' | 'Khojki' | 'Khudawadi' | 'Lao' | 'Latin' | 'Lepcha' | 'Limbu' | 'Linear_A' | 'Linear_B' | 'Lisu' | 'Lycian' | 'Lydian' | 'Mahajani' | 'Makasar' | 'Malayalam' | 'Mandaic' | 'Manichaean' | 'Marchen' | 'Medefaidrin' | 'Masaram_Gondi' | 'Meetei_Mayek' | 'Mende_Kikakui' | 'Meroitic_Cursive' | 'Meroitic_Hieroglyphs' | 'Miao' | 'Modi' | 'Mongolian' | 'Mro' | 'Multani' | 'Myanmar' | 'Nabataean' | 'Nandinagari' | 'New_Tai_Lue' | 'Newa' | 'Nko' | 'Nushu' | 'Nyiakeng_Puachue_Hmong' | 'Ogham' | 'Ol_Chiki' | 'Old_Hungarian' | 'Old_Italic' | 'Old_North_Arabian' | 'Old_Permic' | 'Old_Persian' | 'Old_Sogdian' | 'Old_South_Arabian' | 'Old_Turkic' | 'Oriya' | 'Osage' | 'Osmanya' | 'Pahawh_Hmong' | 'Palmyrene' | 'Pau_Cin_Hau' | 'Phags_Pa' | 'Phoenician' | 'Psalter_Pahlavi' | 'Rejang' | 'Runic' | 'Samaritan' | 'Saurashtra' | 'Sharada' | 'Shavian' | 'Siddham' | 'SignWriting' | 'Sinhala' | 'Sogdian' | 'Sora_Sompeng' | 'Soyombo' | 'Sundanese' | 'Syloti_Nagri' | 'Syriac' | 'Tagalog' | 'Tagbanwa' | 'Tai_Le' | 'Tai_Tham' | 'Tai_Viet' | 'Takri' | 'Tamil' | 'Tangut' | 'Telugu' | 'Thaana' | 'Thai' | 'Tibetan' | 'Tifinagh' | 'Tirhuta' | 'Ugaritic' | 'Vai' | 'Wancho' | 'Warang_Citi' | 'Yezidi' | 'Yi' | 'Zanabazar_Square';
-}
-
-interface String {
-    match<RE extends RegExp>(regexp: RE): ReturnType<RE[typeof Symbol.match]>;
-    matchAll<RE extends RegExp>(regexp: RE): ReturnType<RE[typeof Symbol.matchAll]>;
-}
-declare namespace $ {
-    type Groups_to_params<T> = {
-        [P in keyof T]?: T[P] | boolean | undefined;
-    };
-    export type $mol_regexp_source = number | string | RegExp | {
-        [key in string]: $mol_regexp_source;
-    } | readonly [$mol_regexp_source, ...$mol_regexp_source[]];
-    export type $mol_regexp_groups<Source extends $mol_regexp_source> = Source extends number ? {} : Source extends string ? {} : Source extends $mol_regexp_source[] ? $mol_type_merge<$mol_type_intersect<{
-        [key in Extract<keyof Source, number>]: $mol_regexp_groups<Source[key]>;
-    }[Extract<keyof Source, number>]>> : Source extends RegExp ? Record<string, string> extends NonNullable<NonNullable<ReturnType<Source['exec']>>['groups']> ? {} : NonNullable<NonNullable<ReturnType<Source['exec']>>['groups']> : Source extends {
-        readonly [key in string]: $mol_regexp_source;
-    } ? $mol_type_merge<$mol_type_intersect<{
-        [key in keyof Source]: $mol_type_merge<$mol_type_override<{
-            readonly [k in Extract<keyof Source, string>]: string;
-        }, {
-            readonly [k in key]: Source[key] extends string ? Source[key] : string;
-        }> & $mol_regexp_groups<Source[key]>>;
-    }[keyof Source]>> : never;
-    export class $mol_regexp<Groups extends Record<string, string>> extends RegExp {
-        readonly groups: (Extract<keyof Groups, string>)[];
-        constructor(source: string, flags?: string, groups?: (Extract<keyof Groups, string>)[]);
-        [Symbol.matchAll](str: string): RegExpStringIterator<RegExpExecArray & $mol_type_override<RegExpExecArray, {
-            groups?: {
-                [key in keyof Groups]: string;
-            };
-        }>>;
-        [Symbol.match](str: string): null | RegExpMatchArray;
-        [Symbol.split](str: string): string[];
-        test(str: string): boolean;
-        exec(str: string): RegExpExecArray & $mol_type_override<RegExpExecArray, {
-            groups?: {
-                [key in keyof Groups]: string;
-            };
-        }> | null;
-        generate(params: Groups_to_params<Groups>): string | null;
-        get native(): RegExp;
-        static separated<Chunk extends $mol_regexp_source, Sep extends $mol_regexp_source>(chunk: Chunk, sep: Sep): $mol_regexp<[$mol_regexp<[[Chunk], Sep] extends infer T ? T extends [[Chunk], Sep] ? T extends $mol_regexp_source[] ? $mol_type_merge<$mol_type_intersect<{ [key in Extract<keyof T, number>]: $mol_regexp_groups<T[key]>; }[Extract<keyof T, number>]>> : T extends RegExp ? Record<string, string> extends NonNullable<NonNullable<ReturnType<T["exec"]>>["groups"]> ? {} : NonNullable<NonNullable<ReturnType<T["exec"]>>["groups"]> : T extends {
-            readonly [x: string]: $mol_regexp_source;
-        } ? $mol_type_merge<$mol_type_intersect<{ [key_1 in keyof T]: $mol_type_merge<Omit<{ readonly [k in Extract<keyof T, string>]: string; }, key_1> & { readonly [k_1 in key_1]: T[key_1] extends string ? T[key_1] : string; } & $mol_regexp_groups<T[key_1]>>; }[keyof T]>> : never : never : never>, Chunk] extends infer T_1 ? T_1 extends [$mol_regexp<[[Chunk], Sep] extends infer T_2 ? T_2 extends [[Chunk], Sep] ? T_2 extends $mol_regexp_source[] ? $mol_type_merge<$mol_type_intersect<{ [key_4 in Extract<keyof T_2, number>]: $mol_regexp_groups<T_2[key_4]>; }[Extract<keyof T_2, number>]>> : T_2 extends RegExp ? Record<string, string> extends NonNullable<NonNullable<ReturnType<T_2["exec"]>>["groups"]> ? {} : NonNullable<NonNullable<ReturnType<T_2["exec"]>>["groups"]> : T_2 extends {
-            readonly [x: string]: $mol_regexp_source;
-        } ? $mol_type_merge<$mol_type_intersect<{ [key_5 in keyof T_2]: $mol_type_merge<Omit<{ readonly [k in Extract<keyof T_2, string>]: string; }, key_5> & { readonly [k_1 in key_5]: T_2[key_5] extends string ? T_2[key_5] : string; } & $mol_regexp_groups<T_2[key_5]>>; }[keyof T_2]>> : never : never : never>, Chunk] ? T_1 extends $mol_regexp_source[] ? $mol_type_merge<$mol_type_intersect<{ [key_2 in Extract<keyof T_1, number>]: $mol_regexp_groups<T_1[key_2]>; }[Extract<keyof T_1, number>]>> : T_1 extends RegExp ? Record<string, string> extends NonNullable<NonNullable<ReturnType<T_1["exec"]>>["groups"]> ? {} : NonNullable<NonNullable<ReturnType<T_1["exec"]>>["groups"]> : T_1 extends {
-            readonly [x: string]: $mol_regexp_source;
-        } ? $mol_type_merge<$mol_type_intersect<{ [key_3 in keyof T_1]: $mol_type_merge<Omit<{ readonly [k in Extract<keyof T_1, string>]: string; }, key_3> & { readonly [k_1 in key_3]: T_1[key_3] extends string ? T_1[key_3] : string; } & $mol_regexp_groups<T_1[key_3]>>; }[keyof T_1]>> : never : never : never>;
-        static repeat<Source extends $mol_regexp_source>(source: Source, min?: number, max?: number): $mol_regexp<$mol_regexp_groups<Source>>;
-        static repeat_greedy<Source extends $mol_regexp_source>(source: Source, min?: number, max?: number): $mol_regexp<$mol_regexp_groups<Source>>;
-        static vary<Sources extends readonly $mol_regexp_source[]>(sources: Sources, flags?: string): $mol_regexp<$mol_regexp_groups<Sources[number]>>;
-        static optional<Source extends $mol_regexp_source>(source: Source): $mol_regexp<$mol_regexp_groups<Source>>;
-        static force_after(source: $mol_regexp_source): $mol_regexp<Record<string, string>>;
-        static forbid_after(source: $mol_regexp_source): $mol_regexp<Record<string, string>>;
-        static from<Source extends $mol_regexp_source>(source: Source, { ignoreCase, multiline }?: Partial<Pick<RegExp, 'ignoreCase' | 'multiline'>>): $mol_regexp<$mol_regexp_groups<Source>>;
-        static unicode_only(...category: $mol_unicode_category): $mol_regexp<Record<string, string>>;
-        static unicode_except(...category: $mol_unicode_category): $mol_regexp<Record<string, string>>;
-        static char_range(from: number, to: number): $mol_regexp<{}>;
-        static char_only(...allowed: readonly [$mol_regexp_source, ...$mol_regexp_source[]]): $mol_regexp<{}>;
-        static char_except(...forbidden: readonly [$mol_regexp_source, ...$mol_regexp_source[]]): $mol_regexp<{}>;
-        static decimal_only: $mol_regexp<{}>;
-        static decimal_except: $mol_regexp<{}>;
-        static latin_only: $mol_regexp<{}>;
-        static latin_except: $mol_regexp<{}>;
-        static space_only: $mol_regexp<{}>;
-        static space_except: $mol_regexp<{}>;
-        static word_break_only: $mol_regexp<{}>;
-        static word_break_except: $mol_regexp<{}>;
-        static tab: $mol_regexp<{}>;
-        static slash_back: $mol_regexp<{}>;
-        static nul: $mol_regexp<{}>;
-        static char_any: $mol_regexp<{}>;
-        static begin: $mol_regexp<{}>;
-        static end: $mol_regexp<{}>;
-        static or: $mol_regexp<{}>;
-        static line_end: $mol_regexp<{
-            readonly win_end: string;
-            readonly mac_end: string;
-        }>;
-    }
-    export {};
-}
-
-declare namespace $ {
-
-	type $mol_paragraph__sub_mol_dimmer_1 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_paragraph['sub'] >
-	>
-	type $mol_paragraph__sub_mol_dimmer_2 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_paragraph['sub'] >
-	>
-	export class $mol_dimmer extends $mol_paragraph {
-		parts( ): readonly($mol_view_content)[]
-		string( id: any): string
-		haystack( ): string
-		needle( ): string
-		sub( ): ReturnType< $mol_dimmer['parts'] >
-		Low( id: any): $mol_paragraph
-		High( id: any): $mol_paragraph
-	}
-	
-}
-
-//# sourceMappingURL=dimmer.view.tree.d.ts.map
-declare namespace $.$$ {
-    class $mol_dimmer extends $.$mol_dimmer {
-        parts(): any[];
-        strings(): string[];
-        string(index: number): string;
-        view_find(check: (path: $mol_view, text?: string) => boolean, path?: $mol_view[]): Generator<$mol_view[]>;
-    }
-}
-
-declare namespace $ {
-}
-
 declare namespace $ {
 
 	export class $mol_text_code_token extends $mol_dimmer {
@@ -8113,20 +8717,6 @@ declare namespace $.$$ {
 }
 
 declare namespace $ {
-}
-
-declare namespace $ {
-    class $mol_state_session<Value> extends $mol_object {
-        static 'native()': Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
-        static native(): Storage | {
-            getItem(key: string): any;
-            setItem(key: string, value: string): void;
-            removeItem(key: string): void;
-        };
-        static value<Value>(key: string, next?: Value): Value;
-        prefix(): string;
-        value(key: string, next?: Value): Value;
-    }
 }
 
 declare namespace $ {
@@ -9245,26 +9835,6 @@ declare namespace $ {
 }
 
 declare namespace $ {
-
-	export class $mol_avatar extends $mol_icon {
-		view_box( ): string
-		id( ): string
-		path( ): string
-	}
-	
-}
-
-//# sourceMappingURL=avatar.view.tree.d.ts.map
-declare namespace $.$$ {
-    class $mol_avatar extends $.$mol_avatar {
-        path(): string;
-    }
-}
-
-declare namespace $ {
-}
-
-declare namespace $ {
     let $hyoo_sync_revision: string;
 }
 
@@ -10262,117 +10832,77 @@ declare namespace $ {
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_check__click_bog_vk_app_54 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['show_my'] >
+	type $mol_switch__value_bog_vk_app_54 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['page'] >
 		,
-		ReturnType< $mol_check['click'] >
+		ReturnType< $mol_switch['value'] >
 	>
-	type $mol_check__checked_bog_vk_app_55 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['tab_my_active'] >
+	type $mol_switch__options_bog_vk_app_55 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['tab_options'] >
 		,
-		ReturnType< $mol_check['checked'] >
+		ReturnType< $mol_switch['options'] >
 	>
-	type $mol_check__title_bog_vk_app_56 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_check['title'] >
-	>
-	type $mol_check__click_bog_vk_app_57 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['show_search'] >
-		,
-		ReturnType< $mol_check['click'] >
-	>
-	type $mol_check__checked_bog_vk_app_58 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['tab_search_active'] >
-		,
-		ReturnType< $mol_check['checked'] >
-	>
-	type $mol_check__title_bog_vk_app_59 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_check['title'] >
-	>
-	type $mol_check__click_bog_vk_app_60 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['show_archive'] >
-		,
-		ReturnType< $mol_check['click'] >
-	>
-	type $mol_check__checked_bog_vk_app_61 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['tab_archive_active'] >
-		,
-		ReturnType< $mol_check['checked'] >
-	>
-	type $mol_check__title_bog_vk_app_62 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_check['title'] >
-	>
-	type $mol_view__sub_bog_vk_app_63 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
-	>
-	type $mol_string__hint_bog_vk_app_64 = $mol_type_enforce<
+	type $mol_string__hint_bog_vk_app_56 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_string['hint'] >
 	>
-	type $mol_string__value_bog_vk_app_65 = $mol_type_enforce<
+	type $mol_string__value_bog_vk_app_57 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['search_query'] >
 		,
 		ReturnType< $mol_string['value'] >
 	>
-	type $bog_vk_tracks__audios_bog_vk_app_66 = $mol_type_enforce<
+	type $bog_vk_tracks__audios_bog_vk_app_58 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_tracks['audios'] >
 	>
-	type $bog_vk_tracks__current_audio_bog_vk_app_67 = $mol_type_enforce<
+	type $bog_vk_tracks__current_audio_bog_vk_app_59 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['current_audio'] >
 	>
-	type $bog_vk_tracks__play_audio_bog_vk_app_68 = $mol_type_enforce<
+	type $bog_vk_tracks__play_audio_bog_vk_app_60 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['on_play_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['play_audio'] >
 	>
-	type $bog_vk_tracks__archive_mode_bog_vk_app_69 = $mol_type_enforce<
+	type $bog_vk_tracks__archive_mode_bog_vk_app_61 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['archive_mode'] >
 		,
 		ReturnType< $bog_vk_tracks['archive_mode'] >
 	>
-	type $bog_vk_tracks__reorder_up_bog_vk_app_70 = $mol_type_enforce<
+	type $bog_vk_tracks__reorder_up_bog_vk_app_62 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['reorder_up'] >
 		,
 		ReturnType< $bog_vk_tracks['reorder_up'] >
 	>
-	type $bog_vk_tracks__reorder_down_bog_vk_app_71 = $mol_type_enforce<
+	type $bog_vk_tracks__reorder_down_bog_vk_app_63 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['reorder_down'] >
 		,
 		ReturnType< $bog_vk_tracks['reorder_down'] >
 	>
-	type $bog_vk_tracks__archive_audio_bog_vk_app_72 = $mol_type_enforce<
+	type $bog_vk_tracks__archive_audio_bog_vk_app_64 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['archive_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['archive_audio'] >
 	>
-	type $bog_vk_tracks__restore_audio_bog_vk_app_73 = $mol_type_enforce<
+	type $bog_vk_tracks__restore_audio_bog_vk_app_65 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['restore_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['restore_audio'] >
 	>
-	type $bog_vk_tracks__delete_audio_bog_vk_app_74 = $mol_type_enforce<
+	type $bog_vk_tracks__delete_audio_bog_vk_app_66 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['delete_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['delete_audio'] >
 	>
-	type $bog_vk_player__queue_bog_vk_app_75 = $mol_type_enforce<
+	type $bog_vk_player__queue_bog_vk_app_67 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_player['queue'] >
 	>
-	type $bog_vk_player__current_audio_bog_vk_app_76 = $mol_type_enforce<
+	type $bog_vk_player__current_audio_bog_vk_app_68 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_player['current_audio'] >
@@ -10420,22 +10950,20 @@ declare namespace $ {
 		Download_all_icon( ): $mol_icon_download
 		Download_all( ): $mol_button_minor
 		Version( ): $bog_version
+		Sync_status( ): $giper_baza_status
 		Lighter( ): $mol_lights_toggle
 		scroll( next?: number ): number
 		Auth_link( ): $mol_link
 		token_hint( ): string
 		Auth_hint( ): $mol_paragraph
 		Auth_block( ): $mol_view
-		show_my( next?: any ): any
-		tab_my_active( ): boolean
-		Tab_my( ): $mol_check
-		show_search( next?: any ): any
-		tab_search_active( ): boolean
-		Tab_search( ): $mol_check
-		show_archive( next?: any ): any
-		tab_archive_active( ): boolean
-		Tab_archive( ): $mol_check
-		Tabs( ): $mol_view
+		page( next?: string ): string
+		tab_options( ): ({ 
+			'my': string,
+			'search': string,
+			'archive': string,
+		}) 
+		Tabs( ): $mol_switch
 		search_query( next?: string ): string
 		Search_bar( ): $mol_string
 		visible_audios( ): readonly(any)[]
@@ -10471,12 +10999,6 @@ declare namespace $.$$ {
         extract_token(input: string): string;
         extract_cookies(input: string): string;
         page(next?: string): string;
-        show_my(): void;
-        show_search(): void;
-        show_archive(): void;
-        tab_my_active(): boolean;
-        tab_search_active(): boolean;
-        tab_archive_active(): boolean;
         cached_audios(): $bog_vk_api_audio[];
         synced_audios(): $bog_vk_api_audio[];
         archived_audios(): $bog_vk_api_audio[];
@@ -10508,7 +11030,6 @@ declare namespace $.$$ {
         Auth_block(): any;
         token_hint(): string;
         Download_all(): any;
-        Tab_search(): any;
         Search_bar(): any;
         download_all(): void;
     }

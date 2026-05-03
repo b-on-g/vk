@@ -2671,6 +2671,344 @@ var $;
 
 ;
 "use strict";
+
+;
+"use strict";
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_test({
+        'escape'() {
+            const specials = $mol_regexp.from('.*+?^${}()|[]\\');
+            $mol_assert_equal(specials.source, '\\.\\*\\+\\?\\^\\$\\{\\}\\(\\)\\|\\[\\]\\\\');
+        },
+        'char code'() {
+            const space = $mol_regexp.from(32);
+            $mol_assert_like(' '.match(space), [' ']);
+        },
+        'repeat fixed'() {
+            const { repeat, decimal_only: digit } = $mol_regexp;
+            const year = repeat(digit, 4, 4);
+            $mol_assert_like('#2020#'.match(year), ['2020']);
+        },
+        'greedy repeat'() {
+            const { repeat, repeat_greedy, latin_only: letter } = $mol_regexp;
+            $mol_assert_like('abc'.match(repeat(letter, 1, 2)), ['a', 'b', 'c']);
+            $mol_assert_like('abc'.match(repeat_greedy(letter, 1, 2)), ['ab', 'c']);
+        },
+        'repeat range'() {
+            const { repeat_greedy, decimal_only: digit } = $mol_regexp;
+            const year = repeat_greedy(digit, 2, 4);
+            $mol_assert_like('#2#'.match(year), null);
+            $mol_assert_like('#20#'.match(year), ['20']);
+            $mol_assert_like('#2020#'.match(year), ['2020']);
+            $mol_assert_like('#20201#'.match(year), ['2020']);
+        },
+        'repeat from'() {
+            const { repeat_greedy, latin_only: letter } = $mol_regexp;
+            const name = repeat_greedy(letter, 2);
+            $mol_assert_like('##'.match(name), null);
+            $mol_assert_like('#a#'.match(name), null);
+            $mol_assert_like('#ab#'.match(name), ['ab']);
+            $mol_assert_like('#abc#'.match(name), ['abc']);
+        },
+        'from string'() {
+            const regexp = $mol_regexp.from('[\\d]');
+            $mol_assert_equal(regexp.source, '\\[\\\\d\\]');
+            $mol_assert_equal(regexp.flags, 'gsu');
+        },
+        'from regexp'() {
+            const regexp = $mol_regexp.from(/[\d]/i);
+            $mol_assert_equal(regexp.source, '[\\d]');
+            $mol_assert_equal(regexp.flags, 'i');
+        },
+        'split'() {
+            const regexp = $mol_regexp.from(';');
+            $mol_assert_like('aaa;bbb;ccc'.split(regexp), ['aaa', ';', 'bbb', ';', 'ccc']);
+            $mol_assert_like('aaa;;ccc'.split(regexp), ['aaa', ';', '', ';', 'ccc']);
+            $mol_assert_like('aaa'.split(regexp), ['aaa']);
+            $mol_assert_like(''.split(regexp), ['']);
+        },
+        'test for matching'() {
+            const regexp = $mol_regexp.from('foo');
+            $mol_assert_like(regexp.test(''), false);
+            $mol_assert_like(regexp.test('fo'), false);
+            $mol_assert_like(regexp.test('foo'), true);
+            $mol_assert_like(regexp.test('foobar'), true);
+            $mol_assert_like(regexp.test('barfoo'), true);
+        },
+        'case ignoring'() {
+            const xxx = $mol_regexp.from('x', { ignoreCase: true });
+            $mol_assert_like(xxx.flags, 'gisu');
+            $mol_assert_like(xxx.exec('xx')[0], 'x');
+            $mol_assert_like(xxx.exec('XX')[0], 'X');
+        },
+        'multiline mode'() {
+            const { end, from } = $mol_regexp;
+            const xxx = from(['x', end], { multiline: true });
+            $mol_assert_like(xxx.exec('x\ny')[0], 'x');
+            $mol_assert_like(xxx.flags, 'gmsu');
+        },
+        'flags override'() {
+            const triplet = $mol_regexp.from($mol_regexp.from(/.../, { ignoreCase: true }), { multiline: true });
+            $mol_assert_like(triplet.toString(), '/.../gmsu');
+        },
+        'sequence'() {
+            const { begin, end, decimal_only: digit, repeat, from } = $mol_regexp;
+            const year = repeat(digit, 4, 4);
+            const dash = '-';
+            const month = repeat(digit, 2, 2);
+            const day = repeat(digit, 2, 2);
+            const date = from([begin, year, dash, month, dash, day, end]);
+            $mol_assert_like(date.exec('2020-01-02')[0], '2020-01-02');
+        },
+        'optional'() {
+            const name = $mol_regexp.from(['A', ['4']]);
+            $mol_assert_equal('AB'.match(name)[0], 'A');
+            $mol_assert_equal('A4'.match(name)[0], 'A4');
+        },
+        'anon variants'() {
+            const name = $mol_regexp.from(['A', $mol_regexp.vary(['4', '5'])]);
+            $mol_assert_equal('AB'.match(name), null);
+            $mol_assert_equal('A4'.match(name)[0], 'A4');
+            $mol_assert_equal('A5'.match(name)[0], 'A5');
+        },
+        'only groups'() {
+            const regexp = $mol_regexp.from({ dog: '@' });
+            $mol_assert_like([...'#'.matchAll(regexp)][0].groups, undefined);
+            $mol_assert_like([...'@'.matchAll(regexp)][0].groups, { dog: '@' });
+        },
+        'catch skipped'() {
+            const regexp = $mol_regexp.from(/(@)(\d?)/g);
+            $mol_assert_like([...'[[@]]'.matchAll(regexp)].map(f => [...f]), [
+                ['[['],
+                ['@', '@', ''],
+                [']]'],
+            ]);
+        },
+        'enum variants'() {
+            let Sex;
+            (function (Sex) {
+                Sex["male"] = "male";
+                Sex["female"] = "female";
+            })(Sex || (Sex = {}));
+            const sexism = $mol_regexp.from(Sex);
+            $mol_assert_like([...''.matchAll(sexism)].length, 0);
+            $mol_assert_like([...'trans'.matchAll(sexism)][0].groups, undefined);
+            $mol_assert_like([...'male'.matchAll(sexism)][0].groups, { male: 'male', female: '' });
+            $mol_assert_like([...'female'.matchAll(sexism)][0].groups, { male: '', female: 'female' });
+        },
+        'recursive only groups'() {
+            let Sex;
+            (function (Sex) {
+                Sex["male"] = "male";
+                Sex["female"] = "female";
+            })(Sex || (Sex = {}));
+            const sexism = $mol_regexp.from({ Sex });
+            $mol_assert_like([...''.matchAll(sexism)].length, 0);
+            $mol_assert_like([...'male'.matchAll(sexism)][0].groups, { Sex: 'male', male: 'male', female: '' });
+            $mol_assert_like([...'female'.matchAll(sexism)][0].groups, { Sex: 'female', male: '', female: 'female' });
+        },
+        'sequence with groups'() {
+            const { begin, end, decimal_only: digit, repeat, from } = $mol_regexp;
+            const year = repeat(digit, 4, 4);
+            const dash = '-';
+            const month = repeat(digit, 2, 2);
+            const day = repeat(digit, 2, 2);
+            const regexp = from([begin, { year }, dash, { month }, dash, { day }, end]);
+            const found = [...'2020-01-02'.matchAll(regexp)];
+            $mol_assert_like(found[0].groups, {
+                year: '2020',
+                month: '01',
+                day: '02',
+            });
+        },
+        'sequence with groups of mixed type'() {
+            const prefix = '/';
+            const postfix = '/';
+            const regexp = $mol_regexp.from([{ prefix }, /(\w+)/, { postfix }, /([gumi]*)/]);
+            $mol_assert_like([...'/foo/mi'.matchAll(regexp)], [
+                Object.assign(["/foo/mi", "/", "foo", "/", "mi"], {
+                    groups: {
+                        prefix: '/',
+                        postfix: '/',
+                    },
+                    index: 0,
+                    input: "/",
+                }),
+            ]);
+        },
+        'recursive sequence with groups'() {
+            const { begin, end, decimal_only: digit, repeat, from } = $mol_regexp;
+            const year = repeat(digit, 4, 4);
+            const dash = '-';
+            const month = repeat(digit, 2, 2);
+            const day = repeat(digit, 2, 2);
+            const regexp = from([
+                begin, { date: [{ year }, dash, { month }] }, dash, { day }, end
+            ]);
+            const found = [...'2020-01-02'.matchAll(regexp)];
+            $mol_assert_like(found[0].groups, {
+                date: '2020-01',
+                year: '2020',
+                month: '01',
+                day: '02',
+            });
+        },
+        'parse multiple'() {
+            const { decimal_only: digit, from } = $mol_regexp;
+            const regexp = from({ digit });
+            $mol_assert_like([...'123'.matchAll(regexp)].map(f => f.groups), [
+                { digit: '1' },
+                { digit: '2' },
+                { digit: '3' },
+            ]);
+        },
+        'named variants'() {
+            const { begin, or, end, from } = $mol_regexp;
+            const sexism = from([
+                begin, 'sex = ', { sex: ['male', or, 'female'] }, end
+            ]);
+            $mol_assert_like([...'sex = male'.matchAll(sexism)][0].groups, { sex: 'male' });
+            $mol_assert_like([...'sex = female'.matchAll(sexism)][0].groups, { sex: 'female' });
+            $mol_assert_like([...'sex = malefemale'.matchAll(sexism)][0].groups, undefined);
+        },
+        'force after'() {
+            const { latin_only: letter, force_after, from } = $mol_regexp;
+            const regexp = from([letter, force_after('.')]);
+            $mol_assert_like('x.'.match(regexp), ['x']);
+            $mol_assert_like('x,'.match(regexp), null);
+        },
+        'forbid after'() {
+            const { latin_only: letter, forbid_after, from } = $mol_regexp;
+            const regexp = from([letter, forbid_after('.')]);
+            $mol_assert_like('x.'.match(regexp), null);
+            $mol_assert_like('x,'.match(regexp), ['x']);
+        },
+        'char except'() {
+            const { char_except, latin_only, tab } = $mol_regexp;
+            const name = char_except(latin_only, tab);
+            $mol_assert_like('a'.match(name), null);
+            $mol_assert_like('\t'.match(name), null);
+            $mol_assert_like('('.match(name), ['(']);
+        },
+        'unicode only'() {
+            const { unicode_only, from } = $mol_regexp;
+            const name = from([
+                unicode_only('Script', 'Cyrillic'),
+                unicode_only('Hex_Digit'),
+            ]);
+            $mol_assert_like('FF'.match(name), null);
+            $mol_assert_like('ФG'.match(name), null);
+            $mol_assert_like('ФF'.match(name), ['ФF']);
+        },
+        'generate by optional with inner group'() {
+            const { begin, end, from } = $mol_regexp;
+            const animals = from([begin, '#', ['^', { dog: '@' }], end]);
+            $mol_assert_equal(animals.generate({}), '#');
+            $mol_assert_equal(animals.generate({ dog: false }), '#');
+            $mol_assert_equal(animals.generate({ dog: true }), '#^@');
+            $mol_assert_fail(() => animals.generate({ dog: '$' }), 'Wrong param: dog=$');
+        },
+        'generate by optional with inner group with variants'() {
+            const { begin, end, from } = $mol_regexp;
+            const animals = from([begin, '#', ['^', { animal: { dog: '@', fox: '&' } }], end]);
+            $mol_assert_equal(animals.generate({}), '#');
+            $mol_assert_equal(animals.generate({ dog: true }), '#^@');
+            $mol_assert_equal(animals.generate({ fox: true }), '#^&');
+            $mol_assert_fail(() => animals.generate({ dog: '$' }), 'Wrong param: dog=$');
+        },
+        'complex example'() {
+            const { begin, end, char_only, char_range, latin_only, slash_back, repeat_greedy, from, } = $mol_regexp;
+            const atom_char = char_only(latin_only, "!#$%&'*+/=?^`{|}~-");
+            const atom = repeat_greedy(atom_char, 1);
+            const dot_atom = from([atom, repeat_greedy(['.', atom])]);
+            const name_letter = char_only(char_range(0x01, 0x08), 0x0b, 0x0c, char_range(0x0e, 0x1f), 0x21, char_range(0x23, 0x5b), char_range(0x5d, 0x7f));
+            const quoted_pair = from([
+                slash_back,
+                char_only(char_range(0x01, 0x09), 0x0b, 0x0c, char_range(0x0e, 0x7f))
+            ]);
+            const name = repeat_greedy({ name_letter, quoted_pair });
+            const quoted_name = from(['"', { name }, '"']);
+            const local_part = from({ dot_atom, quoted_name });
+            const domain = dot_atom;
+            const mail = from([begin, local_part, '@', { domain }, end]);
+            $mol_assert_equal('foo..bar@example.org'.match(mail), null);
+            $mol_assert_equal('foo..bar"@example.org'.match(mail), null);
+            $mol_assert_like([...'foo.bar@example.org'.matchAll(mail)][0].groups, {
+                dot_atom: "foo.bar",
+                quoted_name: "",
+                name: "",
+                name_letter: "",
+                quoted_pair: "",
+                domain: "example.org",
+            });
+            $mol_assert_like([...'"foo..bar"@example.org'.matchAll(mail)][0].groups, {
+                dot_atom: "",
+                quoted_name: '"foo..bar"',
+                name: "foo..bar",
+                name_letter: "r",
+                quoted_pair: "",
+                domain: "example.org",
+            });
+            $mol_assert_equal(mail.generate({ dot_atom: 'foo.bar', domain: 'example.org' }), 'foo.bar@example.org');
+            $mol_assert_equal(mail.generate({ name: 'foo..bar', domain: 'example.org' }), '"foo..bar"@example.org');
+            $mol_assert_fail(() => mail.generate({ dot_atom: 'foo..bar', domain: 'example.org' }), 'Wrong param: dot_atom=foo..bar');
+        },
+    });
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        $mol_test({
+            'Empty needle'() {
+                const app = new $mol_dimmer;
+                app.needle = () => '  ';
+                app.haystack = () => 'foo  bar';
+                $mol_assert_like(app.strings(), ['foo  bar']);
+            },
+            'Empty haystack'() {
+                const app = new $mol_dimmer;
+                app.needle = () => 'foo  bar';
+                app.haystack = () => '';
+                $mol_assert_like(app.strings(), ['']);
+            },
+            'Not found'() {
+                const app = new $mol_dimmer;
+                app.needle = () => 'foo';
+                app.haystack = () => ' bar ';
+                $mol_assert_like(app.strings(), [' bar ']);
+            },
+            'One found'() {
+                const app = new $mol_dimmer;
+                app.needle = () => 'foo';
+                app.haystack = () => ' barfoo ';
+                $mol_assert_like(app.strings(), [' bar', 'foo', ' ']);
+            },
+            'Multiple found'() {
+                const app = new $mol_dimmer;
+                app.needle = () => 'foo';
+                app.haystack = () => ' foobarfoo foo';
+                $mol_assert_like(app.strings(), [' ', 'foo', 'bar', 'foo', ' ', 'foo']);
+            },
+            'Fuzzy search'() {
+                const app = new $mol_dimmer;
+                app.needle = () => 'foo bar';
+                app.haystack = () => ' barfoo ';
+                $mol_assert_like(app.strings(), [' ', 'bar', '', 'foo', ' ']);
+            },
+        });
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
 var $;
 (function ($) {
     class TestClass extends Uint8Array {
@@ -2802,150 +3140,108 @@ var $;
 ;
 "use strict";
 var $;
-(function ($) {
+(function ($_1) {
     $mol_test({
-        async 'put, get, drop, count records and clear store'() {
-            const db = await $$.$mol_db('$mol_db_test', mig => mig.store_make('letters'));
-            const trans = db.change('letters');
-            try {
-                const { letters } = trans.stores;
-                $mol_assert_like(await letters.get(1), undefined);
-                $mol_assert_like(await letters.get(2), undefined);
-                $mol_assert_like(await letters.count(), 0);
-                await letters.put('a');
-                await letters.put('b', 1);
-                await letters.put('c', 2);
-                $mol_assert_like(await letters.get(1), 'b');
-                $mol_assert_like(await letters.get(2), 'c');
-                $mol_assert_like(await letters.count(), 2);
-                await letters.drop(1);
-                $mol_assert_like(await letters.get(1), undefined);
-                $mol_assert_like(await letters.count(), 1);
-                await letters.clear();
-                $mol_assert_like(await letters.count(), 0);
-            }
-            finally {
-                trans.abort();
-                db.kill();
-            }
-        },
-        async 'select by query'() {
-            const db = await $$.$mol_db('$mol_db_test', mig => mig.store_make('letters'));
-            const trans = db.change('letters');
-            try {
-                const { letters } = trans.stores;
-                await letters.put('a');
-                await letters.put('b');
-                await letters.put('c');
-                await letters.put('d');
-                $mol_assert_like(await letters.select(), ['a', 'b', 'c', 'd']);
-                $mol_assert_like(await letters.select(null, 2), ['a', 'b']);
-                $mol_assert_like(await letters.select($mol_dom_context.IDBKeyRange.bound(2, 3)), ['b', 'c']);
-            }
-            finally {
-                trans.abort();
-                db.kill();
-            }
-        },
-    });
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_test({
-        async 'take and drop db'() {
-            const db = await $$.$mol_db('$mol_db_test');
-            await db.kill();
-        },
-        async 'make and drop store in separate migrations'() {
-            try {
-                const db1 = await $$.$mol_db('$mol_db_test', mig => mig.store_make('temp'));
-                db1.destructor();
-                $mol_assert_like(db1.stores, ['temp']);
-                $mol_assert_like(db1.version, 2);
-                const db2 = await $$.$mol_db('$mol_db_test', mig => mig.store_make('temp'), mig => mig.store_drop('temp'));
-                db2.destructor();
-                $mol_assert_like(db2.stores, []);
-                $mol_assert_like(db2.version, 3);
-            }
-            finally {
-                const db0 = await $$.$mol_db('$mol_db_test');
-                await db0.kill();
-            }
-        },
-    });
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_test({
-        async 'unique index'() {
-            const db = await $$.$mol_db('$mol_db_test', mig => mig.store_make('users'), mig => mig.stores.users.index_make('names', ['name'], true));
-            const trans = db.change('users');
-            try {
-                const { users } = trans.stores;
-                await users.put({ name: 'Jin' }, 'jin');
-                await users.put({ name: 'John' }, 'john');
-                await users.put({ name: 'Bin' }, 'bin');
-                const { names } = users.indexes;
-                $mol_assert_like(await names.get(['Jin']), { name: 'Jin' });
-                $mol_assert_like(await names.get(['John']), { name: 'John' });
-                $mol_assert_like(await names.count(), 3);
-                $mol_assert_like(await names.select($mol_dom_context.IDBKeyRange.bound(['J'], ['J\uFFFF'])), [{ name: 'Jin' }, { name: 'John' }]);
-                try {
-                    await users.put({ name: 'Jin' }, 'jin2');
-                    $mol_fail(new Error('Exception expected'));
-                }
-                catch (error) {
-                    $mol_assert_unique(error.message, 'Exception expected');
+        'Watch one value'($) {
+            class App extends $mol_object2 {
+                static $ = $;
+                static set = new $mol_wire_set();
+                static lucky() {
+                    return this.set.has(777);
                 }
             }
-            finally {
-                trans.abort();
-                await db.kill();
-            }
+            __decorate([
+                $mol_wire_solo
+            ], App, "lucky", null);
+            $mol_assert_equal(App.lucky(), false);
+            App.set.add(666);
+            $mol_assert_equal(App.lucky(), false);
+            App.set.add(777);
+            $mol_assert_equal(App.lucky(), true);
+            App.set.delete(777);
+            $mol_assert_equal(App.lucky(), false);
         },
-        async 'multi path index'() {
-            const db = await $$.$mol_db('$mol_db_test', mig => mig.store_make('users'), mig => mig.stores.users.index_make('names', ['first', 'last']));
-            const trans = db.change('users');
-            try {
-                const { users } = trans.stores;
-                await users.put({ first: 'Jin', last: 'Johnson' }, 'jin');
-                await users.put({ first: 'John', last: 'Jinson' }, 'john');
-                await users.put({ first: 'Bond', last: 'James' }, '007');
-                const { names } = users.indexes;
-                $mol_assert_like(await names.get(['Jin', 'Johnson']), { first: 'Jin', last: 'Johnson' });
-                $mol_assert_like(await names.get(['John', 'Jinson']), { first: 'John', last: 'Jinson' });
-                $mol_assert_like(await names.count(), 3);
-                $mol_assert_like(await names.select($mol_dom_context.IDBKeyRange.bound(['Jin', 'Johnson'], ['John', 'Jinson'])), [{ first: 'Jin', last: 'Johnson' }, { first: 'John', last: 'Jinson' }]);
+        'Watch item channel'($) {
+            class App extends $mol_object2 {
+                static $ = $;
+                static set = new $mol_wire_set();
+                static lucky() {
+                    return this.set.item(777);
+                }
             }
-            finally {
-                trans.abort();
-                await db.kill();
-            }
+            __decorate([
+                $mol_wire_solo
+            ], App, "lucky", null);
+            $mol_assert_equal(App.lucky(), false);
+            App.set.item(666, true);
+            $mol_assert_equal(App.lucky(), false);
+            App.set.item(777, true);
+            $mol_assert_equal(App.lucky(), true);
+            App.set.item(777, false);
+            $mol_assert_equal(App.lucky(), false);
         },
-        async 'multiple indexes'() {
-            const db = await $$.$mol_db('$mol_db_test', mig => mig.store_make('users'), mig => mig.stores.users.index_make('names', ['name'], true), mig => mig.stores.users.index_make('ages', ['age']));
-            const trans = db.change('users');
-            try {
-                const { users } = trans.stores;
-                await users.put({ name: 'Jin', age: 18 }, 'jin');
-                await users.put({ name: 'John', age: 18 }, 'john');
-                const { names, ages } = users.indexes;
-                $mol_assert_like(await names.select(['Jin']), [{ name: 'Jin', age: 18 }]);
-                $mol_assert_like(await names.select(['John']), [{ name: 'John', age: 18 }]);
-                $mol_assert_like(await names.count(), 2);
-                $mol_assert_like(await ages.select([18]), [{ name: 'Jin', age: 18 }, { name: 'John', age: 18 }]);
-                $mol_assert_like(await ages.count(), 2);
+        'Watch size'($) {
+            class App extends $mol_object2 {
+                static $ = $;
+                static set = new $mol_wire_set();
+                static size() {
+                    return this.set.size;
+                }
             }
-            finally {
-                trans.abort();
-                await db.kill();
+            __decorate([
+                $mol_wire_solo
+            ], App, "size", null);
+            $mol_assert_equal(App.size(), 0);
+            App.set.add(666);
+            $mol_assert_equal(App.size(), 1);
+            App.set.add(777);
+            $mol_assert_equal(App.size(), 2);
+            App.set.delete(777);
+            $mol_assert_equal(App.size(), 1);
+        },
+        'Watch for-of'($) {
+            class App extends $mol_object2 {
+                static $ = $;
+                static set = new $mol_wire_set();
+                static sum() {
+                    let res = 0;
+                    for (const val of this.set) {
+                        res += val;
+                    }
+                    return res;
+                }
             }
+            __decorate([
+                $mol_wire_solo
+            ], App, "sum", null);
+            $mol_assert_equal(App.sum(), 0);
+            App.set.add(111);
+            $mol_assert_equal(App.sum(), 111);
+            App.set.add(222);
+            $mol_assert_equal(App.sum(), 333);
+            App.set.delete(111);
+            $mol_assert_equal(App.sum(), 222);
+        },
+        'Watch forEach'($) {
+            class App extends $mol_object2 {
+                static $ = $;
+                static set = new $mol_wire_set();
+                static sum() {
+                    let res = 0;
+                    this.set.forEach(val => res += val);
+                    return res;
+                }
+            }
+            __decorate([
+                $mol_wire_solo
+            ], App, "sum", null);
+            $mol_assert_equal(App.sum(), 0);
+            App.set.add(111);
+            $mol_assert_equal(App.sum(), 111);
+            App.set.add(222);
+            $mol_assert_equal(App.sum(), 333);
+            App.set.delete(111);
+            $mol_assert_equal(App.sum(), 222);
         },
     });
 })($ || ($ = {}));
@@ -4910,6 +5206,157 @@ var $;
 ;
 "use strict";
 var $;
+(function ($) {
+    $mol_test({
+        async 'put, get, drop, count records and clear store'() {
+            const db = await $$.$mol_db('$mol_db_test', mig => mig.store_make('letters'));
+            const trans = db.change('letters');
+            try {
+                const { letters } = trans.stores;
+                $mol_assert_like(await letters.get(1), undefined);
+                $mol_assert_like(await letters.get(2), undefined);
+                $mol_assert_like(await letters.count(), 0);
+                await letters.put('a');
+                await letters.put('b', 1);
+                await letters.put('c', 2);
+                $mol_assert_like(await letters.get(1), 'b');
+                $mol_assert_like(await letters.get(2), 'c');
+                $mol_assert_like(await letters.count(), 2);
+                await letters.drop(1);
+                $mol_assert_like(await letters.get(1), undefined);
+                $mol_assert_like(await letters.count(), 1);
+                await letters.clear();
+                $mol_assert_like(await letters.count(), 0);
+            }
+            finally {
+                trans.abort();
+                db.kill();
+            }
+        },
+        async 'select by query'() {
+            const db = await $$.$mol_db('$mol_db_test', mig => mig.store_make('letters'));
+            const trans = db.change('letters');
+            try {
+                const { letters } = trans.stores;
+                await letters.put('a');
+                await letters.put('b');
+                await letters.put('c');
+                await letters.put('d');
+                $mol_assert_like(await letters.select(), ['a', 'b', 'c', 'd']);
+                $mol_assert_like(await letters.select(null, 2), ['a', 'b']);
+                $mol_assert_like(await letters.select($mol_dom_context.IDBKeyRange.bound(2, 3)), ['b', 'c']);
+            }
+            finally {
+                trans.abort();
+                db.kill();
+            }
+        },
+    });
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_test({
+        async 'take and drop db'() {
+            const db = await $$.$mol_db('$mol_db_test');
+            await db.kill();
+        },
+        async 'make and drop store in separate migrations'() {
+            try {
+                const db1 = await $$.$mol_db('$mol_db_test', mig => mig.store_make('temp'));
+                db1.destructor();
+                $mol_assert_like(db1.stores, ['temp']);
+                $mol_assert_like(db1.version, 2);
+                const db2 = await $$.$mol_db('$mol_db_test', mig => mig.store_make('temp'), mig => mig.store_drop('temp'));
+                db2.destructor();
+                $mol_assert_like(db2.stores, []);
+                $mol_assert_like(db2.version, 3);
+            }
+            finally {
+                const db0 = await $$.$mol_db('$mol_db_test');
+                await db0.kill();
+            }
+        },
+    });
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_test({
+        async 'unique index'() {
+            const db = await $$.$mol_db('$mol_db_test', mig => mig.store_make('users'), mig => mig.stores.users.index_make('names', ['name'], true));
+            const trans = db.change('users');
+            try {
+                const { users } = trans.stores;
+                await users.put({ name: 'Jin' }, 'jin');
+                await users.put({ name: 'John' }, 'john');
+                await users.put({ name: 'Bin' }, 'bin');
+                const { names } = users.indexes;
+                $mol_assert_like(await names.get(['Jin']), { name: 'Jin' });
+                $mol_assert_like(await names.get(['John']), { name: 'John' });
+                $mol_assert_like(await names.count(), 3);
+                $mol_assert_like(await names.select($mol_dom_context.IDBKeyRange.bound(['J'], ['J\uFFFF'])), [{ name: 'Jin' }, { name: 'John' }]);
+                try {
+                    await users.put({ name: 'Jin' }, 'jin2');
+                    $mol_fail(new Error('Exception expected'));
+                }
+                catch (error) {
+                    $mol_assert_unique(error.message, 'Exception expected');
+                }
+            }
+            finally {
+                trans.abort();
+                await db.kill();
+            }
+        },
+        async 'multi path index'() {
+            const db = await $$.$mol_db('$mol_db_test', mig => mig.store_make('users'), mig => mig.stores.users.index_make('names', ['first', 'last']));
+            const trans = db.change('users');
+            try {
+                const { users } = trans.stores;
+                await users.put({ first: 'Jin', last: 'Johnson' }, 'jin');
+                await users.put({ first: 'John', last: 'Jinson' }, 'john');
+                await users.put({ first: 'Bond', last: 'James' }, '007');
+                const { names } = users.indexes;
+                $mol_assert_like(await names.get(['Jin', 'Johnson']), { first: 'Jin', last: 'Johnson' });
+                $mol_assert_like(await names.get(['John', 'Jinson']), { first: 'John', last: 'Jinson' });
+                $mol_assert_like(await names.count(), 3);
+                $mol_assert_like(await names.select($mol_dom_context.IDBKeyRange.bound(['Jin', 'Johnson'], ['John', 'Jinson'])), [{ first: 'Jin', last: 'Johnson' }, { first: 'John', last: 'Jinson' }]);
+            }
+            finally {
+                trans.abort();
+                await db.kill();
+            }
+        },
+        async 'multiple indexes'() {
+            const db = await $$.$mol_db('$mol_db_test', mig => mig.store_make('users'), mig => mig.stores.users.index_make('names', ['name'], true), mig => mig.stores.users.index_make('ages', ['age']));
+            const trans = db.change('users');
+            try {
+                const { users } = trans.stores;
+                await users.put({ name: 'Jin', age: 18 }, 'jin');
+                await users.put({ name: 'John', age: 18 }, 'john');
+                const { names, ages } = users.indexes;
+                $mol_assert_like(await names.select(['Jin']), [{ name: 'Jin', age: 18 }]);
+                $mol_assert_like(await names.select(['John']), [{ name: 'John', age: 18 }]);
+                $mol_assert_like(await names.count(), 2);
+                $mol_assert_like(await ages.select([18]), [{ name: 'Jin', age: 18 }, { name: 'John', age: 18 }]);
+                $mol_assert_like(await ages.count(), 2);
+            }
+            finally {
+                trans.abort();
+                await db.kill();
+            }
+        },
+    });
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
 (function ($_1) {
     $mol_test_mocks.push($ => {
         class $giper_baza_mine_mock extends $.$giper_baza_mine_temp {
@@ -5615,6 +6062,56 @@ var $;
 ;
 "use strict";
 var $;
+(function ($_1) {
+    $mol_test_mocks.push($ => {
+        class $giper_baza_glob_mock extends $.$giper_baza_glob {
+            static $ = $;
+            static lands_touched = new $mol_wire_set();
+        }
+        $.$giper_baza_glob = $giper_baza_glob_mock;
+    });
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($_1) {
+    $mol_test_mocks.push($ => {
+        class $giper_baza_yard_mock extends $.$giper_baza_yard {
+            master() {
+                return null;
+            }
+        }
+        $.$giper_baza_yard = $giper_baza_yard_mock;
+    });
+    $giper_baza_yard.masters = () => {
+        $giper_baza_glob.Seed();
+        return ['http://localhost:9090/'];
+    };
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_test({
+        'null by default'() {
+            const key = String(Math.random());
+            $mol_assert_equal($mol_state_session.value(key), null);
+        },
+        'storing'() {
+            const key = String(Math.random());
+            $mol_state_session.value(key, '$mol_state_session_test');
+            $mol_assert_equal($mol_state_session.value(key), '$mol_state_session_test');
+            $mol_state_session.value(key, null);
+            $mol_assert_equal($mol_state_session.value(key), null);
+        },
+    });
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
 (function ($) {
     function check(str, query) {
         $mol_assert_like(str, $hyoo_harp_to_string(query));
@@ -5807,9 +6304,6 @@ var $;
         },
     });
 })($ || ($ = {}));
-
-;
-"use strict";
 
 ;
 "use strict";
@@ -6014,128 +6508,6 @@ var $;
 var $;
 (function ($_1) {
     $mol_test({
-        'Watch one value'($) {
-            class App extends $mol_object2 {
-                static $ = $;
-                static set = new $mol_wire_set();
-                static lucky() {
-                    return this.set.has(777);
-                }
-            }
-            __decorate([
-                $mol_wire_solo
-            ], App, "lucky", null);
-            $mol_assert_equal(App.lucky(), false);
-            App.set.add(666);
-            $mol_assert_equal(App.lucky(), false);
-            App.set.add(777);
-            $mol_assert_equal(App.lucky(), true);
-            App.set.delete(777);
-            $mol_assert_equal(App.lucky(), false);
-        },
-        'Watch item channel'($) {
-            class App extends $mol_object2 {
-                static $ = $;
-                static set = new $mol_wire_set();
-                static lucky() {
-                    return this.set.item(777);
-                }
-            }
-            __decorate([
-                $mol_wire_solo
-            ], App, "lucky", null);
-            $mol_assert_equal(App.lucky(), false);
-            App.set.item(666, true);
-            $mol_assert_equal(App.lucky(), false);
-            App.set.item(777, true);
-            $mol_assert_equal(App.lucky(), true);
-            App.set.item(777, false);
-            $mol_assert_equal(App.lucky(), false);
-        },
-        'Watch size'($) {
-            class App extends $mol_object2 {
-                static $ = $;
-                static set = new $mol_wire_set();
-                static size() {
-                    return this.set.size;
-                }
-            }
-            __decorate([
-                $mol_wire_solo
-            ], App, "size", null);
-            $mol_assert_equal(App.size(), 0);
-            App.set.add(666);
-            $mol_assert_equal(App.size(), 1);
-            App.set.add(777);
-            $mol_assert_equal(App.size(), 2);
-            App.set.delete(777);
-            $mol_assert_equal(App.size(), 1);
-        },
-        'Watch for-of'($) {
-            class App extends $mol_object2 {
-                static $ = $;
-                static set = new $mol_wire_set();
-                static sum() {
-                    let res = 0;
-                    for (const val of this.set) {
-                        res += val;
-                    }
-                    return res;
-                }
-            }
-            __decorate([
-                $mol_wire_solo
-            ], App, "sum", null);
-            $mol_assert_equal(App.sum(), 0);
-            App.set.add(111);
-            $mol_assert_equal(App.sum(), 111);
-            App.set.add(222);
-            $mol_assert_equal(App.sum(), 333);
-            App.set.delete(111);
-            $mol_assert_equal(App.sum(), 222);
-        },
-        'Watch forEach'($) {
-            class App extends $mol_object2 {
-                static $ = $;
-                static set = new $mol_wire_set();
-                static sum() {
-                    let res = 0;
-                    this.set.forEach(val => res += val);
-                    return res;
-                }
-            }
-            __decorate([
-                $mol_wire_solo
-            ], App, "sum", null);
-            $mol_assert_equal(App.sum(), 0);
-            App.set.add(111);
-            $mol_assert_equal(App.sum(), 111);
-            App.set.add(222);
-            $mol_assert_equal(App.sum(), 333);
-            App.set.delete(111);
-            $mol_assert_equal(App.sum(), 222);
-        },
-    });
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($_1) {
-    $mol_test_mocks.push($ => {
-        class $giper_baza_glob_mock extends $.$giper_baza_glob {
-            static $ = $;
-            static lands_touched = new $mol_wire_set();
-        }
-        $.$giper_baza_glob = $giper_baza_glob_mock;
-    });
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($_1) {
-    $mol_test({
         'save and load buffers'($) {
             const land = $giper_baza_land.make({ $ });
             const file = land.Data($giper_baza_file);
@@ -6155,359 +6527,6 @@ var $;
             $mol_assert_equal(source, new Uint8Array(await file.blob().arrayBuffer()));
         },
     });
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($_1) {
-    $mol_test_mocks.push($ => {
-        class $giper_baza_yard_mock extends $.$giper_baza_yard {
-            master() {
-                return null;
-            }
-        }
-        $.$giper_baza_yard = $giper_baza_yard_mock;
-    });
-    $giper_baza_yard.masters = () => {
-        $giper_baza_glob.Seed();
-        return ['http://localhost:9090/'];
-    };
-})($ || ($ = {}));
-
-;
-"use strict";
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_test({
-        'escape'() {
-            const specials = $mol_regexp.from('.*+?^${}()|[]\\');
-            $mol_assert_equal(specials.source, '\\.\\*\\+\\?\\^\\$\\{\\}\\(\\)\\|\\[\\]\\\\');
-        },
-        'char code'() {
-            const space = $mol_regexp.from(32);
-            $mol_assert_like(' '.match(space), [' ']);
-        },
-        'repeat fixed'() {
-            const { repeat, decimal_only: digit } = $mol_regexp;
-            const year = repeat(digit, 4, 4);
-            $mol_assert_like('#2020#'.match(year), ['2020']);
-        },
-        'greedy repeat'() {
-            const { repeat, repeat_greedy, latin_only: letter } = $mol_regexp;
-            $mol_assert_like('abc'.match(repeat(letter, 1, 2)), ['a', 'b', 'c']);
-            $mol_assert_like('abc'.match(repeat_greedy(letter, 1, 2)), ['ab', 'c']);
-        },
-        'repeat range'() {
-            const { repeat_greedy, decimal_only: digit } = $mol_regexp;
-            const year = repeat_greedy(digit, 2, 4);
-            $mol_assert_like('#2#'.match(year), null);
-            $mol_assert_like('#20#'.match(year), ['20']);
-            $mol_assert_like('#2020#'.match(year), ['2020']);
-            $mol_assert_like('#20201#'.match(year), ['2020']);
-        },
-        'repeat from'() {
-            const { repeat_greedy, latin_only: letter } = $mol_regexp;
-            const name = repeat_greedy(letter, 2);
-            $mol_assert_like('##'.match(name), null);
-            $mol_assert_like('#a#'.match(name), null);
-            $mol_assert_like('#ab#'.match(name), ['ab']);
-            $mol_assert_like('#abc#'.match(name), ['abc']);
-        },
-        'from string'() {
-            const regexp = $mol_regexp.from('[\\d]');
-            $mol_assert_equal(regexp.source, '\\[\\\\d\\]');
-            $mol_assert_equal(regexp.flags, 'gsu');
-        },
-        'from regexp'() {
-            const regexp = $mol_regexp.from(/[\d]/i);
-            $mol_assert_equal(regexp.source, '[\\d]');
-            $mol_assert_equal(regexp.flags, 'i');
-        },
-        'split'() {
-            const regexp = $mol_regexp.from(';');
-            $mol_assert_like('aaa;bbb;ccc'.split(regexp), ['aaa', ';', 'bbb', ';', 'ccc']);
-            $mol_assert_like('aaa;;ccc'.split(regexp), ['aaa', ';', '', ';', 'ccc']);
-            $mol_assert_like('aaa'.split(regexp), ['aaa']);
-            $mol_assert_like(''.split(regexp), ['']);
-        },
-        'test for matching'() {
-            const regexp = $mol_regexp.from('foo');
-            $mol_assert_like(regexp.test(''), false);
-            $mol_assert_like(regexp.test('fo'), false);
-            $mol_assert_like(regexp.test('foo'), true);
-            $mol_assert_like(regexp.test('foobar'), true);
-            $mol_assert_like(regexp.test('barfoo'), true);
-        },
-        'case ignoring'() {
-            const xxx = $mol_regexp.from('x', { ignoreCase: true });
-            $mol_assert_like(xxx.flags, 'gisu');
-            $mol_assert_like(xxx.exec('xx')[0], 'x');
-            $mol_assert_like(xxx.exec('XX')[0], 'X');
-        },
-        'multiline mode'() {
-            const { end, from } = $mol_regexp;
-            const xxx = from(['x', end], { multiline: true });
-            $mol_assert_like(xxx.exec('x\ny')[0], 'x');
-            $mol_assert_like(xxx.flags, 'gmsu');
-        },
-        'flags override'() {
-            const triplet = $mol_regexp.from($mol_regexp.from(/.../, { ignoreCase: true }), { multiline: true });
-            $mol_assert_like(triplet.toString(), '/.../gmsu');
-        },
-        'sequence'() {
-            const { begin, end, decimal_only: digit, repeat, from } = $mol_regexp;
-            const year = repeat(digit, 4, 4);
-            const dash = '-';
-            const month = repeat(digit, 2, 2);
-            const day = repeat(digit, 2, 2);
-            const date = from([begin, year, dash, month, dash, day, end]);
-            $mol_assert_like(date.exec('2020-01-02')[0], '2020-01-02');
-        },
-        'optional'() {
-            const name = $mol_regexp.from(['A', ['4']]);
-            $mol_assert_equal('AB'.match(name)[0], 'A');
-            $mol_assert_equal('A4'.match(name)[0], 'A4');
-        },
-        'anon variants'() {
-            const name = $mol_regexp.from(['A', $mol_regexp.vary(['4', '5'])]);
-            $mol_assert_equal('AB'.match(name), null);
-            $mol_assert_equal('A4'.match(name)[0], 'A4');
-            $mol_assert_equal('A5'.match(name)[0], 'A5');
-        },
-        'only groups'() {
-            const regexp = $mol_regexp.from({ dog: '@' });
-            $mol_assert_like([...'#'.matchAll(regexp)][0].groups, undefined);
-            $mol_assert_like([...'@'.matchAll(regexp)][0].groups, { dog: '@' });
-        },
-        'catch skipped'() {
-            const regexp = $mol_regexp.from(/(@)(\d?)/g);
-            $mol_assert_like([...'[[@]]'.matchAll(regexp)].map(f => [...f]), [
-                ['[['],
-                ['@', '@', ''],
-                [']]'],
-            ]);
-        },
-        'enum variants'() {
-            let Sex;
-            (function (Sex) {
-                Sex["male"] = "male";
-                Sex["female"] = "female";
-            })(Sex || (Sex = {}));
-            const sexism = $mol_regexp.from(Sex);
-            $mol_assert_like([...''.matchAll(sexism)].length, 0);
-            $mol_assert_like([...'trans'.matchAll(sexism)][0].groups, undefined);
-            $mol_assert_like([...'male'.matchAll(sexism)][0].groups, { male: 'male', female: '' });
-            $mol_assert_like([...'female'.matchAll(sexism)][0].groups, { male: '', female: 'female' });
-        },
-        'recursive only groups'() {
-            let Sex;
-            (function (Sex) {
-                Sex["male"] = "male";
-                Sex["female"] = "female";
-            })(Sex || (Sex = {}));
-            const sexism = $mol_regexp.from({ Sex });
-            $mol_assert_like([...''.matchAll(sexism)].length, 0);
-            $mol_assert_like([...'male'.matchAll(sexism)][0].groups, { Sex: 'male', male: 'male', female: '' });
-            $mol_assert_like([...'female'.matchAll(sexism)][0].groups, { Sex: 'female', male: '', female: 'female' });
-        },
-        'sequence with groups'() {
-            const { begin, end, decimal_only: digit, repeat, from } = $mol_regexp;
-            const year = repeat(digit, 4, 4);
-            const dash = '-';
-            const month = repeat(digit, 2, 2);
-            const day = repeat(digit, 2, 2);
-            const regexp = from([begin, { year }, dash, { month }, dash, { day }, end]);
-            const found = [...'2020-01-02'.matchAll(regexp)];
-            $mol_assert_like(found[0].groups, {
-                year: '2020',
-                month: '01',
-                day: '02',
-            });
-        },
-        'sequence with groups of mixed type'() {
-            const prefix = '/';
-            const postfix = '/';
-            const regexp = $mol_regexp.from([{ prefix }, /(\w+)/, { postfix }, /([gumi]*)/]);
-            $mol_assert_like([...'/foo/mi'.matchAll(regexp)], [
-                Object.assign(["/foo/mi", "/", "foo", "/", "mi"], {
-                    groups: {
-                        prefix: '/',
-                        postfix: '/',
-                    },
-                    index: 0,
-                    input: "/",
-                }),
-            ]);
-        },
-        'recursive sequence with groups'() {
-            const { begin, end, decimal_only: digit, repeat, from } = $mol_regexp;
-            const year = repeat(digit, 4, 4);
-            const dash = '-';
-            const month = repeat(digit, 2, 2);
-            const day = repeat(digit, 2, 2);
-            const regexp = from([
-                begin, { date: [{ year }, dash, { month }] }, dash, { day }, end
-            ]);
-            const found = [...'2020-01-02'.matchAll(regexp)];
-            $mol_assert_like(found[0].groups, {
-                date: '2020-01',
-                year: '2020',
-                month: '01',
-                day: '02',
-            });
-        },
-        'parse multiple'() {
-            const { decimal_only: digit, from } = $mol_regexp;
-            const regexp = from({ digit });
-            $mol_assert_like([...'123'.matchAll(regexp)].map(f => f.groups), [
-                { digit: '1' },
-                { digit: '2' },
-                { digit: '3' },
-            ]);
-        },
-        'named variants'() {
-            const { begin, or, end, from } = $mol_regexp;
-            const sexism = from([
-                begin, 'sex = ', { sex: ['male', or, 'female'] }, end
-            ]);
-            $mol_assert_like([...'sex = male'.matchAll(sexism)][0].groups, { sex: 'male' });
-            $mol_assert_like([...'sex = female'.matchAll(sexism)][0].groups, { sex: 'female' });
-            $mol_assert_like([...'sex = malefemale'.matchAll(sexism)][0].groups, undefined);
-        },
-        'force after'() {
-            const { latin_only: letter, force_after, from } = $mol_regexp;
-            const regexp = from([letter, force_after('.')]);
-            $mol_assert_like('x.'.match(regexp), ['x']);
-            $mol_assert_like('x,'.match(regexp), null);
-        },
-        'forbid after'() {
-            const { latin_only: letter, forbid_after, from } = $mol_regexp;
-            const regexp = from([letter, forbid_after('.')]);
-            $mol_assert_like('x.'.match(regexp), null);
-            $mol_assert_like('x,'.match(regexp), ['x']);
-        },
-        'char except'() {
-            const { char_except, latin_only, tab } = $mol_regexp;
-            const name = char_except(latin_only, tab);
-            $mol_assert_like('a'.match(name), null);
-            $mol_assert_like('\t'.match(name), null);
-            $mol_assert_like('('.match(name), ['(']);
-        },
-        'unicode only'() {
-            const { unicode_only, from } = $mol_regexp;
-            const name = from([
-                unicode_only('Script', 'Cyrillic'),
-                unicode_only('Hex_Digit'),
-            ]);
-            $mol_assert_like('FF'.match(name), null);
-            $mol_assert_like('ФG'.match(name), null);
-            $mol_assert_like('ФF'.match(name), ['ФF']);
-        },
-        'generate by optional with inner group'() {
-            const { begin, end, from } = $mol_regexp;
-            const animals = from([begin, '#', ['^', { dog: '@' }], end]);
-            $mol_assert_equal(animals.generate({}), '#');
-            $mol_assert_equal(animals.generate({ dog: false }), '#');
-            $mol_assert_equal(animals.generate({ dog: true }), '#^@');
-            $mol_assert_fail(() => animals.generate({ dog: '$' }), 'Wrong param: dog=$');
-        },
-        'generate by optional with inner group with variants'() {
-            const { begin, end, from } = $mol_regexp;
-            const animals = from([begin, '#', ['^', { animal: { dog: '@', fox: '&' } }], end]);
-            $mol_assert_equal(animals.generate({}), '#');
-            $mol_assert_equal(animals.generate({ dog: true }), '#^@');
-            $mol_assert_equal(animals.generate({ fox: true }), '#^&');
-            $mol_assert_fail(() => animals.generate({ dog: '$' }), 'Wrong param: dog=$');
-        },
-        'complex example'() {
-            const { begin, end, char_only, char_range, latin_only, slash_back, repeat_greedy, from, } = $mol_regexp;
-            const atom_char = char_only(latin_only, "!#$%&'*+/=?^`{|}~-");
-            const atom = repeat_greedy(atom_char, 1);
-            const dot_atom = from([atom, repeat_greedy(['.', atom])]);
-            const name_letter = char_only(char_range(0x01, 0x08), 0x0b, 0x0c, char_range(0x0e, 0x1f), 0x21, char_range(0x23, 0x5b), char_range(0x5d, 0x7f));
-            const quoted_pair = from([
-                slash_back,
-                char_only(char_range(0x01, 0x09), 0x0b, 0x0c, char_range(0x0e, 0x7f))
-            ]);
-            const name = repeat_greedy({ name_letter, quoted_pair });
-            const quoted_name = from(['"', { name }, '"']);
-            const local_part = from({ dot_atom, quoted_name });
-            const domain = dot_atom;
-            const mail = from([begin, local_part, '@', { domain }, end]);
-            $mol_assert_equal('foo..bar@example.org'.match(mail), null);
-            $mol_assert_equal('foo..bar"@example.org'.match(mail), null);
-            $mol_assert_like([...'foo.bar@example.org'.matchAll(mail)][0].groups, {
-                dot_atom: "foo.bar",
-                quoted_name: "",
-                name: "",
-                name_letter: "",
-                quoted_pair: "",
-                domain: "example.org",
-            });
-            $mol_assert_like([...'"foo..bar"@example.org'.matchAll(mail)][0].groups, {
-                dot_atom: "",
-                quoted_name: '"foo..bar"',
-                name: "foo..bar",
-                name_letter: "r",
-                quoted_pair: "",
-                domain: "example.org",
-            });
-            $mol_assert_equal(mail.generate({ dot_atom: 'foo.bar', domain: 'example.org' }), 'foo.bar@example.org');
-            $mol_assert_equal(mail.generate({ name: 'foo..bar', domain: 'example.org' }), '"foo..bar"@example.org');
-            $mol_assert_fail(() => mail.generate({ dot_atom: 'foo..bar', domain: 'example.org' }), 'Wrong param: dot_atom=foo..bar');
-        },
-    });
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        $mol_test({
-            'Empty needle'() {
-                const app = new $mol_dimmer;
-                app.needle = () => '  ';
-                app.haystack = () => 'foo  bar';
-                $mol_assert_like(app.strings(), ['foo  bar']);
-            },
-            'Empty haystack'() {
-                const app = new $mol_dimmer;
-                app.needle = () => 'foo  bar';
-                app.haystack = () => '';
-                $mol_assert_like(app.strings(), ['']);
-            },
-            'Not found'() {
-                const app = new $mol_dimmer;
-                app.needle = () => 'foo';
-                app.haystack = () => ' bar ';
-                $mol_assert_like(app.strings(), [' bar ']);
-            },
-            'One found'() {
-                const app = new $mol_dimmer;
-                app.needle = () => 'foo';
-                app.haystack = () => ' barfoo ';
-                $mol_assert_like(app.strings(), [' bar', 'foo', ' ']);
-            },
-            'Multiple found'() {
-                const app = new $mol_dimmer;
-                app.needle = () => 'foo';
-                app.haystack = () => ' foobarfoo foo';
-                $mol_assert_like(app.strings(), [' ', 'foo', 'bar', 'foo', ' ', 'foo']);
-            },
-            'Fuzzy search'() {
-                const app = new $mol_dimmer;
-                app.needle = () => 'foo bar';
-                app.haystack = () => ' barfoo ';
-                $mol_assert_like(app.strings(), [' ', 'bar', '', 'foo', ' ']);
-            },
-        });
-    })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));
 
 ;
@@ -6844,25 +6863,6 @@ var $;
                 .expanded2(dimensions);
             $mol_assert_like([...expanded.x], [Infinity, -Infinity]);
             $mol_assert_like([...expanded.y], [Infinity, -Infinity]);
-        },
-    });
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_test({
-        'null by default'() {
-            const key = String(Math.random());
-            $mol_assert_equal($mol_state_session.value(key), null);
-        },
-        'storing'() {
-            const key = String(Math.random());
-            $mol_state_session.value(key, '$mol_state_session_test');
-            $mol_assert_equal($mol_state_session.value(key), '$mol_state_session_test');
-            $mol_state_session.value(key, null);
-            $mol_assert_equal($mol_state_session.value(key), null);
         },
     });
 })($ || ($ = {}));

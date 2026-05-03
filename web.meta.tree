@@ -61,6 +61,8 @@
 	pack player git \https://github.com/giper-dev/player.git
 	pack search git \https://github.com/giper-dev/search.git
 	pack web git \https://github.com/giper-dev/web.git
+\/giper/baza/glob
+	deploy \giper/baza/glob/glob.baza
 \/hyoo
 	pack about git \https://github.com/hyoo-ru/about.hyoo.ru.git
 	pack artist git \https://github.com/hyoo-ru/artist.hyoo.ru.git
@@ -126,8 +128,6 @@
 	pack home git \https://github.com/hyoo-ru/hyoo.ru.git
 	pack idea git \https://github.com/hyoo-ru/idea.hyoo.ru.git
 	pack intern git \https://github.com/hyoo-ru/intern.hyoo.ru.git
-\/giper/baza/glob
-	deploy \giper/baza/glob/glob.baza
 \/giper/baza/file
 	include \/mol/offline/install
 \/giper/baza/app
