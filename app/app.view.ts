@@ -403,6 +403,39 @@ namespace $.$$ {
 			return next ?? ''
 		}
 
+		@$mol_mem
+		import_link(next?: string) {
+			return next ?? ''
+		}
+
+		@$mol_mem
+		import_status(next?: string) {
+			return next ?? ''
+		}
+
+		@$mol_action
+		apply_account_link() {
+			const raw = this.import_link().trim()
+			if (!raw) {
+				this.import_status('Вставь ссылку с #account=…')
+				return
+			}
+			const match = raw.match(/[#&]account=([^&\s]+)/)
+			const key = match ? decodeURIComponent(match[1]) : raw
+			if (key.length < 172) {
+				this.import_status('Ключ слишком короткий')
+				return
+			}
+			const current = $mol_state_local.value('$giper_baza_auth')
+			if (current === key) {
+				this.import_status('Этот ключ уже используется')
+				return
+			}
+			$mol_state_local.value('$giper_baza_auth', key)
+			this.import_status('Применено, перезагрузка…')
+			location.reload()
+		}
+
 		@$mol_action
 		copy_account_link() {
 			const link = this.account_link()
