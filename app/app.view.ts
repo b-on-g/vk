@@ -32,21 +32,41 @@ namespace $.$$ {
 	/**
 	 * В chrome-extension/moz-extension контексте `location.origin` имеет схему
 	 * `chrome-extension://`, и yard.web.ts пушит его в masters_default.
-	 * Yard потом делает `new WebSocket(link.replace(/^http/, 'ws'))` — схема не
-	 * меняется, и WebSocket падает SyntaxError. Чистим default-список и
-	 * подкладываем публичный baza-master, чтобы синк работал.
+	 * Кроме того, peer-ы из Seed().peers() могут принести относительные URL,
+	 * которые в extension резолвятся в chrome-extension://. Любой такой URL
+	 * → `new WebSocket(...)` → SyntaxError.
+	 *
+	 * Фикс из двух частей:
+	 *   1) подкладываем публичный baza-master в masters_default;
+	 *   2) оборачиваем static masters() так, чтобы из итогового списка
+	 *      выпадали URL с невалидной для WebSocket схемой.
 	 */
 	;(function fix_yard_masters_in_extension() {
 		try {
 			if (typeof location === 'undefined') return
 			const proto = location.protocol
 			if (proto !== 'chrome-extension:' && proto !== 'moz-extension:') return
-			const list = $giper_baza_yard.masters_default
+
+			const yard = $giper_baza_yard as any
+			const list: string[] = yard.masters_default
 			for (let i = list.length - 1; i >= 0; i--) {
-				if (/^(chrome|moz)-extension:/.test(list[i])) list.splice(i, 1)
+				if (!/^(http|https|ws|wss):/.test(list[i])) list.splice(i, 1)
 			}
-			if (!list.length) list.push('https://baza.giper.dev/')
-			console.info('[app] yard masters in extension:', list)
+			if (!list.includes('https://baza.giper.dev/')) list.push('https://baza.giper.dev/')
+
+			if (!yard.__bog_vk_masters_patched) {
+				const orig = yard.masters.bind(yard)
+				Object.defineProperty(yard, 'masters', {
+					configurable: true,
+					value: function() {
+						const all = orig() as string[]
+						return all.filter(url => /^(http|https|ws|wss):/.test(url))
+					},
+				})
+				yard.__bog_vk_masters_patched = true
+			}
+
+			console.info('[app] yard masters in extension:', yard.masters())
 		} catch (e: any) {
 			console.warn('[app] yard masters fix failed:', e?.message)
 		}
