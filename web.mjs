@@ -18731,9 +18731,6 @@ var $;
 var $;
 (function ($) {
     class $bog_vk_store extends $mol_object2 {
-        static version(next) {
-            return next ?? 0;
-        }
         static land() {
             return this.$.$giper_baza_glob.home().land();
         }
@@ -18745,16 +18742,7 @@ var $;
             return `${audio.owner_id}_${audio.id}`;
         }
         static list_audios(archived) {
-            this.version();
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return [];
-            }
+            const dict = this.tracks_dict();
             const keys = (dict.keys() ?? []);
             const rows = [];
             for (const key of keys) {
@@ -18861,7 +18849,6 @@ var $;
             }
             if (track.Archived()?.val() === true)
                 track.Archived('auto').val(false);
-            this.version(this.version() + 1);
         }
         static swap_order(a, b) {
             if (!a || !b)
@@ -18889,7 +18876,6 @@ var $;
             const next_b = ob === oa ? oa : oa;
             ta.Order('auto').val(next_a);
             tb.Order('auto').val(next_b);
-            this.version(this.version() + 1);
         }
         static archive_track(audio) {
             if (!audio)
@@ -18908,7 +18894,6 @@ var $;
             if (!track)
                 return;
             track.Archived('auto').val(true);
-            this.version(this.version() + 1);
         }
         static fresh_files = new Map();
         static local_blob(audio) {
@@ -19000,15 +18985,6 @@ var $;
                 console.warn('[store] File ensure returned null');
             }
             this.fresh_files.set(key, file);
-            this.version(this.version() + 1);
-            try {
-                this.land().units_saving();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                console.warn('[store] units_saving failed:', e?.message);
-            }
             return audio;
         }
         static delete_track(audio) {
@@ -19024,7 +19000,6 @@ var $;
                 return;
             }
             dict.cut(this.cache_key(audio));
-            this.version(this.version() + 1);
         }
         static restore_track(audio) {
             if (!audio)
@@ -19043,12 +19018,8 @@ var $;
             if (!track)
                 return;
             track.Archived('auto').val(false);
-            this.version(this.version() + 1);
         }
     }
-    __decorate([
-        $mol_mem
-    ], $bog_vk_store, "version", null);
     __decorate([
         $mol_mem_key
     ], $bog_vk_store, "list_audios", null);
@@ -34187,7 +34158,11 @@ var $;
 (function ($) {
     var $$;
     (function ($$) {
+        $mol_style_attach('bog/vk/app/app-popup.css', `
+		html, body { min-width: 24rem; min-height: 32rem; }
+	`);
         $mol_style_define($bog_vk_app, {
+            minWidth: '20rem',
             maxWidth: '50rem',
             margin: {
                 left: 'auto',

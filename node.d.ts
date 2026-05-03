@@ -7914,7 +7914,6 @@ declare namespace $.$$ {
 
 declare namespace $ {
     class $bog_vk_store extends $mol_object2 {
-        static version(next?: number): number;
         static land(): $giper_baza_land;
         static tracks_dict(): {
             Value: typeof $bog_vk_track_baza;
