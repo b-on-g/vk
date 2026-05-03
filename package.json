@@ -207,6 +207,7 @@
     "$mol_icon_delete",
     "$mol_icon_archive",
     "$mol_icon_restore",
+    "$mol_icon_delete_forever",
     "$bog_vk_api",
     "$bog_vk_cache",
     "$mol_db",

@@ -2580,6 +2580,15 @@ declare namespace $ {
 
 //# sourceMappingURL=restore.view.tree.d.ts.map
 declare namespace $ {
+
+	export class $mol_icon_delete_forever extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=forever.view.tree.d.ts.map
+declare namespace $ {
     class $bog_vk_api extends $mol_object {
         static default_proxy_url: string;
         static token(next?: string): string;
@@ -5438,6 +5447,21 @@ declare namespace $ {
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
+	type $mol_button_minor__hint_bog_vk_track_22 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_button_minor['hint'] >
+	>
+	type $mol_button_minor__click_bog_vk_track_23 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['delete_forever'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_bog_vk_track_24 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
 	export class $bog_vk_track extends $mol_view {
 		event_click( next?: any ): any
 		cover( ): string
@@ -5468,6 +5492,9 @@ declare namespace $ {
 		restore( next?: any ): any
 		Restore_icon( ): $mol_icon_restore
 		Restore( ): $mol_button_minor
+		delete_forever( next?: any ): any
+		Delete_forever_icon( ): $mol_icon_delete_forever
+		Delete_forever( ): $mol_button_minor
 		audio( ): any
 		current( ): boolean
 		play( next?: any ): any
@@ -5500,6 +5527,7 @@ declare namespace $.$$ {
         Move_down(): any;
         Archive(): any;
         Restore(): any;
+        Delete_forever(): any;
         is_local(): boolean;
         Download(): any;
         Delete(): any;
@@ -7185,12 +7213,14 @@ declare namespace $ {
         static save_track(audio: $bog_vk_api_audio): void;
         static swap_order(a: $bog_vk_api_audio, b: $bog_vk_api_audio): void;
         static archive_track(audio: $bog_vk_api_audio): void;
+        private static fresh_files;
         static local_blob(audio: $bog_vk_api_audio): Blob | null;
         static parse_filename(name: string): {
             artist: string;
             title: string;
         };
         static save_local_track(file: File): $bog_vk_api_audio | null;
+        static delete_track(audio: $bog_vk_api_audio): void;
         static restore_track(audio: $bog_vk_api_audio): void;
     }
 }
@@ -7247,6 +7277,11 @@ declare namespace $ {
 		,
 		ReturnType< $bog_vk_track['restore'] >
 	>
+	type $bog_vk_track__delete_forever_bog_vk_tracks_11 = $mol_type_enforce<
+		ReturnType< $bog_vk_tracks['track_delete'] >
+		,
+		ReturnType< $bog_vk_track['delete_forever'] >
+	>
 	export class $bog_vk_tracks extends $mol_list {
 		track_audio( id: any): any
 		track_current( id: any): boolean
@@ -7257,6 +7292,7 @@ declare namespace $ {
 		track_move_down( id: any, next?: any ): any
 		track_archive( id: any, next?: any ): any
 		track_restore( id: any, next?: any ): any
+		track_delete( id: any, next?: any ): any
 		Track( id: any): $bog_vk_track
 		track_rows( ): readonly(any)[]
 		audios( ): readonly(any)[]
@@ -7267,6 +7303,7 @@ declare namespace $ {
 		reorder_down( next?: any ): any
 		archive_audio( next?: any ): any
 		restore_audio( next?: any ): any
+		delete_audio( next?: any ): any
 		rows( ): ReturnType< $bog_vk_tracks['track_rows'] >
 	}
 	
@@ -7285,6 +7322,7 @@ declare namespace $.$$ {
         track_move_down(index: number): void;
         track_archive(index: number): void;
         track_restore(index: number): void;
+        track_delete(index: number): void;
     }
 }
 
@@ -10308,12 +10346,17 @@ declare namespace $ {
 		,
 		ReturnType< $bog_vk_tracks['restore_audio'] >
 	>
-	type $bog_vk_player__queue_bog_vk_app_71 = $mol_type_enforce<
+	type $bog_vk_tracks__delete_audio_bog_vk_app_71 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['delete_audio'] >
+		,
+		ReturnType< $bog_vk_tracks['delete_audio'] >
+	>
+	type $bog_vk_player__queue_bog_vk_app_72 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_player['queue'] >
 	>
-	type $bog_vk_player__current_audio_bog_vk_app_72 = $mol_type_enforce<
+	type $bog_vk_player__current_audio_bog_vk_app_73 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_player['current_audio'] >
@@ -10384,6 +10427,7 @@ declare namespace $ {
 		reorder_down( next?: any ): any
 		archive_audio( next?: any ): any
 		restore_audio( next?: any ): any
+		delete_audio( next?: any ): any
 		Tracks( ): $bog_vk_tracks
 		Player( ): $bog_vk_player
 		plugins( ): readonly(any)[]
@@ -10426,6 +10470,7 @@ declare namespace $.$$ {
         reorder_down(audio: $bog_vk_api_audio | null): void;
         archive_audio(audio: $bog_vk_api_audio | null): void;
         restore_audio(audio: $bog_vk_api_audio | null): void;
+        delete_audio(audio: $bog_vk_api_audio | null): void;
         on_play_audio(audio?: $bog_vk_api_audio | null): void;
         upload_files(next?: File[]): File[];
         clear_token(): void;

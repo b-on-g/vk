@@ -7777,6 +7777,17 @@ var $;
 "use strict";
 
 ;
+	($.$mol_icon_delete_forever) = class $mol_icon_delete_forever extends ($.$mol_icon) {
+		path(){
+			return "M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8.46,11.88L9.87,10.47L12,12.59L14.12,10.47L15.53,11.88L13.41,14L15.53,16.12L14.12,17.53L12,15.41L9.88,17.53L8.47,16.12L10.59,14L8.46,11.88M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z";
+		}
+	};
+
+
+;
+"use strict";
+
+;
 	($.$bog_vk_track) = class $bog_vk_track extends ($.$mol_view) {
 		event_click(next){
 			if(next !== undefined) return next;
@@ -7911,6 +7922,21 @@ var $;
 			(obj.sub) = () => ([(this.Restore_icon())]);
 			return obj;
 		}
+		delete_forever(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Delete_forever_icon(){
+			const obj = new this.$.$mol_icon_delete_forever();
+			return obj;
+		}
+		Delete_forever(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.hint) = () => ("Удалить навсегда");
+			(obj.click) = (next) => ((this.delete_forever(next)));
+			(obj.sub) = () => ([(this.Delete_forever_icon())]);
+			return obj;
+		}
 		audio(){
 			return null;
 		}
@@ -7947,7 +7973,8 @@ var $;
 				(this.Download()), 
 				(this.Delete()), 
 				(this.Archive()), 
-				(this.Restore())
+				(this.Restore()), 
+				(this.Delete_forever())
 			];
 		}
 	};
@@ -7976,6 +8003,9 @@ var $;
 	($mol_mem(($.$bog_vk_track.prototype), "restore"));
 	($mol_mem(($.$bog_vk_track.prototype), "Restore_icon"));
 	($mol_mem(($.$bog_vk_track.prototype), "Restore"));
+	($mol_mem(($.$bog_vk_track.prototype), "delete_forever"));
+	($mol_mem(($.$bog_vk_track.prototype), "Delete_forever_icon"));
+	($mol_mem(($.$bog_vk_track.prototype), "Delete_forever"));
 	($mol_mem(($.$bog_vk_track.prototype), "play"));
 
 
@@ -14655,6 +14685,11 @@ var $;
                     return null;
                 return super.Restore();
             }
+            Delete_forever() {
+                if (!this.archive_mode())
+                    return null;
+                return super.Delete_forever();
+            }
             is_local() {
                 return this.audio_data()?.owner_id === 0;
             }
@@ -14697,6 +14732,8 @@ var $;
                 if (this.click_on_button(event, () => this.Archive()))
                     return;
                 if (this.click_on_button(event, () => this.Restore()))
+                    return;
+                if (this.click_on_button(event, () => this.Delete_forever()))
                     return;
                 this.play(this.audio());
             }
@@ -14800,6 +14837,11 @@ var $;
                 },
             },
             Restore: {
+                justify: {
+                    content: 'flex-end',
+                },
+            },
+            Delete_forever: {
                 justify: {
                     content: 'flex-end',
                 },
@@ -17837,32 +17879,32 @@ var $;
             track.Archived('auto').val(true);
             this.version(this.version() + 1);
         }
+        static fresh_files = new Map();
         static local_blob(audio) {
             if (audio.owner_id !== 0)
                 return null;
-            let dict;
-            try {
-                dict = this.tracks_dict();
+            const key = this.cache_key(audio);
+            const fresh = this.fresh_files.get(key);
+            if (fresh) {
+                console.log('[store] local blob from RAM:', audio.title, fresh.size, 'bytes,', fresh.type);
+                return fresh;
             }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return null;
-            }
-            const track = dict.key(this.cache_key(audio));
+            const dict = this.tracks_dict();
+            const track = dict.key(key);
             if (!track)
                 return null;
             const file = track.File()?.remote();
             if (!file)
                 return null;
-            try {
-                return file.blob();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
+            const buf = file.buffer();
+            if (!buf || buf.byteLength === 0) {
+                console.warn('[store] local blob empty:', audio.title, 'type:', file.type());
                 return null;
             }
+            const type = file.type() || 'audio/mpeg';
+            const blob = new Blob([buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength)], { type });
+            console.log('[store] local blob from baza:', audio.title, blob.size, 'bytes,', type);
+            return blob;
         }
         static parse_filename(name) {
             const base = name.replace(/\.[^.]+$/, '').trim();
@@ -17905,8 +17947,24 @@ var $;
                 store.blob(file);
                 track.File('auto').remote(store);
             }
+            this.fresh_files.set(key, file);
             this.version(this.version() + 1);
             return audio;
+        }
+        static delete_track(audio) {
+            if (!audio)
+                return;
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return;
+            }
+            dict.cut(this.cache_key(audio));
+            this.version(this.version() + 1);
         }
         static restore_track(audio) {
             if (!audio)
@@ -17948,6 +18006,9 @@ var $;
     ], $bog_vk_store, "save_local_track", null);
     __decorate([
         $mol_action
+    ], $bog_vk_store, "delete_track", null);
+    __decorate([
+        $mol_action
     ], $bog_vk_store, "restore_track", null);
     $.$bog_vk_store = $bog_vk_store;
 })($ || ($ = {}));
@@ -17986,6 +18047,10 @@ var $;
 			if(next !== undefined) return next;
 			return null;
 		}
+		track_delete(id, next){
+			if(next !== undefined) return next;
+			return null;
+		}
 		Track(id){
 			const obj = new this.$.$bog_vk_track();
 			(obj.audio) = () => ((this.track_audio(id)));
@@ -17998,6 +18063,7 @@ var $;
 			(obj.move_down) = (next) => ((this.track_move_down(id, next)));
 			(obj.archive) = (next) => ((this.track_archive(id, next)));
 			(obj.restore) = (next) => ((this.track_restore(id, next)));
+			(obj.delete_forever) = (next) => ((this.track_delete(id, next)));
 			return obj;
 		}
 		track_rows(){
@@ -18032,6 +18098,10 @@ var $;
 			if(next !== undefined) return next;
 			return null;
 		}
+		delete_audio(next){
+			if(next !== undefined) return next;
+			return null;
+		}
 		rows(){
 			return (this.track_rows());
 		}
@@ -18041,12 +18111,14 @@ var $;
 	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_move_down"));
 	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_archive"));
 	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_restore"));
+	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_delete"));
 	($mol_mem_key(($.$bog_vk_tracks.prototype), "Track"));
 	($mol_mem(($.$bog_vk_tracks.prototype), "play_audio"));
 	($mol_mem(($.$bog_vk_tracks.prototype), "reorder_up"));
 	($mol_mem(($.$bog_vk_tracks.prototype), "reorder_down"));
 	($mol_mem(($.$bog_vk_tracks.prototype), "archive_audio"));
 	($mol_mem(($.$bog_vk_tracks.prototype), "restore_audio"));
+	($mol_mem(($.$bog_vk_tracks.prototype), "delete_audio"));
 
 
 ;
@@ -18107,6 +18179,11 @@ var $;
                 if (audio)
                     this.restore_audio(audio);
             }
+            track_delete(index) {
+                const audio = this.track_audio(index);
+                if (audio)
+                    this.delete_audio(audio);
+            }
         }
         __decorate([
             $mol_mem
@@ -18126,6 +18203,9 @@ var $;
         __decorate([
             $mol_action
         ], $bog_vk_tracks.prototype, "track_restore", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_tracks.prototype, "track_delete", null);
         $$.$bog_vk_tracks = $bog_vk_tracks;
     })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));
@@ -19118,6 +19198,10 @@ var $;
 			if(next !== undefined) return next;
 			return null;
 		}
+		delete_audio(next){
+			if(next !== undefined) return next;
+			return null;
+		}
 		Tracks(){
 			const obj = new this.$.$bog_vk_tracks();
 			(obj.audios) = () => ((this.visible_audios()));
@@ -19128,6 +19212,7 @@ var $;
 			(obj.reorder_down) = (next) => ((this.reorder_down(next)));
 			(obj.archive_audio) = (next) => ((this.archive_audio(next)));
 			(obj.restore_audio) = (next) => ((this.restore_audio(next)));
+			(obj.delete_audio) = (next) => ((this.delete_audio(next)));
 			return obj;
 		}
 		Player(){
@@ -19229,6 +19314,7 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "reorder_down"));
 	($mol_mem(($.$bog_vk_app.prototype), "archive_audio"));
 	($mol_mem(($.$bog_vk_app.prototype), "restore_audio"));
+	($mol_mem(($.$bog_vk_app.prototype), "delete_audio"));
 	($mol_mem(($.$bog_vk_app.prototype), "Tracks"));
 	($mol_mem(($.$bog_vk_app.prototype), "Player"));
 
@@ -25160,6 +25246,18 @@ var $;
                     console.warn('[app] baza restore failed:', e?.message);
                 }
             }
+            delete_audio(audio) {
+                if (!audio)
+                    return;
+                try {
+                    $bog_vk_store.delete_track(audio);
+                }
+                catch (e) {
+                    if (e instanceof Promise)
+                        return;
+                    console.warn('[app] baza delete failed:', e?.message);
+                }
+            }
             on_play_audio(audio) {
                 if (!audio)
                     return;
@@ -25362,6 +25460,9 @@ var $;
         __decorate([
             $mol_action
         ], $bog_vk_app.prototype, "restore_audio", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_app.prototype, "delete_audio", null);
         __decorate([
             $mol_action
         ], $bog_vk_app.prototype, "on_play_audio", null);
