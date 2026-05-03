@@ -3,7 +3,7 @@
 	"name": "Bog VK Music",
 	"short_name": "Bog VK",
 	"description": "VK music player with offline cache and Giper Baza sync",
-	"version": "0.2.2",
+	"version": "1.2.2",
 	"action": {
 		"default_popup": "index.html",
 		"default_title": "Bog VK Music",

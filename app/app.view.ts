@@ -427,12 +427,8 @@ namespace $.$$ {
 				return
 			}
 			const current = $mol_state_local.value('$giper_baza_auth')
-			if (current === key) {
-				this.import_status('Этот ключ уже используется')
-				return
-			}
-			$mol_state_local.value('$giper_baza_auth', key)
-			this.import_status('Применено, перезагрузка…')
+			if (current !== key) $mol_state_local.value('$giper_baza_auth', key)
+			this.import_status(current === key ? 'Перезапуск…' : 'Применено, перезагрузка…')
 			location.reload()
 		}
 

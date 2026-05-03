@@ -288,6 +288,14 @@ namespace $ {
 			}
 			this.fresh_files.set(key, file)
 			this.version(this.version() + 1)
+			// Принудительно сбрасываем юниты в IDB, не дожидаясь yard.sync_news —
+			// иначе chunks живут только в RAM до первого коннекта к peer.
+			try {
+				this.land().units_saving()
+			} catch (e: any) {
+				if (e instanceof Promise) throw e
+				console.warn('[store] units_saving failed:', e?.message)
+			}
 			return audio
 		}
 
