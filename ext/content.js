@@ -330,51 +330,116 @@
 		document.head.appendChild(s)
 	}
 
-	// VK markup is opaque (hashed CSS module classes). We look for elements that have a
-	// `data-audio` attribute or whose data-* properties contain owner_id/id we already saw.
-	function key_from_node(node) {
-		const da = node.getAttribute && node.getAttribute('data-audio')
-		if (da) {
-			// data-audio looks like "<owner>_<id>_..." or JSON.
-			const m = da.match(/(-?\d+)_(\d+)/)
-			if (m) return m[1] + '_' + m[2]
-		}
-		// Fallback: scan dataset.
+	// VK ships row metadata as a JSON array in `data-audio`:
+	//   [id, owner_id, url, title, artist, duration, ..., access_key, ...]
+	// `url` is usually empty until the user hits Play; we fall back to audio.getById on click.
+	function parse_row(node) {
 		try {
-			for (const k in node.dataset) {
-				const v = node.dataset[k]
-				if (typeof v !== 'string') continue
-				const m = v.match(/(-?\d+)_(\d+)/)
-				if (m && audios_cache.has(m[1] + '_' + m[2])) return m[1] + '_' + m[2]
+			const raw = node.getAttribute && node.getAttribute('data-audio')
+			if (!raw) return null
+			const arr = JSON.parse(raw)
+			if (!Array.isArray(arr) || arr.length < 6) return null
+			const audio = {
+				id: Number(arr[0]),
+				owner_id: Number(arr[1]),
+				url: typeof arr[2] === 'string' ? arr[2] : '',
+				title: typeof arr[3] === 'string' ? arr[3] : '',
+				artist: typeof arr[4] === 'string' ? arr[4] : '',
+				duration: Number(arr[5]) || 0,
+				access_key: '',
 			}
-		} catch (e) {}
-		return ''
+			// access_key — длинная alpha-numeric строка где-то в массиве.
+			for (const v of arr) {
+				if (typeof v !== 'string' || v.length < 50) continue
+				if (!/^[A-Za-z0-9_-]+$/.test(v)) continue
+				audio.access_key = v
+				break
+			}
+			if (!Number.isFinite(audio.id) || !Number.isFinite(audio.owner_id)) return null
+			return audio
+		} catch (e) { return null }
+	}
+
+	async function get_token() {
+		return new Promise((resolve) => {
+			try { chrome.storage.local.get(['vk_token'], (r) => resolve(r?.vk_token || '')) }
+			catch (e) { resolve('') }
+		})
+	}
+
+	async function refresh_url(audio) {
+		const token = await get_token()
+		if (!token) throw new Error('Нет токена — открой раздел Музыка на vk.com, токен подцепится сам')
+		const id_str = audio.access_key
+			? audio.owner_id + '_' + audio.id + '_' + audio.access_key
+			: audio.owner_id + '_' + audio.id
+		const body = new URLSearchParams({
+			audios: id_str,
+			access_token: token,
+			v: '5.275',
+			client_id: '6287487',
+		})
+		const r = await fetch('https://api.vk.com/method/audio.getById', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			body: body.toString(),
+			credentials: 'include',
+		})
+		const data = await r.json()
+		if (data && data.error) throw new Error(data.error.error_msg || 'VK API error')
+		const fresh = data && data.response && data.response[0]
+		if (!fresh || !fresh.url) throw new Error('VK не отдал URL (возможно DRM или удалён)')
+		return fresh
 	}
 
 	function add_button_to(row) {
 		if (!row || row.querySelector('.bog-vk-dl')) return
-		const key = key_from_node(row)
-		if (!key) return
-		const audio = audios_cache.get(key)
-		if (!audio || !audio.url) return
+		let audio = parse_row(row)
+		// Fallback: row без data-audio но с data-full-id="owner_id" (например в плейлистах).
+		if (!audio) {
+			const fid = row.getAttribute && row.getAttribute('data-full-id')
+			if (fid) {
+				const m = fid.match(/^(-?\d+)_(\d+)$/)
+				if (m) {
+					const cached = audios_cache.get(fid)
+					audio = cached || { id: +m[2], owner_id: +m[1], title: '', artist: '', duration: 0, url: '', access_key: '' }
+				}
+			}
+		}
+		if (!audio) return
 
 		const btn = document.createElement('button')
 		btn.className = 'bog-vk-dl'
 		btn.title = 'Скачать (Bog VK)'
 		btn.textContent = '⬇'
-		btn.addEventListener('click', (e) => {
+		btn.addEventListener('click', async (e) => {
 			e.preventDefault(); e.stopPropagation()
-			download_audio(audio, btn)
+			try {
+				let target = audio
+				if (!target.url) {
+					btn.dataset.state = 'loading'; btn.textContent = '⏳'
+					const fresh = await refresh_url(audio)
+					target = Object.assign({}, audio, fresh)
+				}
+				download_audio(target, btn)
+			} catch (err) {
+				console.warn('[bog_vk_ext] click failed', err)
+				btn.dataset.state = 'error'; btn.textContent = '⚠'
+				btn.title = String(err && err.message || err)
+				setTimeout(() => { btn.dataset.state = ''; btn.textContent = '⬇'; btn.title = 'Скачать (Bog VK)' }, 3500)
+			}
 		})
-		row.appendChild(btn)
+
+		// Кладём кнопку рядом с info-блоком VK (там же где живёт vmsDownloadAudioButton сторонних расширений).
+		const info = row.querySelector('[class*="audio_row__info"], [class*="audioRow__info"]') || row
+		info.appendChild(btn)
 	}
 
 	function scan() {
-		// Common VK selectors that wrap a single audio row across desktop / mobile / new player.
-		const candidates = document.querySelectorAll(
-			'[data-audio], [class*="audio_row"], [class*="AudioRow"], [class*="audio-item"]'
-		)
-		candidates.forEach(add_button_to)
+		// VK ставит data-audio на сам ряд — самый надёжный селектор.
+		document.querySelectorAll('[data-audio]').forEach(add_button_to)
+		// Запасной — для контекстов без data-audio (нечасто).
+		document.querySelectorAll('[data-full-id][class*="audio_row"], [data-full-id][class*="AudioRow"]').forEach(add_button_to)
 	}
 
 	function start_observer() {
