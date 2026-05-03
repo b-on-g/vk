@@ -71,6 +71,7 @@ $bog_vk_app $mol_page
 				<= Download_all_icon $mol_icon_download
 		<= Version $bog_version
 			version \0.2.2
+		<= Sync_status $giper_baza_status
 		<= Lighter $mol_lights_toggle
 	body_scroll_top? <=> scroll? 0
 	body /
@@ -82,20 +83,12 @@ $bog_vk_app $mol_page
 					sub / \Открыть аудио
 				<= Auth_hint $mol_paragraph
 					title <= token_hint \
-		<= Tabs $mol_view
-			sub /
-				<= Tab_my $mol_check
-					click? <=> show_my? null
-					checked <= tab_my_active false
-					title \Моя музыка
-				<= Tab_search $mol_check
-					click? <=> show_search? null
-					checked <= tab_search_active false
-					title \Поиск
-				<= Tab_archive $mol_check
-					click? <=> show_archive? null
-					checked <= tab_archive_active false
-					title \Архив
+		<= Tabs $mol_switch
+			value? <=> page? \my
+			options <= tab_options *
+				my \Моя музыка
+				search \Поиск
+				archive \Архив
 		<= Search_bar $mol_string
 			hint \Поиск музыки...
 			value? <=> search_query? \

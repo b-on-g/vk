@@ -91,30 +91,11 @@ namespace $.$$ {
 		page(next?: string) {
 			if (next !== undefined) {
 				$mol_state_arg.value('page', next)
+				if (next !== 'search') this.search_query('')
+				return next
 			}
 			return $mol_state_arg.value('page') ?? 'my'
 		}
-
-		@$mol_action
-		show_my() {
-			this.page('my')
-			this.search_query('')
-		}
-
-		@$mol_action
-		show_search() {
-			this.page('search')
-		}
-
-		@$mol_action
-		show_archive() {
-			this.page('archive')
-			this.search_query('')
-		}
-
-		tab_my_active() { return this.page() === 'my' }
-		tab_search_active() { return this.page() === 'search' }
-		tab_archive_active() { return this.page() === 'archive' }
 
 		@$mol_mem
 		cached_audios(): $bog_vk_api_audio[] {
@@ -454,11 +435,6 @@ namespace $.$$ {
 		Download_all() {
 			if (this.offline_mode()) return null as any
 			return super.Download_all()
-		}
-
-		Tab_search() {
-			if (this.offline_mode()) return null as any
-			return super.Tab_search()
 		}
 
 		Search_bar() {
