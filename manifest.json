@@ -21,6 +21,9 @@
 	"host_permissions": [
 		"https://api.vk.com/*",
 		"https://*.vk.com/*",
+		"https://vk.com/*",
+		"https://*.vk.ru/*",
+		"https://vk.ru/*",
 		"https://*.userapi.com/*",
 		"https://baza.giper.dev/*",
 		"wss://baza.giper.dev/*"
@@ -34,7 +37,9 @@
 		{
 			"matches": [
 				"*://*.vk.com/*",
-				"*://vk.com/*"
+				"*://vk.com/*",
+				"*://*.vk.ru/*",
+				"*://vk.ru/*"
 			],
 			"js": [
 				"bog/vk/ext/content.js"
