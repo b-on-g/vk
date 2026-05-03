@@ -26311,6 +26311,32 @@ var $;
     var $$;
     (function ($$) {
         ;
+        (function sync_vk_token_from_chrome_storage() {
+            try {
+                const ext = globalThis.chrome;
+                if (!ext?.storage?.local)
+                    return;
+                ext.storage.local.get(['vk_token'], (res) => {
+                    const tok = res?.vk_token;
+                    if (tok && $mol_state_local.value('vk_token') !== tok) {
+                        $mol_state_local.value('vk_token', tok);
+                        console.info('[app] vk_token loaded from extension storage');
+                    }
+                });
+                ext.storage.onChanged.addListener((changes, area) => {
+                    if (area !== 'local')
+                        return;
+                    const next = changes?.vk_token?.newValue;
+                    if (next && $mol_state_local.value('vk_token') !== next) {
+                        $mol_state_local.value('vk_token', next);
+                        console.info('[app] vk_token updated from extension storage');
+                    }
+                });
+            }
+            catch (e) {
+                console.warn('[app] vk_token sync failed:', e?.message);
+            }
+        })();
         (function fix_yard_masters_in_extension() {
             try {
                 if (typeof location === 'undefined')
