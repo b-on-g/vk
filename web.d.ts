@@ -1349,7 +1349,7 @@ declare namespace $.$$ {
 
 declare namespace $ {
 
-	export class $bog_vk_popup_fix extends $mol_plugin {
+	export class $bog_popup_fix extends $mol_plugin {
 	}
 	
 }
@@ -16979,7 +16979,7 @@ declare namespace $ {
 	>
 	export class $bog_vk_app extends $mol_page {
 		Theme( ): $mol_theme_auto
-		Popup_fix( ): $bog_vk_popup_fix
+		Popup_fix( ): $bog_popup_fix
 		token_popup_open( next?: boolean ): boolean
 		Token_icon( ): $mol_icon_key_variant
 		Token_toggle( ): $mol_check_icon

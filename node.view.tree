@@ -38,7 +38,7 @@ $mol_theme_auto $mol_plugin
 	light \$mol_theme_light
 	attr * mol_theme <= theme <= dark \$mol_theme_dark
 
-$bog_vk_popup_fix $mol_plugin
+$bog_popup_fix $mol_plugin
 
 $mol_svg $mol_view
 	dom_name \svg
@@ -635,7 +635,7 @@ $bog_vk_player $mol_view
 $bog_vk_app $mol_page
 	plugins /
 		<= Theme $mol_theme_auto
-		<= Popup_fix $bog_vk_popup_fix
+		<= Popup_fix $bog_popup_fix
 	title \Bog Music
 	tools /
 		<= Token_popup $mol_pop

@@ -5420,7 +5420,7 @@ var $;
 })($ || ($ = {}));
 
 ;
-	($.$bog_vk_popup_fix) = class $bog_vk_popup_fix extends ($.$mol_plugin) {};
+	($.$bog_popup_fix) = class $bog_popup_fix extends ($.$mol_plugin) {};
 
 
 ;
@@ -5432,7 +5432,7 @@ var $;
 (function ($) {
     var $$;
     (function ($$) {
-        $mol_style_attach('bog/vk/popup/popup.view.css', `
+        $mol_style_attach('bog/popup/popup.view.css', `
 		html, body {
 			min-width: 24rem;
 			min-height: 32rem;
@@ -20419,7 +20419,7 @@ var $;
 			return obj;
 		}
 		Popup_fix(){
-			const obj = new this.$.$bog_vk_popup_fix();
+			const obj = new this.$.$bog_popup_fix();
 			return obj;
 		}
 		token_popup_open(next){
