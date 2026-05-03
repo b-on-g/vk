@@ -26353,14 +26353,26 @@ var $;
                 const proto = location.protocol;
                 if (proto !== 'chrome-extension:' && proto !== 'moz-extension:')
                     return;
-                const list = $giper_baza_yard.masters_default;
+                const yard = $giper_baza_yard;
+                const list = yard.masters_default;
                 for (let i = list.length - 1; i >= 0; i--) {
-                    if (/^(chrome|moz)-extension:/.test(list[i]))
+                    if (!/^(http|https|ws|wss):/.test(list[i]))
                         list.splice(i, 1);
                 }
-                if (!list.length)
+                if (!list.includes('https://baza.giper.dev/'))
                     list.push('https://baza.giper.dev/');
-                console.info('[app] yard masters in extension:', list);
+                if (!yard.__bog_vk_masters_patched) {
+                    const orig = yard.masters.bind(yard);
+                    Object.defineProperty(yard, 'masters', {
+                        configurable: true,
+                        value: function () {
+                            const all = orig();
+                            return all.filter(url => /^(http|https|ws|wss):/.test(url));
+                        },
+                    });
+                    yard.__bog_vk_masters_patched = true;
+                }
+                console.info('[app] yard masters in extension:', yard.masters());
             }
             catch (e) {
                 console.warn('[app] yard masters fix failed:', e?.message);
