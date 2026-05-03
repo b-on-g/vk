@@ -1,15 +1,4 @@
 namespace $.$$ {
-	$mol_style_define($bog_vk_tab, {
-		'@': {
-			'data-tab-active': {
-				true: {
-					background: { color: $mol_theme.focus },
-					color: $mol_theme.card,
-				},
-			},
-		},
-	})
-
 	$mol_style_define($bog_vk_app, {
 		maxWidth: '50rem',
 		margin: {

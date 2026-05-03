@@ -1,9 +1,3 @@
-$bog_vk_tab $mol_button_minor
-	active false
-	attr *
-		^
-		data-tab-active <= active
-
 $bog_vk_app $mol_page
 	plugins /
 		<= Theme $mol_theme_auto
@@ -90,18 +84,18 @@ $bog_vk_app $mol_page
 					title <= token_hint \
 		<= Tabs $mol_view
 			sub /
-				<= Tab_my $bog_vk_tab
+				<= Tab_my $mol_check
 					click? <=> show_my? null
-					active <= tab_my_active false
-					sub / \Моя музыка
-				<= Tab_search $bog_vk_tab
+					checked <= tab_my_active false
+					title \Моя музыка
+				<= Tab_search $mol_check
 					click? <=> show_search? null
-					active <= tab_search_active false
-					sub / \Поиск
-				<= Tab_archive $bog_vk_tab
+					checked <= tab_search_active false
+					title \Поиск
+				<= Tab_archive $mol_check
 					click? <=> show_archive? null
-					active <= tab_archive_active false
-					sub / \Архив
+					checked <= tab_archive_active false
+					title \Архив
 		<= Search_bar $mol_string
 			hint \Поиск музыки...
 			value? <=> search_query? \
