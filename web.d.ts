@@ -14678,6 +14678,7 @@ declare namespace $ {
         static save_track(audio: $bog_vk_api_audio): void;
         static swap_order(a: $bog_vk_api_audio, b: $bog_vk_api_audio): void;
         static archive_track(audio: $bog_vk_api_audio): void;
+        static local_blob(audio: $bog_vk_api_audio): Blob | null;
         static parse_filename(name: string): {
             artist: string;
             title: string;

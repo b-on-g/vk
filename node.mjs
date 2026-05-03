@@ -17701,15 +17701,6 @@ var $;
                 const order_val = track.Order()?.val();
                 const order = order_val == null ? added : Number(order_val);
                 let url = track.Url()?.val() ?? '';
-                try {
-                    const file = track.File()?.remote();
-                    if (file)
-                        url = file.uri();
-                }
-                catch (e) {
-                    if (e instanceof Promise)
-                        throw e;
-                }
                 rows.push({
                     audio: {
                         id,
@@ -17845,6 +17836,33 @@ var $;
                 return;
             track.Archived('auto').val(true);
             this.version(this.version() + 1);
+        }
+        static local_blob(audio) {
+            if (audio.owner_id !== 0)
+                return null;
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return null;
+            }
+            const track = dict.key(this.cache_key(audio));
+            if (!track)
+                return null;
+            const file = track.File()?.remote();
+            if (!file)
+                return null;
+            try {
+                return file.blob();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return null;
+            }
         }
         static parse_filename(name) {
             const base = name.replace(/\.[^.]+$/, '').trim();
@@ -18496,6 +18514,16 @@ var $;
                     if (this._last_blob_url) {
                         URL.revokeObjectURL(this._last_blob_url);
                         this._last_blob_url = '';
+                    }
+                    if (audio.owner_id === 0) {
+                        const blob = $bog_vk_store.local_blob(audio);
+                        if (blob) {
+                            const url = URL.createObjectURL(blob);
+                            this._last_blob_url = url;
+                            el.src = url;
+                            await this.safe_play(el);
+                            return;
+                        }
                     }
                     const cached = await $bog_vk_cache.get(audio);
                     if (cached) {
