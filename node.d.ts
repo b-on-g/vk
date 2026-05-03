@@ -10440,7 +10440,7 @@ declare namespace $.$$ {
         Auth_block(): any;
         token_hint(): string;
         Download_all(): any;
-        Tabs(): any;
+        Tab_search(): any;
         Search_bar(): any;
         download_all(): void;
     }

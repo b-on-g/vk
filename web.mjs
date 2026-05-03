@@ -33732,10 +33732,10 @@ var $;
                     return null;
                 return super.Download_all();
             }
-            Tabs() {
+            Tab_search() {
                 if (this.offline_mode())
                     return null;
-                return super.Tabs();
+                return super.Tab_search();
             }
             Search_bar() {
                 if (this.page() !== 'search')
