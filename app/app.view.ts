@@ -333,15 +333,21 @@ namespace $.$$ {
 		@$mol_mem
 		upload_files(next?: File[]) {
 			if (next?.length) {
+				console.log('[app] upload_files received:', next.length, 'file(s):', next.map(f => `${f.name} (${f.size}B, ${f.type})`).join(', '))
 				for (const file of next) {
 					try {
 						// arrayBuffer() читается через wire-sync ВНЕ @$mol_action —
 						// иначе action откатывается и Type/Chunks не записываются.
 						const buffer = new Uint8Array(($mol_wire_sync(file) as any).arrayBuffer())
-						$bog_vk_store.save_local_track(file, buffer)
+						console.log('[app] arrayBuffer ready for', file.name, buffer.byteLength, 'bytes')
+						const audio = $bog_vk_store.save_local_track(file, buffer)
+						console.log('[app] save_local_track ok:', audio?.title, 'id:', audio?.id)
 					} catch (e: any) {
-						if (e instanceof Promise) return next
-						console.warn('[app] upload failed:', file.name, e?.message)
+						if (e instanceof Promise) {
+							console.log('[app] upload waiting on promise:', file.name)
+							throw e
+						}
+						console.warn('[app] upload failed:', file.name, e?.message, e)
 					}
 				}
 			}

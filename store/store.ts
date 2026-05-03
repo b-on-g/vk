@@ -233,40 +233,59 @@ namespace $ {
 		 * Блоб кладётся в $giper_baza_file, метаданные — в $bog_vk_track_baza.
 		 * Возвращает audio для воспроизведения.
 		 */
+		/** Детерминированный hash по строке (FNV-1a 32 bit). */
+		static hash_str(s: string): number {
+			let h = 2166136261
+			for (let i = 0; i < s.length; i++) {
+				h ^= s.charCodeAt(i)
+				h = Math.imul(h, 16777619)
+			}
+			return h >>> 0
+		}
+
 		@$mol_action
 		static save_local_track(file: File, buffer: Uint8Array): $bog_vk_api_audio | null {
 			const { artist, title } = this.parse_filename(file.name)
+			// Детерминированный id — одинаковый при ретраях wire, не создаёт дубликаты.
+			const id = this.hash_str(`${file.name}|${file.size}|${file.lastModified}`)
 			const audio: $bog_vk_api_audio = {
-				id: Date.now() + Math.floor(Math.random() * 1000),
+				id,
 				owner_id: 0,
 				artist,
 				title,
 				duration: 0,
 				url: '',
 			}
+			console.log('[store] save_local_track:', file.name, file.size, 'bytes, type:', file.type, 'key:', `0_${id}`)
 			let dict: ReturnType<typeof $bog_vk_store.tracks_dict>
 			try {
 				dict = this.tracks_dict()
 			} catch (e) {
 				if (e instanceof Promise) throw e
+				console.warn('[store] tracks_dict failed:', e)
 				return null
 			}
 			const key = this.cache_key(audio)
 			const track = dict.key(key, 'auto')
-			if (!track) return null
+			if (!track) {
+				console.warn('[store] dict.key returned null for', key)
+				return null
+			}
 			track.Vk_id('auto')!.val(key)
 			track.Title('auto')!.val(title)
 			track.Artist('auto')!.val(artist)
-			track.Added('auto')!.val(Date.now())
-			track.Order('auto')!.val(this.max_order() + 1)
+			if (track.Added()?.val() == null) track.Added('auto')!.val(Date.now())
+			if (track.Order()?.val() == null) track.Order('auto')!.val(this.max_order() + 1)
 			track.Archived('auto')!.val(false)
 			const store = track.File('auto')!.ensure(null)
 			if (store) {
 				store.buffer(buffer as Uint8Array<ArrayBuffer>)
 				store.type(file.type || 'audio/mpeg')
 				if (file.name) store.name(file.name)
+				console.log('[store] file written, type:', store.type(), 'chunks:', store.chunks().length)
+			} else {
+				console.warn('[store] File ensure returned null')
 			}
-			// Кешируем сам File в RAM — играть можно сразу, не дожидаясь синка чанков.
 			this.fresh_files.set(key, file)
 			this.version(this.version() + 1)
 			return audio
