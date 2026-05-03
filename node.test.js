@@ -19494,6 +19494,14 @@ var $;
             }
             this.fresh_files.set(key, file);
             this.version(this.version() + 1);
+            try {
+                this.land().units_saving();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                console.warn('[store] units_saving failed:', e?.message);
+            }
             return audio;
         }
         static delete_track(audio) {
@@ -26435,12 +26443,9 @@ var $;
                     return;
                 }
                 const current = $mol_state_local.value('$giper_baza_auth');
-                if (current === key) {
-                    this.import_status('Этот ключ уже используется');
-                    return;
-                }
-                $mol_state_local.value('$giper_baza_auth', key);
-                this.import_status('Применено, перезагрузка…');
+                if (current !== key)
+                    $mol_state_local.value('$giper_baza_auth', key);
+                this.import_status(current === key ? 'Перезапуск…' : 'Применено, перезагрузка…');
                 location.reload();
             }
             copy_account_link() {
