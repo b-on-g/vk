@@ -304,7 +304,7 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    const $mol_theme: Record<"image" | "line" | "text" | "field" | "current" | "hover" | "focus" | "hue" | "back" | "card" | "special" | "control" | "shade" | "spirit" | "hue_spread", $mol_style_func<"var", unknown>>;
+    const $mol_theme: Record<"image" | "line" | "text" | "field" | "current" | "hover" | "hue" | "back" | "card" | "special" | "control" | "shade" | "focus" | "spirit" | "hue_spread", $mol_style_func<"var", unknown>>;
 }
 
 declare namespace $ {
@@ -1035,117 +1035,6 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    let $mol_layer: Record<"hover" | "focus" | "float" | "speck" | "popup", $mol_style_func<"var", unknown>>;
-}
-
-declare namespace $ {
-}
-
-declare namespace $ {
-}
-
-declare namespace $ {
-
-	export class $mol_speck extends $mol_view {
-		value( ): any
-		theme( ): string
-		sub( ): readonly(any)[]
-	}
-	
-}
-
-//# sourceMappingURL=speck.view.tree.d.ts.map
-declare namespace $ {
-    class $mol_plugin extends $mol_view {
-        dom_node_external(next?: Element): Element;
-        render(): void;
-    }
-}
-
-declare namespace $ {
-    type $mol_type_enforce<Actual extends Expected, Expected> = Actual;
-}
-
-declare namespace $ {
-
-	type $mol_speck__value_mol_button_1 = $mol_type_enforce<
-		ReturnType< $mol_button['error'] >
-		,
-		ReturnType< $mol_speck['value'] >
-	>
-	export class $mol_button extends $mol_view {
-		event_activate( next?: any ): any
-		activate( next?: ReturnType< $mol_button['event_activate'] > ): ReturnType< $mol_button['event_activate'] >
-		clicks( next?: any ): any
-		event_key_press( next?: any ): any
-		key_press( next?: ReturnType< $mol_button['event_key_press'] > ): ReturnType< $mol_button['event_key_press'] >
-		disabled( ): boolean
-		tab_index( ): number
-		hint( ): string
-		hint_safe( ): ReturnType< $mol_button['hint'] >
-		error( ): string
-		enabled( ): boolean
-		click( next?: any ): any
-		event_click( next?: any ): any
-		status( next?: readonly(any)[] ): readonly(any)[]
-		event( ): ({ 
-			click( next?: ReturnType< $mol_button['activate'] > ): ReturnType< $mol_button['activate'] >,
-			dblclick( next?: ReturnType< $mol_button['clicks'] > ): ReturnType< $mol_button['clicks'] >,
-			keydown( next?: ReturnType< $mol_button['key_press'] > ): ReturnType< $mol_button['key_press'] >,
-		})  & ReturnType< $mol_view['event'] >
-		attr( ): ({ 
-			'disabled': ReturnType< $mol_button['disabled'] >,
-			'role': string,
-			'tabindex': ReturnType< $mol_button['tab_index'] >,
-			'title': ReturnType< $mol_button['hint_safe'] >,
-		})  & ReturnType< $mol_view['attr'] >
-		sub( ): readonly($mol_view_content)[]
-		Speck( ): $mol_speck
-	}
-	
-}
-
-//# sourceMappingURL=button.view.tree.d.ts.map
-declare namespace $.$$ {
-    class $mol_button extends $.$mol_button {
-        disabled(): boolean;
-        event_activate(next: Event): void;
-        event_key_press(event: KeyboardEvent): any;
-        tab_index(): number;
-        error(): string;
-        hint_safe(): string;
-        sub_visible(): ($mol_view_content | $mol_speck)[];
-    }
-}
-
-declare namespace $ {
-}
-
-declare namespace $ {
-}
-
-declare namespace $ {
-
-	export class $mol_button_typed extends $mol_button {
-		minimal_height( ): number
-		minimal_width( ): number
-	}
-	
-}
-
-//# sourceMappingURL=typed.view.tree.d.ts.map
-declare namespace $ {
-}
-
-declare namespace $ {
-
-	export class $mol_button_minor extends $mol_button_typed {
-	}
-	
-}
-
-//# sourceMappingURL=minor.view.tree.d.ts.map
-declare namespace $ {
     class $mol_dom_listener extends $mol_object {
         _node: any;
         _event: string;
@@ -1241,6 +1130,17 @@ declare namespace $.$$ {
 }
 
 declare namespace $.$$ {
+}
+
+declare namespace $ {
+    type $mol_type_enforce<Actual extends Expected, Expected> = Actual;
+}
+
+declare namespace $ {
+    class $mol_plugin extends $mol_view {
+        dom_node_external(next?: Element): Element;
+        render(): void;
+    }
 }
 
 declare namespace $ {
@@ -1546,6 +1446,106 @@ declare namespace $ {
 }
 
 //# sourceMappingURL=variant.view.tree.d.ts.map
+declare namespace $ {
+    let $mol_layer: Record<"hover" | "float" | "focus" | "speck" | "popup", $mol_style_func<"var", unknown>>;
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
+
+	export class $mol_speck extends $mol_view {
+		value( ): any
+		theme( ): string
+		sub( ): readonly(any)[]
+	}
+	
+}
+
+//# sourceMappingURL=speck.view.tree.d.ts.map
+declare namespace $ {
+
+	type $mol_speck__value_mol_button_1 = $mol_type_enforce<
+		ReturnType< $mol_button['error'] >
+		,
+		ReturnType< $mol_speck['value'] >
+	>
+	export class $mol_button extends $mol_view {
+		event_activate( next?: any ): any
+		activate( next?: ReturnType< $mol_button['event_activate'] > ): ReturnType< $mol_button['event_activate'] >
+		clicks( next?: any ): any
+		event_key_press( next?: any ): any
+		key_press( next?: ReturnType< $mol_button['event_key_press'] > ): ReturnType< $mol_button['event_key_press'] >
+		disabled( ): boolean
+		tab_index( ): number
+		hint( ): string
+		hint_safe( ): ReturnType< $mol_button['hint'] >
+		error( ): string
+		enabled( ): boolean
+		click( next?: any ): any
+		event_click( next?: any ): any
+		status( next?: readonly(any)[] ): readonly(any)[]
+		event( ): ({ 
+			click( next?: ReturnType< $mol_button['activate'] > ): ReturnType< $mol_button['activate'] >,
+			dblclick( next?: ReturnType< $mol_button['clicks'] > ): ReturnType< $mol_button['clicks'] >,
+			keydown( next?: ReturnType< $mol_button['key_press'] > ): ReturnType< $mol_button['key_press'] >,
+		})  & ReturnType< $mol_view['event'] >
+		attr( ): ({ 
+			'disabled': ReturnType< $mol_button['disabled'] >,
+			'role': string,
+			'tabindex': ReturnType< $mol_button['tab_index'] >,
+			'title': ReturnType< $mol_button['hint_safe'] >,
+		})  & ReturnType< $mol_view['attr'] >
+		sub( ): readonly($mol_view_content)[]
+		Speck( ): $mol_speck
+	}
+	
+}
+
+//# sourceMappingURL=button.view.tree.d.ts.map
+declare namespace $.$$ {
+    class $mol_button extends $.$mol_button {
+        disabled(): boolean;
+        event_activate(next: Event): void;
+        event_key_press(event: KeyboardEvent): any;
+        tab_index(): number;
+        error(): string;
+        hint_safe(): string;
+        sub_visible(): ($mol_view_content | $mol_speck)[];
+    }
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
+
+	export class $mol_button_typed extends $mol_button {
+		minimal_height( ): number
+		minimal_width( ): number
+	}
+	
+}
+
+//# sourceMappingURL=typed.view.tree.d.ts.map
+declare namespace $ {
+}
+
+declare namespace $ {
+
+	export class $mol_button_minor extends $mol_button_typed {
+	}
+	
+}
+
+//# sourceMappingURL=minor.view.tree.d.ts.map
 declare namespace $ {
     class $mol_dom_event<EventType extends Event> extends $mol_object {
         readonly native: EventType;
@@ -16519,13 +16519,6 @@ declare namespace $.$$ {
 
 declare namespace $ {
 
-	export class $bog_vk_tab extends $mol_button_minor {
-		active( ): boolean
-		attr( ): ({ 
-			'data-tab-active': ReturnType< $bog_vk_tab['active'] >,
-		})  & ReturnType< $mol_button_minor['attr'] >
-	}
-	
 	type $mol_check_icon__hint_bog_vk_app_1 = $mol_type_enforce<
 		string
 		,
@@ -16791,50 +16784,50 @@ declare namespace $ {
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $bog_vk_tab__click_bog_vk_app_54 = $mol_type_enforce<
+	type $mol_check__click_bog_vk_app_54 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['show_my'] >
 		,
-		ReturnType< $bog_vk_tab['click'] >
+		ReturnType< $mol_check['click'] >
 	>
-	type $bog_vk_tab__active_bog_vk_app_55 = $mol_type_enforce<
+	type $mol_check__checked_bog_vk_app_55 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['tab_my_active'] >
 		,
-		ReturnType< $bog_vk_tab['active'] >
+		ReturnType< $mol_check['checked'] >
 	>
-	type $bog_vk_tab__sub_bog_vk_app_56 = $mol_type_enforce<
-		readonly(any)[]
+	type $mol_check__title_bog_vk_app_56 = $mol_type_enforce<
+		string
 		,
-		ReturnType< $bog_vk_tab['sub'] >
+		ReturnType< $mol_check['title'] >
 	>
-	type $bog_vk_tab__click_bog_vk_app_57 = $mol_type_enforce<
+	type $mol_check__click_bog_vk_app_57 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['show_search'] >
 		,
-		ReturnType< $bog_vk_tab['click'] >
+		ReturnType< $mol_check['click'] >
 	>
-	type $bog_vk_tab__active_bog_vk_app_58 = $mol_type_enforce<
+	type $mol_check__checked_bog_vk_app_58 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['tab_search_active'] >
 		,
-		ReturnType< $bog_vk_tab['active'] >
+		ReturnType< $mol_check['checked'] >
 	>
-	type $bog_vk_tab__sub_bog_vk_app_59 = $mol_type_enforce<
-		readonly(any)[]
+	type $mol_check__title_bog_vk_app_59 = $mol_type_enforce<
+		string
 		,
-		ReturnType< $bog_vk_tab['sub'] >
+		ReturnType< $mol_check['title'] >
 	>
-	type $bog_vk_tab__click_bog_vk_app_60 = $mol_type_enforce<
+	type $mol_check__click_bog_vk_app_60 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['show_archive'] >
 		,
-		ReturnType< $bog_vk_tab['click'] >
+		ReturnType< $mol_check['click'] >
 	>
-	type $bog_vk_tab__active_bog_vk_app_61 = $mol_type_enforce<
+	type $mol_check__checked_bog_vk_app_61 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['tab_archive_active'] >
 		,
-		ReturnType< $bog_vk_tab['active'] >
+		ReturnType< $mol_check['checked'] >
 	>
-	type $bog_vk_tab__sub_bog_vk_app_62 = $mol_type_enforce<
-		readonly(any)[]
+	type $mol_check__title_bog_vk_app_62 = $mol_type_enforce<
+		string
 		,
-		ReturnType< $bog_vk_tab['sub'] >
+		ReturnType< $mol_check['title'] >
 	>
 	type $mol_view__sub_bog_vk_app_63 = $mol_type_enforce<
 		readonly(any)[]
@@ -16957,13 +16950,13 @@ declare namespace $ {
 		Auth_block( ): $mol_view
 		show_my( next?: any ): any
 		tab_my_active( ): boolean
-		Tab_my( ): $bog_vk_tab
+		Tab_my( ): $mol_check
 		show_search( next?: any ): any
 		tab_search_active( ): boolean
-		Tab_search( ): $bog_vk_tab
+		Tab_search( ): $mol_check
 		show_archive( next?: any ): any
 		tab_archive_active( ): boolean
-		Tab_archive( ): $bog_vk_tab
+		Tab_archive( ): $mol_check
 		Tabs( ): $mol_view
 		search_query( next?: string ): string
 		Search_bar( ): $mol_string
