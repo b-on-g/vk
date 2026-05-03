@@ -1,6 +1,29 @@
 namespace $.$$ {
 
 	/**
+	 * В chrome-extension/moz-extension контексте `location.origin` имеет схему
+	 * `chrome-extension://`, и yard.web.ts пушит его в masters_default.
+	 * Yard потом делает `new WebSocket(link.replace(/^http/, 'ws'))` — схема не
+	 * меняется, и WebSocket падает SyntaxError. Чистим default-список и
+	 * подкладываем публичный baza-master, чтобы синк работал.
+	 */
+	;(function fix_yard_masters_in_extension() {
+		try {
+			if (typeof location === 'undefined') return
+			const proto = location.protocol
+			if (proto !== 'chrome-extension:' && proto !== 'moz-extension:') return
+			const list = $giper_baza_yard.masters_default
+			for (let i = list.length - 1; i >= 0; i--) {
+				if (/^(chrome|moz)-extension:/.test(list[i])) list.splice(i, 1)
+			}
+			if (!list.length) list.push('https://baza.giper.dev/')
+			console.info('[app] yard masters in extension:', list)
+		} catch (e: any) {
+			console.warn('[app] yard masters fix failed:', e?.message)
+		}
+	})()
+
+	/**
 	 * Импорт ЛК из URL вида `#account=<key>` — ровно как в piterjs $hyoo_meta_safe.
 	 * Должен сработать ДО первого обращения к $giper_baza_auth.current(),
 	 * поэтому выполняется на уровне модуля (IIFE).
@@ -371,81 +394,20 @@ namespace $.$$ {
 			this.proxy_url('')
 		}
 
-		/** Полный ключ $giper_baza_auth в виде строки (pub + priv). */
-		account_key(): string {
-			return String($mol_state_local.value('$giper_baza_auth') ?? '')
-		}
-
-		/** Первые 8 символов lord (для отображения). */
+		/** Никнейм для шапки — берём из home land профиля. */
 		@$mol_mem
-		account_lord_short(): string {
+		nickname_label() {
 			try {
-				const auth = $giper_baza_auth.current()
-				if (!auth) return '—'
-				const lord = auth.pass().lord().str
-				return lord.slice(0, 8) + '…'
+				return this.Account().nickname() || ''
 			} catch (e) {
 				if (e instanceof Promise) throw e
-				return '—'
+				return ''
 			}
 		}
 
-		/** URL с текущим ключом аккаунта для переноса на другое устройство. */
-		account_link(): string {
-			const key = this.account_key()
-			if (!key) return ''
-			const base = location.origin + location.pathname + location.search
-			return base + '#account=' + encodeURIComponent(key)
-		}
-
-		@$mol_mem
-		copy_status(next?: string) {
-			return next ?? ''
-		}
-
-		@$mol_mem
-		import_link(next?: string) {
-			return next ?? ''
-		}
-
-		@$mol_mem
-		import_status(next?: string) {
-			return next ?? ''
-		}
-
-		@$mol_action
-		apply_account_link() {
-			const raw = this.import_link().trim()
-			if (!raw) {
-				this.import_status('Вставь ссылку с #account=…')
-				return
-			}
-			const match = raw.match(/[#&]account=([^&\s]+)/)
-			const key = match ? decodeURIComponent(match[1]) : raw
-			if (key.length < 172) {
-				this.import_status('Ключ слишком короткий')
-				return
-			}
-			const current = $mol_state_local.value('$giper_baza_auth')
-			if (current !== key) $mol_state_local.value('$giper_baza_auth', key)
-			this.import_status(current === key ? 'Перезапуск…' : 'Применено, перезагрузка…')
-			location.reload()
-		}
-
-		@$mol_action
-		copy_account_link() {
-			const link = this.account_link()
-			if (!link) {
-				this.copy_status('Ключ не найден')
-				return
-			}
-			try {
-				navigator.clipboard.writeText(link)
-				this.copy_status('Скопировано. Не делись публично!')
-			} catch (e: any) {
-				console.warn('[app] clipboard failed:', e?.message)
-				this.copy_status('Не удалось — скопируй из адресной строки: ' + link)
-			}
+		Nickname_label() {
+			if (!this.nickname_label()) return null as any
+			return super.Nickname_label()
 		}
 
 		/**

@@ -38,6 +38,8 @@ $bog_vk_app $mol_page
 						<= Proxy_reset $mol_button_minor
 							title \Сбросить на дефолтный
 							click? <=> reset_proxy? null
+		<= Nickname_label $mol_view
+			sub / <= nickname_label \
 		<= Account_popup $mol_pop
 			showed? <=> account_popup_open? false
 			align \bottom_left
@@ -46,27 +48,7 @@ $bog_vk_app $mol_page
 				Icon <= Account_icon $mol_icon_account_circle
 				checked? <=> account_popup_open? false
 			bubble_content /
-				<= Account_panel $mol_list
-					rows /
-						<= Account_id $mol_view
-							sub /
-								\ЛК:
-								<= Account_id_text $mol_view sub / <= account_lord_short \
-						<= Account_warning $mol_paragraph
-							title \Ссылка ниже — СЕКРЕТ. Не делись ей публично.
-						<= Account_copy $mol_button_minor
-							title \Скопировать ссылку для переноса
-							click? <=> copy_account_link? null
-						<= Account_copy_status $mol_view sub / <= copy_status \
-						<= Account_import_hint $mol_paragraph
-							title \Перенести с другого устройства — вставь ссылку:
-						<= Account_import_input $mol_string
-							hint \https://.../vk/#account=...
-							value? <=> import_link? \
-						<= Account_import_apply $mol_button_minor
-							title \Применить
-							click? <=> apply_account_link? null
-						<= Account_import_status $mol_view sub / <= import_status \
+				<= Account $bog_vk_account
 		<= Help_toggle $mol_check_icon
 			hint \Подсказка
 			Icon <= Help_icon $mol_icon_help_circle_outline

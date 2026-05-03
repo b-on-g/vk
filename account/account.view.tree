@@ -1,0 +1,26 @@
+$bog_vk_account $mol_list
+	rows /
+		<= Nickname_field $mol_form_field
+			name \Имя
+			Content <= Nickname_input $mol_string
+				value? <=> nickname? \
+				hint \Как тебя зовут?
+		<= Lord $mol_view
+			sub /
+				\ЛК:
+				<= Lord_text $mol_view sub / <= lord_short \
+		<= Warning $mol_paragraph
+			title \Ссылка ниже — СЕКРЕТ. Не делись ей публично.
+		<= Copy $mol_button_minor
+			title \Скопировать ссылку для переноса
+			click? <=> copy? null
+		<= Copy_status $mol_view sub / <= copy_status \
+		<= Import_hint $mol_paragraph
+			title \Перенести с другого устройства — вставь ссылку:
+		<= Import_input $mol_string
+			hint \https://.../vk/#account=...
+			value? <=> import_link? \
+		<= Import_apply $mol_button_minor
+			title \Применить
+			click? <=> apply_import? null
+		<= Import_status $mol_view sub / <= import_status \
