@@ -86,12 +86,18 @@ $bog_vk_app $mol_page
 			sub /
 				<= Tab_my $mol_button_minor
 					click? <=> show_my? null
+					attr *
+						bog_vk_tab_active <= tab_my_active false
 					sub / \Моя музыка
 				<= Tab_search $mol_button_minor
 					click? <=> show_search? null
+					attr *
+						bog_vk_tab_active <= tab_search_active false
 					sub / \Поиск
 				<= Tab_archive $mol_button_minor
 					click? <=> show_archive? null
+					attr *
+						bog_vk_tab_active <= tab_archive_active false
 					sub / \Архив
 		<= Search_bar $mol_string
 			hint \Поиск музыки...

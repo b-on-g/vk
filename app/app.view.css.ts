@@ -19,6 +19,39 @@ namespace $.$$ {
 			},
 		},
 
+		Tab_my: {
+			'@': {
+				bog_vk_tab_active: {
+					true: {
+						background: { color: $mol_theme.focus },
+						color: $mol_theme.card,
+					},
+				},
+			},
+		},
+
+		Tab_search: {
+			'@': {
+				bog_vk_tab_active: {
+					true: {
+						background: { color: $mol_theme.focus },
+						color: $mol_theme.card,
+					},
+				},
+			},
+		},
+
+		Tab_archive: {
+			'@': {
+				bog_vk_tab_active: {
+					true: {
+						background: { color: $mol_theme.focus },
+						color: $mol_theme.card,
+					},
+				},
+			},
+		},
+
 		Search_bar: {
 			font: {
 				size: '1rem',

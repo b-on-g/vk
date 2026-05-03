@@ -112,6 +112,10 @@ namespace $.$$ {
 			this.search_query('')
 		}
 
+		tab_my_active() { return this.page() === 'my' }
+		tab_search_active() { return this.page() === 'search' }
+		tab_archive_active() { return this.page() === 'archive' }
+
 		@$mol_mem
 		cached_audios(): $bog_vk_api_audio[] {
 			$bog_vk_cache.version()
@@ -331,7 +335,10 @@ namespace $.$$ {
 			if (next?.length) {
 				for (const file of next) {
 					try {
-						$bog_vk_store.save_local_track(file)
+						// arrayBuffer() читается через wire-sync ВНЕ @$mol_action —
+						// иначе action откатывается и Type/Chunks не записываются.
+						const buffer = new Uint8Array(($mol_wire_sync(file) as any).arrayBuffer())
+						$bog_vk_store.save_local_track(file, buffer)
 					} catch (e: any) {
 						if (e instanceof Promise) return next
 						console.warn('[app] upload failed:', file.name, e?.message)

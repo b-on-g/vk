@@ -234,7 +234,7 @@ namespace $ {
 		 * Возвращает audio для воспроизведения.
 		 */
 		@$mol_action
-		static save_local_track(file: File): $bog_vk_api_audio | null {
+		static save_local_track(file: File, buffer: Uint8Array): $bog_vk_api_audio | null {
 			const { artist, title } = this.parse_filename(file.name)
 			const audio: $bog_vk_api_audio = {
 				id: Date.now() + Math.floor(Math.random() * 1000),
@@ -262,8 +262,9 @@ namespace $ {
 			track.Archived('auto')!.val(false)
 			const store = track.File('auto')!.ensure(null)
 			if (store) {
-				store.blob(file)
-				track.File('auto')!.remote(store)
+				store.buffer(buffer as Uint8Array<ArrayBuffer>)
+				store.type(file.type || 'audio/mpeg')
+				if (file.name) store.name(file.name)
 			}
 			// Кешируем сам File в RAM — играть можно сразу, не дожидаясь синка чанков.
 			this.fresh_files.set(key, file)
