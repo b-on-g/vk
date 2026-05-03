@@ -156,6 +156,7 @@
     "$mol_charset_encode",
     "$mol_charset_buffer",
     "$mol_file_transaction",
+    "$bog_vk_popup",
     "$mol_icon_key_variant",
     "$mol_icon_key",
     "$mol_icon",

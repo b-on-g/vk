@@ -5429,6 +5429,28 @@ var $;
 })($ || ($ = {}));
 
 ;
+	($.$bog_vk_popup_fix) = class $bog_vk_popup_fix extends ($.$mol_plugin) {};
+
+
+;
+"use strict";
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        $mol_style_attach('bog/vk/popup/popup.view.css', `
+		html, body {
+			min-width: 24rem;
+			min-height: 32rem;
+		}
+	`);
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
 	($.$mol_svg) = class $mol_svg extends ($.$mol_view) {
 		dom_name(){
 			return "svg";
@@ -20405,6 +20427,10 @@ var $;
 			const obj = new this.$.$mol_theme_auto();
 			return obj;
 		}
+		Popup_fix(){
+			const obj = new this.$.$bog_vk_popup_fix();
+			return obj;
+		}
 		token_popup_open(next){
 			if(next !== undefined) return next;
 			return false;
@@ -20774,7 +20800,7 @@ var $;
 			return obj;
 		}
 		plugins(){
-			return [(this.Theme())];
+			return [(this.Theme()), (this.Popup_fix())];
 		}
 		title(){
 			return "Bog Music";
@@ -20808,6 +20834,7 @@ var $;
 		}
 	};
 	($mol_mem(($.$bog_vk_app.prototype), "Theme"));
+	($mol_mem(($.$bog_vk_app.prototype), "Popup_fix"));
 	($mol_mem(($.$bog_vk_app.prototype), "token_popup_open"));
 	($mol_mem(($.$bog_vk_app.prototype), "Token_icon"));
 	($mol_mem(($.$bog_vk_app.prototype), "Token_toggle"));
@@ -26592,9 +26619,6 @@ var $;
 (function ($) {
     var $$;
     (function ($$) {
-        $mol_style_attach('bog/vk/app/app-popup.css', `
-		html, body { min-width: 24rem; min-height: 32rem; }
-	`);
         $mol_style_define($bog_vk_app, {
             minWidth: '20rem',
             maxWidth: '50rem',

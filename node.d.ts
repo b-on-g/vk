@@ -1573,6 +1573,17 @@ declare namespace $.$$ {
 }
 
 declare namespace $ {
+
+	export class $bog_vk_popup_fix extends $mol_plugin {
+	}
+	
+}
+
+//# sourceMappingURL=popup.view.tree.d.ts.map
+declare namespace $.$$ {
+}
+
+declare namespace $ {
     class $mol_state_time extends $mol_object {
         static task(precision: number, reset?: null): $mol_after_timeout | $mol_after_frame;
         static now(precision: number): number;
@@ -10938,6 +10949,7 @@ declare namespace $ {
 	>
 	export class $bog_vk_app extends $mol_page {
 		Theme( ): $mol_theme_auto
+		Popup_fix( ): $bog_vk_popup_fix
 		token_popup_open( next?: boolean ): boolean
 		Token_icon( ): $mol_icon_key_variant
 		Token_toggle( ): $mol_check_icon
