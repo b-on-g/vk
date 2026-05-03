@@ -76,6 +76,25 @@ async function handleGetAudios(request: Request) {
 	return jsonResponse(data.response, request)
 }
 
+/** Refresh audio URL (HLS expires ~60 min) */
+async function handleGetById(request: Request) {
+	const body = await request.json<{ token: string; cookies?: string; audios: string }>()
+
+	if (!body.token || !body.audios) {
+		return jsonResponse({ error: 'token and audios are required' }, request, 400)
+	}
+
+	const data = await vkApi('audio.getById', body.token, body.cookies ?? '', {
+		audios: body.audios,
+	})
+
+	if (data.error) {
+		return jsonResponse({ error: data.error.error_msg ?? 'VK API error', code: data.error.error_code }, request, 502)
+	}
+
+	return jsonResponse(data.response, request)
+}
+
 /** Search audio */
 async function handleSearch(request: Request) {
 	const body = await request.json<{ token: string; cookies?: string; query: string; offset?: number; count?: number }>()
@@ -113,6 +132,10 @@ export default {
 
 			if (url.pathname === '/search' && request.method === 'POST') {
 				return await handleSearch(request)
+			}
+
+			if (url.pathname === '/getById' && request.method === 'POST') {
+				return await handleGetById(request)
 			}
 
 			if (url.pathname === '/health') {

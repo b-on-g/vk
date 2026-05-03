@@ -387,8 +387,23 @@ namespace $ {
 			return crypto.subtle.decrypt({ name: 'AES-CBC', iv }, cryptoKey, data)
 		}
 
+		/**
+		 * Освежает audio.url через VK audio.getById — HLS ссылки протухают ~60 мин.
+		 * Возвращает рабочий URL или пустую строку если не получилось.
+		 */
+		static async refresh_url(audio: $bog_vk_api_audio): Promise<string> {
+			try {
+				const key = `${audio.owner_id}_${audio.id}${audio.access_key ? '_' + audio.access_key : ''}`
+				const fresh = ($mol_wire_sync($bog_vk_api) as any).refresh_audio(key) as $bog_vk_api_audio | null
+				return fresh?.url ?? ''
+			} catch (e: any) {
+				console.warn('[cache] refresh_url failed:', e?.message)
+				return ''
+			}
+		}
+
 		static async save_hls(audio: $bog_vk_api_audio): Promise<void> {
-			const url = audio.url
+			let url = audio.url
 			if (!url) {
 				console.warn('[cache] skip — no URL:', audio.artist, '—', audio.title)
 				return
@@ -407,11 +422,21 @@ namespace $ {
 
 				console.log('[cache] start download:', audio.artist, '—', audio.title)
 
-				const m3u8_resp = await fetch(url)
+				let m3u8_resp = await fetch(url)
+				// Если url протух — пробуем обновить через audio.getById.
+				if (m3u8_resp.status === 403 || m3u8_resp.status === 404) {
+					console.log('[cache] url expired, refreshing:', audio.artist, '—', audio.title)
+					const fresh_url = await this.refresh_url(audio)
+					if (fresh_url) {
+						url = fresh_url
+						m3u8_resp = await fetch(url)
+					}
+				}
 				if (!m3u8_resp.ok) throw new Error(`m3u8 fetch ${m3u8_resp.status}`)
 				const m3u8_text = await m3u8_resp.text()
 
 				const base_url = url.substring(0, url.lastIndexOf('/') + 1)
+				// (url мог быть подменён на fresh_url выше — base пересчитывается от него)
 				const { segments, key_url, key_iv } = this.parse_m3u8(m3u8_text, base_url)
 
 				if (!segments.length) throw new Error('No segments in m3u8')
