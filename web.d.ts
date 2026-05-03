@@ -12572,9 +12572,12 @@ declare namespace $ {
         static token(next?: string): string;
         static cookies(next?: string): string;
         static proxy_url(next?: string): string;
+        static in_extension(): boolean;
+        static fetch_vk_direct(method: string, params: Record<string, any>): Promise<any>;
         static fetch_proxy(endpoint: string, body: Record<string, any>): Promise<any>;
         static my_audios(): $bog_vk_api_audio_list;
         static search_audios(query: string): $bog_vk_api_audio_list;
+        static refresh_audio(audio_key: string): $bog_vk_api_audio | null;
     }
     interface $bog_vk_api_audio {
         id: number;
@@ -12633,6 +12636,7 @@ declare namespace $ {
             key_iv: string;
         };
         static decrypt_segment(data: ArrayBuffer, cryptoKey: CryptoKey, index: number, iv_hex: string): Promise<ArrayBuffer>;
+        static refresh_url(audio: $bog_vk_api_audio): Promise<string>;
         static save_hls(audio: $bog_vk_api_audio): Promise<void>;
     }
     export {};

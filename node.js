@@ -18771,6 +18771,40 @@ var $;
             const custom = $mol_state_local.value('vk_proxy_url', next) ?? '';
             return custom || this.default_proxy_url;
         }
+        static in_extension() {
+            try {
+                const proto = location.protocol;
+                return proto === 'chrome-extension:' || proto === 'moz-extension:';
+            }
+            catch {
+                return false;
+            }
+        }
+        static async fetch_vk_direct(method, params) {
+            const token = this.token();
+            if (!token)
+                throw new Error('Token is not set');
+            const body = new URLSearchParams({
+                ...Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
+                access_token: token,
+                v: '5.275',
+                client_id: '6287487',
+            });
+            const resp = await fetch(`https://api.vk.com/method/${method}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString(),
+                credentials: 'include',
+            });
+            const data = await resp.json();
+            if (data?.error) {
+                const msg = data.error.error_msg ?? 'VK API error';
+                const code = data.error.error_code ?? '?';
+                console.error(`[vk-api] error ${code}: ${msg}`);
+                throw new Error(`[${code}] ${msg}`);
+            }
+            return data.response;
+        }
         static async fetch_proxy(endpoint, body) {
             const base = this.proxy_url().replace(/\/$/, '');
             const resp = await fetch(`${base}${endpoint}`, {
@@ -18791,13 +18825,30 @@ var $;
             const token = this.token();
             if (!token)
                 throw new Error('Token is not set');
+            if (this.in_extension()) {
+                return $mol_wire_sync(this).fetch_vk_direct('audio.get', { count: 200 });
+            }
             return $mol_wire_sync(this).fetch_proxy('/audios', { token, cookies: this.cookies(), count: 200 });
         }
         static search_audios(query) {
             const token = this.token();
             if (!token)
                 throw new Error('Token is not set');
+            if (this.in_extension()) {
+                return $mol_wire_sync(this).fetch_vk_direct('audio.search', { q: query, count: 100, sort: 2 });
+            }
             return $mol_wire_sync(this).fetch_proxy('/search', { token, cookies: this.cookies(), query, count: 100 });
+        }
+        static refresh_audio(audio_key) {
+            const token = this.token();
+            if (!token)
+                throw new Error('Token is not set');
+            if (this.in_extension()) {
+                const resp = $mol_wire_sync(this).fetch_vk_direct('audio.getById', { audios: audio_key });
+                return resp?.[0] ?? null;
+            }
+            const resp = $mol_wire_sync(this).fetch_proxy('/getById', { token, cookies: this.cookies(), audios: audio_key });
+            return resp?.[0] ?? null;
         }
     }
     __decorate([
@@ -18815,6 +18866,9 @@ var $;
     __decorate([
         $mol_mem_key
     ], $bog_vk_api, "search_audios", null);
+    __decorate([
+        $mol_mem_key
+    ], $bog_vk_api, "refresh_audio", null);
     $.$bog_vk_api = $bog_vk_api;
 })($ || ($ = {}));
 
@@ -19398,8 +19452,19 @@ var $;
             }
             return crypto.subtle.decrypt({ name: 'AES-CBC', iv }, cryptoKey, data);
         }
+        static async refresh_url(audio) {
+            try {
+                const key = `${audio.owner_id}_${audio.id}${audio.access_key ? '_' + audio.access_key : ''}`;
+                const fresh = $mol_wire_sync($bog_vk_api).refresh_audio(key);
+                return fresh?.url ?? '';
+            }
+            catch (e) {
+                console.warn('[cache] refresh_url failed:', e?.message);
+                return '';
+            }
+        }
         static async save_hls(audio) {
-            const url = audio.url;
+            let url = audio.url;
             if (!url) {
                 console.warn('[cache] skip — no URL:', audio.artist, '—', audio.title);
                 return;
@@ -19414,7 +19479,15 @@ var $;
                     return;
                 }
                 console.log('[cache] start download:', audio.artist, '—', audio.title);
-                const m3u8_resp = await fetch(url);
+                let m3u8_resp = await fetch(url);
+                if (m3u8_resp.status === 403 || m3u8_resp.status === 404) {
+                    console.log('[cache] url expired, refreshing:', audio.artist, '—', audio.title);
+                    const fresh_url = await this.refresh_url(audio);
+                    if (fresh_url) {
+                        url = fresh_url;
+                        m3u8_resp = await fetch(url);
+                    }
+                }
                 if (!m3u8_resp.ok)
                     throw new Error(`m3u8 fetch ${m3u8_resp.status}`);
                 const m3u8_text = await m3u8_resp.text();
