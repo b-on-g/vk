@@ -1,3 +1,35 @@
+$mol_speck $mol_view
+	theme \$mol_theme_accent
+	sub /
+		<= value null
+
+$mol_button $mol_view
+	enabled true
+	click?event null
+	event_click?event null
+	status? /
+	event *
+		^
+		click?event <=> activate?event <=> event_activate?event null
+		dblclick?event <=> clicks?event null
+		keydown?event <=> key_press?event <=> event_key_press?event null
+	attr *
+		^
+		disabled <= disabled false
+		role \button
+		tabindex <= tab_index 0
+		title <= hint_safe <= hint \
+	sub /$mol_view_content
+		<= title
+	Speck $mol_speck
+		value <= error \
+
+$mol_button_typed $mol_button
+	minimal_height 40
+	minimal_width 40
+
+$mol_button_minor $mol_button_typed
+
 $mol_scroll $mol_view
 	scroll_top? 0
 	scroll_left? 0
@@ -70,38 +102,6 @@ $mol_icon $mol_svg_root
 $mol_icon_key $mol_icon path \M7 14C5.9 14 5 13.1 5 12S5.9 10 7 10 9 10.9 9 12 8.1 14 7 14M12.6 10C11.8 7.7 9.6 6 7 6C3.7 6 1 8.7 1 12S3.7 18 7 18C9.6 18 11.8 16.3 12.6 14H16V18H20V14H23V10H12.6Z
 
 $mol_icon_key_variant $mol_icon path \M22,18V22H18V19H15V16H12L9.74,13.74C9.19,13.91 8.61,14 8,14A6,6 0 0,1 2,8A6,6 0 0,1 8,2A6,6 0 0,1 14,8C14,8.61 13.91,9.19 13.74,9.74L22,18M7,5A2,2 0 0,0 5,7A2,2 0 0,0 7,9A2,2 0 0,0 9,7A2,2 0 0,0 7,5Z
-
-$mol_speck $mol_view
-	theme \$mol_theme_accent
-	sub /
-		<= value null
-
-$mol_button $mol_view
-	enabled true
-	click?event null
-	event_click?event null
-	status? /
-	event *
-		^
-		click?event <=> activate?event <=> event_activate?event null
-		dblclick?event <=> clicks?event null
-		keydown?event <=> key_press?event <=> event_key_press?event null
-	attr *
-		^
-		disabled <= disabled false
-		role \button
-		tabindex <= tab_index 0
-		title <= hint_safe <= hint \
-	sub /$mol_view_content
-		<= title
-	Speck $mol_speck
-		value <= error \
-
-$mol_button_typed $mol_button
-	minimal_height 40
-	minimal_width 40
-
-$mol_button_minor $mol_button_typed
 
 $mol_check $mol_button_minor
 	attr *
@@ -462,6 +462,12 @@ $bog_vk_player $mol_view
 						<= Time $mol_paragraph
 							title <= time_text \
 
+$bog_vk_tab $mol_button_minor
+	active false
+	attr *
+		^
+		data-tab-active <= active
+
 $bog_vk_app $mol_page
 	plugins /
 		<= Theme $mol_theme_auto
@@ -548,14 +554,17 @@ $bog_vk_app $mol_page
 					title <= token_hint \
 		<= Tabs $mol_view
 			sub /
-				<= Tab_my $mol_button_minor
+				<= Tab_my $bog_vk_tab
 					click? <=> show_my? null
+					active <= tab_my_active false
 					sub / \Моя музыка
-				<= Tab_search $mol_button_minor
+				<= Tab_search $bog_vk_tab
 					click? <=> show_search? null
+					active <= tab_search_active false
 					sub / \Поиск
-				<= Tab_archive $mol_button_minor
+				<= Tab_archive $bog_vk_tab
 					click? <=> show_archive? null
+					active <= tab_archive_active false
 					sub / \Архив
 		<= Search_bar $mol_string
 			hint \Поиск музыки...
