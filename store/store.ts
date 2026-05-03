@@ -60,6 +60,14 @@ namespace $ {
 				const order_val = track.Order()?.val()
 				// Если Order не задан — fallback на Added (делим, чтобы был в том же порядке).
 				const order = order_val == null ? added : Number(order_val)
+				// Локально загруженные треки хранят blob в File — резолвим в baza-uri.
+				let url = track.Url()?.val() ?? ''
+				try {
+					const file = track.File()?.remote()
+					if (file) url = file.uri()
+				} catch (e) {
+					if (e instanceof Promise) throw e
+				}
 				rows.push({
 					audio: {
 						id,
@@ -67,7 +75,7 @@ namespace $ {
 						artist: track.Artist()?.val() ?? '',
 						title: track.Title()?.val() ?? '',
 						duration: track.Duration()?.val() ?? 0,
-						url: track.Url()?.val() ?? '',
+						url,
 					},
 					order,
 					added,
@@ -189,6 +197,55 @@ namespace $ {
 			if (!track) return
 			track.Archived('auto')!.val(true)
 			this.version(this.version() + 1)
+		}
+
+		/** Парсит "Artist - Title" из имени файла. */
+		static parse_filename(name: string): { artist: string, title: string } {
+			const base = name.replace(/\.[^.]+$/, '').trim()
+			const m = base.match(/^(.+?)\s*[-–—]\s*(.+)$/)
+			if (m) return { artist: m[1].trim(), title: m[2].trim() }
+			return { artist: '', title: base }
+		}
+
+		/**
+		 * Загружает локальный аудиофайл (с телефона) в home land.
+		 * Блоб кладётся в $giper_baza_file, метаданные — в $bog_vk_track_baza.
+		 * Возвращает audio для воспроизведения.
+		 */
+		@$mol_action
+		static save_local_track(file: File): $bog_vk_api_audio | null {
+			const { artist, title } = this.parse_filename(file.name)
+			const audio: $bog_vk_api_audio = {
+				id: Date.now() + Math.floor(Math.random() * 1000),
+				owner_id: 0,
+				artist,
+				title,
+				duration: 0,
+				url: '',
+			}
+			let dict: ReturnType<typeof $bog_vk_store.tracks_dict>
+			try {
+				dict = this.tracks_dict()
+			} catch (e) {
+				if (e instanceof Promise) throw e
+				return null
+			}
+			const key = this.cache_key(audio)
+			const track = dict.key(key, 'auto')
+			if (!track) return null
+			track.Vk_id('auto')!.val(key)
+			track.Title('auto')!.val(title)
+			track.Artist('auto')!.val(artist)
+			track.Added('auto')!.val(Date.now())
+			track.Order('auto')!.val(this.max_order() + 1)
+			track.Archived('auto')!.val(false)
+			const store = track.File('auto')!.ensure(null)
+			if (store) {
+				store.blob(file)
+				track.File('auto')!.remote(store)
+			}
+			this.version(this.version() + 1)
+			return audio
 		}
 
 		/** Удаляет флаг Archived. */

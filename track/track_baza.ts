@@ -14,6 +14,7 @@ namespace $ {
 		Added: $giper_baza_atom_real,
 		Order: $giper_baza_atom_real,
 		Archived: $giper_baza_atom_bool,
+		File: $giper_baza_atom_link_to(() => $giper_baza_file),
 	}) {}
 
 }

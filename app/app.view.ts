@@ -211,8 +211,9 @@ namespace $.$$ {
 			for (const s of synced) {
 				const key = `${s.owner_id}_${s.id}`
 				const found = by_key.get(key)
-				if (found) {
-					out.push(found)
+				// Локальные треки (owner_id === 0) живут только в baza — берём их оттуда.
+				if (found || s.owner_id === 0) {
+					out.push(found ?? s)
 					used.add(key)
 				}
 			}
@@ -314,6 +315,21 @@ namespace $.$$ {
 				if (e instanceof Promise) return
 				console.warn('[app] baza save failed:', e?.message)
 			}
+		}
+
+		@$mol_mem
+		upload_files(next?: File[]) {
+			if (next?.length) {
+				for (const file of next) {
+					try {
+						$bog_vk_store.save_local_track(file)
+					} catch (e: any) {
+						if (e instanceof Promise) return next
+						console.warn('[app] upload failed:', file.name, e?.message)
+					}
+				}
+			}
+			return next ?? []
 		}
 
 		@$mol_action
@@ -433,6 +449,7 @@ namespace $.$$ {
 			if (!audios.length) return
 			for (const audio of audios) {
 				if (!audio.url) continue
+				if (audio.owner_id === 0) continue
 				;($mol_wire_sync($bog_vk_cache) as any).save_hls(audio)
 				$bog_vk_cache.version($bog_vk_cache.version() + 1)
 				try { $bog_vk_store.save_track(audio) } catch (e: any) {

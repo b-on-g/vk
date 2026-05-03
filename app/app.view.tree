@@ -61,6 +61,10 @@ $bog_vk_app $mol_page
 			hint \Подсказка
 			Icon <= Help_icon $mol_icon_help_circle_outline
 			checked? <=> show_hint? true
+		<= Upload $mol_button_open
+			hint \Загрузить с устройства
+			accept \audio/*
+			files? <=> upload_files? /File
 		<= Download_all $mol_button_minor
 			click? <=> download_all? null
 			sub /

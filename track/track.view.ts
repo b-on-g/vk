@@ -64,14 +64,20 @@ namespace $.$$ {
 			return super.Restore()
 		}
 
+		is_local() {
+			return this.audio_data()?.owner_id === 0
+		}
+
 		Download() {
 			if (this.archive_mode()) return null as any
+			if (this.is_local()) return null as any
 			if (this.cached()) return null as any
 			return super.Download()
 		}
 
 		Delete() {
 			if (this.archive_mode()) return null as any
+			if (this.is_local()) return null as any
 			if (!this.cached()) return null as any
 			return super.Delete()
 		}
