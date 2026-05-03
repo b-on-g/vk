@@ -29624,13 +29624,50 @@ var $;
 			(obj.sub) = () => ([(this.copy_status())]);
 			return obj;
 		}
+		Account_import_hint(){
+			const obj = new this.$.$mol_paragraph();
+			(obj.title) = () => ("Перенести с другого устройства — вставь ссылку:");
+			return obj;
+		}
+		import_link(next){
+			if(next !== undefined) return next;
+			return "";
+		}
+		Account_import_input(){
+			const obj = new this.$.$mol_string();
+			(obj.hint) = () => ("https://.../vk/#account=...");
+			(obj.value) = (next) => ((this.import_link(next)));
+			return obj;
+		}
+		apply_account_link(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Account_import_apply(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.title) = () => ("Применить");
+			(obj.click) = (next) => ((this.apply_account_link(next)));
+			return obj;
+		}
+		import_status(){
+			return "";
+		}
+		Account_import_status(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([(this.import_status())]);
+			return obj;
+		}
 		Account_panel(){
 			const obj = new this.$.$mol_list();
 			(obj.rows) = () => ([
 				(this.Account_id()), 
 				(this.Account_warning()), 
 				(this.Account_copy()), 
-				(this.Account_copy_status())
+				(this.Account_copy_status()), 
+				(this.Account_import_hint()), 
+				(this.Account_import_input()), 
+				(this.Account_import_apply()), 
+				(this.Account_import_status())
 			]);
 			return obj;
 		}
@@ -29862,6 +29899,12 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "copy_account_link"));
 	($mol_mem(($.$bog_vk_app.prototype), "Account_copy"));
 	($mol_mem(($.$bog_vk_app.prototype), "Account_copy_status"));
+	($mol_mem(($.$bog_vk_app.prototype), "Account_import_hint"));
+	($mol_mem(($.$bog_vk_app.prototype), "import_link"));
+	($mol_mem(($.$bog_vk_app.prototype), "Account_import_input"));
+	($mol_mem(($.$bog_vk_app.prototype), "apply_account_link"));
+	($mol_mem(($.$bog_vk_app.prototype), "Account_import_apply"));
+	($mol_mem(($.$bog_vk_app.prototype), "Account_import_status"));
 	($mol_mem(($.$bog_vk_app.prototype), "Account_panel"));
 	($mol_mem(($.$bog_vk_app.prototype), "Account_popup"));
 	($mol_mem(($.$bog_vk_app.prototype), "Help_icon"));
@@ -33948,6 +33991,33 @@ var $;
             copy_status(next) {
                 return next ?? '';
             }
+            import_link(next) {
+                return next ?? '';
+            }
+            import_status(next) {
+                return next ?? '';
+            }
+            apply_account_link() {
+                const raw = this.import_link().trim();
+                if (!raw) {
+                    this.import_status('Вставь ссылку с #account=…');
+                    return;
+                }
+                const match = raw.match(/[#&]account=([^&\s]+)/);
+                const key = match ? decodeURIComponent(match[1]) : raw;
+                if (key.length < 172) {
+                    this.import_status('Ключ слишком короткий');
+                    return;
+                }
+                const current = $mol_state_local.value('$giper_baza_auth');
+                if (current === key) {
+                    this.import_status('Этот ключ уже используется');
+                    return;
+                }
+                $mol_state_local.value('$giper_baza_auth', key);
+                this.import_status('Применено, перезагрузка…');
+                location.reload();
+            }
             copy_account_link() {
                 const link = this.account_link();
                 if (!link) {
@@ -34087,6 +34157,15 @@ var $;
         __decorate([
             $mol_mem
         ], $bog_vk_app.prototype, "copy_status", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_app.prototype, "import_link", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_app.prototype, "import_status", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_app.prototype, "apply_account_link", null);
         __decorate([
             $mol_action
         ], $bog_vk_app.prototype, "copy_account_link", null);

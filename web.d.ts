@@ -16767,172 +16767,202 @@ declare namespace $ {
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_list__rows_bog_vk_app_35 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_list['rows'] >
-	>
-	type $mol_pop__showed_bog_vk_app_36 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['account_popup_open'] >
-		,
-		ReturnType< $mol_pop['showed'] >
-	>
-	type $mol_pop__align_bog_vk_app_37 = $mol_type_enforce<
+	type $mol_paragraph__title_bog_vk_app_35 = $mol_type_enforce<
 		string
-		,
-		ReturnType< $mol_pop['align'] >
-	>
-	type $mol_pop__Anchor_bog_vk_app_38 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['Account_toggle'] >
-		,
-		ReturnType< $mol_pop['Anchor'] >
-	>
-	type $mol_pop__bubble_content_bog_vk_app_39 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_pop['bubble_content'] >
-	>
-	type $mol_check_icon__hint_bog_vk_app_40 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_check_icon['hint'] >
-	>
-	type $mol_check_icon__Icon_bog_vk_app_41 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['Help_icon'] >
-		,
-		ReturnType< $mol_check_icon['Icon'] >
-	>
-	type $mol_check_icon__checked_bog_vk_app_42 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['show_hint'] >
-		,
-		ReturnType< $mol_check_icon['checked'] >
-	>
-	type $mol_button_open__hint_bog_vk_app_43 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_button_open['hint'] >
-	>
-	type $mol_button_open__accept_bog_vk_app_44 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_button_open['accept'] >
-	>
-	type $mol_button_open__files_bog_vk_app_45 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['upload_files'] >
-		,
-		ReturnType< $mol_button_open['files'] >
-	>
-	type $mol_button_minor__click_bog_vk_app_46 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['download_all'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_button_minor__sub_bog_vk_app_47 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_button_minor['sub'] >
-	>
-	type $bog_version__version_bog_vk_app_48 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $bog_version['version'] >
-	>
-	type $mol_link__uri_bog_vk_app_49 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_link['uri'] >
-	>
-	type $mol_link__target_bog_vk_app_50 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_link['target'] >
-	>
-	type $mol_link__sub_bog_vk_app_51 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_link['sub'] >
-	>
-	type $mol_paragraph__title_bog_vk_app_52 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['token_hint'] >
 		,
 		ReturnType< $mol_paragraph['title'] >
 	>
-	type $mol_view__sub_bog_vk_app_53 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
-	>
-	type $mol_switch__value_bog_vk_app_54 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['page'] >
-		,
-		ReturnType< $mol_switch['value'] >
-	>
-	type $mol_switch__options_bog_vk_app_55 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['tab_options'] >
-		,
-		ReturnType< $mol_switch['options'] >
-	>
-	type $mol_string__hint_bog_vk_app_56 = $mol_type_enforce<
+	type $mol_string__hint_bog_vk_app_36 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_string['hint'] >
 	>
-	type $mol_string__value_bog_vk_app_57 = $mol_type_enforce<
+	type $mol_string__value_bog_vk_app_37 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['import_link'] >
+		,
+		ReturnType< $mol_string['value'] >
+	>
+	type $mol_button_minor__title_bog_vk_app_38 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_button_minor['title'] >
+	>
+	type $mol_button_minor__click_bog_vk_app_39 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['apply_account_link'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_view__sub_bog_vk_app_40 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_list__rows_bog_vk_app_41 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_list['rows'] >
+	>
+	type $mol_pop__showed_bog_vk_app_42 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['account_popup_open'] >
+		,
+		ReturnType< $mol_pop['showed'] >
+	>
+	type $mol_pop__align_bog_vk_app_43 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_pop['align'] >
+	>
+	type $mol_pop__Anchor_bog_vk_app_44 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['Account_toggle'] >
+		,
+		ReturnType< $mol_pop['Anchor'] >
+	>
+	type $mol_pop__bubble_content_bog_vk_app_45 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_pop['bubble_content'] >
+	>
+	type $mol_check_icon__hint_bog_vk_app_46 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_check_icon['hint'] >
+	>
+	type $mol_check_icon__Icon_bog_vk_app_47 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['Help_icon'] >
+		,
+		ReturnType< $mol_check_icon['Icon'] >
+	>
+	type $mol_check_icon__checked_bog_vk_app_48 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['show_hint'] >
+		,
+		ReturnType< $mol_check_icon['checked'] >
+	>
+	type $mol_button_open__hint_bog_vk_app_49 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_button_open['hint'] >
+	>
+	type $mol_button_open__accept_bog_vk_app_50 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_button_open['accept'] >
+	>
+	type $mol_button_open__files_bog_vk_app_51 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['upload_files'] >
+		,
+		ReturnType< $mol_button_open['files'] >
+	>
+	type $mol_button_minor__click_bog_vk_app_52 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['download_all'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_bog_vk_app_53 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	type $bog_version__version_bog_vk_app_54 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $bog_version['version'] >
+	>
+	type $mol_link__uri_bog_vk_app_55 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_link['uri'] >
+	>
+	type $mol_link__target_bog_vk_app_56 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_link['target'] >
+	>
+	type $mol_link__sub_bog_vk_app_57 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_link['sub'] >
+	>
+	type $mol_paragraph__title_bog_vk_app_58 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['token_hint'] >
+		,
+		ReturnType< $mol_paragraph['title'] >
+	>
+	type $mol_view__sub_bog_vk_app_59 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_switch__value_bog_vk_app_60 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['page'] >
+		,
+		ReturnType< $mol_switch['value'] >
+	>
+	type $mol_switch__options_bog_vk_app_61 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['tab_options'] >
+		,
+		ReturnType< $mol_switch['options'] >
+	>
+	type $mol_string__hint_bog_vk_app_62 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_string['hint'] >
+	>
+	type $mol_string__value_bog_vk_app_63 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['search_query'] >
 		,
 		ReturnType< $mol_string['value'] >
 	>
-	type $bog_vk_tracks__audios_bog_vk_app_58 = $mol_type_enforce<
+	type $bog_vk_tracks__audios_bog_vk_app_64 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_tracks['audios'] >
 	>
-	type $bog_vk_tracks__current_audio_bog_vk_app_59 = $mol_type_enforce<
+	type $bog_vk_tracks__current_audio_bog_vk_app_65 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['current_audio'] >
 	>
-	type $bog_vk_tracks__play_audio_bog_vk_app_60 = $mol_type_enforce<
+	type $bog_vk_tracks__play_audio_bog_vk_app_66 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['on_play_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['play_audio'] >
 	>
-	type $bog_vk_tracks__archive_mode_bog_vk_app_61 = $mol_type_enforce<
+	type $bog_vk_tracks__archive_mode_bog_vk_app_67 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['archive_mode'] >
 		,
 		ReturnType< $bog_vk_tracks['archive_mode'] >
 	>
-	type $bog_vk_tracks__reorder_up_bog_vk_app_62 = $mol_type_enforce<
+	type $bog_vk_tracks__reorder_up_bog_vk_app_68 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['reorder_up'] >
 		,
 		ReturnType< $bog_vk_tracks['reorder_up'] >
 	>
-	type $bog_vk_tracks__reorder_down_bog_vk_app_63 = $mol_type_enforce<
+	type $bog_vk_tracks__reorder_down_bog_vk_app_69 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['reorder_down'] >
 		,
 		ReturnType< $bog_vk_tracks['reorder_down'] >
 	>
-	type $bog_vk_tracks__archive_audio_bog_vk_app_64 = $mol_type_enforce<
+	type $bog_vk_tracks__archive_audio_bog_vk_app_70 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['archive_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['archive_audio'] >
 	>
-	type $bog_vk_tracks__restore_audio_bog_vk_app_65 = $mol_type_enforce<
+	type $bog_vk_tracks__restore_audio_bog_vk_app_71 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['restore_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['restore_audio'] >
 	>
-	type $bog_vk_tracks__delete_audio_bog_vk_app_66 = $mol_type_enforce<
+	type $bog_vk_tracks__delete_audio_bog_vk_app_72 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['delete_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['delete_audio'] >
 	>
-	type $bog_vk_player__queue_bog_vk_app_67 = $mol_type_enforce<
+	type $bog_vk_player__queue_bog_vk_app_73 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_player['queue'] >
 	>
-	type $bog_vk_player__current_audio_bog_vk_app_68 = $mol_type_enforce<
+	type $bog_vk_player__current_audio_bog_vk_app_74 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_player['current_audio'] >
@@ -16969,6 +16999,13 @@ declare namespace $ {
 		Account_copy( ): $mol_button_minor
 		copy_status( ): string
 		Account_copy_status( ): $mol_view
+		Account_import_hint( ): $mol_paragraph
+		import_link( next?: string ): string
+		Account_import_input( ): $mol_string
+		apply_account_link( next?: any ): any
+		Account_import_apply( ): $mol_button_minor
+		import_status( ): string
+		Account_import_status( ): $mol_view
 		Account_panel( ): $mol_list
 		Account_popup( ): $mol_pop
 		Help_icon( ): $mol_icon_help_circle_outline
@@ -17055,6 +17092,9 @@ declare namespace $.$$ {
         account_lord_short(): string;
         account_link(): string;
         copy_status(next?: string): string;
+        import_link(next?: string): string;
+        import_status(next?: string): string;
+        apply_account_link(): void;
         copy_account_link(): void;
         auto(): any;
         Auth_block(): any;

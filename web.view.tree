@@ -2150,6 +2150,15 @@ $bog_vk_app $mol_page
 							title \Скопировать ссылку для переноса
 							click? <=> copy_account_link? null
 						<= Account_copy_status $mol_view sub / <= copy_status \
+						<= Account_import_hint $mol_paragraph
+							title \Перенести с другого устройства — вставь ссылку:
+						<= Account_import_input $mol_string
+							hint \https://.../vk/#account=...
+							value? <=> import_link? \
+						<= Account_import_apply $mol_button_minor
+							title \Применить
+							click? <=> apply_account_link? null
+						<= Account_import_status $mol_view sub / <= import_status \
 		<= Help_toggle $mol_check_icon
 			hint \Подсказка
 			Icon <= Help_icon $mol_icon_help_circle_outline
