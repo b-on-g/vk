@@ -7,6 +7,7 @@ $bog_vk_tracks $mol_list
 	reorder_down? null
 	archive_audio? null
 	restore_audio? null
+	delete_audio? null
 	rows <= track_rows /
 		<= Track*0 $bog_vk_track
 			audio <= track_audio* null
@@ -19,3 +20,4 @@ $bog_vk_tracks $mol_list
 			move_down? <=> track_move_down*? null
 			archive? <=> track_archive*? null
 			restore? <=> track_restore*? null
+			delete_forever? <=> track_delete*? null

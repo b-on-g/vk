@@ -64,6 +64,11 @@ namespace $.$$ {
 			return super.Restore()
 		}
 
+		Delete_forever() {
+			if (!this.archive_mode()) return null as any
+			return super.Delete_forever()
+		}
+
 		is_local() {
 			return this.audio_data()?.owner_id === 0
 		}
@@ -98,6 +103,7 @@ namespace $.$$ {
 			if (this.click_on_button(event, () => this.Move_down())) return
 			if (this.click_on_button(event, () => this.Archive())) return
 			if (this.click_on_button(event, () => this.Restore())) return
+			if (this.click_on_button(event, () => this.Delete_forever())) return
 			this.play(this.audio())
 		}
 

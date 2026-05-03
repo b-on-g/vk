@@ -56,5 +56,11 @@ namespace $.$$ {
 			const audio = this.track_audio(index)
 			if (audio) this.restore_audio(audio)
 		}
+
+		@$mol_action
+		track_delete(index: number) {
+			const audio = this.track_audio(index)
+			if (audio) this.delete_audio(audio)
+		}
 	}
 }

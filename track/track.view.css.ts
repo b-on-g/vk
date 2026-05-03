@@ -52,6 +52,12 @@ namespace $.$$ {
 			},
 		},
 
+		Delete_forever: {
+			justify: {
+				content: 'flex-end',
+			},
+		},
+
 		Cover: {
 			flex: {
 				shrink: 0,

@@ -9,6 +9,7 @@ $bog_vk_track $mol_view
 	move_down? null
 	archive? null
 	restore? null
+	delete_forever? null
 	event *
 		click? <=> event_click? null
 	attr *
@@ -53,3 +54,8 @@ $bog_vk_track $mol_view
 			click? <=> restore? null
 			sub /
 				<= Restore_icon $mol_icon_restore
+		<= Delete_forever $mol_button_minor
+			hint \Удалить навсегда
+			click? <=> delete_forever? null
+			sub /
+				<= Delete_forever_icon $mol_icon_delete_forever

@@ -302,6 +302,15 @@ namespace $.$$ {
 		}
 
 		@$mol_action
+		delete_audio(audio: $bog_vk_api_audio | null) {
+			if (!audio) return
+			try { $bog_vk_store.delete_track(audio) } catch (e: any) {
+				if (e instanceof Promise) return
+				console.warn('[app] baza delete failed:', e?.message)
+			}
+		}
+
+		@$mol_action
 		on_play_audio(audio?: $bog_vk_api_audio | null) {
 			if (!audio) return
 

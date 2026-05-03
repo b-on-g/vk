@@ -192,26 +192,32 @@ namespace $ {
 			this.version(this.version() + 1)
 		}
 
+		/** RAM-кеш свежезагруженных файлов на текущей сессии — играем без ожидания синка baza. */
+		private static fresh_files = new Map<string, File>()
+
 		/** Достаёт blob локально загруженного трека. null если не локальный или нет файла. */
 		static local_blob(audio: $bog_vk_api_audio): Blob | null {
 			if (audio.owner_id !== 0) return null
-			let dict: ReturnType<typeof $bog_vk_store.tracks_dict>
-			try {
-				dict = this.tracks_dict()
-			} catch (e) {
-				if (e instanceof Promise) throw e
-				return null
+			const key = this.cache_key(audio)
+			const fresh = this.fresh_files.get(key)
+			if (fresh) {
+				console.log('[store] local blob from RAM:', audio.title, fresh.size, 'bytes,', fresh.type)
+				return fresh
 			}
-			const track = dict.key(this.cache_key(audio))
+			const dict = this.tracks_dict()
+			const track = dict.key(key)
 			if (!track) return null
 			const file = track.File()?.remote()
 			if (!file) return null
-			try {
-				return file.blob() as unknown as Blob
-			} catch (e) {
-				if (e instanceof Promise) throw e
+			const buf = file.buffer()
+			if (!buf || buf.byteLength === 0) {
+				console.warn('[store] local blob empty:', audio.title, 'type:', file.type())
 				return null
 			}
+			const type = file.type() || 'audio/mpeg'
+			const blob = new Blob([buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer], { type })
+			console.log('[store] local blob from baza:', audio.title, blob.size, 'bytes,', type)
+			return blob
 		}
 
 		/** Парсит "Artist - Title" из имени файла. */
@@ -259,8 +265,25 @@ namespace $ {
 				store.blob(file)
 				track.File('auto')!.remote(store)
 			}
+			// Кешируем сам File в RAM — играть можно сразу, не дожидаясь синка чанков.
+			this.fresh_files.set(key, file)
 			this.version(this.version() + 1)
 			return audio
+		}
+
+		/** Окончательно удаляет трек из baza (по ключу). */
+		@$mol_action
+		static delete_track(audio: $bog_vk_api_audio): void {
+			if (!audio) return
+			let dict: ReturnType<typeof $bog_vk_store.tracks_dict>
+			try {
+				dict = this.tracks_dict()
+			} catch (e) {
+				if (e instanceof Promise) throw e
+				return
+			}
+			dict.cut(this.cache_key(audio))
+			this.version(this.version() + 1)
 		}
 
 		/** Удаляет флаг Archived. */

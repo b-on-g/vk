@@ -105,6 +105,7 @@ $bog_vk_app $mol_page
 			reorder_down? <=> reorder_down? null
 			archive_audio? <=> archive_audio? null
 			restore_audio? <=> restore_audio? null
+			delete_audio? <=> delete_audio? null
 	foot /
 		<= Player $bog_vk_player
 			queue <= visible_audios /
