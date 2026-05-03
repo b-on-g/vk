@@ -155,8 +155,9 @@ namespace $.$$ {
 
 				// 0. Локальный трек — blob лежит в Giper Baza.
 				if (audio.owner_id === 0) {
-					// $mol_wire_sync превращает wire-throw-promise в await-able promise.
-					const blob = await ($mol_wire_sync($bog_vk_store) as any).local_blob(audio) as Blob | null
+					// $mol_wire_async (не sync!) внутри обычной async-функции —
+					// возвращает Promise, который реально ждёт IDB ball_load.
+					const blob = await ($mol_wire_async($bog_vk_store) as any).local_blob(audio) as Blob | null
 					if (blob) {
 						const url = URL.createObjectURL(blob)
 						this._last_blob_url = url
