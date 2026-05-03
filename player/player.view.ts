@@ -153,6 +153,18 @@ namespace $.$$ {
 					this._last_blob_url = ''
 				}
 
+				// 0. Локальный трек — blob лежит в Giper Baza.
+				if (audio.owner_id === 0) {
+					const blob = $bog_vk_store.local_blob(audio)
+					if (blob) {
+						const url = URL.createObjectURL(blob)
+						this._last_blob_url = url
+						el.src = url
+						await this.safe_play(el)
+						return
+					}
+				}
+
 				// 1. Try cache (has actual audio data, works offline)
 				const cached = await $bog_vk_cache.get(audio)
 				if (cached) {

@@ -60,14 +60,7 @@ namespace $ {
 				const order_val = track.Order()?.val()
 				// Если Order не задан — fallback на Added (делим, чтобы был в том же порядке).
 				const order = order_val == null ? added : Number(order_val)
-				// Локально загруженные треки хранят blob в File — резолвим в baza-uri.
 				let url = track.Url()?.val() ?? ''
-				try {
-					const file = track.File()?.remote()
-					if (file) url = file.uri()
-				} catch (e) {
-					if (e instanceof Promise) throw e
-				}
 				rows.push({
 					audio: {
 						id,
@@ -197,6 +190,28 @@ namespace $ {
 			if (!track) return
 			track.Archived('auto')!.val(true)
 			this.version(this.version() + 1)
+		}
+
+		/** Достаёт blob локально загруженного трека. null если не локальный или нет файла. */
+		static local_blob(audio: $bog_vk_api_audio): Blob | null {
+			if (audio.owner_id !== 0) return null
+			let dict: ReturnType<typeof $bog_vk_store.tracks_dict>
+			try {
+				dict = this.tracks_dict()
+			} catch (e) {
+				if (e instanceof Promise) throw e
+				return null
+			}
+			const track = dict.key(this.cache_key(audio))
+			if (!track) return null
+			const file = track.File()?.remote()
+			if (!file) return null
+			try {
+				return file.blob() as unknown as Blob
+			} catch (e) {
+				if (e instanceof Promise) throw e
+				return null
+			}
 		}
 
 		/** Парсит "Artist - Title" из имени файла. */
