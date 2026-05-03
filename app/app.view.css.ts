@@ -1,4 +1,15 @@
 namespace $.$$ {
+	$mol_style_define($bog_vk_tab, {
+		'@': {
+			'data-tab-active': {
+				true: {
+					background: { color: $mol_theme.focus },
+					color: $mol_theme.card,
+				},
+			},
+		},
+	})
+
 	$mol_style_define($bog_vk_app, {
 		maxWidth: '50rem',
 		margin: {
@@ -19,38 +30,6 @@ namespace $.$$ {
 			},
 		},
 
-		Tab_my: {
-			'@': {
-				bog_vk_tab_active: {
-					true: {
-						background: { color: $mol_theme.focus },
-						color: $mol_theme.card,
-					},
-				},
-			},
-		},
-
-		Tab_search: {
-			'@': {
-				bog_vk_tab_active: {
-					true: {
-						background: { color: $mol_theme.focus },
-						color: $mol_theme.card,
-					},
-				},
-			},
-		},
-
-		Tab_archive: {
-			'@': {
-				bog_vk_tab_active: {
-					true: {
-						background: { color: $mol_theme.focus },
-						color: $mol_theme.card,
-					},
-				},
-			},
-		},
 
 		Search_bar: {
 			font: {
