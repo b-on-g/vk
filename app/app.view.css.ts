@@ -1,5 +1,12 @@
 namespace $.$$ {
+	// Расширения (popup) и iframe-и режут html/body до 0px — задаём минимум,
+	// чтобы UI не схлопывался в полоску.
+	$mol_style_attach('bog/vk/app/app-popup.css', `
+		html, body { min-width: 24rem; min-height: 32rem; }
+	`)
+
 	$mol_style_define($bog_vk_app, {
+		minWidth: '20rem',
 		maxWidth: '50rem',
 		margin: {
 			left: 'auto',

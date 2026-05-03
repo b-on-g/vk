@@ -7,12 +7,6 @@ namespace $ {
 	 */
 	export class $bog_vk_store extends $mol_object2 {
 
-		/** Версия для инвалидации — инкрементируй после записи, чтобы читатели перечитали. */
-		@$mol_mem
-		static version(next?: number): number {
-			return next ?? 0
-		}
-
 		/** Home land текущего пользователя. НЕ @$mol_mem — чтобы не было circular. */
 		static land() {
 			return this.$.$giper_baza_glob.home().land()
@@ -35,14 +29,7 @@ namespace $ {
 		 */
 		@$mol_mem_key
 		static list_audios(archived: boolean): $bog_vk_api_audio[] {
-			this.version()
-			let dict: ReturnType<typeof $bog_vk_store.tracks_dict>
-			try {
-				dict = this.tracks_dict()
-			} catch (e) {
-				if (e instanceof Promise) throw e
-				return []
-			}
+			const dict = this.tracks_dict()
 			const keys = (dict.keys() ?? []) as string[]
 			type Row = { audio: $bog_vk_api_audio, order: number, added: number }
 			const rows: Row[] = []
@@ -143,7 +130,6 @@ namespace $ {
 			}
 			// Снимаем флаг Archived при повторном добавлении.
 			if (track.Archived()?.val() === true) track.Archived('auto')!.val(false)
-			this.version(this.version() + 1)
 		}
 
 		/** Меняет Order двух треков местами. */
@@ -171,7 +157,6 @@ namespace $ {
 			const next_b = ob === oa ? oa : oa
 			ta.Order('auto')!.val(next_a)
 			tb.Order('auto')!.val(next_b)
-			this.version(this.version() + 1)
 		}
 
 		/** Помечает трек как удалённый (мягкое удаление). */
@@ -189,7 +174,6 @@ namespace $ {
 			const track = dict.key(key)
 			if (!track) return
 			track.Archived('auto')!.val(true)
-			this.version(this.version() + 1)
 		}
 
 		/** RAM-кеш свежезагруженных файлов на текущей сессии — играем без ожидания синка baza. */
@@ -287,15 +271,6 @@ namespace $ {
 				console.warn('[store] File ensure returned null')
 			}
 			this.fresh_files.set(key, file)
-			this.version(this.version() + 1)
-			// Принудительно сбрасываем юниты в IDB, не дожидаясь yard.sync_news —
-			// иначе chunks живут только в RAM до первого коннекта к peer.
-			try {
-				this.land().units_saving()
-			} catch (e: any) {
-				if (e instanceof Promise) throw e
-				console.warn('[store] units_saving failed:', e?.message)
-			}
 			return audio
 		}
 
@@ -311,7 +286,6 @@ namespace $ {
 				return
 			}
 			dict.cut(this.cache_key(audio))
-			this.version(this.version() + 1)
 		}
 
 		/** Удаляет флаг Archived. */
@@ -329,7 +303,6 @@ namespace $ {
 			const track = dict.key(key)
 			if (!track) return
 			track.Archived('auto')!.val(false)
-			this.version(this.version() + 1)
 		}
 
 	}
