@@ -13964,50 +13964,6 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    type $bog_vk_cache_schema = {
-        tracks: {
-            Key: string;
-            Doc: Blob;
-            Indexes: {};
-        };
-        meta: {
-            Key: string;
-            Doc: $bog_vk_api_audio;
-            Indexes: {};
-        };
-    };
-    export class $bog_vk_cache extends $mol_object {
-        static version(next?: number): number;
-        static db(): $mol_db_database<$bog_vk_cache_schema>;
-        static db_async(): Promise<$mol_db_database<$bog_vk_cache_schema>>;
-        static cache_key(audio: $bog_vk_api_audio): string;
-        static get(audio: $bog_vk_api_audio): Promise<string | null>;
-        static is_cached(audio: $bog_vk_api_audio): Promise<boolean>;
-        static drop(audio: $bog_vk_api_audio): Promise<void>;
-        static all_cached(): Promise<$bog_vk_api_audio[]>;
-        static adts_to_m4a(adts: Uint8Array): Uint8Array;
-        static extract_audio(ts: Uint8Array): {
-            data: Uint8Array;
-            mime: string;
-        };
-        static demux_ts_audio(ts: Uint8Array): Uint8Array | null;
-        static parse_m3u8(text: string, base_url: string): {
-            segments: string[];
-            key_url: string;
-            key_iv: string;
-        };
-        static decrypt_segment(data: ArrayBuffer, cryptoKey: CryptoKey, index: number, iv_hex: string): Promise<ArrayBuffer>;
-        /**
-         * Освежает audio.url через VK audio.getById — HLS ссылки протухают ~60 мин.
-         * Возвращает рабочий URL или пустую строку если не получилось.
-         */
-        static refresh_url(audio: $bog_vk_api_audio): Promise<string>;
-        static save_hls(audio: $bog_vk_api_audio): Promise<void>;
-    }
-    export {};
-}
-
-declare namespace $ {
     const $giper_baza_file_base: Omit<typeof $giper_baza_dict, "prototype"> & {
         new (...args: any[]): $mol_type_override<$giper_baza_dict, {
             readonly Name: (auto?: any) => $giper_baza_atom_text | null;
@@ -16349,6 +16305,8 @@ declare namespace $ {
          * синкался на другие устройства через Giper Baza.
          */
         static save_blob(audio: $bog_vk_api_audio, buffer: Uint8Array, mime: string): void;
+        /** Удаляет blob (поле File) из baza, оставляя метаданные трека. */
+        static drop_blob(audio: $bog_vk_api_audio): void;
         /** Парсит "Artist - Title" из имени файла. */
         static parse_filename(name: string): {
             artist: string;
@@ -16366,6 +16324,44 @@ declare namespace $ {
         static delete_track(audio: $bog_vk_api_audio): void;
         /** Удаляет флаг Archived. */
         static restore_track(audio: $bog_vk_api_audio): void;
+    }
+}
+
+declare namespace $ {
+    /**
+     * Тонкий фасад над Giper Baza для аудио-блобов.
+     * Раньше был отдельный IndexedDB (`vk_audio_cache`), но теперь источник один —
+     * baza, чтобы блобы автоматически синкались на другие устройства.
+     */
+    class $bog_vk_cache extends $mol_object {
+        static version(next?: number): number;
+        static cache_key(audio: $bog_vk_api_audio): string;
+        /**
+         * Тонкая обёртка над `$bog_vk_store.local_blob` — отдаёт URL для воспроизведения.
+         * Раньше тут был IndexedDB-кэш; теперь источник один — Giper Baza, чтобы блобы
+         * автоматически синкались между устройствами (не дублируем хранилище).
+         */
+        static get(audio: $bog_vk_api_audio): Promise<string | null>;
+        static is_cached(audio: $bog_vk_api_audio): boolean;
+        static drop(audio: $bog_vk_api_audio): void;
+        static adts_to_m4a(adts: Uint8Array): Uint8Array;
+        static extract_audio(ts: Uint8Array): {
+            data: Uint8Array;
+            mime: string;
+        };
+        static demux_ts_audio(ts: Uint8Array): Uint8Array | null;
+        static parse_m3u8(text: string, base_url: string): {
+            segments: string[];
+            key_url: string;
+            key_iv: string;
+        };
+        static decrypt_segment(data: ArrayBuffer, cryptoKey: CryptoKey, index: number, iv_hex: string): Promise<ArrayBuffer>;
+        /**
+         * Освежает audio.url через VK audio.getById — HLS ссылки протухают ~60 мин.
+         * Возвращает рабочий URL или пустую строку если не получилось.
+         */
+        static refresh_url(audio: $bog_vk_api_audio): Promise<string>;
+        static save_hls(audio: $bog_vk_api_audio): Promise<void>;
     }
 }
 
@@ -17193,8 +17189,17 @@ declare namespace $.$$ {
          * Вызывается реактивно из auto() — `@$mol_mem` ретраит при появлении
          * токена / готовности baza. Идемпотентно (save_track обновляет только
          * изменившиеся поля), так что вызов на каждом тике безопасен.
+         *
+         * Фоном дёргает `prefetch_blobs` для треков без `File` в baza, чтобы сразу
+         * после синка metadata пользователь мог играть offline.
          */
         auto_import(): number | null;
+        /**
+         * Последовательно скачивает HLS для треков, у которых в baza нет файла.
+         * `save_hls` идемпотентен (проверяет `is_cached`), так что повторные
+         * вызовы безопасны. Запускается из auto_import фоном.
+         */
+        static prefetch_blobs(items: $bog_vk_api_audio[]): Promise<void>;
         auto(): any;
     }
 }

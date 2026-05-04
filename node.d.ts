@@ -8993,194 +8993,6 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    /** Converts IDBResult to Promise */
-    function $mol_db_response<Result>(request: IDBRequest<Result>): Promise<Result>;
-}
-
-declare namespace $ {
-    /**
-     * Creates new or returns existen database with automatic schema migration.
-     * Schema version is based on migrations count.
-     * Migrations code mustn't be changed after deploy.
-     * Only adding migrations at the end is allowed.
-     * Only new migrations will be applyed to existen DB.
-     * Schema changes allowed only through migratios.
-     */
-    function $mol_db<Schema extends $mol_db_schema>(this: $, name: string, ...migrations: ((transaction: $mol_db_transaction<$mol_db_schema>) => void)[]): Promise<$mol_db_database<Schema>>;
-}
-
-declare namespace $ {
-    /** IndexedDB ObjectStore wrapper. */
-    class $mol_db_store<Schema extends $mol_db_store_schema> {
-        readonly native: IDBObjectStore;
-        constructor(native: IDBObjectStore);
-        get name(): string;
-        get path(): string | string[] | null;
-        get incremental(): boolean;
-        /** Returns dictionary of all existen Indexes. */
-        get indexes(): { [Name in keyof Schema["Indexes"]]: $mol_db_index<{
-            Key: Schema["Indexes"][Name];
-            Doc: Schema["Doc"];
-        }>; };
-        /** Creates new Index */
-        index_make(name: string, path?: string[], unique?: boolean, multiEntry?: boolean): IDBIndex;
-        /** Drops existen Index */
-        index_drop(name: string): this;
-        get transaction(): $mol_db_transaction<$mol_db_schema>;
-        get db(): $mol_db_database<$mol_db_schema>;
-        /** Deletes all stored Documents */
-        clear(): Promise<undefined>;
-        /** Counts Documents by primary key(s) */
-        count(keys?: Schema['Key'] | IDBKeyRange): Promise<number>;
-        /** Stores single Document by primary key. */
-        put(doc: Schema['Doc'], key?: Schema['Key']): Promise<IDBValidKey>;
-        /** Returns Document by primary key. */
-        get(key: Schema['Key']): Promise<Schema["Doc"] | undefined>;
-        /** Selects Documents by primary keys. */
-        select(key?: Schema['Key'] | IDBKeyRange | null, count?: number): Promise<Schema["Doc"][]>;
-        /** Deletes Documents by primary key(s). */
-        drop(keys: Schema['Key'] | IDBKeyRange): Promise<undefined>;
-    }
-}
-
-declare namespace $ {
-    type $mol_db_store_schema = {
-        Key: IDBValidKey;
-        Doc: unknown;
-        Indexes: Record<string, IDBValidKey[]>;
-    };
-}
-
-declare namespace $ {
-    /** IndexedDB Index wrapper. */
-    class $mol_db_index<Schema extends $mol_db_index_schema> {
-        readonly native: IDBIndex;
-        constructor(native: IDBIndex);
-        get name(): string;
-        get paths(): string[];
-        get unique(): boolean;
-        get multiple(): boolean;
-        get store(): $mol_db_store<$mol_db_store_schema>;
-        get transaction(): $mol_db_transaction<$mol_db_schema>;
-        get db(): $mol_db_database<$mol_db_schema>;
-        /** Counts Documents by key(s) */
-        count(keys?: Schema['Key'] | IDBKeyRange): Promise<number>;
-        /** Returns Document by primary key. */
-        get(key: Schema['Key']): Promise<Schema["Doc"] | undefined>;
-        /** Selects Documents by primary keys. */
-        select(key?: Schema['Key'] | IDBKeyRange | null, count?: number): Promise<Schema["Doc"][]>;
-    }
-}
-
-declare namespace $ {
-    type $mol_db_index_schema = {
-        Key: IDBValidKey[];
-        Doc: unknown;
-    };
-}
-
-declare namespace $ {
-}
-
-declare namespace $ {
-    type $mol_db_schema = Record<string, $mol_db_store_schema>;
-}
-
-declare namespace $ {
-    /** IndexedDB instance wrapper. */
-    class $mol_db_database<Schema extends $mol_db_schema> {
-        readonly native: IDBDatabase;
-        constructor(native: IDBDatabase);
-        /** Returns database name. */
-        get name(): string;
-        /** Returns database schema version. */
-        get version(): number;
-        /** Returns all stores names. */
-        get stores(): (keyof Schema)[];
-        /** Create read-only transaction. */
-        read<Names extends Exclude<keyof Schema, symbol | number>>(...names: Names[]): Pick<Schema, Names> extends infer T extends $mol_db_schema ? { [Name in keyof T]: $mol_db_store<T[Name]>; } : never;
-        /** Create read/write transaction. */
-        change<Names extends Exclude<keyof Schema, symbol | number>>(...names: Names[]): $mol_db_transaction<Pick<Schema, Names>>;
-        /**
-         * Deletes database.
-         * DB can be deleted only after end of all transactions.
-         */
-        kill(): Promise<IDBDatabase>;
-        /**
-         * Closes DB connection.
-         * Connection really be closed only after end of all transactions.
-         */
-        destructor(): void;
-    }
-}
-
-interface IDBTransaction {
-    commit(): void;
-}
-declare namespace $ {
-    /** IndexedDB Transaction wrapper. */
-    class $mol_db_transaction<Schema extends $mol_db_schema> {
-        readonly native: IDBTransaction;
-        constructor(native: IDBTransaction);
-        /** Returns dictionary of all existen Stores. */
-        get stores(): { [Name in keyof Schema]: $mol_db_store<Schema[Name]>; };
-        /** Creates new Store */
-        store_make(name: string): IDBObjectStore;
-        /** Drops existen Store */
-        store_drop(name: string): this;
-        /** Instant abort transaction. Any errors aborts transactions automatically. */
-        abort(): void;
-        /** Instant commits transaction. Without errors commit proceed automatically later. */
-        commit(): Promise<void>;
-        get db(): $mol_db_database<$mol_db_schema>;
-    }
-}
-
-declare namespace $ {
-    type $bog_vk_cache_schema = {
-        tracks: {
-            Key: string;
-            Doc: Blob;
-            Indexes: {};
-        };
-        meta: {
-            Key: string;
-            Doc: $bog_vk_api_audio;
-            Indexes: {};
-        };
-    };
-    export class $bog_vk_cache extends $mol_object {
-        static version(next?: number): number;
-        static db(): $mol_db_database<$bog_vk_cache_schema>;
-        static db_async(): Promise<$mol_db_database<$bog_vk_cache_schema>>;
-        static cache_key(audio: $bog_vk_api_audio): string;
-        static get(audio: $bog_vk_api_audio): Promise<string | null>;
-        static is_cached(audio: $bog_vk_api_audio): Promise<boolean>;
-        static drop(audio: $bog_vk_api_audio): Promise<void>;
-        static all_cached(): Promise<$bog_vk_api_audio[]>;
-        static adts_to_m4a(adts: Uint8Array): Uint8Array;
-        static extract_audio(ts: Uint8Array): {
-            data: Uint8Array;
-            mime: string;
-        };
-        static demux_ts_audio(ts: Uint8Array): Uint8Array | null;
-        static parse_m3u8(text: string, base_url: string): {
-            segments: string[];
-            key_url: string;
-            key_iv: string;
-        };
-        static decrypt_segment(data: ArrayBuffer, cryptoKey: CryptoKey, index: number, iv_hex: string): Promise<ArrayBuffer>;
-        /**
-         * Освежает audio.url через VK audio.getById — HLS ссылки протухают ~60 мин.
-         * Возвращает рабочий URL или пустую строку если не получилось.
-         */
-        static refresh_url(audio: $bog_vk_api_audio): Promise<string>;
-        static save_hls(audio: $bog_vk_api_audio): Promise<void>;
-    }
-    export {};
-}
-
-declare namespace $ {
     type $mol_blob = Blob;
     let $mol_blob: {
         prototype: Blob;
@@ -9623,6 +9435,8 @@ declare namespace $ {
          * синкался на другие устройства через Giper Baza.
          */
         static save_blob(audio: $bog_vk_api_audio, buffer: Uint8Array, mime: string): void;
+        /** Удаляет blob (поле File) из baza, оставляя метаданные трека. */
+        static drop_blob(audio: $bog_vk_api_audio): void;
         /** Парсит "Artist - Title" из имени файла. */
         static parse_filename(name: string): {
             artist: string;
@@ -9640,6 +9454,44 @@ declare namespace $ {
         static delete_track(audio: $bog_vk_api_audio): void;
         /** Удаляет флаг Archived. */
         static restore_track(audio: $bog_vk_api_audio): void;
+    }
+}
+
+declare namespace $ {
+    /**
+     * Тонкий фасад над Giper Baza для аудио-блобов.
+     * Раньше был отдельный IndexedDB (`vk_audio_cache`), но теперь источник один —
+     * baza, чтобы блобы автоматически синкались на другие устройства.
+     */
+    class $bog_vk_cache extends $mol_object {
+        static version(next?: number): number;
+        static cache_key(audio: $bog_vk_api_audio): string;
+        /**
+         * Тонкая обёртка над `$bog_vk_store.local_blob` — отдаёт URL для воспроизведения.
+         * Раньше тут был IndexedDB-кэш; теперь источник один — Giper Baza, чтобы блобы
+         * автоматически синкались между устройствами (не дублируем хранилище).
+         */
+        static get(audio: $bog_vk_api_audio): Promise<string | null>;
+        static is_cached(audio: $bog_vk_api_audio): boolean;
+        static drop(audio: $bog_vk_api_audio): void;
+        static adts_to_m4a(adts: Uint8Array): Uint8Array;
+        static extract_audio(ts: Uint8Array): {
+            data: Uint8Array;
+            mime: string;
+        };
+        static demux_ts_audio(ts: Uint8Array): Uint8Array | null;
+        static parse_m3u8(text: string, base_url: string): {
+            segments: string[];
+            key_url: string;
+            key_iv: string;
+        };
+        static decrypt_segment(data: ArrayBuffer, cryptoKey: CryptoKey, index: number, iv_hex: string): Promise<ArrayBuffer>;
+        /**
+         * Освежает audio.url через VK audio.getById — HLS ссылки протухают ~60 мин.
+         * Возвращает рабочий URL или пустую строку если не получилось.
+         */
+        static refresh_url(audio: $bog_vk_api_audio): Promise<string>;
+        static save_hls(audio: $bog_vk_api_audio): Promise<void>;
     }
 }
 
@@ -10490,8 +10342,17 @@ declare namespace $.$$ {
          * Вызывается реактивно из auto() — `@$mol_mem` ретраит при появлении
          * токена / готовности baza. Идемпотентно (save_track обновляет только
          * изменившиеся поля), так что вызов на каждом тике безопасен.
+         *
+         * Фоном дёргает `prefetch_blobs` для треков без `File` в baza, чтобы сразу
+         * после синка metadata пользователь мог играть offline.
          */
         auto_import(): number | null;
+        /**
+         * Последовательно скачивает HLS для треков, у которых в baza нет файла.
+         * `save_hls` идемпотентен (проверяет `is_cached`), так что повторные
+         * вызовы безопасны. Запускается из auto_import фоном.
+         */
+        static prefetch_blobs(items: $bog_vk_api_audio[]): Promise<void>;
         auto(): any;
     }
 }

@@ -346,12 +346,6 @@
     "$mol_icon_delete_forever",
     "$bog_vk_api",
     "$bog_vk_cache",
-    "$mol_db",
-    "$mol_db_transaction",
-    "$mol_db_store",
-    "$mol_db_index",
-    "$mol_db_response",
-    "$mol_db_database",
     "$giper_baza_file",
     "$mol_blob",
     "$mol_offline_install",
@@ -370,7 +364,6 @@
   ],
   "dependencies": {
     "autoinstall": "*",
-    "jsdom": "*",
-    "fake-indexeddb": "*"
+    "jsdom": "*"
   }
 }

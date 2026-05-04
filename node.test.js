@@ -20283,767 +20283,6 @@ var $;
 "use strict";
 var $;
 (function ($) {
-    /** Converts IDBResult to Promise */
-    function $mol_db_response(request) {
-        return new Promise((done, fail) => {
-            request.onerror = () => fail(new Error(request.error.message));
-            request.onsuccess = () => done(request.result);
-        });
-    }
-    $.$mol_db_response = $mol_db_response;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /**
-     * Creates new or returns existen database with automatic schema migration.
-     * Schema version is based on migrations count.
-     * Migrations code mustn't be changed after deploy.
-     * Only adding migrations at the end is allowed.
-     * Only new migrations will be applyed to existen DB.
-     * Schema changes allowed only through migratios.
-     */
-    async function $mol_db(name, ...migrations) {
-        const request = this.$mol_dom_context.indexedDB.open(name, migrations.length ? migrations.length + 1 : undefined);
-        request.onupgradeneeded = event => {
-            migrations.splice(0, event.oldVersion - 1);
-            const transaction = new $mol_db_transaction(request.transaction);
-            for (const migrate of migrations)
-                migrate(transaction);
-        };
-        const db = await $mol_db_response(request);
-        return new $mol_db_database(db);
-    }
-    $.$mol_db = $mol_db;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /** IndexedDB ObjectStore wrapper. */
-    class $mol_db_store {
-        native;
-        constructor(native) {
-            this.native = native;
-        }
-        get name() {
-            return this.native.name;
-        }
-        get path() {
-            return this.native.keyPath;
-        }
-        get incremental() {
-            return this.native.autoIncrement;
-        }
-        /** Returns dictionary of all existen Indexes. */
-        get indexes() {
-            return new Proxy({}, {
-                ownKeys: () => [...this.native.indexNames],
-                has: (_, name) => this.native.indexNames.contains(name),
-                get: (_, name) => new $mol_db_index(this.native.index(name))
-            });
-        }
-        /** Creates new Index */
-        index_make(name, path = [], unique = false, multiEntry = false) {
-            return this.native.createIndex(name, path, { multiEntry, unique });
-        }
-        /** Drops existen Index */
-        index_drop(name) {
-            this.native.deleteIndex(name);
-            return this;
-        }
-        get transaction() {
-            return new $mol_db_transaction(this.native.transaction);
-        }
-        get db() {
-            return this.transaction.db;
-        }
-        /** Deletes all stored Documents */
-        clear() {
-            return $mol_db_response(this.native.clear());
-        }
-        /** Counts Documents by primary key(s) */
-        count(keys) {
-            return $mol_db_response(this.native.count(keys));
-        }
-        /** Stores single Document by primary key. */
-        put(doc, key) {
-            return $mol_db_response(this.native.put(doc, key));
-        }
-        /** Returns Document by primary key. */
-        get(key) {
-            return $mol_db_response(this.native.get(key));
-        }
-        /** Selects Documents by primary keys. */
-        select(key, count) {
-            return $mol_db_response(this.native.getAll(key, count));
-        }
-        /** Deletes Documents by primary key(s). */
-        drop(keys) {
-            return $mol_db_response(this.native.delete(keys));
-        }
-    }
-    $.$mol_db_store = $mol_db_store;
-})($ || ($ = {}));
-
-;
-"use strict";
-
-;
-"use strict";
-var $;
-(function ($) {
-    /** IndexedDB Index wrapper. */
-    class $mol_db_index {
-        native;
-        constructor(native) {
-            this.native = native;
-        }
-        get name() {
-            return this.native.name;
-        }
-        get paths() {
-            return this.native.keyPath;
-        }
-        get unique() {
-            return this.native.unique;
-        }
-        get multiple() {
-            return this.native.multiEntry;
-        }
-        get store() {
-            return new $mol_db_store(this.native.objectStore);
-        }
-        get transaction() {
-            return this.store.transaction;
-        }
-        get db() {
-            return this.store.db;
-        }
-        /** Counts Documents by key(s) */
-        count(keys) {
-            return $mol_db_response(this.native.count(keys));
-        }
-        /** Returns Document by primary key. */
-        get(key) {
-            return $mol_db_response(this.native.get(key));
-        }
-        /** Selects Documents by primary keys. */
-        select(key, count) {
-            return $mol_db_response(this.native.getAll(key, count));
-        }
-    }
-    $.$mol_db_index = $mol_db_index;
-})($ || ($ = {}));
-
-;
-"use strict";
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_dom_context.indexedDB = $node['fake-indexeddb'].indexedDB;
-    $mol_dom_context.IDBCursor = $node['fake-indexeddb'].IDBCursor;
-    $mol_dom_context.IDBCursorWithValue = $node['fake-indexeddb'].IDBCursorWithValue;
-    $mol_dom_context.IDBDatabase = $node['fake-indexeddb'].IDBDatabase;
-    $mol_dom_context.IDBFactory = $node['fake-indexeddb'].IDBFactory;
-    $mol_dom_context.IDBIndex = $node['fake-indexeddb'].IDBIndex;
-    $mol_dom_context.IDBKeyRange = $node['fake-indexeddb'].IDBKeyRange;
-    $mol_dom_context.IDBObjectStore = $node['fake-indexeddb'].IDBObjectStore;
-    $mol_dom_context.IDBOpenDBRequest = $node['fake-indexeddb'].IDBOpenDBRequest;
-    $mol_dom_context.IDBRequest = $node['fake-indexeddb'].IDBRequest;
-    $mol_dom_context.IDBTransaction = $node['fake-indexeddb'].IDBTransaction;
-    $mol_dom_context.IDBVersionChangeEvent = $node['fake-indexeddb'].IDBVersionChangeEvent;
-})($ || ($ = {}));
-
-;
-"use strict";
-
-;
-"use strict";
-var $;
-(function ($) {
-    /** IndexedDB instance wrapper. */
-    class $mol_db_database {
-        native;
-        constructor(native) {
-            this.native = native;
-        }
-        /** Returns database name. */
-        get name() {
-            return this.native.name;
-        }
-        /** Returns database schema version. */
-        get version() {
-            return this.native.version;
-        }
-        /** Returns all stores names. */
-        get stores() {
-            return [...this.native.objectStoreNames];
-        }
-        /** Create read-only transaction. */
-        read(...names) {
-            return new $mol_db_transaction(this.native.transaction(names, 'readonly', { durability: 'relaxed' })).stores;
-        }
-        /** Create read/write transaction. */
-        change(...names) {
-            return new $mol_db_transaction(this.native.transaction(names, 'readwrite', { durability: 'relaxed' }));
-        }
-        /**
-         * Deletes database.
-         * DB can be deleted only after end of all transactions.
-         */
-        kill() {
-            this.native.close();
-            const request = $mol_dom_context.indexedDB.deleteDatabase(this.name);
-            request.onblocked = console.warn;
-            return $mol_db_response(request);
-        }
-        /**
-         * Closes DB connection.
-         * Connection really be closed only after end of all transactions.
-         */
-        destructor() {
-            this.native.close();
-        }
-    }
-    $.$mol_db_database = $mol_db_database;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /** IndexedDB Transaction wrapper. */
-    class $mol_db_transaction {
-        native;
-        constructor(native) {
-            this.native = native;
-        }
-        /** Returns dictionary of all existen Stores. */
-        get stores() {
-            return new Proxy({}, {
-                ownKeys: () => [...this.native.objectStoreNames],
-                has: (_, name) => this.native.objectStoreNames.contains(name),
-                get: (_, name, proxy) => (name in proxy)
-                    ? new $mol_db_store(this.native.objectStore(name))
-                    : undefined,
-            });
-        }
-        /** Creates new Store */
-        store_make(name) {
-            return this.native.db.createObjectStore(name, { autoIncrement: true });
-        }
-        /** Drops existen Store */
-        store_drop(name) {
-            this.native.db.deleteObjectStore(name);
-            return this;
-        }
-        /** Instant abort transaction. Any errors aborts transactions automatically. */
-        abort() {
-            if (this.native.error)
-                return;
-            this.native.abort();
-        }
-        /** Instant commits transaction. Without errors commit proceed automatically later. */
-        commit() {
-            this.native.commit?.();
-            return new Promise((done, fail) => {
-                this.native.onerror = () => fail(new Error(this.native.error.message));
-                this.native.oncomplete = () => done();
-            });
-        }
-        get db() {
-            return new $mol_db_database(this.native.db);
-        }
-    }
-    $.$mol_db_transaction = $mol_db_transaction;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    class $bog_vk_cache extends $mol_object {
-        static version(next) {
-            return next ?? 0;
-        }
-        static db() {
-            return $mol_wire_sync(this).db_async();
-        }
-        static async db_async() {
-            return $$.$mol_db('vk_audio_cache', mig => mig.store_make('tracks'), mig => mig.store_make('meta'));
-        }
-        static cache_key(audio) {
-            return `${audio.owner_id}_${audio.id}`;
-        }
-        static async get(audio) {
-            const key = this.cache_key(audio);
-            try {
-                const db = await this.db_async();
-                const blob = await db.read('tracks').tracks.get(key);
-                db.destructor();
-                if (blob) {
-                    // Delete broken cache entries (empty or too small)
-                    if (blob.size < 1000) {
-                        console.warn(`[cache] broken entry (${blob.size} bytes), deleting: ${audio.artist} — ${audio.title}`);
-                        const db2 = await this.db_async();
-                        const tx = db2.change('tracks', 'meta');
-                        await tx.stores.tracks.drop(key);
-                        await tx.stores.meta.drop(key);
-                        db2.destructor();
-                        return null;
-                    }
-                    // Re-mux old audio/aac entries to audio/mp4
-                    if (blob.type === 'audio/aac') {
-                        console.log(`[cache] migrating ${audio.artist} — ${audio.title} from aac to m4a...`);
-                        const adts = new Uint8Array(await blob.arrayBuffer());
-                        const m4a = this.adts_to_m4a(adts);
-                        const newBlob = new Blob([m4a.buffer], { type: 'audio/mp4' });
-                        const db2 = await this.db_async();
-                        const tx = db2.change('tracks');
-                        await tx.stores.tracks.put(newBlob, key);
-                        db2.destructor();
-                        return URL.createObjectURL(newBlob);
-                    }
-                    console.log(`[cache] hit: ${audio.artist} — ${audio.title} (${(blob.size / 1024 / 1024).toFixed(1)} MB)`);
-                    return URL.createObjectURL(blob);
-                }
-                console.warn(`[cache] miss: ${audio.artist} — ${audio.title} (key: ${key})`);
-                return null;
-            }
-            catch (e) {
-                console.warn(`[cache] get error: ${key}`, e?.message);
-                return null;
-            }
-        }
-        static async is_cached(audio) {
-            const key = this.cache_key(audio);
-            try {
-                const db = await this.db_async();
-                const count = await db.read('tracks').tracks.count(key);
-                db.destructor();
-                return count > 0;
-            }
-            catch {
-                return false;
-            }
-        }
-        static async drop(audio) {
-            const key = this.cache_key(audio);
-            const db = await this.db_async();
-            const tx = db.change('tracks', 'meta');
-            await tx.stores.tracks.drop(key);
-            await tx.stores.meta.drop(key);
-            db.destructor();
-            console.log(`[cache] dropped: ${audio.artist} — ${audio.title}`);
-        }
-        static async all_cached() {
-            try {
-                const db = await this.db_async();
-                const all = await db.read('meta').meta.select();
-                db.destructor();
-                return all.reverse();
-            }
-            catch {
-                return [];
-            }
-        }
-        static adts_to_m4a(adts) {
-            const frames = [];
-            const frameSizes = [];
-            let audioObjectType = 2;
-            let sampleRateIndex = 4;
-            let channelConfig = 2;
-            let i = 0;
-            while (i < adts.length - 7) {
-                if (adts[i] !== 0xFF || (adts[i + 1] & 0xF6) !== 0xF0) {
-                    i++;
-                    continue;
-                }
-                const protAbsent = adts[i + 1] & 0x01;
-                const profile = (adts[i + 2] >> 6) & 0x03;
-                const srIdx = (adts[i + 2] >> 2) & 0x0F;
-                const chCfg = ((adts[i + 2] & 0x01) << 2) | ((adts[i + 3] >> 6) & 0x03);
-                const frameLen = ((adts[i + 3] & 0x03) << 11) | (adts[i + 4] << 3) | ((adts[i + 5] >> 5) & 0x07);
-                if (frameLen < 7 || frameLen > 8192 || i + frameLen > adts.length) {
-                    i++;
-                    continue;
-                }
-                // Verify next frame sync to filter false positives
-                if (i + frameLen + 1 < adts.length) {
-                    if (adts[i + frameLen] !== 0xFF || (adts[i + frameLen + 1] & 0xF6) !== 0xF0) {
-                        i++;
-                        continue;
-                    }
-                }
-                // Lock codec params from first valid frame
-                if (frames.length === 0) {
-                    audioObjectType = profile + 1;
-                    sampleRateIndex = srIdx;
-                    channelConfig = chCfg;
-                }
-                const hdrLen = protAbsent ? 7 : 9;
-                if (hdrLen >= frameLen) {
-                    i++;
-                    continue;
-                }
-                const raw = adts.slice(i + hdrLen, i + frameLen);
-                frames.push(raw);
-                frameSizes.push(raw.length);
-                i += frameLen;
-            }
-            if (frames.length === 0)
-                return adts;
-            const sampleRates = [96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350];
-            const sampleRate = sampleRates[sampleRateIndex] || 44100;
-            const totalSamples = frames.length * 1024;
-            const rawSize = frameSizes.reduce((a, b) => a + b, 0);
-            // AudioSpecificConfig (2 bytes)
-            const asc0 = (audioObjectType << 3) | (sampleRateIndex >> 1);
-            const asc1 = ((sampleRateIndex & 1) << 7) | (channelConfig << 3);
-            const u32 = (v) => [(v >>> 24) & 0xFF, (v >>> 16) & 0xFF, (v >>> 8) & 0xFF, v & 0xFF];
-            const u16 = (v) => [(v >> 8) & 0xFF, v & 0xFF];
-            const str = (s) => s.split('').map(c => c.charCodeAt(0));
-            const box = (type, payload) => [...u32(8 + payload.length), ...str(type), ...payload];
-            const fbox = (type, ver, fl, payload) => [...u32(12 + payload.length), ...str(type), ver, (fl >> 16) & 0xFF, (fl >> 8) & 0xFF, fl & 0xFF, ...payload];
-            // ftyp
-            const ftyp = box('ftyp', [...str('M4A '), ...u32(0), ...str('M4A '), ...str('isom'), ...str('mp42')]);
-            // esds descriptor chain
-            const decSpecInfo = [0x05, 0x02, asc0, asc1];
-            const decConfigPayload = [0x40, 0x15, 0x00, 0x00, 0x00, ...u32(0), ...u32(0), ...decSpecInfo];
-            const decConfig = [0x04, decConfigPayload.length, ...decConfigPayload];
-            const slConfig = [0x06, 0x01, 0x02];
-            const esPayload = [...u16(1), 0x00, ...decConfig, ...slConfig];
-            const esDescr = [0x03, esPayload.length, ...esPayload];
-            const esds = fbox('esds', 0, 0, esDescr);
-            // mp4a sample entry
-            const mp4aPayload = [
-                ...Array(6).fill(0), ...u16(1), // reserved + data_reference_index
-                ...Array(8).fill(0), // reserved
-                ...u16(channelConfig), ...u16(16), // channels, sample_size
-                ...u16(0), ...u16(0), // compression_id, packet_size
-                ...u16(sampleRate), ...u16(0), // samplerate 16.16 fixed
-                ...esds,
-            ];
-            const mp4a = [...u32(8 + mp4aPayload.length), ...str('mp4a'), ...mp4aPayload];
-            const stsd = fbox('stsd', 0, 0, [...u32(1), ...mp4a]);
-            const stts = fbox('stts', 0, 0, [...u32(1), ...u32(frames.length), ...u32(1024)]);
-            const stsc = fbox('stsc', 0, 0, [...u32(1), ...u32(1), ...u32(frames.length), ...u32(1)]);
-            const stsz = fbox('stsz', 0, 0, [...u32(0), ...u32(frames.length), ...frameSizes.flatMap(s => u32(s))]);
-            const stco = fbox('stco', 0, 0, [...u32(1), ...u32(0)]); // offset patched below
-            const stbl = box('stbl', [...stsd, ...stts, ...stsc, ...stsz, ...stco]);
-            const smhd = fbox('smhd', 0, 0, [...u16(0), ...u16(0)]);
-            const urlBox = fbox('url ', 0, 1, []);
-            const dref = fbox('dref', 0, 0, [...u32(1), ...urlBox]);
-            const dinf = box('dinf', dref);
-            const minf = box('minf', [...smhd, ...dinf, ...stbl]);
-            const mdhd = fbox('mdhd', 0, 0, [...u32(0), ...u32(0), ...u32(sampleRate), ...u32(totalSamples), ...u16(0x55C4), ...u16(0)]);
-            const hdlr = fbox('hdlr', 0, 0, [...u32(0), ...str('soun'), ...u32(0), ...u32(0), ...u32(0), 0]);
-            const mdia = box('mdia', [...mdhd, ...hdlr, ...minf]);
-            const identity = [
-                0x00, 0x01, 0x00, 0x00, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0x00, 0x01, 0x00, 0x00, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0x40, 0x00, 0x00, 0x00,
-            ];
-            const tkhd = fbox('tkhd', 0, 3, [
-                ...u32(0), ...u32(0), ...u32(1), ...u32(0), ...u32(totalSamples),
-                ...u32(0), ...u32(0), ...u16(0), ...u16(0), ...u16(0x0100), ...u16(0),
-                ...identity, ...u32(0), ...u32(0),
-            ]);
-            const trak = box('trak', [...tkhd, ...mdia]);
-            const mvhd = fbox('mvhd', 0, 0, [
-                ...u32(0), ...u32(0), ...u32(sampleRate), ...u32(totalSamples),
-                ...u32(0x00010000), ...u16(0x0100), ...Array(10).fill(0),
-                ...identity, ...Array(24).fill(0), ...u32(2),
-            ]);
-            const moov = box('moov', [...mvhd, ...trak]);
-            // Patch stco chunk_offset: mdat data starts after ftyp + moov + mdat header(8)
-            const mdatDataOffset = ftyp.length + moov.length + 8;
-            for (let j = 0; j < moov.length - 4; j++) {
-                if (moov[j] === 0x73 && moov[j + 1] === 0x74 && moov[j + 2] === 0x63 && moov[j + 3] === 0x6F) {
-                    // 'stco' found: type(4) + version(1) + flags(3) + entry_count(4) = 12 bytes to offset
-                    const p = j + 12;
-                    moov[p] = (mdatDataOffset >>> 24) & 0xFF;
-                    moov[p + 1] = (mdatDataOffset >>> 16) & 0xFF;
-                    moov[p + 2] = (mdatDataOffset >>> 8) & 0xFF;
-                    moov[p + 3] = mdatDataOffset & 0xFF;
-                    break;
-                }
-            }
-            // Assemble: ftyp + moov + mdat
-            const mdatHeader = [...u32(8 + rawSize), ...str('mdat')];
-            const total = ftyp.length + moov.length + mdatHeader.length + rawSize;
-            const out = new Uint8Array(total);
-            let pos = 0;
-            out.set(ftyp, pos);
-            pos += ftyp.length;
-            out.set(moov, pos);
-            pos += moov.length;
-            out.set(mdatHeader, pos);
-            pos += mdatHeader.length;
-            for (const frame of frames) {
-                out.set(frame, pos);
-                pos += frame.length;
-            }
-            console.log(`[cache] muxed ${frames.length} AAC frames → ${(total / 1024).toFixed(0)} KB M4A`);
-            return out;
-        }
-        static extract_audio(ts) {
-            // Already raw AAC (ADTS)
-            if (ts[0] === 0xFF && (ts[1] & 0xF0) === 0xF0) {
-                return { data: ts, mime: 'audio/aac' };
-            }
-            // Already MP3
-            if (ts[0] === 0xFF && (ts[1] & 0xE0) === 0xE0) {
-                return { data: ts, mime: 'audio/mpeg' };
-            }
-            // ID3 tag (MP3 with metadata)
-            if (ts[0] === 0x49 && ts[1] === 0x44 && ts[2] === 0x33) {
-                return { data: ts, mime: 'audio/mpeg' };
-            }
-            // MPEG-TS → proper demux: parse TS packets, extract PES audio payloads
-            if (ts[0] === 0x47) {
-                const audio = this.demux_ts_audio(ts);
-                if (audio)
-                    return { data: audio, mime: 'audio/aac' };
-            }
-            // Fallback: return as-is
-            return { data: ts, mime: 'audio/mpeg' };
-        }
-        static demux_ts_audio(ts) {
-            // Phase 1: parse TS packets, group payloads by PID
-            const pidChunks = new Map();
-            for (let pos = 0; pos + 188 <= ts.length; pos += 188) {
-                if (ts[pos] !== 0x47)
-                    continue;
-                const pusi = !!(ts[pos + 1] & 0x40);
-                const pid = ((ts[pos + 1] & 0x1F) << 8) | ts[pos + 2];
-                const afc = (ts[pos + 3] >> 4) & 0x03;
-                if (pid === 0 || pid === 0x1FFF)
-                    continue; // skip PAT / null
-                if (!(afc & 0x01))
-                    continue; // no payload
-                let off = 4;
-                if (afc & 0x02)
-                    off += 1 + ts[pos + 4]; // adaptation field
-                if (off >= 188)
-                    continue;
-                if (!pidChunks.has(pid))
-                    pidChunks.set(pid, []);
-                pidChunks.get(pid).push({ pusi, data: ts.slice(pos + off, pos + 188) });
-            }
-            // Phase 2: find audio PID (PES stream_id 0xC0..0xDF)
-            for (const [pid, chunks] of pidChunks) {
-                const first = chunks.find(c => c.pusi);
-                if (!first)
-                    continue;
-                const d = first.data;
-                if (d.length < 9)
-                    continue;
-                if (d[0] !== 0x00 || d[1] !== 0x00 || d[2] !== 0x01)
-                    continue;
-                if (d[3] < 0xC0 || d[3] > 0xDF)
-                    continue; // not audio
-                // Phase 3: reassemble PES payloads, strip PES headers → raw ADTS
-                const parts = [];
-                for (const chunk of chunks) {
-                    if (chunk.pusi) {
-                        const p = chunk.data;
-                        if (p.length < 9 || p[0] !== 0x00 || p[1] !== 0x00 || p[2] !== 0x01)
-                            continue;
-                        const pesHdrLen = 9 + p[8];
-                        if (pesHdrLen < p.length) {
-                            parts.push(p.slice(pesHdrLen));
-                        }
-                    }
-                    else {
-                        parts.push(chunk.data);
-                    }
-                }
-                const total = parts.reduce((s, p) => s + p.length, 0);
-                if (total === 0)
-                    continue;
-                const out = new Uint8Array(total);
-                let off = 0;
-                for (const p of parts) {
-                    out.set(p, off);
-                    off += p.length;
-                }
-                console.log(`[cache] demuxed TS: PID ${pid}, ${total} bytes raw ADTS`);
-                return out;
-            }
-            return null;
-        }
-        static parse_m3u8(text, base_url) {
-            const lines = text.split('\n');
-            let key_url = '';
-            let key_iv = '';
-            const segments = [];
-            for (const line of lines) {
-                const trimmed = line.trim();
-                if (trimmed.startsWith('#EXT-X-KEY:')) {
-                    const uri_match = trimmed.match(/URI="([^"]+)"/);
-                    if (uri_match) {
-                        key_url = uri_match[1].startsWith('http') ? uri_match[1] : base_url + uri_match[1];
-                    }
-                    const iv_match = trimmed.match(/IV=0x([0-9a-fA-F]+)/);
-                    if (iv_match) {
-                        key_iv = iv_match[1];
-                    }
-                }
-                else if (trimmed && !trimmed.startsWith('#')) {
-                    segments.push(trimmed.startsWith('http') ? trimmed : base_url + trimmed);
-                }
-            }
-            return { segments, key_url, key_iv };
-        }
-        static async decrypt_segment(data, cryptoKey, index, iv_hex) {
-            let iv;
-            if (iv_hex) {
-                const bytes = new Uint8Array(16);
-                for (let i = 0; i < 16 && i * 2 < iv_hex.length; i++) {
-                    bytes[i] = parseInt(iv_hex.substring(i * 2, i * 2 + 2), 16);
-                }
-                iv = bytes.buffer;
-            }
-            else {
-                const bytes = new Uint8Array(16);
-                bytes[15] = index & 0xFF;
-                bytes[14] = (index >> 8) & 0xFF;
-                bytes[13] = (index >> 16) & 0xFF;
-                bytes[12] = (index >> 24) & 0xFF;
-                iv = bytes.buffer;
-            }
-            return crypto.subtle.decrypt({ name: 'AES-CBC', iv }, cryptoKey, data);
-        }
-        /**
-         * Освежает audio.url через VK audio.getById — HLS ссылки протухают ~60 мин.
-         * Возвращает рабочий URL или пустую строку если не получилось.
-         */
-        static async refresh_url(audio) {
-            try {
-                const key = `${audio.owner_id}_${audio.id}${audio.access_key ? '_' + audio.access_key : ''}`;
-                const fresh = $mol_wire_sync($bog_vk_api).refresh_audio(key);
-                return fresh?.url ?? '';
-            }
-            catch (e) {
-                console.warn('[cache] refresh_url failed:', e?.message);
-                return '';
-            }
-        }
-        static async save_hls(audio) {
-            let url = audio.url;
-            if (!url) {
-                console.warn('[cache] skip — no URL:', audio.artist, '—', audio.title);
-                return;
-            }
-            const cache_id = this.cache_key(audio);
-            try {
-                const db_check = await this.db_async();
-                const existing = await db_check.read('tracks').tracks.count(cache_id);
-                db_check.destructor();
-                if (existing > 0) {
-                    console.log('[cache] already cached:', audio.artist, '—', audio.title);
-                    return;
-                }
-                console.log('[cache] start download:', audio.artist, '—', audio.title);
-                let m3u8_resp = await fetch(url);
-                // Если url протух — пробуем обновить через audio.getById.
-                if (m3u8_resp.status === 403 || m3u8_resp.status === 404) {
-                    console.log('[cache] url expired, refreshing:', audio.artist, '—', audio.title);
-                    const fresh_url = await this.refresh_url(audio);
-                    if (fresh_url) {
-                        url = fresh_url;
-                        m3u8_resp = await fetch(url);
-                    }
-                }
-                if (!m3u8_resp.ok)
-                    throw new Error(`m3u8 fetch ${m3u8_resp.status}`);
-                const m3u8_text = await m3u8_resp.text();
-                const base_url = url.substring(0, url.lastIndexOf('/') + 1);
-                // (url мог быть подменён на fresh_url выше — base пересчитывается от него)
-                const { segments, key_url, key_iv } = this.parse_m3u8(m3u8_text, base_url);
-                if (!segments.length)
-                    throw new Error('No segments in m3u8');
-                let cryptoKey = null;
-                if (key_url) {
-                    console.log(`[cache] encrypted HLS, fetching key from:`, key_url);
-                    const key_resp = await fetch(key_url);
-                    if (!key_resp.ok)
-                        throw new Error(`Key fetch failed: ${key_resp.status}`);
-                    const key_data = await key_resp.arrayBuffer();
-                    console.log(`[cache] key size: ${key_data.byteLength} bytes, hex: ${Array.from(new Uint8Array(key_data)).map(b => b.toString(16).padStart(2, '0')).join('')}`);
-                    if (key_data.byteLength !== 16) {
-                        console.warn(`[cache] unexpected key size ${key_data.byteLength}, expected 16`);
-                    }
-                    cryptoKey = await crypto.subtle.importKey('raw', key_data, 'AES-CBC', false, ['decrypt']);
-                    console.log(`[cache] key imported, IV: ${key_iv || '(sequence number)'}`);
-                }
-                console.log(`[cache] ${segments.length} segments to download${cryptoKey ? ' (encrypted)' : ''}`);
-                const chunks = [];
-                for (let i = 0; i < segments.length; i++) {
-                    const resp = await fetch(segments[i]);
-                    if (!resp.ok)
-                        throw new Error(`Segment ${i + 1}/${segments.length} failed: ${resp.status}`);
-                    let data = await resp.arrayBuffer();
-                    const firstByte = new Uint8Array(data)[0];
-                    if (cryptoKey && firstByte !== 0x47) {
-                        data = await this.decrypt_segment(data, cryptoKey, i, key_iv);
-                    }
-                    chunks.push(data);
-                }
-                const total = chunks.reduce((s, c) => s + c.byteLength, 0);
-                const merged = new Uint8Array(total);
-                let offset = 0;
-                for (const chunk of chunks) {
-                    merged.set(new Uint8Array(chunk), offset);
-                    offset += chunk.byteLength;
-                }
-                let { data: audioData, mime } = this.extract_audio(merged);
-                if (mime === 'audio/aac') {
-                    audioData = this.adts_to_m4a(audioData);
-                    mime = 'audio/mp4';
-                }
-                const blob = new Blob([audioData.buffer], { type: mime });
-                const sizeMB = (audioData.byteLength / 1024 / 1024).toFixed(1);
-                console.log(`[cache] format: ${mime}, extracted ${sizeMB} MB from ${(total / 1024 / 1024).toFixed(1)} MB raw`);
-                const db = await this.db_async();
-                const tx = db.change('tracks', 'meta');
-                await tx.stores.tracks.put(blob, cache_id);
-                await tx.stores.meta.put({ ...audio, url: '' }, cache_id);
-                db.destructor();
-                console.log(`[cache] saved: ${audio.artist} — ${audio.title} (${sizeMB} MB)`);
-                // Дублируем blob в Giper Baza, чтобы offline-воспроизведение работало
-                // и на других устройствах (sync через GB).
-                try {
-                    $bog_vk_store.save_blob(audio, audioData, mime);
-                }
-                catch (e) {
-                    if (e instanceof Promise)
-                        throw e;
-                    console.warn(`[cache] baza save failed: ${audio.artist} — ${audio.title}:`, e?.message);
-                }
-            }
-            catch (e) {
-                console.warn(`[cache] FAILED: ${audio.artist} — ${audio.title}:`, e?.message || e?.name || String(e), e);
-            }
-        }
-    }
-    __decorate([
-        $mol_mem
-    ], $bog_vk_cache, "version", null);
-    $.$bog_vk_cache = $bog_vk_cache;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
     $.$mol_blob = ($node.buffer?.Blob ?? $mol_dom_context.Blob);
 })($ || ($ = {}));
 
@@ -21654,6 +20893,26 @@ var $;
             store.type(mime || 'audio/mpeg');
             console.log('[store] blob saved to baza:', audio.title, buffer.byteLength, 'bytes,', mime);
         }
+        /** Удаляет blob (поле File) из baza, оставляя метаданные трека. */
+        static drop_blob(audio) {
+            if (!audio)
+                return;
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return;
+            }
+            const key = this.cache_key(audio);
+            const track = dict.key(key);
+            if (!track)
+                return;
+            track.File('auto').val(null);
+            this.fresh_files.delete(key);
+        }
         /** Парсит "Artist - Title" из имени файла. */
         static parse_filename(name) {
             const base = name.replace(/\.[^.]+$/, '').trim();
@@ -21779,6 +21038,9 @@ var $;
     ], $bog_vk_store, "save_blob", null);
     __decorate([
         $mol_action
+    ], $bog_vk_store, "drop_blob", null);
+    __decorate([
+        $mol_action
     ], $bog_vk_store, "save_local_track", null);
     __decorate([
         $mol_action
@@ -21787,6 +21049,431 @@ var $;
         $mol_action
     ], $bog_vk_store, "restore_track", null);
     $.$bog_vk_store = $bog_vk_store;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    /**
+     * Тонкий фасад над Giper Baza для аудио-блобов.
+     * Раньше был отдельный IndexedDB (`vk_audio_cache`), но теперь источник один —
+     * baza, чтобы блобы автоматически синкались на другие устройства.
+     */
+    class $bog_vk_cache extends $mol_object {
+        static version(next) {
+            return next ?? 0;
+        }
+        static cache_key(audio) {
+            return `${audio.owner_id}_${audio.id}`;
+        }
+        /**
+         * Тонкая обёртка над `$bog_vk_store.local_blob` — отдаёт URL для воспроизведения.
+         * Раньше тут был IndexedDB-кэш; теперь источник один — Giper Baza, чтобы блобы
+         * автоматически синкались между устройствами (не дублируем хранилище).
+         */
+        static async get(audio) {
+            try {
+                const blob = $bog_vk_store.local_blob(audio);
+                if (!blob)
+                    return null;
+                return URL.createObjectURL(blob);
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                console.warn(`[cache] get error: ${audio.artist} — ${audio.title}`, e?.message);
+                return null;
+            }
+        }
+        static is_cached(audio) {
+            try {
+                return $bog_vk_store.local_blob(audio) !== null;
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return false;
+            }
+        }
+        static drop(audio) {
+            try {
+                $bog_vk_store.drop_blob(audio);
+                console.log(`[cache] dropped: ${audio.artist} — ${audio.title}`);
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                console.warn(`[cache] drop error: ${audio.artist} — ${audio.title}`, e?.message);
+            }
+        }
+        static adts_to_m4a(adts) {
+            const frames = [];
+            const frameSizes = [];
+            let audioObjectType = 2;
+            let sampleRateIndex = 4;
+            let channelConfig = 2;
+            let i = 0;
+            while (i < adts.length - 7) {
+                if (adts[i] !== 0xFF || (adts[i + 1] & 0xF6) !== 0xF0) {
+                    i++;
+                    continue;
+                }
+                const protAbsent = adts[i + 1] & 0x01;
+                const profile = (adts[i + 2] >> 6) & 0x03;
+                const srIdx = (adts[i + 2] >> 2) & 0x0F;
+                const chCfg = ((adts[i + 2] & 0x01) << 2) | ((adts[i + 3] >> 6) & 0x03);
+                const frameLen = ((adts[i + 3] & 0x03) << 11) | (adts[i + 4] << 3) | ((adts[i + 5] >> 5) & 0x07);
+                if (frameLen < 7 || frameLen > 8192 || i + frameLen > adts.length) {
+                    i++;
+                    continue;
+                }
+                // Verify next frame sync to filter false positives
+                if (i + frameLen + 1 < adts.length) {
+                    if (adts[i + frameLen] !== 0xFF || (adts[i + frameLen + 1] & 0xF6) !== 0xF0) {
+                        i++;
+                        continue;
+                    }
+                }
+                // Lock codec params from first valid frame
+                if (frames.length === 0) {
+                    audioObjectType = profile + 1;
+                    sampleRateIndex = srIdx;
+                    channelConfig = chCfg;
+                }
+                const hdrLen = protAbsent ? 7 : 9;
+                if (hdrLen >= frameLen) {
+                    i++;
+                    continue;
+                }
+                const raw = adts.slice(i + hdrLen, i + frameLen);
+                frames.push(raw);
+                frameSizes.push(raw.length);
+                i += frameLen;
+            }
+            if (frames.length === 0)
+                return adts;
+            const sampleRates = [96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350];
+            const sampleRate = sampleRates[sampleRateIndex] || 44100;
+            const totalSamples = frames.length * 1024;
+            const rawSize = frameSizes.reduce((a, b) => a + b, 0);
+            // AudioSpecificConfig (2 bytes)
+            const asc0 = (audioObjectType << 3) | (sampleRateIndex >> 1);
+            const asc1 = ((sampleRateIndex & 1) << 7) | (channelConfig << 3);
+            const u32 = (v) => [(v >>> 24) & 0xFF, (v >>> 16) & 0xFF, (v >>> 8) & 0xFF, v & 0xFF];
+            const u16 = (v) => [(v >> 8) & 0xFF, v & 0xFF];
+            const str = (s) => s.split('').map(c => c.charCodeAt(0));
+            const box = (type, payload) => [...u32(8 + payload.length), ...str(type), ...payload];
+            const fbox = (type, ver, fl, payload) => [...u32(12 + payload.length), ...str(type), ver, (fl >> 16) & 0xFF, (fl >> 8) & 0xFF, fl & 0xFF, ...payload];
+            // ftyp
+            const ftyp = box('ftyp', [...str('M4A '), ...u32(0), ...str('M4A '), ...str('isom'), ...str('mp42')]);
+            // esds descriptor chain
+            const decSpecInfo = [0x05, 0x02, asc0, asc1];
+            const decConfigPayload = [0x40, 0x15, 0x00, 0x00, 0x00, ...u32(0), ...u32(0), ...decSpecInfo];
+            const decConfig = [0x04, decConfigPayload.length, ...decConfigPayload];
+            const slConfig = [0x06, 0x01, 0x02];
+            const esPayload = [...u16(1), 0x00, ...decConfig, ...slConfig];
+            const esDescr = [0x03, esPayload.length, ...esPayload];
+            const esds = fbox('esds', 0, 0, esDescr);
+            // mp4a sample entry
+            const mp4aPayload = [
+                ...Array(6).fill(0), ...u16(1), // reserved + data_reference_index
+                ...Array(8).fill(0), // reserved
+                ...u16(channelConfig), ...u16(16), // channels, sample_size
+                ...u16(0), ...u16(0), // compression_id, packet_size
+                ...u16(sampleRate), ...u16(0), // samplerate 16.16 fixed
+                ...esds,
+            ];
+            const mp4a = [...u32(8 + mp4aPayload.length), ...str('mp4a'), ...mp4aPayload];
+            const stsd = fbox('stsd', 0, 0, [...u32(1), ...mp4a]);
+            const stts = fbox('stts', 0, 0, [...u32(1), ...u32(frames.length), ...u32(1024)]);
+            const stsc = fbox('stsc', 0, 0, [...u32(1), ...u32(1), ...u32(frames.length), ...u32(1)]);
+            const stsz = fbox('stsz', 0, 0, [...u32(0), ...u32(frames.length), ...frameSizes.flatMap(s => u32(s))]);
+            const stco = fbox('stco', 0, 0, [...u32(1), ...u32(0)]); // offset patched below
+            const stbl = box('stbl', [...stsd, ...stts, ...stsc, ...stsz, ...stco]);
+            const smhd = fbox('smhd', 0, 0, [...u16(0), ...u16(0)]);
+            const urlBox = fbox('url ', 0, 1, []);
+            const dref = fbox('dref', 0, 0, [...u32(1), ...urlBox]);
+            const dinf = box('dinf', dref);
+            const minf = box('minf', [...smhd, ...dinf, ...stbl]);
+            const mdhd = fbox('mdhd', 0, 0, [...u32(0), ...u32(0), ...u32(sampleRate), ...u32(totalSamples), ...u16(0x55C4), ...u16(0)]);
+            const hdlr = fbox('hdlr', 0, 0, [...u32(0), ...str('soun'), ...u32(0), ...u32(0), ...u32(0), 0]);
+            const mdia = box('mdia', [...mdhd, ...hdlr, ...minf]);
+            const identity = [
+                0x00, 0x01, 0x00, 0x00, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0x00, 0x01, 0x00, 0x00, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0x40, 0x00, 0x00, 0x00,
+            ];
+            const tkhd = fbox('tkhd', 0, 3, [
+                ...u32(0), ...u32(0), ...u32(1), ...u32(0), ...u32(totalSamples),
+                ...u32(0), ...u32(0), ...u16(0), ...u16(0), ...u16(0x0100), ...u16(0),
+                ...identity, ...u32(0), ...u32(0),
+            ]);
+            const trak = box('trak', [...tkhd, ...mdia]);
+            const mvhd = fbox('mvhd', 0, 0, [
+                ...u32(0), ...u32(0), ...u32(sampleRate), ...u32(totalSamples),
+                ...u32(0x00010000), ...u16(0x0100), ...Array(10).fill(0),
+                ...identity, ...Array(24).fill(0), ...u32(2),
+            ]);
+            const moov = box('moov', [...mvhd, ...trak]);
+            // Patch stco chunk_offset: mdat data starts after ftyp + moov + mdat header(8)
+            const mdatDataOffset = ftyp.length + moov.length + 8;
+            for (let j = 0; j < moov.length - 4; j++) {
+                if (moov[j] === 0x73 && moov[j + 1] === 0x74 && moov[j + 2] === 0x63 && moov[j + 3] === 0x6F) {
+                    // 'stco' found: type(4) + version(1) + flags(3) + entry_count(4) = 12 bytes to offset
+                    const p = j + 12;
+                    moov[p] = (mdatDataOffset >>> 24) & 0xFF;
+                    moov[p + 1] = (mdatDataOffset >>> 16) & 0xFF;
+                    moov[p + 2] = (mdatDataOffset >>> 8) & 0xFF;
+                    moov[p + 3] = mdatDataOffset & 0xFF;
+                    break;
+                }
+            }
+            // Assemble: ftyp + moov + mdat
+            const mdatHeader = [...u32(8 + rawSize), ...str('mdat')];
+            const total = ftyp.length + moov.length + mdatHeader.length + rawSize;
+            const out = new Uint8Array(total);
+            let pos = 0;
+            out.set(ftyp, pos);
+            pos += ftyp.length;
+            out.set(moov, pos);
+            pos += moov.length;
+            out.set(mdatHeader, pos);
+            pos += mdatHeader.length;
+            for (const frame of frames) {
+                out.set(frame, pos);
+                pos += frame.length;
+            }
+            console.log(`[cache] muxed ${frames.length} AAC frames → ${(total / 1024).toFixed(0)} KB M4A`);
+            return out;
+        }
+        static extract_audio(ts) {
+            // Already raw AAC (ADTS)
+            if (ts[0] === 0xFF && (ts[1] & 0xF0) === 0xF0) {
+                return { data: ts, mime: 'audio/aac' };
+            }
+            // Already MP3
+            if (ts[0] === 0xFF && (ts[1] & 0xE0) === 0xE0) {
+                return { data: ts, mime: 'audio/mpeg' };
+            }
+            // ID3 tag (MP3 with metadata)
+            if (ts[0] === 0x49 && ts[1] === 0x44 && ts[2] === 0x33) {
+                return { data: ts, mime: 'audio/mpeg' };
+            }
+            // MPEG-TS → proper demux: parse TS packets, extract PES audio payloads
+            if (ts[0] === 0x47) {
+                const audio = this.demux_ts_audio(ts);
+                if (audio)
+                    return { data: audio, mime: 'audio/aac' };
+            }
+            // Fallback: return as-is
+            return { data: ts, mime: 'audio/mpeg' };
+        }
+        static demux_ts_audio(ts) {
+            // Phase 1: parse TS packets, group payloads by PID
+            const pidChunks = new Map();
+            for (let pos = 0; pos + 188 <= ts.length; pos += 188) {
+                if (ts[pos] !== 0x47)
+                    continue;
+                const pusi = !!(ts[pos + 1] & 0x40);
+                const pid = ((ts[pos + 1] & 0x1F) << 8) | ts[pos + 2];
+                const afc = (ts[pos + 3] >> 4) & 0x03;
+                if (pid === 0 || pid === 0x1FFF)
+                    continue; // skip PAT / null
+                if (!(afc & 0x01))
+                    continue; // no payload
+                let off = 4;
+                if (afc & 0x02)
+                    off += 1 + ts[pos + 4]; // adaptation field
+                if (off >= 188)
+                    continue;
+                if (!pidChunks.has(pid))
+                    pidChunks.set(pid, []);
+                pidChunks.get(pid).push({ pusi, data: ts.slice(pos + off, pos + 188) });
+            }
+            // Phase 2: find audio PID (PES stream_id 0xC0..0xDF)
+            for (const [pid, chunks] of pidChunks) {
+                const first = chunks.find(c => c.pusi);
+                if (!first)
+                    continue;
+                const d = first.data;
+                if (d.length < 9)
+                    continue;
+                if (d[0] !== 0x00 || d[1] !== 0x00 || d[2] !== 0x01)
+                    continue;
+                if (d[3] < 0xC0 || d[3] > 0xDF)
+                    continue; // not audio
+                // Phase 3: reassemble PES payloads, strip PES headers → raw ADTS
+                const parts = [];
+                for (const chunk of chunks) {
+                    if (chunk.pusi) {
+                        const p = chunk.data;
+                        if (p.length < 9 || p[0] !== 0x00 || p[1] !== 0x00 || p[2] !== 0x01)
+                            continue;
+                        const pesHdrLen = 9 + p[8];
+                        if (pesHdrLen < p.length) {
+                            parts.push(p.slice(pesHdrLen));
+                        }
+                    }
+                    else {
+                        parts.push(chunk.data);
+                    }
+                }
+                const total = parts.reduce((s, p) => s + p.length, 0);
+                if (total === 0)
+                    continue;
+                const out = new Uint8Array(total);
+                let off = 0;
+                for (const p of parts) {
+                    out.set(p, off);
+                    off += p.length;
+                }
+                console.log(`[cache] demuxed TS: PID ${pid}, ${total} bytes raw ADTS`);
+                return out;
+            }
+            return null;
+        }
+        static parse_m3u8(text, base_url) {
+            const lines = text.split('\n');
+            let key_url = '';
+            let key_iv = '';
+            const segments = [];
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('#EXT-X-KEY:')) {
+                    const uri_match = trimmed.match(/URI="([^"]+)"/);
+                    if (uri_match) {
+                        key_url = uri_match[1].startsWith('http') ? uri_match[1] : base_url + uri_match[1];
+                    }
+                    const iv_match = trimmed.match(/IV=0x([0-9a-fA-F]+)/);
+                    if (iv_match) {
+                        key_iv = iv_match[1];
+                    }
+                }
+                else if (trimmed && !trimmed.startsWith('#')) {
+                    segments.push(trimmed.startsWith('http') ? trimmed : base_url + trimmed);
+                }
+            }
+            return { segments, key_url, key_iv };
+        }
+        static async decrypt_segment(data, cryptoKey, index, iv_hex) {
+            let iv;
+            if (iv_hex) {
+                const bytes = new Uint8Array(16);
+                for (let i = 0; i < 16 && i * 2 < iv_hex.length; i++) {
+                    bytes[i] = parseInt(iv_hex.substring(i * 2, i * 2 + 2), 16);
+                }
+                iv = bytes.buffer;
+            }
+            else {
+                const bytes = new Uint8Array(16);
+                bytes[15] = index & 0xFF;
+                bytes[14] = (index >> 8) & 0xFF;
+                bytes[13] = (index >> 16) & 0xFF;
+                bytes[12] = (index >> 24) & 0xFF;
+                iv = bytes.buffer;
+            }
+            return crypto.subtle.decrypt({ name: 'AES-CBC', iv }, cryptoKey, data);
+        }
+        /**
+         * Освежает audio.url через VK audio.getById — HLS ссылки протухают ~60 мин.
+         * Возвращает рабочий URL или пустую строку если не получилось.
+         */
+        static async refresh_url(audio) {
+            try {
+                const key = `${audio.owner_id}_${audio.id}${audio.access_key ? '_' + audio.access_key : ''}`;
+                const fresh = $mol_wire_sync($bog_vk_api).refresh_audio(key);
+                return fresh?.url ?? '';
+            }
+            catch (e) {
+                console.warn('[cache] refresh_url failed:', e?.message);
+                return '';
+            }
+        }
+        static async save_hls(audio) {
+            let url = audio.url;
+            if (!url) {
+                console.warn('[cache] skip — no URL:', audio.artist, '—', audio.title);
+                return;
+            }
+            try {
+                if (this.is_cached(audio)) {
+                    console.log('[cache] already in baza:', audio.artist, '—', audio.title);
+                    return;
+                }
+                console.log('[cache] start download:', audio.artist, '—', audio.title);
+                let m3u8_resp = await fetch(url);
+                // Если url протух — пробуем обновить через audio.getById.
+                if (m3u8_resp.status === 403 || m3u8_resp.status === 404) {
+                    console.log('[cache] url expired, refreshing:', audio.artist, '—', audio.title);
+                    const fresh_url = await this.refresh_url(audio);
+                    if (fresh_url) {
+                        url = fresh_url;
+                        m3u8_resp = await fetch(url);
+                    }
+                }
+                if (!m3u8_resp.ok)
+                    throw new Error(`m3u8 fetch ${m3u8_resp.status}`);
+                const m3u8_text = await m3u8_resp.text();
+                const base_url = url.substring(0, url.lastIndexOf('/') + 1);
+                // (url мог быть подменён на fresh_url выше — base пересчитывается от него)
+                const { segments, key_url, key_iv } = this.parse_m3u8(m3u8_text, base_url);
+                if (!segments.length)
+                    throw new Error('No segments in m3u8');
+                let cryptoKey = null;
+                if (key_url) {
+                    console.log(`[cache] encrypted HLS, fetching key from:`, key_url);
+                    const key_resp = await fetch(key_url);
+                    if (!key_resp.ok)
+                        throw new Error(`Key fetch failed: ${key_resp.status}`);
+                    const key_data = await key_resp.arrayBuffer();
+                    console.log(`[cache] key size: ${key_data.byteLength} bytes, hex: ${Array.from(new Uint8Array(key_data)).map(b => b.toString(16).padStart(2, '0')).join('')}`);
+                    if (key_data.byteLength !== 16) {
+                        console.warn(`[cache] unexpected key size ${key_data.byteLength}, expected 16`);
+                    }
+                    cryptoKey = await crypto.subtle.importKey('raw', key_data, 'AES-CBC', false, ['decrypt']);
+                    console.log(`[cache] key imported, IV: ${key_iv || '(sequence number)'}`);
+                }
+                console.log(`[cache] ${segments.length} segments to download${cryptoKey ? ' (encrypted)' : ''}`);
+                const chunks = [];
+                for (let i = 0; i < segments.length; i++) {
+                    const resp = await fetch(segments[i]);
+                    if (!resp.ok)
+                        throw new Error(`Segment ${i + 1}/${segments.length} failed: ${resp.status}`);
+                    let data = await resp.arrayBuffer();
+                    const firstByte = new Uint8Array(data)[0];
+                    if (cryptoKey && firstByte !== 0x47) {
+                        data = await this.decrypt_segment(data, cryptoKey, i, key_iv);
+                    }
+                    chunks.push(data);
+                }
+                const total = chunks.reduce((s, c) => s + c.byteLength, 0);
+                const merged = new Uint8Array(total);
+                let offset = 0;
+                for (const chunk of chunks) {
+                    merged.set(new Uint8Array(chunk), offset);
+                    offset += chunk.byteLength;
+                }
+                let { data: audioData, mime } = this.extract_audio(merged);
+                if (mime === 'audio/aac') {
+                    audioData = this.adts_to_m4a(audioData);
+                    mime = 'audio/mp4';
+                }
+                const sizeMB = (audioData.byteLength / 1024 / 1024).toFixed(1);
+                console.log(`[cache] format: ${mime}, extracted ${sizeMB} MB from ${(total / 1024 / 1024).toFixed(1)} MB raw`);
+                $bog_vk_store.save_blob(audio, audioData, mime);
+                console.log(`[cache] saved to baza: ${audio.artist} — ${audio.title} (${sizeMB} MB)`);
+                this.version(this.version() + 1);
+            }
+            catch (e) {
+                console.warn(`[cache] FAILED: ${audio.artist} — ${audio.title}:`, e?.message || e?.name || String(e), e);
+            }
+        }
+    }
+    __decorate([
+        $mol_mem
+    ], $bog_vk_cache, "version", null);
+    $.$bog_vk_cache = $bog_vk_cache;
 })($ || ($ = {}));
 
 ;
@@ -22048,17 +21735,8 @@ var $;
                     let blob = null;
                     let mime = 'audio/aac';
                     try {
-                        if (audio.owner_id === 0) {
-                            blob = $bog_vk_store.local_blob(audio);
-                            mime = blob?.type || 'audio/mpeg';
-                        }
-                        else {
-                            const url = await $bog_vk_cache.get(audio);
-                            if (url) {
-                                blob = await (await fetch(url)).blob();
-                                mime = blob.type || 'audio/aac';
-                            }
-                        }
+                        blob = $bog_vk_store.local_blob(audio);
+                        mime = blob?.type || 'audio/mpeg';
                     }
                     catch (e) {
                         console.warn('[account] zip skip:', audio.title, e?.message);
@@ -23003,8 +22681,8 @@ var $;
                         URL.revokeObjectURL(this._last_blob_url);
                         this._last_blob_url = '';
                     }
-                    // 0. Blob из Giper Baza (локальные загрузки + VK-треки, синкнутые с другого устройства).
-                    // $mol_wire_async внутри обычной async-функции реально ждёт IDB ball_load.
+                    // 0. Blob из Giper Baza — единый источник для offline (локальные + VK).
+                    // $mol_wire_async внутри обычной async-функции реально ждёт ball_load.
                     const blob = await $mol_wire_async($bog_vk_store).local_blob(audio);
                     if (blob) {
                         const url = URL.createObjectURL(blob);
@@ -23013,15 +22691,7 @@ var $;
                         await this.safe_play(el);
                         return;
                     }
-                    // 1. Try cache (has actual audio data, works offline)
-                    const cached = await $bog_vk_cache.get(audio);
-                    if (cached) {
-                        this._last_blob_url = cached;
-                        el.src = cached;
-                        await this.safe_play(el);
-                        return;
-                    }
-                    // 2. Try direct URL (Safari supports HLS natively)
+                    // 1. Try direct URL (Safari supports HLS natively)
                     if (audio.url) {
                         el.src = audio.url;
                         try {
@@ -23033,11 +22703,12 @@ var $;
                             // Direct play failed — download first
                         }
                     }
-                    // 3. Download HLS → cache → play
+                    // 2. Forced download → save blob to baza → play from baza.
                     if (audio.url) {
                         await $bog_vk_cache.save_hls(audio);
-                        const url = await $bog_vk_cache.get(audio);
-                        if (url) {
+                        const blob2 = $bog_vk_store.local_blob(audio);
+                        if (blob2) {
+                            const url = URL.createObjectURL(blob2);
                             this._last_blob_url = url;
                             el.src = url;
                             await this.safe_play(el);
@@ -24012,6 +23683,9 @@ var $;
              * Вызывается реактивно из auto() — `@$mol_mem` ретраит при появлении
              * токена / готовности baza. Идемпотентно (save_track обновляет только
              * изменившиеся поля), так что вызов на каждом тике безопасен.
+             *
+             * Фоном дёргает `prefetch_blobs` для треков без `File` в baza, чтобы сразу
+             * после синка metadata пользователь мог играть offline.
              */
             auto_import() {
                 if (!$bog_vk_api.in_extension())
@@ -24042,7 +23716,40 @@ var $;
                         console.warn('[app] auto_import save failed:', audio.title, e?.message);
                     }
                 }
+                // Качаем блобы тех, у кого их в baza ещё нет — последовательно, чтобы
+                // не ддосить VK CDN. Фоном, без блокировки UI.
+                try {
+                    $mol_wire_async($bog_vk_app).prefetch_blobs(items);
+                }
+                catch { }
                 return items.length;
+            }
+            /**
+             * Последовательно скачивает HLS для треков, у которых в baza нет файла.
+             * `save_hls` идемпотентен (проверяет `is_cached`), так что повторные
+             * вызовы безопасны. Запускается из auto_import фоном.
+             */
+            static async prefetch_blobs(items) {
+                if (!items?.length)
+                    return;
+                let downloaded = 0;
+                for (const audio of items) {
+                    try {
+                        if ($bog_vk_cache.is_cached(audio))
+                            continue;
+                        if (!audio.url)
+                            continue;
+                        await $bog_vk_cache.save_hls(audio);
+                        downloaded++;
+                    }
+                    catch (e) {
+                        if (e instanceof Promise)
+                            continue;
+                        console.warn('[app] prefetch failed:', audio.title, e?.message);
+                    }
+                }
+                if (downloaded)
+                    console.log('[app] prefetched', downloaded, 'tracks to baza');
             }
             auto() {
                 try {
@@ -30399,157 +30106,6 @@ var $;
         $giper_baza_glob.Seed();
         return ['http://localhost:9090/'];
     };
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_test({
-        async 'put, get, drop, count records and clear store'() {
-            const db = await $$.$mol_db('$mol_db_test', mig => mig.store_make('letters'));
-            const trans = db.change('letters');
-            try {
-                const { letters } = trans.stores;
-                $mol_assert_like(await letters.get(1), undefined);
-                $mol_assert_like(await letters.get(2), undefined);
-                $mol_assert_like(await letters.count(), 0);
-                await letters.put('a');
-                await letters.put('b', 1);
-                await letters.put('c', 2);
-                $mol_assert_like(await letters.get(1), 'b');
-                $mol_assert_like(await letters.get(2), 'c');
-                $mol_assert_like(await letters.count(), 2);
-                await letters.drop(1);
-                $mol_assert_like(await letters.get(1), undefined);
-                $mol_assert_like(await letters.count(), 1);
-                await letters.clear();
-                $mol_assert_like(await letters.count(), 0);
-            }
-            finally {
-                trans.abort();
-                db.kill();
-            }
-        },
-        async 'select by query'() {
-            const db = await $$.$mol_db('$mol_db_test', mig => mig.store_make('letters'));
-            const trans = db.change('letters');
-            try {
-                const { letters } = trans.stores;
-                await letters.put('a');
-                await letters.put('b');
-                await letters.put('c');
-                await letters.put('d');
-                $mol_assert_like(await letters.select(), ['a', 'b', 'c', 'd']);
-                $mol_assert_like(await letters.select(null, 2), ['a', 'b']);
-                $mol_assert_like(await letters.select($mol_dom_context.IDBKeyRange.bound(2, 3)), ['b', 'c']);
-            }
-            finally {
-                trans.abort();
-                db.kill();
-            }
-        },
-    });
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_test({
-        async 'take and drop db'() {
-            const db = await $$.$mol_db('$mol_db_test');
-            await db.kill();
-        },
-        async 'make and drop store in separate migrations'() {
-            try {
-                const db1 = await $$.$mol_db('$mol_db_test', mig => mig.store_make('temp'));
-                db1.destructor();
-                $mol_assert_like(db1.stores, ['temp']);
-                $mol_assert_like(db1.version, 2);
-                const db2 = await $$.$mol_db('$mol_db_test', mig => mig.store_make('temp'), mig => mig.store_drop('temp'));
-                db2.destructor();
-                $mol_assert_like(db2.stores, []);
-                $mol_assert_like(db2.version, 3);
-            }
-            finally {
-                const db0 = await $$.$mol_db('$mol_db_test');
-                await db0.kill();
-            }
-        },
-    });
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_test({
-        async 'unique index'() {
-            const db = await $$.$mol_db('$mol_db_test', mig => mig.store_make('users'), mig => mig.stores.users.index_make('names', ['name'], true));
-            const trans = db.change('users');
-            try {
-                const { users } = trans.stores;
-                await users.put({ name: 'Jin' }, 'jin');
-                await users.put({ name: 'John' }, 'john');
-                await users.put({ name: 'Bin' }, 'bin');
-                const { names } = users.indexes;
-                $mol_assert_like(await names.get(['Jin']), { name: 'Jin' });
-                $mol_assert_like(await names.get(['John']), { name: 'John' });
-                $mol_assert_like(await names.count(), 3);
-                $mol_assert_like(await names.select($mol_dom_context.IDBKeyRange.bound(['J'], ['J\uFFFF'])), [{ name: 'Jin' }, { name: 'John' }]);
-                try {
-                    await users.put({ name: 'Jin' }, 'jin2');
-                    $mol_fail(new Error('Exception expected'));
-                }
-                catch (error) {
-                    $mol_assert_unique(error.message, 'Exception expected');
-                }
-            }
-            finally {
-                trans.abort();
-                await db.kill();
-            }
-        },
-        async 'multi path index'() {
-            const db = await $$.$mol_db('$mol_db_test', mig => mig.store_make('users'), mig => mig.stores.users.index_make('names', ['first', 'last']));
-            const trans = db.change('users');
-            try {
-                const { users } = trans.stores;
-                await users.put({ first: 'Jin', last: 'Johnson' }, 'jin');
-                await users.put({ first: 'John', last: 'Jinson' }, 'john');
-                await users.put({ first: 'Bond', last: 'James' }, '007');
-                const { names } = users.indexes;
-                $mol_assert_like(await names.get(['Jin', 'Johnson']), { first: 'Jin', last: 'Johnson' });
-                $mol_assert_like(await names.get(['John', 'Jinson']), { first: 'John', last: 'Jinson' });
-                $mol_assert_like(await names.count(), 3);
-                $mol_assert_like(await names.select($mol_dom_context.IDBKeyRange.bound(['Jin', 'Johnson'], ['John', 'Jinson'])), [{ first: 'Jin', last: 'Johnson' }, { first: 'John', last: 'Jinson' }]);
-            }
-            finally {
-                trans.abort();
-                await db.kill();
-            }
-        },
-        async 'multiple indexes'() {
-            const db = await $$.$mol_db('$mol_db_test', mig => mig.store_make('users'), mig => mig.stores.users.index_make('names', ['name'], true), mig => mig.stores.users.index_make('ages', ['age']));
-            const trans = db.change('users');
-            try {
-                const { users } = trans.stores;
-                await users.put({ name: 'Jin', age: 18 }, 'jin');
-                await users.put({ name: 'John', age: 18 }, 'john');
-                const { names, ages } = users.indexes;
-                $mol_assert_like(await names.select(['Jin']), [{ name: 'Jin', age: 18 }]);
-                $mol_assert_like(await names.select(['John']), [{ name: 'John', age: 18 }]);
-                $mol_assert_like(await names.count(), 2);
-                $mol_assert_like(await ages.select([18]), [{ name: 'Jin', age: 18 }, { name: 'John', age: 18 }]);
-                $mol_assert_like(await ages.count(), 2);
-            }
-            finally {
-                trans.abort();
-                await db.kill();
-            }
-        },
-    });
 })($ || ($ = {}));
 
 ;
