@@ -228,16 +228,8 @@ namespace $.$$ {
 				let blob: Blob | null = null
 				let mime = 'audio/aac'
 				try {
-					if (audio.owner_id === 0) {
-						blob = $bog_vk_store.local_blob(audio)
-						mime = blob?.type || 'audio/mpeg'
-					} else {
-						const url = await $bog_vk_cache.get(audio)
-						if (url) {
-							blob = await (await fetch(url)).blob()
-							mime = blob.type || 'audio/aac'
-						}
-					}
+					blob = $bog_vk_store.local_blob(audio)
+					mime = blob?.type || 'audio/mpeg'
 				} catch (e: any) {
 					console.warn('[account] zip skip:', audio.title, e?.message)
 				}

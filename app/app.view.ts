@@ -313,6 +313,9 @@ namespace $.$$ {
 		 * Вызывается реактивно из auto() — `@$mol_mem` ретраит при появлении
 		 * токена / готовности baza. Идемпотентно (save_track обновляет только
 		 * изменившиеся поля), так что вызов на каждом тике безопасен.
+		 *
+		 * Фоном дёргает `prefetch_blobs` для треков без `File` в baza, чтобы сразу
+		 * после синка metadata пользователь мог играть offline.
 		 */
 		@$mol_mem
 		auto_import() {
@@ -335,7 +338,32 @@ namespace $.$$ {
 					console.warn('[app] auto_import save failed:', audio.title, e?.message)
 				}
 			}
+			// Качаем блобы тех, у кого их в baza ещё нет — последовательно, чтобы
+			// не ддосить VK CDN. Фоном, без блокировки UI.
+			try { ($mol_wire_async($bog_vk_app) as any).prefetch_blobs(items) } catch {}
 			return items.length
+		}
+
+		/**
+		 * Последовательно скачивает HLS для треков, у которых в baza нет файла.
+		 * `save_hls` идемпотентен (проверяет `is_cached`), так что повторные
+		 * вызовы безопасны. Запускается из auto_import фоном.
+		 */
+		static async prefetch_blobs(items: $bog_vk_api_audio[]) {
+			if (!items?.length) return
+			let downloaded = 0
+			for (const audio of items) {
+				try {
+					if ($bog_vk_cache.is_cached(audio)) continue
+					if (!audio.url) continue
+					await $bog_vk_cache.save_hls(audio)
+					downloaded++
+				} catch (e: any) {
+					if (e instanceof Promise) continue
+					console.warn('[app] prefetch failed:', audio.title, e?.message)
+				}
+			}
+			if (downloaded) console.log('[app] prefetched', downloaded, 'tracks to baza')
 		}
 
 		auto() {

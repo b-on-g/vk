@@ -228,6 +228,24 @@ namespace $ {
 			console.log('[store] blob saved to baza:', audio.title, buffer.byteLength, 'bytes,', mime)
 		}
 
+		/** Удаляет blob (поле File) из baza, оставляя метаданные трека. */
+		@$mol_action
+		static drop_blob(audio: $bog_vk_api_audio): void {
+			if (!audio) return
+			let dict: ReturnType<typeof $bog_vk_store.tracks_dict>
+			try {
+				dict = this.tracks_dict()
+			} catch (e) {
+				if (e instanceof Promise) throw e
+				return
+			}
+			const key = this.cache_key(audio)
+			const track = dict.key(key)
+			if (!track) return
+			track.File('auto')!.val(null)
+			this.fresh_files.delete(key)
+		}
+
 		/** Парсит "Artist - Title" из имени файла. */
 		static parse_filename(name: string): { artist: string, title: string } {
 			const base = name.replace(/\.[^.]+$/, '').trim()

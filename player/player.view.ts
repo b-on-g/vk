@@ -153,8 +153,8 @@ namespace $.$$ {
 					this._last_blob_url = ''
 				}
 
-				// 0. Blob из Giper Baza (локальные загрузки + VK-треки, синкнутые с другого устройства).
-				// $mol_wire_async внутри обычной async-функции реально ждёт IDB ball_load.
+				// 0. Blob из Giper Baza — единый источник для offline (локальные + VK).
+				// $mol_wire_async внутри обычной async-функции реально ждёт ball_load.
 				const blob = await ($mol_wire_async($bog_vk_store) as any).local_blob(audio) as Blob | null
 				if (blob) {
 					const url = URL.createObjectURL(blob)
@@ -164,16 +164,7 @@ namespace $.$$ {
 					return
 				}
 
-				// 1. Try cache (has actual audio data, works offline)
-				const cached = await $bog_vk_cache.get(audio)
-				if (cached) {
-					this._last_blob_url = cached
-					el.src = cached
-					await this.safe_play(el)
-					return
-				}
-
-				// 2. Try direct URL (Safari supports HLS natively)
+				// 1. Try direct URL (Safari supports HLS natively)
 				if (audio.url) {
 					el.src = audio.url
 					try {
@@ -185,11 +176,12 @@ namespace $.$$ {
 					}
 				}
 
-				// 3. Download HLS → cache → play
+				// 2. Forced download → save blob to baza → play from baza.
 				if (audio.url) {
 					await $bog_vk_cache.save_hls(audio)
-					const url = await $bog_vk_cache.get(audio)
-					if (url) {
+					const blob2 = $bog_vk_store.local_blob(audio)
+					if (blob2) {
+						const url = URL.createObjectURL(blob2)
 						this._last_blob_url = url
 						el.src = url
 						await this.safe_play(el)

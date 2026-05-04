@@ -1,18 +1,10 @@
 namespace $ {
 
-	type $bog_vk_cache_schema = {
-		tracks: {
-			Key: string
-			Doc: Blob
-			Indexes: {}
-		}
-		meta: {
-			Key: string
-			Doc: $bog_vk_api_audio
-			Indexes: {}
-		}
-	}
-
+	/**
+	 * Тонкий фасад над Giper Baza для аудио-блобов.
+	 * Раньше был отдельный IndexedDB (`vk_audio_cache`), но теперь источник один —
+	 * baza, чтобы блобы автоматически синкались на другие устройства.
+	 */
 	export class $bog_vk_cache extends $mol_object {
 
 		@$mol_mem
@@ -20,92 +12,43 @@ namespace $ {
 			return next ?? 0
 		}
 
-		static db() {
-			return $mol_wire_sync(this).db_async()
-		}
-
-		static async db_async() {
-			return $$.$mol_db<$bog_vk_cache_schema>(
-				'vk_audio_cache',
-				mig => mig.store_make('tracks'),
-				mig => mig.store_make('meta'),
-			)
-		}
-
 		static cache_key(audio: $bog_vk_api_audio) {
 			return `${audio.owner_id}_${audio.id}`
 		}
 
+		/**
+		 * Тонкая обёртка над `$bog_vk_store.local_blob` — отдаёт URL для воспроизведения.
+		 * Раньше тут был IndexedDB-кэш; теперь источник один — Giper Baza, чтобы блобы
+		 * автоматически синкались между устройствами (не дублируем хранилище).
+		 */
 		static async get(audio: $bog_vk_api_audio): Promise<string | null> {
-			const key = this.cache_key(audio)
 			try {
-				const db = await this.db_async()
-				const blob = await db.read('tracks').tracks.get(key)
-				db.destructor()
-				if (blob) {
-					// Delete broken cache entries (empty or too small)
-					if (blob.size < 1000) {
-						console.warn(`[cache] broken entry (${blob.size} bytes), deleting: ${audio.artist} — ${audio.title}`)
-						const db2 = await this.db_async()
-						const tx = db2.change('tracks', 'meta')
-						await tx.stores.tracks.drop(key)
-						await tx.stores.meta.drop(key)
-						db2.destructor()
-						return null
-					}
-					// Re-mux old audio/aac entries to audio/mp4
-					if (blob.type === 'audio/aac') {
-						console.log(`[cache] migrating ${audio.artist} — ${audio.title} from aac to m4a...`)
-						const adts = new Uint8Array(await blob.arrayBuffer())
-						const m4a = this.adts_to_m4a(adts)
-						const newBlob = new Blob([m4a.buffer as ArrayBuffer], { type: 'audio/mp4' })
-						const db2 = await this.db_async()
-						const tx = db2.change('tracks')
-						await tx.stores.tracks.put(newBlob, key)
-						db2.destructor()
-						return URL.createObjectURL(newBlob)
-					}
-					console.log(`[cache] hit: ${audio.artist} — ${audio.title} (${(blob.size / 1024 / 1024).toFixed(1)} MB)`)
-					return URL.createObjectURL(blob)
-				}
-				console.warn(`[cache] miss: ${audio.artist} — ${audio.title} (key: ${key})`)
-				return null
+				const blob = $bog_vk_store.local_blob(audio)
+				if (!blob) return null
+				return URL.createObjectURL(blob)
 			} catch (e: any) {
-				console.warn(`[cache] get error: ${key}`, e?.message)
+				if (e instanceof Promise) throw e
+				console.warn(`[cache] get error: ${audio.artist} — ${audio.title}`, e?.message)
 				return null
 			}
 		}
 
-		static async is_cached(audio: $bog_vk_api_audio): Promise<boolean> {
-			const key = this.cache_key(audio)
+		static is_cached(audio: $bog_vk_api_audio): boolean {
 			try {
-				const db = await this.db_async()
-				const count = await db.read('tracks').tracks.count(key)
-				db.destructor()
-				return count > 0
-			} catch {
+				return $bog_vk_store.local_blob(audio) !== null
+			} catch (e: any) {
+				if (e instanceof Promise) throw e
 				return false
 			}
 		}
 
-		static async drop(audio: $bog_vk_api_audio): Promise<void> {
-			const key = this.cache_key(audio)
-			const db = await this.db_async()
-			const tx = db.change('tracks', 'meta')
-			await tx.stores.tracks.drop(key)
-			await tx.stores.meta.drop(key)
-			db.destructor()
-			console.log(`[cache] dropped: ${audio.artist} — ${audio.title}`)
-		}
-
-		static async all_cached(): Promise<$bog_vk_api_audio[]> {
+		static drop(audio: $bog_vk_api_audio): void {
 			try {
-				const db = await this.db_async()
-				const all = await db.read('meta').meta.select()
-				db.destructor()
-				return all.reverse()
-			} catch {
-				return []
+				$bog_vk_store.drop_blob(audio)
+				console.log(`[cache] dropped: ${audio.artist} — ${audio.title}`)
+			} catch (e: any) {
+				if (e instanceof Promise) throw e
+				console.warn(`[cache] drop error: ${audio.artist} — ${audio.title}`, e?.message)
 			}
 		}
 
@@ -409,14 +352,9 @@ namespace $ {
 				return
 			}
 
-			const cache_id = this.cache_key(audio)
-
 			try {
-				const db_check = await this.db_async()
-				const existing = await db_check.read('tracks').tracks.count(cache_id)
-				db_check.destructor()
-				if (existing > 0) {
-					console.log('[cache] already cached:', audio.artist, '—', audio.title)
+				if (this.is_cached(audio)) {
+					console.log('[cache] already in baza:', audio.artist, '—', audio.title)
 					return
 				}
 
@@ -482,26 +420,12 @@ namespace $ {
 					audioData = this.adts_to_m4a(audioData)
 					mime = 'audio/mp4'
 				}
-				const blob = new Blob([audioData.buffer as ArrayBuffer], { type: mime })
 				const sizeMB = (audioData.byteLength / 1024 / 1024).toFixed(1)
 				console.log(`[cache] format: ${mime}, extracted ${sizeMB} MB from ${(total / 1024 / 1024).toFixed(1)} MB raw`)
 
-				const db = await this.db_async()
-				const tx = db.change('tracks', 'meta')
-				await tx.stores.tracks.put(blob, cache_id)
-				await tx.stores.meta.put({ ...audio, url: '' }, cache_id)
-				db.destructor()
-
-				console.log(`[cache] saved: ${audio.artist} — ${audio.title} (${sizeMB} MB)`)
-
-				// Дублируем blob в Giper Baza, чтобы offline-воспроизведение работало
-				// и на других устройствах (sync через GB).
-				try {
-					$bog_vk_store.save_blob(audio, audioData, mime)
-				} catch (e: any) {
-					if (e instanceof Promise) throw e
-					console.warn(`[cache] baza save failed: ${audio.artist} — ${audio.title}:`, e?.message)
-				}
+				$bog_vk_store.save_blob(audio, audioData, mime)
+				console.log(`[cache] saved to baza: ${audio.artist} — ${audio.title} (${sizeMB} MB)`)
+				this.version(this.version() + 1)
 			} catch (e: any) {
 				console.warn(`[cache] FAILED: ${audio.artist} — ${audio.title}:`, e?.message || e?.name || String(e), e)
 			}
