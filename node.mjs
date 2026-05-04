@@ -6107,9 +6107,9 @@ var $;
 
 
 ;
-	($.$mol_icon_key) = class $mol_icon_key extends ($.$mol_icon) {
+	($.$mol_icon_account) = class $mol_icon_account extends ($.$mol_icon) {
 		path(){
-			return "M7 14C5.9 14 5 13.1 5 12S5.9 10 7 10 9 10.9 9 12 8.1 14 7 14M12.6 10C11.8 7.7 9.6 6 7 6C3.7 6 1 8.7 1 12S3.7 18 7 18C9.6 18 11.8 16.3 12.6 14H16V18H20V14H23V10H12.6Z";
+			return "M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z";
 		}
 	};
 
@@ -6119,9 +6119,9 @@ var $;
 
 
 ;
-	($.$mol_icon_key_variant) = class $mol_icon_key_variant extends ($.$mol_icon) {
+	($.$mol_icon_account_circle) = class $mol_icon_account_circle extends ($.$mol_icon) {
 		path(){
-			return "M22,18V22H18V19H15V16H12L9.74,13.74C9.19,13.91 8.61,14 8,14A6,6 0 0,1 2,8A6,6 0 0,1 8,2A6,6 0 0,1 14,8C14,8.61 13.91,9.19 13.74,9.74L22,18M7,5A2,2 0 0,0 5,7A2,2 0 0,0 7,9A2,2 0 0,0 9,7A2,2 0 0,0 7,5Z";
+			return "M12,19.2C9.5,19.2 7.29,17.92 6,16C6.03,14 10,12.9 12,12.9C14,12.9 17.97,14 18,16C16.71,17.92 14.5,19.2 12,19.2M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z";
 		}
 	};
 
@@ -6618,42 +6618,6 @@ var $;
 (function ($) {
     $mol_style_attach("mol/check/icon/icon.view.css", "[mol_check_icon]:where([mol_check_checked]) {\n\tcolor: var(--mol_theme_current);\n}\n");
 })($ || ($ = {}));
-
-;
-"use strict";
-
-
-;
-	($.$mol_icon_cog) = class $mol_icon_cog extends ($.$mol_icon) {
-		path(){
-			return "M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$mol_icon_account) = class $mol_icon_account extends ($.$mol_icon) {
-		path(){
-			return "M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$mol_icon_account_circle) = class $mol_icon_account_circle extends ($.$mol_icon) {
-		path(){
-			return "M12,19.2C9.5,19.2 7.29,17.92 6,16C6.03,14 10,12.9 12,12.9C14,12.9 17.97,14 18,16C16.71,17.92 14.5,19.2 12,19.2M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z";
-		}
-	};
-
 
 ;
 "use strict";
@@ -22272,36 +22236,6 @@ var $;
 			(obj.title) = () => ((this.title()));
 			return obj;
 		}
-		Token_icon(){
-			const obj = new this.$.$mol_icon_key_variant();
-			return obj;
-		}
-		token_open(next){
-			if(next !== undefined) return next;
-			return false;
-		}
-		Token_toggle(){
-			const obj = new this.$.$mol_check_icon();
-			(obj.hint) = () => ("Токен");
-			(obj.Icon) = () => ((this.Token_icon()));
-			(obj.checked) = (next) => ((this.token_open(next)));
-			return obj;
-		}
-		Settings_icon(){
-			const obj = new this.$.$mol_icon_cog();
-			return obj;
-		}
-		settings_open(next){
-			if(next !== undefined) return next;
-			return false;
-		}
-		Settings_toggle(){
-			const obj = new this.$.$mol_check_icon();
-			(obj.hint) = () => ("Настройки прокси");
-			(obj.Icon) = () => ((this.Settings_icon()));
-			(obj.checked) = (next) => ((this.settings_open(next)));
-			return obj;
-		}
 		nickname_label(){
 			return "";
 		}
@@ -22381,65 +22315,6 @@ var $;
 		scroll(next){
 			if(next !== undefined) return next;
 			return 0;
-		}
-		token(next){
-			if(next !== undefined) return next;
-			return "";
-		}
-		Token_input(){
-			const obj = new this.$.$mol_string();
-			(obj.hint) = () => ("Вставь токен или cURL");
-			(obj.value) = (next) => ((this.token(next)));
-			return obj;
-		}
-		clear_token(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		Token_clear(){
-			const obj = new this.$.$mol_button_minor();
-			(obj.title) = () => ("Удалить токен");
-			(obj.click) = (next) => ((this.clear_token(next)));
-			return obj;
-		}
-		Token_panel(){
-			const obj = new this.$.$mol_list();
-			(obj.rows) = () => ([(this.Token_input()), (this.Token_clear())]);
-			return obj;
-		}
-		Proxy_hint(){
-			const obj = new this.$.$mol_paragraph();
-			(obj.title) = () => ("URL прокси для обхода блокировок");
-			return obj;
-		}
-		proxy_url(next){
-			if(next !== undefined) return next;
-			return "";
-		}
-		Proxy_input(){
-			const obj = new this.$.$mol_string();
-			(obj.hint) = () => ("https://my-proxy.example.com");
-			(obj.value) = (next) => ((this.proxy_url(next)));
-			return obj;
-		}
-		reset_proxy(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		Proxy_reset(){
-			const obj = new this.$.$mol_button_minor();
-			(obj.title) = () => ("Сбросить на дефолтный");
-			(obj.click) = (next) => ((this.reset_proxy(next)));
-			return obj;
-		}
-		Settings_panel(){
-			const obj = new this.$.$mol_list();
-			(obj.rows) = () => ([
-				(this.Proxy_hint()), 
-				(this.Proxy_input()), 
-				(this.Proxy_reset())
-			]);
-			return obj;
 		}
 		Account(){
 			const obj = new this.$.$bog_vk_account();
@@ -22551,8 +22426,6 @@ var $;
 		}
 		tools(){
 			return [
-				(this.Token_toggle()), 
-				(this.Settings_toggle()), 
 				(this.Nickname_label()), 
 				(this.Account_toggle()), 
 				(this.Help_toggle()), 
@@ -22568,8 +22441,6 @@ var $;
 		}
 		body(){
 			return [
-				(this.Token_panel()), 
-				(this.Settings_panel()), 
 				(this.Account()), 
 				(this.Auth_block()), 
 				(this.Tabs()), 
@@ -22584,12 +22455,6 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "Theme"));
 	($mol_mem(($.$bog_vk_app.prototype), "Popup_fix"));
 	($mol_mem(($.$bog_vk_app.prototype), "Brand"));
-	($mol_mem(($.$bog_vk_app.prototype), "Token_icon"));
-	($mol_mem(($.$bog_vk_app.prototype), "token_open"));
-	($mol_mem(($.$bog_vk_app.prototype), "Token_toggle"));
-	($mol_mem(($.$bog_vk_app.prototype), "Settings_icon"));
-	($mol_mem(($.$bog_vk_app.prototype), "settings_open"));
-	($mol_mem(($.$bog_vk_app.prototype), "Settings_toggle"));
 	($mol_mem(($.$bog_vk_app.prototype), "Nickname_label"));
 	($mol_mem(($.$bog_vk_app.prototype), "Account_icon"));
 	($mol_mem(($.$bog_vk_app.prototype), "account_open"));
@@ -22606,17 +22471,6 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "Sync_status"));
 	($mol_mem(($.$bog_vk_app.prototype), "Lighter"));
 	($mol_mem(($.$bog_vk_app.prototype), "scroll"));
-	($mol_mem(($.$bog_vk_app.prototype), "token"));
-	($mol_mem(($.$bog_vk_app.prototype), "Token_input"));
-	($mol_mem(($.$bog_vk_app.prototype), "clear_token"));
-	($mol_mem(($.$bog_vk_app.prototype), "Token_clear"));
-	($mol_mem(($.$bog_vk_app.prototype), "Token_panel"));
-	($mol_mem(($.$bog_vk_app.prototype), "Proxy_hint"));
-	($mol_mem(($.$bog_vk_app.prototype), "proxy_url"));
-	($mol_mem(($.$bog_vk_app.prototype), "Proxy_input"));
-	($mol_mem(($.$bog_vk_app.prototype), "reset_proxy"));
-	($mol_mem(($.$bog_vk_app.prototype), "Proxy_reset"));
-	($mol_mem(($.$bog_vk_app.prototype), "Settings_panel"));
 	($mol_mem(($.$bog_vk_app.prototype), "Account"));
 	($mol_mem(($.$bog_vk_app.prototype), "Auth_link"));
 	($mol_mem(($.$bog_vk_app.prototype), "Auth_hint"));
@@ -28084,56 +27938,21 @@ var $;
                 }
                 return next ?? [];
             }
-            clear_token() {
-                this.token('');
-                this.token_expired(false);
-                this.token_open(false);
-            }
             /**
              * Каждая overlay-панель — независимый булевый toggle в localStorage,
              * как было у старого show_hint. Несколько панелей могут быть открыты
              * одновременно, треки/таб-бар при этом не прячутся.
              */
-            token_open(next) {
-                return $mol_state_local.value('vk_token_open', next) ?? false;
-            }
-            settings_open(next) {
-                return $mol_state_local.value('vk_settings_open', next) ?? false;
-            }
             account_open(next) {
                 return $mol_state_local.value('vk_account_open', next) ?? false;
             }
             help_open(next) {
                 return $mol_state_local.value('vk_help_open', next) ?? true;
             }
-            Token_panel() {
-                if (!this.token_open())
-                    return null;
-                return super.Token_panel();
-            }
-            Settings_panel() {
-                if (!this.settings_open())
-                    return null;
-                return super.Settings_panel();
-            }
             Account() {
                 if (!this.account_open())
                     return null;
                 return super.Account();
-            }
-            /**
-             * Пользовательский URL прокси (для обхода блокировок VK API).
-             * Пустая строка — дефолтный прокси.
-             */
-            proxy_url(next) {
-                if (next !== undefined) {
-                    $mol_state_local.value('vk_proxy_url', next || null);
-                    return next;
-                }
-                return $mol_state_local.value('vk_proxy_url') ?? '';
-            }
-            reset_proxy() {
-                this.proxy_url('');
             }
             /** Никнейм для шапки — берём прямо из home land профиля. */
             nickname_label() {
@@ -28260,26 +28079,11 @@ var $;
             $mol_mem
         ], $bog_vk_app.prototype, "upload_files", null);
         __decorate([
-            $mol_action
-        ], $bog_vk_app.prototype, "clear_token", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_app.prototype, "token_open", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_app.prototype, "settings_open", null);
-        __decorate([
             $mol_mem
         ], $bog_vk_app.prototype, "account_open", null);
         __decorate([
             $mol_mem
         ], $bog_vk_app.prototype, "help_open", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_app.prototype, "proxy_url", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_app.prototype, "reset_proxy", null);
         __decorate([
             $mol_mem
         ], $bog_vk_app.prototype, "nickname_label", null);
@@ -28378,38 +28182,6 @@ var $;
                 objectFit: 'contain',
                 alignSelf: 'center',
                 margin: { left: '0.5rem', right: '0.25rem' },
-            },
-            Token_panel: {
-                padding: {
-                    top: '0.5rem',
-                    bottom: '0.5rem',
-                    left: '0.5rem',
-                    right: '0.5rem',
-                },
-            },
-            Token_input: {
-                font: {
-                    size: '1rem',
-                },
-            },
-            Settings_panel: {
-                padding: {
-                    top: '0.5rem',
-                    bottom: '0.5rem',
-                    left: '0.5rem',
-                    right: '0.5rem',
-                },
-            },
-            Proxy_input: {
-                font: {
-                    size: '0.875rem',
-                },
-            },
-            Proxy_hint: {
-                font: {
-                    size: '0.8125rem',
-                },
-                color: $mol_theme.shade,
             },
             Nickname_label: {
                 font: { size: '0.875rem' },

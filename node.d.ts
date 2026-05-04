@@ -2308,22 +2308,22 @@ declare namespace $ {
 //# sourceMappingURL=icon.view.tree.d.ts.map
 declare namespace $ {
 
-	export class $mol_icon_key extends $mol_icon {
+	export class $mol_icon_account extends $mol_icon {
 		path( ): string
 	}
 	
 }
 
-//# sourceMappingURL=key.view.tree.d.ts.map
+//# sourceMappingURL=account.view.tree.d.ts.map
 declare namespace $ {
 
-	export class $mol_icon_key_variant extends $mol_icon {
+	export class $mol_icon_account_circle extends $mol_icon {
 		path( ): string
 	}
 	
 }
 
-//# sourceMappingURL=variant.view.tree.d.ts.map
+//# sourceMappingURL=circle.view.tree.d.ts.map
 declare namespace $ {
     /**
      * Z-index values for layers
@@ -2603,33 +2603,6 @@ declare namespace $ {
 }
 
 //# sourceMappingURL=icon.view.tree.d.ts.map
-declare namespace $ {
-
-	export class $mol_icon_cog extends $mol_icon {
-		path( ): string
-	}
-	
-}
-
-//# sourceMappingURL=cog.view.tree.d.ts.map
-declare namespace $ {
-
-	export class $mol_icon_account extends $mol_icon {
-		path( ): string
-	}
-	
-}
-
-//# sourceMappingURL=account.view.tree.d.ts.map
-declare namespace $ {
-
-	export class $mol_icon_account_circle extends $mol_icon {
-		path( ): string
-	}
-	
-}
-
-//# sourceMappingURL=circle.view.tree.d.ts.map
 declare namespace $ {
 
 	export class $mol_icon_help extends $mol_icon {
@@ -12225,247 +12198,162 @@ declare namespace $ {
 		,
 		ReturnType< $mol_image['title'] >
 	>
-	type $mol_check_icon__hint_bog_vk_app_3 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_check_icon['hint'] >
-	>
-	type $mol_check_icon__Icon_bog_vk_app_4 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['Token_icon'] >
-		,
-		ReturnType< $mol_check_icon['Icon'] >
-	>
-	type $mol_check_icon__checked_bog_vk_app_5 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['token_open'] >
-		,
-		ReturnType< $mol_check_icon['checked'] >
-	>
-	type $mol_check_icon__hint_bog_vk_app_6 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_check_icon['hint'] >
-	>
-	type $mol_check_icon__Icon_bog_vk_app_7 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['Settings_icon'] >
-		,
-		ReturnType< $mol_check_icon['Icon'] >
-	>
-	type $mol_check_icon__checked_bog_vk_app_8 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['settings_open'] >
-		,
-		ReturnType< $mol_check_icon['checked'] >
-	>
-	type $mol_view__sub_bog_vk_app_9 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_app_3 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_check_icon__hint_bog_vk_app_10 = $mol_type_enforce<
+	type $mol_check_icon__hint_bog_vk_app_4 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_check_icon['hint'] >
 	>
-	type $mol_check_icon__Icon_bog_vk_app_11 = $mol_type_enforce<
+	type $mol_check_icon__Icon_bog_vk_app_5 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['Account_icon'] >
 		,
 		ReturnType< $mol_check_icon['Icon'] >
 	>
-	type $mol_check_icon__checked_bog_vk_app_12 = $mol_type_enforce<
+	type $mol_check_icon__checked_bog_vk_app_6 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['account_open'] >
 		,
 		ReturnType< $mol_check_icon['checked'] >
 	>
-	type $mol_check_icon__hint_bog_vk_app_13 = $mol_type_enforce<
+	type $mol_check_icon__hint_bog_vk_app_7 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_check_icon['hint'] >
 	>
-	type $mol_check_icon__Icon_bog_vk_app_14 = $mol_type_enforce<
+	type $mol_check_icon__Icon_bog_vk_app_8 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['Help_icon'] >
 		,
 		ReturnType< $mol_check_icon['Icon'] >
 	>
-	type $mol_check_icon__checked_bog_vk_app_15 = $mol_type_enforce<
+	type $mol_check_icon__checked_bog_vk_app_9 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['help_open'] >
 		,
 		ReturnType< $mol_check_icon['checked'] >
 	>
-	type $mol_button_open__hint_bog_vk_app_16 = $mol_type_enforce<
+	type $mol_button_open__hint_bog_vk_app_10 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_button_open['hint'] >
 	>
-	type $mol_button_open__accept_bog_vk_app_17 = $mol_type_enforce<
+	type $mol_button_open__accept_bog_vk_app_11 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_button_open['accept'] >
 	>
-	type $mol_button_open__files_bog_vk_app_18 = $mol_type_enforce<
+	type $mol_button_open__files_bog_vk_app_12 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['upload_files'] >
 		,
 		ReturnType< $mol_button_open['files'] >
 	>
-	type $mol_button_minor__click_bog_vk_app_19 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_app_13 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['download_all'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
-	type $mol_button_minor__sub_bog_vk_app_20 = $mol_type_enforce<
+	type $mol_button_minor__sub_bog_vk_app_14 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
-	type $bog_version__version_bog_vk_app_21 = $mol_type_enforce<
+	type $bog_version__version_bog_vk_app_15 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $bog_version['version'] >
 	>
-	type $mol_string__hint_bog_vk_app_22 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_string['hint'] >
-	>
-	type $mol_string__value_bog_vk_app_23 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['token'] >
-		,
-		ReturnType< $mol_string['value'] >
-	>
-	type $mol_button_minor__title_bog_vk_app_24 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_button_minor['title'] >
-	>
-	type $mol_button_minor__click_bog_vk_app_25 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['clear_token'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_list__rows_bog_vk_app_26 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_list['rows'] >
-	>
-	type $mol_paragraph__title_bog_vk_app_27 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_paragraph['title'] >
-	>
-	type $mol_string__hint_bog_vk_app_28 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_string['hint'] >
-	>
-	type $mol_string__value_bog_vk_app_29 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['proxy_url'] >
-		,
-		ReturnType< $mol_string['value'] >
-	>
-	type $mol_button_minor__title_bog_vk_app_30 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_button_minor['title'] >
-	>
-	type $mol_button_minor__click_bog_vk_app_31 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['reset_proxy'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_list__rows_bog_vk_app_32 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_list['rows'] >
-	>
-	type $mol_link__uri_bog_vk_app_33 = $mol_type_enforce<
+	type $mol_link__uri_bog_vk_app_16 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_link['uri'] >
 	>
-	type $mol_link__target_bog_vk_app_34 = $mol_type_enforce<
+	type $mol_link__target_bog_vk_app_17 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_link['target'] >
 	>
-	type $mol_link__sub_bog_vk_app_35 = $mol_type_enforce<
+	type $mol_link__sub_bog_vk_app_18 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_link['sub'] >
 	>
-	type $mol_paragraph__title_bog_vk_app_36 = $mol_type_enforce<
+	type $mol_paragraph__title_bog_vk_app_19 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['token_hint'] >
 		,
 		ReturnType< $mol_paragraph['title'] >
 	>
-	type $mol_view__sub_bog_vk_app_37 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_app_20 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_switch__value_bog_vk_app_38 = $mol_type_enforce<
+	type $mol_switch__value_bog_vk_app_21 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['page'] >
 		,
 		ReturnType< $mol_switch['value'] >
 	>
-	type $mol_switch__options_bog_vk_app_39 = $mol_type_enforce<
+	type $mol_switch__options_bog_vk_app_22 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['tab_options'] >
 		,
 		ReturnType< $mol_switch['options'] >
 	>
-	type $mol_string__hint_bog_vk_app_40 = $mol_type_enforce<
+	type $mol_string__hint_bog_vk_app_23 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_string['hint'] >
 	>
-	type $mol_string__value_bog_vk_app_41 = $mol_type_enforce<
+	type $mol_string__value_bog_vk_app_24 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['search_query'] >
 		,
 		ReturnType< $mol_string['value'] >
 	>
-	type $bog_vk_tracks__audios_bog_vk_app_42 = $mol_type_enforce<
+	type $bog_vk_tracks__audios_bog_vk_app_25 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_tracks['audios'] >
 	>
-	type $bog_vk_tracks__current_audio_bog_vk_app_43 = $mol_type_enforce<
+	type $bog_vk_tracks__current_audio_bog_vk_app_26 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['current_audio'] >
 	>
-	type $bog_vk_tracks__play_audio_bog_vk_app_44 = $mol_type_enforce<
+	type $bog_vk_tracks__play_audio_bog_vk_app_27 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['on_play_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['play_audio'] >
 	>
-	type $bog_vk_tracks__archive_mode_bog_vk_app_45 = $mol_type_enforce<
+	type $bog_vk_tracks__archive_mode_bog_vk_app_28 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['archive_mode'] >
 		,
 		ReturnType< $bog_vk_tracks['archive_mode'] >
 	>
-	type $bog_vk_tracks__reorder_to_bog_vk_app_46 = $mol_type_enforce<
+	type $bog_vk_tracks__reorder_to_bog_vk_app_29 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['reorder_to'] >
 		,
 		ReturnType< $bog_vk_tracks['reorder_to'] >
 	>
-	type $bog_vk_tracks__archive_audio_bog_vk_app_47 = $mol_type_enforce<
+	type $bog_vk_tracks__archive_audio_bog_vk_app_30 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['archive_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['archive_audio'] >
 	>
-	type $bog_vk_tracks__restore_audio_bog_vk_app_48 = $mol_type_enforce<
+	type $bog_vk_tracks__restore_audio_bog_vk_app_31 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['restore_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['restore_audio'] >
 	>
-	type $bog_vk_tracks__delete_audio_bog_vk_app_49 = $mol_type_enforce<
+	type $bog_vk_tracks__delete_audio_bog_vk_app_32 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['delete_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['delete_audio'] >
 	>
-	type $bog_vk_player__queue_bog_vk_app_50 = $mol_type_enforce<
+	type $bog_vk_player__queue_bog_vk_app_33 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_player['queue'] >
 	>
-	type $bog_vk_player__current_audio_bog_vk_app_51 = $mol_type_enforce<
+	type $bog_vk_player__current_audio_bog_vk_app_34 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_player['current_audio'] >
@@ -12474,12 +12362,6 @@ declare namespace $ {
 		Theme( ): $mol_theme_auto
 		Popup_fix( ): $bog_popup_plugin
 		Brand( ): $mol_image
-		Token_icon( ): $mol_icon_key_variant
-		token_open( next?: boolean ): boolean
-		Token_toggle( ): $mol_check_icon
-		Settings_icon( ): $mol_icon_cog
-		settings_open( next?: boolean ): boolean
-		Settings_toggle( ): $mol_check_icon
 		nickname_label( ): string
 		Nickname_label( ): $mol_view
 		Account_icon( ): $mol_icon_account_circle
@@ -12497,17 +12379,6 @@ declare namespace $ {
 		Sync_status( ): $giper_baza_status
 		Lighter( ): $mol_lights_toggle
 		scroll( next?: number ): number
-		token( next?: string ): string
-		Token_input( ): $mol_string
-		clear_token( next?: any ): any
-		Token_clear( ): $mol_button_minor
-		Token_panel( ): $mol_list
-		Proxy_hint( ): $mol_paragraph
-		proxy_url( next?: string ): string
-		Proxy_input( ): $mol_string
-		reset_proxy( next?: any ): any
-		Proxy_reset( ): $mol_button_minor
-		Settings_panel( ): $mol_list
 		Account( ): $bog_vk_account
 		Auth_link( ): $mol_link
 		Auth_hint( ): $mol_paragraph
@@ -12587,25 +12458,14 @@ declare namespace $.$$ {
         delete_audio(audio: $bog_vk_api_audio | null): void;
         on_play_audio(audio?: $bog_vk_api_audio | null): void;
         upload_files(next?: File[]): File[];
-        clear_token(): void;
         /**
          * Каждая overlay-панель — независимый булевый toggle в localStorage,
          * как было у старого show_hint. Несколько панелей могут быть открыты
          * одновременно, треки/таб-бар при этом не прячутся.
          */
-        token_open(next?: boolean): boolean;
-        settings_open(next?: boolean): boolean;
         account_open(next?: boolean): boolean;
         help_open(next?: boolean): boolean;
-        Token_panel(): any;
-        Settings_panel(): any;
         Account(): any;
-        /**
-         * Пользовательский URL прокси (для обхода блокировок VK API).
-         * Пустая строка — дефолтный прокси.
-         */
-        proxy_url(next?: string): string;
-        reset_proxy(): void;
         /** Никнейм для шапки — берём прямо из home land профиля. */
         nickname_label(): string;
         Nickname_label(): any;
