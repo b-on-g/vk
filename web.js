@@ -4652,14 +4652,19 @@ var $;
             const move_title = (el) => {
                 if (!el || el.nodeType !== 1)
                     return;
-                const t = el.getAttribute && el.getAttribute('title');
-                if (t) {
-                    el.setAttribute('data-mol-tip', t);
-                    el.removeAttribute('title');
+                // Поднимаемся вверх по дереву и переносим title с любого предка —
+                // hover может прилететь от вложенного <input> / <svg>, а title-атрибут
+                // часто стоит на корне кнопки.
+                let node = el;
+                while (node) {
+                    const t = node.getAttribute && node.getAttribute('title');
+                    if (t) {
+                        node.setAttribute('data-mol-tip', t);
+                        node.removeAttribute('title');
+                    }
+                    node = node.parentElement;
                 }
             };
-            // Захватываем на ранней фазе все mouseover'ы, не зависим от того, какой
-            // компонент стрельнул.
             doc.addEventListener('mouseover', (e) => move_title(e.target), true);
             doc.addEventListener('focusin', (e) => move_title(e.target), true);
         }
@@ -31904,23 +31909,6 @@ var $;
 			const obj = new this.$.$bog_vk_account();
 			return obj;
 		}
-		Auth_link(){
-			const obj = new this.$.$mol_link();
-			(obj.uri) = () => ("https://vk.com/audios374092255");
-			(obj.target) = () => ("_blank");
-			(obj.sub) = () => (["Открыть аудио"]);
-			return obj;
-		}
-		Auth_hint(){
-			const obj = new this.$.$mol_paragraph();
-			(obj.title) = () => ((this.token_hint()));
-			return obj;
-		}
-		Auth_block(){
-			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([(this.Auth_link()), (this.Auth_hint())]);
-			return obj;
-		}
 		page(next){
 			if(next !== undefined) return next;
 			return "my";
@@ -32006,9 +31994,6 @@ var $;
 		title(){
 			return "Bog Music";
 		}
-		token_hint(){
-			return "";
-		}
 		Title(){
 			return (this.Brand());
 		}
@@ -32026,7 +32011,6 @@ var $;
 		body(){
 			return [
 				(this.Account()), 
-				(this.Auth_block()), 
 				(this.Tabs()), 
 				(this.Search_bar()), 
 				(this.Tracks())
@@ -32049,9 +32033,6 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "Theme_btn"));
 	($mol_mem(($.$bog_vk_app.prototype), "scroll"));
 	($mol_mem(($.$bog_vk_app.prototype), "Account"));
-	($mol_mem(($.$bog_vk_app.prototype), "Auth_link"));
-	($mol_mem(($.$bog_vk_app.prototype), "Auth_hint"));
-	($mol_mem(($.$bog_vk_app.prototype), "Auth_block"));
 	($mol_mem(($.$bog_vk_app.prototype), "page"));
 	($mol_mem(($.$bog_vk_app.prototype), "Tabs"));
 	($mol_mem(($.$bog_vk_app.prototype), "search_query"));
@@ -36404,14 +36385,6 @@ var $;
                 catch { }
                 return super.auto();
             }
-            Auth_block() {
-                if (this.token())
-                    return null;
-                return super.Auth_block();
-            }
-            token_hint() {
-                return '1. Открой аудио (ссылка выше)\n2. F12 → Network → фильтр «api»\n3. Любой запрос → ПКМ → Copy as cURL\n4. Вставь в поле токена наверху';
-            }
             Search_bar() {
                 if (this.page() !== 'search')
                     return null;
@@ -36523,45 +36496,6 @@ var $;
                     left: '0.5rem',
                     right: '0.5rem',
                 },
-            },
-            Auth_block: {
-                flex: {
-                    direction: 'column',
-                },
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: {
-                    top: '2rem',
-                    bottom: '1rem',
-                    left: '1rem',
-                    right: '1rem',
-                },
-            },
-            Auth_link: {
-                background: {
-                    color: '#0077FF',
-                },
-                color: '#fff',
-                padding: {
-                    top: '0.75rem',
-                    bottom: '0.75rem',
-                    left: '1.5rem',
-                    right: '1.5rem',
-                },
-                borderRadius: '0.5rem',
-                font: {
-                    weight: 'bold',
-                    size: '1rem',
-                },
-                textDecoration: 'none',
-            },
-            Auth_hint: {
-                font: {
-                    size: '0.8125rem',
-                },
-                color: $mol_theme.shade,
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-all',
             },
             Tools: {
                 alignItems: 'center',

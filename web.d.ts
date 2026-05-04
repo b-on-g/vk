@@ -18559,97 +18559,72 @@ declare namespace $ {
 		,
 		ReturnType< $bog_theme_toggle['theme_auto'] >
 	>
-	type $mol_link__uri_bog_vk_app_11 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_link['uri'] >
-	>
-	type $mol_link__target_bog_vk_app_12 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_link['target'] >
-	>
-	type $mol_link__sub_bog_vk_app_13 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_link['sub'] >
-	>
-	type $mol_paragraph__title_bog_vk_app_14 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['token_hint'] >
-		,
-		ReturnType< $mol_paragraph['title'] >
-	>
-	type $mol_view__sub_bog_vk_app_15 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
-	>
-	type $mol_switch__value_bog_vk_app_16 = $mol_type_enforce<
+	type $mol_switch__value_bog_vk_app_11 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['page'] >
 		,
 		ReturnType< $mol_switch['value'] >
 	>
-	type $mol_switch__options_bog_vk_app_17 = $mol_type_enforce<
+	type $mol_switch__options_bog_vk_app_12 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['tab_options'] >
 		,
 		ReturnType< $mol_switch['options'] >
 	>
-	type $mol_string__hint_bog_vk_app_18 = $mol_type_enforce<
+	type $mol_string__hint_bog_vk_app_13 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_string['hint'] >
 	>
-	type $mol_string__value_bog_vk_app_19 = $mol_type_enforce<
+	type $mol_string__value_bog_vk_app_14 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['search_query'] >
 		,
 		ReturnType< $mol_string['value'] >
 	>
-	type $bog_vk_tracks__audios_bog_vk_app_20 = $mol_type_enforce<
+	type $bog_vk_tracks__audios_bog_vk_app_15 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_tracks['audios'] >
 	>
-	type $bog_vk_tracks__current_audio_bog_vk_app_21 = $mol_type_enforce<
+	type $bog_vk_tracks__current_audio_bog_vk_app_16 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['current_audio'] >
 	>
-	type $bog_vk_tracks__play_audio_bog_vk_app_22 = $mol_type_enforce<
+	type $bog_vk_tracks__play_audio_bog_vk_app_17 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['on_play_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['play_audio'] >
 	>
-	type $bog_vk_tracks__archive_mode_bog_vk_app_23 = $mol_type_enforce<
+	type $bog_vk_tracks__archive_mode_bog_vk_app_18 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['archive_mode'] >
 		,
 		ReturnType< $bog_vk_tracks['archive_mode'] >
 	>
-	type $bog_vk_tracks__reorder_to_bog_vk_app_24 = $mol_type_enforce<
+	type $bog_vk_tracks__reorder_to_bog_vk_app_19 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['reorder_to'] >
 		,
 		ReturnType< $bog_vk_tracks['reorder_to'] >
 	>
-	type $bog_vk_tracks__archive_audio_bog_vk_app_25 = $mol_type_enforce<
+	type $bog_vk_tracks__archive_audio_bog_vk_app_20 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['archive_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['archive_audio'] >
 	>
-	type $bog_vk_tracks__restore_audio_bog_vk_app_26 = $mol_type_enforce<
+	type $bog_vk_tracks__restore_audio_bog_vk_app_21 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['restore_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['restore_audio'] >
 	>
-	type $bog_vk_tracks__delete_audio_bog_vk_app_27 = $mol_type_enforce<
+	type $bog_vk_tracks__delete_audio_bog_vk_app_22 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['delete_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['delete_audio'] >
 	>
-	type $bog_vk_player__queue_bog_vk_app_28 = $mol_type_enforce<
+	type $bog_vk_player__queue_bog_vk_app_23 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_player['queue'] >
 	>
-	type $bog_vk_player__current_audio_bog_vk_app_29 = $mol_type_enforce<
+	type $bog_vk_player__current_audio_bog_vk_app_24 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_player['current_audio'] >
@@ -18669,9 +18644,6 @@ declare namespace $ {
 		Theme_btn( ): $bog_theme_toggle
 		scroll( next?: number ): number
 		Account( ): $bog_vk_account
-		Auth_link( ): $mol_link
-		Auth_hint( ): $mol_paragraph
-		Auth_block( ): $mol_view
 		page( next?: string ): string
 		tab_options( ): ({ 
 			'my': string,
@@ -18693,7 +18665,6 @@ declare namespace $ {
 		Player( ): $bog_vk_player
 		plugins( ): readonly(any)[]
 		title( ): string
-		token_hint( ): string
 		Title( ): ReturnType< $bog_vk_app['Brand'] >
 		tools( ): readonly(any)[]
 		body_scroll_top( next?: ReturnType< $bog_vk_app['scroll'] > ): ReturnType< $bog_vk_app['scroll'] >
@@ -18768,8 +18739,6 @@ declare namespace $.$$ {
          * чтобы $giper_baza_glob не вызвал destructor() и не порвал подписки.
          */
         auto(): any;
-        Auth_block(): any;
-        token_hint(): string;
         Search_bar(): any;
     }
 }

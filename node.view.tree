@@ -762,7 +762,6 @@ $bog_vk_app $mol_page
 		<= Popup_fix $bog_popup_plugin
 		<= Tooltip $bog_tooltip_plugin
 	title \Bog Music
-	token_hint \
 	Title <= Brand $mol_image
 		uri \bog/vk/app/favicon.svg
 		title <= title
@@ -782,14 +781,6 @@ $bog_vk_app $mol_page
 	body_scroll_top? <=> scroll? 0
 	body /
 		<= Account $bog_vk_account
-		<= Auth_block $mol_view
-			sub /
-				<= Auth_link $mol_link
-					uri \https://vk.com/audios374092255
-					target \_blank
-					sub / \Открыть аудио
-				<= Auth_hint $mol_paragraph
-					title <= token_hint
 		<= Tabs $mol_switch
 			value? <=> page? \my
 			options <= tab_options *
