@@ -3,4 +3,3 @@ include \/mol/offline/install
 deploy \/bog/vk/app/favicon.svg
 deploy \/bog/vk/ext/content.js
 deploy \/bog/vk/ext/inject.js
-deploy \/bog/vk/app/manifest.ext.json

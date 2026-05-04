@@ -3,6 +3,9 @@ $bog_vk_app $mol_page
 		<= Theme $mol_theme_auto
 		<= Popup_fix $bog_popup_plugin
 	title \Bog Music
+	Title <= Brand $mol_image
+		uri \bog/vk/app/favicon.svg
+		title <= title
 	tools /
 		<= Token_popup $mol_pop
 			showed? <=> token_popup_open? false

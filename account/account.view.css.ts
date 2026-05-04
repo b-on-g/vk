@@ -1,7 +1,8 @@
 namespace $.$$ {
 	$mol_style_define($bog_vk_account, {
-		minWidth: '18rem',
-		maxWidth: '26rem',
+		width: '26rem',
+		maxWidth: $mol_style_func.calc('100vw - 1rem'),
+		boxSizing: 'border-box',
 		padding: {
 			top: '0.5rem',
 			bottom: '0.5rem',

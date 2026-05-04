@@ -79,15 +79,23 @@ namespace $.$$ {
 			alignItems: 'center',
 		},
 
+		Brand: {
+			width: '1.75rem',
+			height: '1.75rem',
+			flex: { shrink: 0, grow: 0 },
+			objectFit: 'contain',
+		},
+
 		Token_panel: {
-			minWidth: '16rem',
-			maxWidth: '22rem',
+			width: '22rem',
+			maxWidth: $mol_style_func.calc('100vw - 1rem'),
 			padding: {
 				top: '0.5rem',
 				bottom: '0.5rem',
 				left: '0.5rem',
 				right: '0.5rem',
 			},
+			boxSizing: 'border-box',
 		},
 
 		Token_input: {
@@ -97,14 +105,15 @@ namespace $.$$ {
 		},
 
 		Settings_panel: {
-			minWidth: '18rem',
-			maxWidth: '24rem',
+			width: '24rem',
+			maxWidth: $mol_style_func.calc('100vw - 1rem'),
 			padding: {
 				top: '0.5rem',
 				bottom: '0.5rem',
 				left: '0.5rem',
 				right: '0.5rem',
 			},
+			boxSizing: 'border-box',
 		},
 
 		Proxy_input: {
