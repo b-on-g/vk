@@ -469,15 +469,6 @@ namespace $.$$ {
 			return super.auto()
 		}
 
-		Auth_block() {
-			if (this.token()) return null as any
-			return super.Auth_block()
-		}
-
-		token_hint() {
-			return '1. Открой аудио (ссылка выше)\n2. F12 → Network → фильтр «api»\n3. Любой запрос → ПКМ → Copy as cURL\n4. Вставь в поле токена наверху'
-		}
-
 
 		Search_bar() {
 			if (this.page() !== 'search') return null as any
