@@ -1,21 +1,27 @@
 namespace $ {
 
 	/**
-	 * Персональное хранилище треков пользователя в Giper Baza.
-	 * Живёт в home land (персональные данные, синкаются между устройствами).
-	 * Ключ — VK cache_key вида `${owner_id}_${id}`.
+	 * Хранилище треков пользователя.
+	 * Сама сущность Giper Baza с словарём треков (cache_key → $bog_vk_track_baza).
+	 * Живёт в home land. Паттерн blitz: $bog_blitz_registry / $bog_blitz_profile.
 	 */
-	export class $bog_vk_store extends $mol_object2 {
+	export class $bog_vk_store extends $giper_baza_dict.with({
+		Tracks: $giper_baza_dict_to($bog_vk_track_baza),
+	}) {
 
-		/** Home land текущего пользователя. НЕ @$mol_mem — чтобы не было circular. */
+		/** Home land текущего пользователя. */
 		static land() {
 			return this.$.$giper_baza_glob.home().land()
 		}
 
-		/** Словарь треков: cache_key → $bog_vk_track_baza. НЕ @$mol_mem. */
+		/** Корневой store-объект в home land. */
+		static root() {
+			return this.land().Data($bog_vk_store)
+		}
+
+		/** Словарь треков. */
 		static tracks_dict() {
-			const Tracks = $giper_baza_dict_to($bog_vk_track_baza)
-			return this.land().Data(Tracks)
+			return this.root().Tracks('auto')!
 		}
 
 		/** Ключ для baza из VK-аудио. */
