@@ -32520,13 +32520,17 @@ var $;
          * резолвятся в chrome-extension://. Любой такой URL → `new WebSocket(...)` →
          * SyntaxError. Чистим default-список и подкладываем публичный baza-master.
          */
+        /**
+         * Принудительно вешаем `https://baza.giper.dev/` как единственный master:
+         * - в chrome-extension `location.origin` = `chrome-extension://` (невалидный WS)
+         * - на gh-pages `location.origin` = `https://b-on-g.github.io/` (нет WS-сервера → 1006)
+         * - peer-URL'ы из Seed().peers() могут быть относительными → резолв в любую из вышеперечисленных схем
+         * Любой из этих сценариев приводил к `wss://...` → ошибке. Хардкод одного известного мастера решает все три.
+         */
         ;
-        (function fix_yard_masters_in_extension() {
+        (function fix_yard_masters() {
             try {
                 if (typeof location === 'undefined')
-                    return;
-                const proto = location.protocol;
-                if (proto !== 'chrome-extension:' && proto !== 'moz-extension:')
                     return;
                 const yard = $giper_baza_yard;
                 const list = yard.masters_default;
@@ -32537,12 +32541,10 @@ var $;
                 if (!list.includes('https://baza.giper.dev/'))
                     list.push('https://baza.giper.dev/');
                 if (!yard.__bog_vk_masters_patched) {
-                    const orig = yard.masters.bind(yard);
                     Object.defineProperty(yard, 'masters', {
                         configurable: true,
                         value: function () {
-                            const all = orig();
-                            return all.filter(url => /^(http|https|ws|wss):/.test(url));
+                            return ['https://baza.giper.dev/'];
                         },
                     });
                     yard.__bog_vk_masters_patched = true;
@@ -32917,17 +32919,13 @@ var $;
                 console.log('[app] prefetch start:', items.length, 'tracks');
                 $bog_vk_app.prefetch_state({ total: items.length, done: 0, failed: 0 });
                 let done = 0, failed = 0;
-                for (const audio of items) {
-                    // Сейвим метаданные перед скачиванием блоба — трек появляется
-                    // в списке сразу как доходит до него очередь.
+                // for-let-i вместо for-of, чтобы можно было `i--` для ретрая того же трека
+                // при baza-Promise (ещё грузится — подождать и повторить).
+                for (let i = 0; i < items.length; i++) {
+                    const audio = items[i];
                     try {
+                        // Метаданные сейвим перед скачиванием — трек появляется в списке сразу.
                         $bog_vk_store.save_track(audio);
-                    }
-                    catch (e) {
-                        if (!(e instanceof Promise))
-                            console.warn('[app] save_track failed:', audio.title, e?.message);
-                    }
-                    try {
                         if ($bog_vk_cache.is_cached(audio)) {
                             done++;
                             continue;
@@ -32949,8 +32947,14 @@ var $;
                         done++;
                     }
                     catch (e) {
+                        if (e instanceof Promise) {
+                            // Baza ещё догружается. Ждём и повторяем тот же трек — это НЕ ошибка.
+                            await e;
+                            i--;
+                            continue;
+                        }
                         failed++;
-                        console.warn('[app] prefetch failed:', audio.title, e?.message ?? e);
+                        console.warn('[app] prefetch failed:', audio.artist, '—', audio.title, '|', e?.message ?? String(e));
                     }
                     $bog_vk_app.prefetch_state({ total: items.length, done, failed });
                 }
