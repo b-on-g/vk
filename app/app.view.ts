@@ -417,71 +417,52 @@ namespace $.$$ {
 		clear_token() {
 			this.token('')
 			this.token_expired(false)
-			this.panel('')
+			this.token_open(false)
 		}
 
 		/**
-		 * Имя активной overlay-панели в body: '' (треки) | 'token' | 'settings' | 'account' | 'help'.
-		 * Только одна панель открыта одновременно — клик по чекбоксу одной автоматически
-		 * сбрасывает остальные.
+		 * Каждая overlay-панель — независимый булевый toggle в localStorage,
+		 * как было у старого show_hint. Несколько панелей могут быть открыты
+		 * одновременно, треки/таб-бар при этом не прячутся.
 		 */
 		@$mol_mem
-		panel(next?: string): string {
-			return next ?? ''
-		}
-
-		@$mol_mem
 		token_open(next?: boolean) {
-			if (next !== undefined) this.panel(next ? 'token' : '')
-			return this.panel() === 'token'
+			return $mol_state_local.value('vk_token_open', next) ?? false
 		}
 
 		@$mol_mem
 		settings_open(next?: boolean) {
-			if (next !== undefined) this.panel(next ? 'settings' : '')
-			return this.panel() === 'settings'
+			return $mol_state_local.value('vk_settings_open', next) ?? false
 		}
 
 		@$mol_mem
 		account_open(next?: boolean) {
-			if (next !== undefined) this.panel(next ? 'account' : '')
-			return this.panel() === 'account'
+			return $mol_state_local.value('vk_account_open', next) ?? false
 		}
 
 		@$mol_mem
 		help_open(next?: boolean) {
-			if (next !== undefined) this.panel(next ? 'help' : '')
-			return this.panel() === 'help'
+			return $mol_state_local.value('vk_help_open', next) ?? true
 		}
 
 		Token_panel() {
-			if (this.panel() !== 'token') return null as any
+			if (!this.token_open()) return null as any
 			return super.Token_panel()
 		}
 
 		Settings_panel() {
-			if (this.panel() !== 'settings') return null as any
+			if (!this.settings_open()) return null as any
 			return super.Settings_panel()
 		}
 
 		Account() {
-			if (this.panel() !== 'account') return null as any
+			if (!this.account_open()) return null as any
 			return super.Account()
 		}
 
 		Help_panel() {
-			if (this.panel() !== 'help') return null as any
+			if (!this.help_open()) return null as any
 			return super.Help_panel()
-		}
-
-		Tabs() {
-			if (this.panel()) return null as any
-			return super.Tabs()
-		}
-
-		Tracks() {
-			if (this.panel()) return null as any
-			return super.Tracks()
 		}
 
 		/**
@@ -530,7 +511,7 @@ namespace $.$$ {
 
 		Auth_block() {
 			if (this.token()) return null as any
-			if (this.panel()) return null as any
+			if (!this.help_open()) return null as any
 			return super.Auth_block()
 		}
 

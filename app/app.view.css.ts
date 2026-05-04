@@ -6,6 +6,9 @@ namespace $.$$ {
 			left: 'auto',
 			right: 'auto',
 		},
+		Head: {
+			justifyContent: 'space-between'
+		},
 
 		Tabs: {
 			flex: {
