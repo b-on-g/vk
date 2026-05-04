@@ -1,6 +1,6 @@
 $bog_vk_app $mol_page
 	plugins /
-		<= Theme $mol_theme_auto
+		<= Theme $bog_theme_auto
 		<= Popup_fix $bog_popup_plugin
 		<= Tooltip $bog_tooltip_plugin
 	title \Bog Music
@@ -15,18 +15,12 @@ $bog_vk_app $mol_page
 			hint \Аккаунт
 			Icon <= Account_icon $mol_icon_account_circle
 			checked? <=> account_open? false
-		<= Help_toggle $mol_check_icon
-			hint \Подсказка
-			Icon <= Help_icon $mol_icon_help_circle_outline
-			checked? <=> help_open? false
 		<= Upload $mol_button_open
 			hint \Загрузить с устройства
 			accept \audio/*
 			files? <=> upload_files? /File
-		<= Version $bog_version
-			version \0.2.2
-		<= Sync_status $giper_baza_status
-		<= Lighter $mol_lights_toggle
+		<= Theme_btn $bog_theme_toggle
+			theme_auto <= Theme
 	body_scroll_top? <=> scroll? 0
 	body /
 		<= Account $bog_vk_account

@@ -427,14 +427,20 @@ namespace $.$$ {
 			return $mol_state_local.value('vk_account_open', next) ?? false
 		}
 
-		@$mol_mem
-		help_open(next?: boolean) {
-			return $mol_state_local.value('vk_help_open', next) ?? true
-		}
-
 		Account() {
 			if (!this.account_open()) return null as any
 			return super.Account()
+		}
+
+		/** Динамические лейблы вкладок с количеством треков. */
+		tab_options() {
+			const my = this.my_audios().length
+			const arch = this.archived_audios().length
+			return {
+				my: my ? `Моя музыка ${my}` : 'Моя музыка',
+				search: 'Поиск',
+				archive: arch ? `Архив ${arch}` : 'Архив',
+			}
 		}
 
 		/** Никнейм для шапки — берём прямо из home land профиля. */
@@ -465,7 +471,6 @@ namespace $.$$ {
 
 		Auth_block() {
 			if (this.token()) return null as any
-			if (!this.help_open()) return null as any
 			return super.Auth_block()
 		}
 

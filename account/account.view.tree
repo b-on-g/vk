@@ -1,5 +1,6 @@
 $bog_vk_account $mol_list
 	rows /
+		<= Sync_status $giper_baza_status
 		<= Nickname_field $mol_form_field
 			name \Имя
 			Content <= Nickname_input $mol_string
