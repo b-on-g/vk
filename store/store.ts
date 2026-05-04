@@ -128,8 +128,7 @@ namespace $ {
 			if (track.Order()?.val() == null) {
 				track.Order('auto')!.val(this.max_order() + 1)
 			}
-			// Снимаем флаг Archived при повторном добавлении.
-			if (track.Archived()?.val() === true) track.Archived('auto')!.val(false)
+			// Флаг Archived НЕ трогаем — снимается только явным restore_track.
 		}
 
 		/** Меняет Order двух треков местами. */
