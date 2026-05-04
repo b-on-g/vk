@@ -20905,6 +20905,48 @@ var $;
             track.File('auto').remote(store);
             console.log('[store] blob saved to baza:', audio.title, buffer.byteLength, 'bytes,', mime);
         }
+        /**
+         * Миграция: для каждого трека с непустым buffer'ом форсит
+         * `track.File('auto')!.remote(store)`. Старые блобы писались без этого
+         * вызова → link существовал только локально и не синкался на другие
+         * устройства. Идемпотентно — повторный вызов на уже мигрированных
+         * треках безопасен.
+         */
+        static migrate_blob_links() {
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return 0;
+            }
+            const keys = (dict.keys() ?? []);
+            let migrated = 0;
+            for (const key of keys) {
+                const track = dict.key(key);
+                if (!track)
+                    continue;
+                const file = track.File()?.remote();
+                if (!file)
+                    continue;
+                const buf = file.buffer();
+                if (!buf || buf.byteLength === 0)
+                    continue;
+                try {
+                    track.File('auto').remote(file);
+                    migrated++;
+                }
+                catch (e) {
+                    if (e instanceof Promise)
+                        throw e;
+                }
+            }
+            if (migrated)
+                console.log('[store] migrated', migrated, 'blob links for sync');
+            return migrated;
+        }
         /** Удаляет blob (поле File) из baza, оставляя метаданные трека. */
         static drop_blob(audio) {
             if (!audio)
@@ -21050,6 +21092,9 @@ var $;
     __decorate([
         $mol_action
     ], $bog_vk_store, "save_blob", null);
+    __decorate([
+        $mol_action
+    ], $bog_vk_store, "migrate_blob_links", null);
     __decorate([
         $mol_action
     ], $bog_vk_store, "drop_blob", null);
@@ -21625,11 +21670,11 @@ var $;
             static land() {
                 return this.$.$giper_baza_glob.home().land();
             }
-            /** Один и тот же Profile pawn-инстанс — нужен, чтобы реактивные подписки
-             *  на `Nickname().val()` сохранялись между перерисовками view. */
+            /** БЕЗ `@$mol_mem` — иначе $mol вызывает `destructor()` на pawn и ломает
+             *  реактивные подписки baza (см. MEMORY паттерн blitz: `profile_data()`).
+             *  baza сама интернит pawn по id, так что `Data(Profile)` всегда отдаёт тот же инстанс. */
             static profile() {
-                const Profile = $bog_vk_account_baza;
-                return this.land().Data(Profile);
+                return this.land().Data($bog_vk_account_baza);
             }
             /** Без `@$mol_mem` — getter напрямую читает Giper Baza, и любое
              *  внешнее изменение (включая sync с другого устройства) ре-рендерит UI
@@ -21846,9 +21891,6 @@ var $;
         __decorate([
             $mol_action
         ], $bog_vk_account.prototype, "apply_import", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_account, "profile", null);
         $$.$bog_vk_account = $bog_vk_account;
     })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));
@@ -23805,6 +23847,18 @@ var $;
                     $bog_vk_store.saved_audios();
                 }
                 catch { }
+                // Одноразовая миграция: дотягиваем `.remote(store)` для старых блобов,
+                // записанных до фикса. Идемпотентна, флаг гарантирует один прогон за сессию.
+                if (!$bog_vk_app.__migration_done) {
+                    try {
+                        $bog_vk_store.migrate_blob_links();
+                        $bog_vk_app.__migration_done = true;
+                    }
+                    catch (e) {
+                        if (e instanceof Promise)
+                            throw e;
+                    }
+                }
                 try {
                     this.auto_import();
                 }
@@ -23814,6 +23868,7 @@ var $;
                 }
                 return super.auto();
             }
+            static __migration_done = false;
         }
         __decorate([
             $mol_mem

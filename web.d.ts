@@ -16305,6 +16305,14 @@ declare namespace $ {
          * синкался на другие устройства через Giper Baza.
          */
         static save_blob(audio: $bog_vk_api_audio, buffer: Uint8Array, mime: string): void;
+        /**
+         * Миграция: для каждого трека с непустым buffer'ом форсит
+         * `track.File('auto')!.remote(store)`. Старые блобы писались без этого
+         * вызова → link существовал только локально и не синкался на другие
+         * устройства. Идемпотентно — повторный вызов на уже мигрированных
+         * треках безопасен.
+         */
+        static migrate_blob_links(): number;
         /** Удаляет blob (поле File) из baza, оставляя метаданные трека. */
         static drop_blob(audio: $bog_vk_api_audio): void;
         /** Парсит "Artist - Title" из имени файла. */
@@ -16525,8 +16533,9 @@ declare namespace $ {
 declare namespace $.$$ {
     class $bog_vk_account extends $.$bog_vk_account {
         static land(): $giper_baza_land;
-        /** Один и тот же Profile pawn-инстанс — нужен, чтобы реактивные подписки
-         *  на `Nickname().val()` сохранялись между перерисовками view. */
+        /** БЕЗ `@$mol_mem` — иначе $mol вызывает `destructor()` на pawn и ломает
+         *  реактивные подписки baza (см. MEMORY паттерн blitz: `profile_data()`).
+         *  baza сама интернит pawn по id, так что `Data(Profile)` всегда отдаёт тот же инстанс. */
         static profile(): $bog_vk_account_baza;
         /** Без `@$mol_mem` — getter напрямую читает Giper Baza, и любое
          *  внешнее изменение (включая sync с другого устройства) ре-рендерит UI
@@ -17217,6 +17226,7 @@ declare namespace $.$$ {
          */
         static prefetch_blobs(items: $bog_vk_api_audio[]): Promise<void>;
         auto(): any;
+        static __migration_done: boolean;
     }
 }
 
