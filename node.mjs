@@ -19336,6 +19336,18 @@ var $;
 })($ || ($ = {}));
 
 ;
+	($.$mol_icon_download) = class $mol_icon_download extends ($.$mol_icon) {
+		path(){
+			return "M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z";
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
 	($.$mol_labeler) = class $mol_labeler extends ($.$mol_list) {
 		label(){
 			return [(this.title())];
@@ -19706,6 +19718,38 @@ var $;
 			const obj = new this.$.$giper_baza_status();
 			return obj;
 		}
+		download_all(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Download_all_icon(){
+			const obj = new this.$.$mol_icon_download();
+			return obj;
+		}
+		Download_all(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.title) = () => ("Скачать всё в zip");
+			(obj.click) = (next) => ((this.download_all(next)));
+			(obj.sub) = () => ([(this.Download_all_icon())]);
+			return obj;
+		}
+		download_all_status(){
+			return "";
+		}
+		Download_all_status(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([(this.download_all_status())]);
+			return obj;
+		}
+		Sync_row(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([
+				(this.Sync_status()), 
+				(this.Download_all()), 
+				(this.Download_all_status())
+			]);
+			return obj;
+		}
 		nickname(next){
 			if(next !== undefined) return next;
 			return "";
@@ -19808,7 +19852,7 @@ var $;
 		}
 		rows(){
 			return [
-				(this.Sync_status()), 
+				(this.Sync_row()), 
 				(this.Nickname_field()), 
 				(this.Lord()), 
 				(this.Warning()), 
@@ -19824,6 +19868,11 @@ var $;
 		}
 	};
 	($mol_mem(($.$bog_vk_account.prototype), "Sync_status"));
+	($mol_mem(($.$bog_vk_account.prototype), "download_all"));
+	($mol_mem(($.$bog_vk_account.prototype), "Download_all_icon"));
+	($mol_mem(($.$bog_vk_account.prototype), "Download_all"));
+	($mol_mem(($.$bog_vk_account.prototype), "Download_all_status"));
+	($mol_mem(($.$bog_vk_account.prototype), "Sync_row"));
 	($mol_mem(($.$bog_vk_account.prototype), "nickname"));
 	($mol_mem(($.$bog_vk_account.prototype), "Nickname_input"));
 	($mol_mem(($.$bog_vk_account.prototype), "Nickname_field"));
@@ -19843,423 +19892,6 @@ var $;
 	($mol_mem(($.$bog_vk_account.prototype), "reset_account"));
 	($mol_mem(($.$bog_vk_account.prototype), "Reset_button"));
 
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        class $bog_vk_account extends $.$bog_vk_account {
-            static land() {
-                return this.$.$giper_baza_glob.home().land();
-            }
-            /** Один и тот же Profile pawn-инстанс — нужен, чтобы реактивные подписки
-             *  на `Nickname().val()` сохранялись между перерисовками view. */
-            static profile() {
-                const Profile = $bog_vk_account_baza;
-                return this.land().Data(Profile);
-            }
-            /** Без `@$mol_mem` — getter напрямую читает Giper Baza, и любое
-             *  внешнее изменение (включая sync с другого устройства) ре-рендерит UI
-             *  через стандартную реактивность baza. */
-            nickname(next) {
-                const profile = $bog_vk_account.profile();
-                if (next !== undefined) {
-                    profile.Nickname('auto').val(next);
-                    return next;
-                }
-                return profile.Nickname()?.val() ?? '';
-            }
-            lord_short() {
-                try {
-                    const auth = $giper_baza_auth.current();
-                    if (!auth)
-                        return '—';
-                    return auth.pass().lord().str.slice(0, 8) + '…';
-                }
-                catch (e) {
-                    if (e instanceof Promise)
-                        throw e;
-                    return '—';
-                }
-            }
-            account_key() {
-                return String($mol_state_local.value('$giper_baza_auth') ?? '');
-            }
-            account_link() {
-                const key = this.account_key();
-                if (!key)
-                    return '';
-                const proto = location.protocol;
-                // В расширении origin = chrome-extension://<id>/ — такая ссылка не откроется на чужом
-                // устройстве. Подменяем на публичный gh-pages хост, куда деплоится тот же билд.
-                if (proto === 'chrome-extension:' || proto === 'moz-extension:') {
-                    return 'https://b-on-g.github.io/vk/#account=' + encodeURIComponent(key);
-                }
-                const base = location.origin + location.pathname + location.search;
-                return base + '#account=' + encodeURIComponent(key);
-            }
-            copy_status(next) {
-                return next ?? '';
-            }
-            copy() {
-                const link = this.account_link();
-                if (!link) {
-                    this.copy_status('Ключ не найден');
-                    return;
-                }
-                try {
-                    navigator.clipboard.writeText(link);
-                    this.copy_status('Скопировано. Не делись публично!');
-                }
-                catch (e) {
-                    console.warn('[account] clipboard failed:', e?.message);
-                    this.copy_status('Не удалось — скопируй из адресной строки: ' + link);
-                }
-            }
-            import_link(next) {
-                return next ?? '';
-            }
-            import_status(next) {
-                return next ?? '';
-            }
-            reset_account() {
-                if (typeof window === 'undefined')
-                    return;
-                try {
-                    const ext = globalThis.chrome;
-                    if (ext?.storage?.local?.clear)
-                        ext.storage.local.clear();
-                }
-                catch { }
-                try {
-                    window.localStorage.clear();
-                }
-                catch { }
-                try {
-                    const idb = globalThis.indexedDB;
-                    if (idb?.deleteDatabase) {
-                        idb.deleteDatabase('$giper_baza_mine');
-                        idb.deleteDatabase('vk_audio_cache');
-                    }
-                }
-                catch { }
-                setTimeout(() => location.reload(), 100);
-            }
-            apply_import() {
-                const raw = this.import_link().trim();
-                if (!raw) {
-                    this.import_status('Вставь ссылку с #account=…');
-                    return;
-                }
-                const match = raw.match(/[#&]account=([^&\s]+)/);
-                const key = match ? decodeURIComponent(match[1]) : raw;
-                if (key.length < 172) {
-                    this.import_status('Ключ слишком короткий');
-                    return;
-                }
-                const current = $mol_state_local.value('$giper_baza_auth');
-                if (current !== key)
-                    $mol_state_local.value('$giper_baza_auth', key);
-                this.import_status(current === key ? 'Перезапуск…' : 'Применено, перезагрузка…');
-                location.reload();
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $bog_vk_account.prototype, "lord_short", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_account.prototype, "copy_status", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_account.prototype, "copy", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_account.prototype, "import_link", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_account.prototype, "import_status", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_account.prototype, "reset_account", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_account.prototype, "apply_import", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_account, "profile", null);
-        $$.$bog_vk_account = $bog_vk_account;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /**
-     * Профиль пользователя в home land.
-     * Никнейм отображается в шапке/попапе аккаунта.
-     */
-    class $bog_vk_account_baza extends $giper_baza_dict.with({
-        Nickname: $giper_baza_atom_text,
-    }) {
-    }
-    $.$bog_vk_account_baza = $bog_vk_account_baza;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        $mol_style_define($bog_vk_account, {
-            width: '100%',
-            maxWidth: $mol_style_func.calc('100vw - 1rem'),
-            boxSizing: 'border-box',
-            padding: {
-                top: '0.5rem',
-                bottom: '0.5rem',
-                left: '0.5rem',
-                right: '0.5rem',
-            },
-            gap: '0.25rem',
-            Lord: {
-                font: {
-                    family: 'monospace',
-                    size: '0.875rem',
-                },
-                padding: {
-                    top: '0.25rem',
-                    bottom: '0.25rem',
-                },
-                gap: '0.5rem',
-            },
-            Warning: {
-                font: { size: '0.8125rem' },
-                color: '#d33',
-            },
-            Copy_status: {
-                font: { size: '0.8125rem' },
-                color: $mol_theme.shade,
-                minHeight: '1rem',
-            },
-            Import_status: {
-                font: { size: '0.8125rem' },
-                color: $mol_theme.shade,
-                minHeight: '1rem',
-            },
-            Import_hint: {
-                font: { size: '0.8125rem' },
-                color: $mol_theme.shade,
-            },
-        });
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-	($.$mol_check_list) = class $mol_check_list extends ($.$mol_view) {
-		option_checked(id, next){
-			if(next !== undefined) return next;
-			return false;
-		}
-		option_title(id){
-			return "";
-		}
-		option_label(id){
-			return [(this.option_title(id))];
-		}
-		enabled(){
-			return true;
-		}
-		option_enabled(id){
-			return (this.enabled());
-		}
-		option_hint(id){
-			return "";
-		}
-		items(){
-			return [];
-		}
-		dictionary(){
-			return {};
-		}
-		Option(id){
-			const obj = new this.$.$mol_check();
-			(obj.checked) = (next) => ((this.option_checked(id, next)));
-			(obj.label) = () => ((this.option_label(id)));
-			(obj.enabled) = () => ((this.option_enabled(id)));
-			(obj.hint) = () => ((this.option_hint(id)));
-			(obj.minimal_height) = () => (24);
-			return obj;
-		}
-		options(){
-			return {};
-		}
-		keys(){
-			return [];
-		}
-		sub(){
-			return (this.items());
-		}
-	};
-	($mol_mem_key(($.$mol_check_list.prototype), "option_checked"));
-	($mol_mem_key(($.$mol_check_list.prototype), "Option"));
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        /**
-         * List of checkboxes
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_check_list_demo
-         */
-        class $mol_check_list extends $.$mol_check_list {
-            options() {
-                return {};
-            }
-            dictionary(next) {
-                return next ?? {};
-            }
-            option_checked(id, next) {
-                const prev = this.dictionary();
-                if (next === undefined)
-                    return prev[id] ?? null;
-                const next_rec = { ...prev, [id]: next };
-                if (next === null)
-                    delete next_rec[id];
-                return this.dictionary(next_rec)[id] ?? null;
-            }
-            keys() {
-                return Object.keys(this.options());
-            }
-            items() {
-                return this.keys().map(key => this.Option(key));
-            }
-            option_title(key) {
-                return this.options()[key] || key;
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_check_list.prototype, "keys", null);
-        __decorate([
-            $mol_mem
-        ], $mol_check_list.prototype, "items", null);
-        $$.$mol_check_list = $mol_check_list;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/check/list/list.view.css", "[mol_check_list] {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tflex: 1 1 auto;\n\tborder-radius: var(--mol_gap_round);\n\tgap: 1px;\n}\n\n[mol_check_list_option] {\n\tflex: 0 1 auto;\n}\n\n[mol_check_list_option]:where([mol_check_checked=\"true\"]) {\n\ttext-shadow: 0 0;\n\tcolor: var(--mol_theme_current);\n}\n\n[mol_check_list_option]:where([mol_check_checked=\"true\"][disabled]) {\n\tcolor: var(--mol_theme_text);\n}\n");
-})($ || ($ = {}));
-
-;
-	($.$mol_switch) = class $mol_switch extends ($.$mol_check_list) {
-		value(next){
-			if(next !== undefined) return next;
-			return "";
-		}
-	};
-	($mol_mem(($.$mol_switch.prototype), "value"));
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    class $mol_state_session extends $mol_object {
-        static 'native()';
-        static native() {
-            if (this['native()'])
-                return this['native()'];
-            check: try {
-                const native = $mol_dom_context.sessionStorage;
-                if (!native)
-                    break check;
-                native.setItem('', '');
-                native.removeItem('');
-                return this['native()'] = native;
-            }
-            catch (error) {
-                console.warn(error);
-            }
-            return this['native()'] = {
-                getItem(key) {
-                    return this[':' + key];
-                },
-                setItem(key, value) {
-                    this[':' + key] = value;
-                },
-                removeItem(key) {
-                    this[':' + key] = void 0;
-                }
-            };
-        }
-        static value(key, next) {
-            if (next === void 0)
-                return JSON.parse(this.native().getItem(key) || 'null');
-            if (next === null)
-                this.native().removeItem(key);
-            else
-                this.native().setItem(key, JSON.stringify(next));
-            return next;
-        }
-        prefix() { return ''; }
-        value(key, next) {
-            return $mol_state_session.value(this.prefix() + '.' + key, next);
-        }
-    }
-    __decorate([
-        $mol_mem_key
-    ], $mol_state_session, "value", null);
-    $.$mol_state_session = $mol_state_session;
-})($ || ($ = {}));
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        /**
-         * Buttons which switching the state
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_switch_demo
-         */
-        class $mol_switch extends $.$mol_switch {
-            value(next) {
-                return $mol_state_session.value(`${this}.value()`, next) ?? '';
-            }
-            option_checked(key, next) {
-                if (next === undefined)
-                    return this.value() == key;
-                this.value(next ? key : '');
-                return next;
-            }
-        }
-        $$.$mol_switch = $mol_switch;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
 
 ;
 	($.$mol_icon_music) = class $mol_icon_music extends ($.$mol_icon) {
@@ -21775,6 +21407,992 @@ var $;
 })($ || ($ = {}));
 
 ;
+"use strict";
+var $;
+(function ($) {
+    /**
+     * Персональное хранилище треков пользователя в Giper Baza.
+     * Живёт в home land (персональные данные, синкаются между устройствами).
+     * Ключ — VK cache_key вида `${owner_id}_${id}`.
+     */
+    class $bog_vk_store extends $mol_object2 {
+        /** Home land текущего пользователя. НЕ @$mol_mem — чтобы не было circular. */
+        static land() {
+            return this.$.$giper_baza_glob.home().land();
+        }
+        /** Словарь треков: cache_key → $bog_vk_track_baza. НЕ @$mol_mem. */
+        static tracks_dict() {
+            const Tracks = $giper_baza_dict_to($bog_vk_track_baza);
+            return this.land().Data(Tracks);
+        }
+        /** Ключ для baza из VK-аудио. */
+        static cache_key(audio) {
+            return `${audio.owner_id}_${audio.id}`;
+        }
+        /**
+         * Собирает треки из baza. archived=false → активные, archived=true → архивные.
+         * Сортирует по Order (asc, с fallback на Added).
+         */
+        static list_audios(archived) {
+            const dict = this.tracks_dict();
+            const keys = (dict.keys() ?? []);
+            const rows = [];
+            for (const key of keys) {
+                const track = dict.key(key);
+                if (!track)
+                    continue;
+                const is_arch = track.Archived()?.val() === true;
+                if (is_arch !== archived)
+                    continue;
+                const vk_id = track.Vk_id()?.val() ?? String(key);
+                const parts = vk_id.split('_');
+                const owner_id = Number(parts[0]);
+                const id = Number(parts[1]);
+                if (!Number.isFinite(owner_id) || !Number.isFinite(id))
+                    continue;
+                const added = Number(track.Added()?.val() ?? 0);
+                const order_val = track.Order()?.val();
+                // Если Order не задан — fallback на Added (делим, чтобы был в том же порядке).
+                const order = order_val == null ? added : Number(order_val);
+                let url = track.Url()?.val() ?? '';
+                rows.push({
+                    audio: {
+                        id,
+                        owner_id,
+                        artist: track.Artist()?.val() ?? '',
+                        title: track.Title()?.val() ?? '',
+                        duration: track.Duration()?.val() ?? 0,
+                        url,
+                    },
+                    order,
+                    added,
+                });
+            }
+            rows.sort((a, b) => {
+                if (a.order !== b.order)
+                    return a.order - b.order;
+                return b.added - a.added;
+            });
+            return rows.map(r => r.audio);
+        }
+        /** Активные (не архивные) треки. */
+        static saved_audios() {
+            return this.list_audios(false);
+        }
+        /** Архивные треки. */
+        static archived_audios() {
+            return this.list_audios(true);
+        }
+        /** Максимальный Order среди всех треков (для добавления новых). */
+        static max_order() {
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return 0;
+            }
+            const keys = (dict.keys() ?? []);
+            let max = 0;
+            for (const key of keys) {
+                const track = dict.key(key);
+                if (!track)
+                    continue;
+                const o = Number(track.Order()?.val() ?? 0);
+                if (o > max)
+                    max = o;
+                const a = Number(track.Added()?.val() ?? 0);
+                if (a > max)
+                    max = a;
+            }
+            return max;
+        }
+        /** Сохраняет/обновляет трек в baza. Идемпотентно. */
+        static save_track(audio) {
+            if (!audio)
+                return;
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return;
+            }
+            const key = this.cache_key(audio);
+            const track = dict.key(key, 'auto');
+            if (!track)
+                return;
+            // Обновляем только если значения реально отличаются, чтобы не засорять CRDT.
+            if (track.Vk_id()?.val() !== key)
+                track.Vk_id('auto').val(key);
+            const title = audio.title ?? '';
+            if (track.Title()?.val() !== title)
+                track.Title('auto').val(title);
+            const artist = audio.artist ?? '';
+            if (track.Artist()?.val() !== artist)
+                track.Artist('auto').val(artist);
+            const dur = Number(audio.duration ?? 0);
+            if (track.Duration()?.val() !== dur)
+                track.Duration('auto').val(dur);
+            if (audio.url && track.Url()?.val() !== audio.url)
+                track.Url('auto').val(audio.url);
+            if (track.Added()?.val() == null)
+                track.Added('auto').val(Date.now());
+            // Назначаем Order для новых треков (max + 1), чтобы в списке шли последними.
+            if (track.Order()?.val() == null) {
+                track.Order('auto').val(this.max_order() + 1);
+            }
+            // Флаг Archived НЕ трогаем — снимается только явным restore_track.
+        }
+        /** Меняет Order двух треков местами. */
+        static swap_order(a, b) {
+            if (!a || !b)
+                return;
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return;
+            }
+            const ta = dict.key(this.cache_key(a), 'auto');
+            const tb = dict.key(this.cache_key(b), 'auto');
+            if (!ta || !tb)
+                return;
+            const oa_raw = ta.Order()?.val();
+            const ob_raw = tb.Order()?.val();
+            const aa = Number(ta.Added()?.val() ?? 0);
+            const ab = Number(tb.Added()?.val() ?? 0);
+            const oa = oa_raw == null ? aa : Number(oa_raw);
+            const ob = ob_raw == null ? ab : Number(ob_raw);
+            // Если значения равны — сдвигаем на 1, чтобы порядок действительно поменялся.
+            const next_a = ob === oa ? oa + 1 : ob;
+            const next_b = ob === oa ? oa : oa;
+            ta.Order('auto').val(next_a);
+            tb.Order('auto').val(next_b);
+        }
+        /** Помечает трек как удалённый (мягкое удаление). */
+        static archive_track(audio) {
+            if (!audio)
+                return;
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return;
+            }
+            const key = this.cache_key(audio);
+            const track = dict.key(key);
+            if (!track)
+                return;
+            track.Archived('auto').val(true);
+        }
+        /** RAM-кеш свежезагруженных файлов на текущей сессии — играем без ожидания синка baza. */
+        static fresh_files = new Map();
+        /** Достаёт blob локально загруженного трека. null если не локальный или нет файла. */
+        static local_blob(audio) {
+            if (audio.owner_id !== 0)
+                return null;
+            const key = this.cache_key(audio);
+            const fresh = this.fresh_files.get(key);
+            if (fresh) {
+                console.log('[store] local blob from RAM:', audio.title, fresh.size, 'bytes,', fresh.type);
+                return fresh;
+            }
+            const dict = this.tracks_dict();
+            const track = dict.key(key);
+            if (!track)
+                return null;
+            const file = track.File()?.remote();
+            if (!file)
+                return null;
+            const buf = file.buffer();
+            if (!buf || buf.byteLength === 0) {
+                console.warn('[store] local blob empty:', audio.title, 'type:', file.type());
+                return null;
+            }
+            const type = file.type() || 'audio/mpeg';
+            const blob = new Blob([buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength)], { type });
+            console.log('[store] local blob from baza:', audio.title, blob.size, 'bytes,', type);
+            return blob;
+        }
+        /** Парсит "Artist - Title" из имени файла. */
+        static parse_filename(name) {
+            const base = name.replace(/\.[^.]+$/, '').trim();
+            const m = base.match(/^(.+?)\s*[-–—]\s*(.+)$/);
+            if (m)
+                return { artist: m[1].trim(), title: m[2].trim() };
+            return { artist: '', title: base };
+        }
+        /**
+         * Загружает локальный аудиофайл (с телефона) в home land.
+         * Блоб кладётся в $giper_baza_file, метаданные — в $bog_vk_track_baza.
+         * Возвращает audio для воспроизведения.
+         */
+        /** Детерминированный hash по строке (FNV-1a 32 bit). */
+        static hash_str(s) {
+            let h = 2166136261;
+            for (let i = 0; i < s.length; i++) {
+                h ^= s.charCodeAt(i);
+                h = Math.imul(h, 16777619);
+            }
+            return h >>> 0;
+        }
+        static save_local_track(file, buffer) {
+            const { artist, title } = this.parse_filename(file.name);
+            // Детерминированный id — одинаковый при ретраях wire, не создаёт дубликаты.
+            const id = this.hash_str(`${file.name}|${file.size}|${file.lastModified}`);
+            const audio = {
+                id,
+                owner_id: 0,
+                artist,
+                title,
+                duration: 0,
+                url: '',
+            };
+            console.log('[store] save_local_track:', file.name, file.size, 'bytes, type:', file.type, 'key:', `0_${id}`);
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                console.warn('[store] tracks_dict failed:', e);
+                return null;
+            }
+            const key = this.cache_key(audio);
+            const track = dict.key(key, 'auto');
+            if (!track) {
+                console.warn('[store] dict.key returned null for', key);
+                return null;
+            }
+            track.Vk_id('auto').val(key);
+            track.Title('auto').val(title);
+            track.Artist('auto').val(artist);
+            if (track.Added()?.val() == null)
+                track.Added('auto').val(Date.now());
+            if (track.Order()?.val() == null)
+                track.Order('auto').val(this.max_order() + 1);
+            track.Archived('auto').val(false);
+            const store = track.File('auto').ensure(null);
+            if (store) {
+                store.buffer(buffer);
+                store.type(file.type || 'audio/mpeg');
+                if (file.name)
+                    store.name(file.name);
+                console.log('[store] file written, type:', store.type(), 'chunks:', store.chunks().length);
+            }
+            else {
+                console.warn('[store] File ensure returned null');
+            }
+            this.fresh_files.set(key, file);
+            return audio;
+        }
+        /** Окончательно удаляет трек из baza (по ключу). */
+        static delete_track(audio) {
+            if (!audio)
+                return;
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return;
+            }
+            dict.cut(this.cache_key(audio));
+        }
+        /** Удаляет флаг Archived. */
+        static restore_track(audio) {
+            if (!audio)
+                return;
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return;
+            }
+            const key = this.cache_key(audio);
+            const track = dict.key(key);
+            if (!track)
+                return;
+            track.Archived('auto').val(false);
+        }
+    }
+    __decorate([
+        $mol_mem_key
+    ], $bog_vk_store, "list_audios", null);
+    __decorate([
+        $mol_action
+    ], $bog_vk_store, "save_track", null);
+    __decorate([
+        $mol_action
+    ], $bog_vk_store, "swap_order", null);
+    __decorate([
+        $mol_action
+    ], $bog_vk_store, "archive_track", null);
+    __decorate([
+        $mol_action
+    ], $bog_vk_store, "save_local_track", null);
+    __decorate([
+        $mol_action
+    ], $bog_vk_store, "delete_track", null);
+    __decorate([
+        $mol_action
+    ], $bog_vk_store, "restore_track", null);
+    $.$bog_vk_store = $bog_vk_store;
+})($ || ($ = {}));
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        // CRC-32 IEEE polynomial 0xEDB88320, table-driven.
+        const CRC_TABLE = (() => {
+            const t = new Uint32Array(256);
+            for (let n = 0; n < 256; n++) {
+                let c = n;
+                for (let k = 0; k < 8; k++)
+                    c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
+                t[n] = c;
+            }
+            return t;
+        })();
+        function crc32(buf) {
+            let c = 0xFFFFFFFF;
+            for (let i = 0; i < buf.length; i++)
+                c = CRC_TABLE[(c ^ buf[i]) & 0xFF] ^ (c >>> 8);
+            return (c ^ 0xFFFFFFFF) >>> 0;
+        }
+        /** Минимальный stored (uncompressed) ZIP encoder — см. APPNOTE.TXT. */
+        function build_zip(files) {
+            const enc = new TextEncoder();
+            const entries = [];
+            let total_local = 0;
+            for (const f of files) {
+                const name_bytes = enc.encode(f.name);
+                const crc = crc32(f.data);
+                entries.push({ name_bytes, data: f.data, crc, offset: total_local });
+                total_local += 30 + name_bytes.length + f.data.length;
+            }
+            let total_central = 0;
+            for (const e of entries)
+                total_central += 46 + e.name_bytes.length;
+            const total_size = total_local + total_central + 22;
+            const buf = new Uint8Array(total_size);
+            const dv = new DataView(buf.buffer);
+            let p = 0;
+            for (const e of entries) {
+                dv.setUint32(p, 0x04034b50, true);
+                p += 4; // local file header sig
+                dv.setUint16(p, 20, true);
+                p += 2; // version needed
+                dv.setUint16(p, 0, true);
+                p += 2; // flags
+                dv.setUint16(p, 0, true);
+                p += 2; // method (store)
+                dv.setUint16(p, 0, true);
+                p += 2; // mtime
+                dv.setUint16(p, 0, true);
+                p += 2; // mdate
+                dv.setUint32(p, e.crc, true);
+                p += 4; // crc
+                dv.setUint32(p, e.data.length, true);
+                p += 4; // compressed size
+                dv.setUint32(p, e.data.length, true);
+                p += 4; // uncompressed size
+                dv.setUint16(p, e.name_bytes.length, true);
+                p += 2; // name len
+                dv.setUint16(p, 0, true);
+                p += 2; // extra len
+                buf.set(e.name_bytes, p);
+                p += e.name_bytes.length;
+                buf.set(e.data, p);
+                p += e.data.length;
+            }
+            const cd_offset = p;
+            for (const e of entries) {
+                dv.setUint32(p, 0x02014b50, true);
+                p += 4; // central dir entry sig
+                dv.setUint16(p, 20, true);
+                p += 2; // version made by
+                dv.setUint16(p, 20, true);
+                p += 2; // version needed
+                dv.setUint16(p, 0, true);
+                p += 2; // flags
+                dv.setUint16(p, 0, true);
+                p += 2; // method
+                dv.setUint16(p, 0, true);
+                p += 2; // mtime
+                dv.setUint16(p, 0, true);
+                p += 2; // mdate
+                dv.setUint32(p, e.crc, true);
+                p += 4;
+                dv.setUint32(p, e.data.length, true);
+                p += 4;
+                dv.setUint32(p, e.data.length, true);
+                p += 4;
+                dv.setUint16(p, e.name_bytes.length, true);
+                p += 2;
+                dv.setUint16(p, 0, true);
+                p += 2; // extra len
+                dv.setUint16(p, 0, true);
+                p += 2; // comment len
+                dv.setUint16(p, 0, true);
+                p += 2; // disk #
+                dv.setUint16(p, 0, true);
+                p += 2; // internal attr
+                dv.setUint32(p, 0, true);
+                p += 4; // external attr
+                dv.setUint32(p, e.offset, true);
+                p += 4; // local header offset
+                buf.set(e.name_bytes, p);
+                p += e.name_bytes.length;
+            }
+            const cd_size = p - cd_offset;
+            dv.setUint32(p, 0x06054b50, true);
+            p += 4; // EOCD sig
+            dv.setUint16(p, 0, true);
+            p += 2; // disk #
+            dv.setUint16(p, 0, true);
+            p += 2; // disk with cd
+            dv.setUint16(p, entries.length, true);
+            p += 2;
+            dv.setUint16(p, entries.length, true);
+            p += 2;
+            dv.setUint32(p, cd_size, true);
+            p += 4;
+            dv.setUint32(p, cd_offset, true);
+            p += 4;
+            dv.setUint16(p, 0, true);
+            p += 2; // comment len
+            return buf;
+        }
+        class $bog_vk_account extends $.$bog_vk_account {
+            static land() {
+                return this.$.$giper_baza_glob.home().land();
+            }
+            /** Один и тот же Profile pawn-инстанс — нужен, чтобы реактивные подписки
+             *  на `Nickname().val()` сохранялись между перерисовками view. */
+            static profile() {
+                const Profile = $bog_vk_account_baza;
+                return this.land().Data(Profile);
+            }
+            /** Без `@$mol_mem` — getter напрямую читает Giper Baza, и любое
+             *  внешнее изменение (включая sync с другого устройства) ре-рендерит UI
+             *  через стандартную реактивность baza. */
+            nickname(next) {
+                const profile = $bog_vk_account.profile();
+                if (next !== undefined) {
+                    profile.Nickname('auto').val(next);
+                    return next;
+                }
+                return profile.Nickname()?.val() ?? '';
+            }
+            lord_short() {
+                try {
+                    const auth = $giper_baza_auth.current();
+                    if (!auth)
+                        return '—';
+                    return auth.pass().lord().str.slice(0, 8) + '…';
+                }
+                catch (e) {
+                    if (e instanceof Promise)
+                        throw e;
+                    return '—';
+                }
+            }
+            account_key() {
+                return String($mol_state_local.value('$giper_baza_auth') ?? '');
+            }
+            account_link() {
+                const key = this.account_key();
+                if (!key)
+                    return '';
+                const proto = location.protocol;
+                // В расширении origin = chrome-extension://<id>/ — такая ссылка не откроется на чужом
+                // устройстве. Подменяем на публичный gh-pages хост, куда деплоится тот же билд.
+                if (proto === 'chrome-extension:' || proto === 'moz-extension:') {
+                    return 'https://b-on-g.github.io/vk/#account=' + encodeURIComponent(key);
+                }
+                const base = location.origin + location.pathname + location.search;
+                return base + '#account=' + encodeURIComponent(key);
+            }
+            copy_status(next) {
+                return next ?? '';
+            }
+            copy() {
+                const link = this.account_link();
+                if (!link) {
+                    this.copy_status('Ключ не найден');
+                    return;
+                }
+                try {
+                    navigator.clipboard.writeText(link);
+                    this.copy_status('Скопировано. Не делись публично!');
+                }
+                catch (e) {
+                    console.warn('[account] clipboard failed:', e?.message);
+                    this.copy_status('Не удалось — скопируй из адресной строки: ' + link);
+                }
+            }
+            import_link(next) {
+                return next ?? '';
+            }
+            import_status(next) {
+                return next ?? '';
+            }
+            download_all_status(next) {
+                return next ?? '';
+            }
+            /**
+             * Собирает все треки (активные + архив) в один uncompressed ZIP и
+             * отдаёт пользователю через `<a download>`. Без npm-зависимостей —
+             * минимальный stored ZIP encoder, см. APPNOTE.TXT.
+             */
+            download_all() {
+                $mol_wire_async($bog_vk_account).download_all_async();
+            }
+            static async download_all_async() {
+                const set_status = (s) => {
+                    try {
+                        const inst = $bog_vk_account.bound?.() ?? null;
+                        if (inst?.download_all_status)
+                            inst.download_all_status(s);
+                    }
+                    catch { }
+                };
+                const safe = (s) => (s || '').replace(/[\\/:*?"<>|]/g, '_').slice(0, 80).trim() || 'track';
+                const ext_of = (mime) => {
+                    if (!mime)
+                        return 'aac';
+                    if (mime.includes('mpeg') || mime.includes('mp3'))
+                        return 'mp3';
+                    if (mime.includes('mp4') || mime.includes('m4a'))
+                        return 'm4a';
+                    if (mime.includes('aac'))
+                        return 'aac';
+                    if (mime.includes('wav'))
+                        return 'wav';
+                    if (mime.includes('ogg'))
+                        return 'ogg';
+                    if (mime.includes('flac'))
+                        return 'flac';
+                    return 'bin';
+                };
+                const tracks = [
+                    ...$bog_vk_store.saved_audios(),
+                    ...$bog_vk_store.archived_audios(),
+                ];
+                if (!tracks.length) {
+                    set_status('Нечего скачивать');
+                    return;
+                }
+                const entries = [];
+                let i = 0;
+                for (const audio of tracks) {
+                    ++i;
+                    set_status(`Сборка ${i}/${tracks.length}…`);
+                    let blob = null;
+                    let mime = 'audio/aac';
+                    try {
+                        if (audio.owner_id === 0) {
+                            blob = $bog_vk_store.local_blob(audio);
+                            mime = blob?.type || 'audio/mpeg';
+                        }
+                        else {
+                            const url = await $bog_vk_cache.get(audio);
+                            if (url) {
+                                blob = await (await fetch(url)).blob();
+                                mime = blob.type || 'audio/aac';
+                            }
+                        }
+                    }
+                    catch (e) {
+                        console.warn('[account] zip skip:', audio.title, e?.message);
+                    }
+                    if (!blob)
+                        continue;
+                    const ext = ext_of(mime);
+                    const name = `${safe(audio.artist)} - ${safe(audio.title)}.${ext}`.replace(/^_? - /, '');
+                    entries.push({ name, data: new Uint8Array(await blob.arrayBuffer()) });
+                }
+                if (!entries.length) {
+                    set_status('Нет доступных аудио');
+                    return;
+                }
+                set_status(`Упаковка ${entries.length}…`);
+                const zip = build_zip(entries);
+                const url = URL.createObjectURL(new Blob([zip.buffer.slice(zip.byteOffset, zip.byteOffset + zip.byteLength)], { type: 'application/zip' }));
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `bog-vk-music-${new Date().toISOString().slice(0, 10)}.zip`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 60_000);
+                set_status(`Готово, ${entries.length} файлов`);
+            }
+            reset_account() {
+                if (typeof window === 'undefined')
+                    return;
+                try {
+                    const ext = globalThis.chrome;
+                    if (ext?.storage?.local?.clear)
+                        ext.storage.local.clear();
+                }
+                catch { }
+                try {
+                    window.localStorage.clear();
+                }
+                catch { }
+                try {
+                    const idb = globalThis.indexedDB;
+                    if (idb?.deleteDatabase) {
+                        idb.deleteDatabase('$giper_baza_mine');
+                        idb.deleteDatabase('vk_audio_cache');
+                    }
+                }
+                catch { }
+                setTimeout(() => location.reload(), 100);
+            }
+            apply_import() {
+                const raw = this.import_link().trim();
+                if (!raw) {
+                    this.import_status('Вставь ссылку с #account=…');
+                    return;
+                }
+                const match = raw.match(/[#&]account=([^&\s]+)/);
+                const key = match ? decodeURIComponent(match[1]) : raw;
+                if (key.length < 172) {
+                    this.import_status('Ключ слишком короткий');
+                    return;
+                }
+                const current = $mol_state_local.value('$giper_baza_auth');
+                if (current !== key)
+                    $mol_state_local.value('$giper_baza_auth', key);
+                this.import_status(current === key ? 'Перезапуск…' : 'Применено, перезагрузка…');
+                location.reload();
+            }
+        }
+        __decorate([
+            $mol_mem
+        ], $bog_vk_account.prototype, "lord_short", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_account.prototype, "copy_status", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_account.prototype, "copy", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_account.prototype, "import_link", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_account.prototype, "import_status", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_account.prototype, "download_all_status", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_account.prototype, "download_all", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_account.prototype, "reset_account", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_account.prototype, "apply_import", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_account, "profile", null);
+        $$.$bog_vk_account = $bog_vk_account;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    /**
+     * Профиль пользователя в home land.
+     * Никнейм отображается в шапке/попапе аккаунта.
+     */
+    class $bog_vk_account_baza extends $giper_baza_dict.with({
+        Nickname: $giper_baza_atom_text,
+    }) {
+    }
+    $.$bog_vk_account_baza = $bog_vk_account_baza;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        $mol_style_define($bog_vk_account, {
+            width: '100%',
+            maxWidth: $mol_style_func.calc('100vw - 1rem'),
+            boxSizing: 'border-box',
+            padding: {
+                top: '0.5rem',
+                bottom: '0.5rem',
+                left: '0.5rem',
+                right: '0.5rem',
+            },
+            gap: '0.25rem',
+            Lord: {
+                font: {
+                    family: 'monospace',
+                    size: '0.875rem',
+                },
+                padding: {
+                    top: '0.25rem',
+                    bottom: '0.25rem',
+                },
+                gap: '0.5rem',
+            },
+            Warning: {
+                font: { size: '0.8125rem' },
+                color: '#d33',
+            },
+            Copy_status: {
+                font: { size: '0.8125rem' },
+                color: $mol_theme.shade,
+                minHeight: '1rem',
+            },
+            Import_status: {
+                font: { size: '0.8125rem' },
+                color: $mol_theme.shade,
+                minHeight: '1rem',
+            },
+            Import_hint: {
+                font: { size: '0.8125rem' },
+                color: $mol_theme.shade,
+            },
+        });
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+	($.$mol_check_list) = class $mol_check_list extends ($.$mol_view) {
+		option_checked(id, next){
+			if(next !== undefined) return next;
+			return false;
+		}
+		option_title(id){
+			return "";
+		}
+		option_label(id){
+			return [(this.option_title(id))];
+		}
+		enabled(){
+			return true;
+		}
+		option_enabled(id){
+			return (this.enabled());
+		}
+		option_hint(id){
+			return "";
+		}
+		items(){
+			return [];
+		}
+		dictionary(){
+			return {};
+		}
+		Option(id){
+			const obj = new this.$.$mol_check();
+			(obj.checked) = (next) => ((this.option_checked(id, next)));
+			(obj.label) = () => ((this.option_label(id)));
+			(obj.enabled) = () => ((this.option_enabled(id)));
+			(obj.hint) = () => ((this.option_hint(id)));
+			(obj.minimal_height) = () => (24);
+			return obj;
+		}
+		options(){
+			return {};
+		}
+		keys(){
+			return [];
+		}
+		sub(){
+			return (this.items());
+		}
+	};
+	($mol_mem_key(($.$mol_check_list.prototype), "option_checked"));
+	($mol_mem_key(($.$mol_check_list.prototype), "Option"));
+
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        /**
+         * List of checkboxes
+         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_check_list_demo
+         */
+        class $mol_check_list extends $.$mol_check_list {
+            options() {
+                return {};
+            }
+            dictionary(next) {
+                return next ?? {};
+            }
+            option_checked(id, next) {
+                const prev = this.dictionary();
+                if (next === undefined)
+                    return prev[id] ?? null;
+                const next_rec = { ...prev, [id]: next };
+                if (next === null)
+                    delete next_rec[id];
+                return this.dictionary(next_rec)[id] ?? null;
+            }
+            keys() {
+                return Object.keys(this.options());
+            }
+            items() {
+                return this.keys().map(key => this.Option(key));
+            }
+            option_title(key) {
+                return this.options()[key] || key;
+            }
+        }
+        __decorate([
+            $mol_mem
+        ], $mol_check_list.prototype, "keys", null);
+        __decorate([
+            $mol_mem
+        ], $mol_check_list.prototype, "items", null);
+        $$.$mol_check_list = $mol_check_list;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_style_attach("mol/check/list/list.view.css", "[mol_check_list] {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tflex: 1 1 auto;\n\tborder-radius: var(--mol_gap_round);\n\tgap: 1px;\n}\n\n[mol_check_list_option] {\n\tflex: 0 1 auto;\n}\n\n[mol_check_list_option]:where([mol_check_checked=\"true\"]) {\n\ttext-shadow: 0 0;\n\tcolor: var(--mol_theme_current);\n}\n\n[mol_check_list_option]:where([mol_check_checked=\"true\"][disabled]) {\n\tcolor: var(--mol_theme_text);\n}\n");
+})($ || ($ = {}));
+
+;
+	($.$mol_switch) = class $mol_switch extends ($.$mol_check_list) {
+		value(next){
+			if(next !== undefined) return next;
+			return "";
+		}
+	};
+	($mol_mem(($.$mol_switch.prototype), "value"));
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    class $mol_state_session extends $mol_object {
+        static 'native()';
+        static native() {
+            if (this['native()'])
+                return this['native()'];
+            check: try {
+                const native = $mol_dom_context.sessionStorage;
+                if (!native)
+                    break check;
+                native.setItem('', '');
+                native.removeItem('');
+                return this['native()'] = native;
+            }
+            catch (error) {
+                console.warn(error);
+            }
+            return this['native()'] = {
+                getItem(key) {
+                    return this[':' + key];
+                },
+                setItem(key, value) {
+                    this[':' + key] = value;
+                },
+                removeItem(key) {
+                    this[':' + key] = void 0;
+                }
+            };
+        }
+        static value(key, next) {
+            if (next === void 0)
+                return JSON.parse(this.native().getItem(key) || 'null');
+            if (next === null)
+                this.native().removeItem(key);
+            else
+                this.native().setItem(key, JSON.stringify(next));
+            return next;
+        }
+        prefix() { return ''; }
+        value(key, next) {
+            return $mol_state_session.value(this.prefix() + '.' + key, next);
+        }
+    }
+    __decorate([
+        $mol_mem_key
+    ], $mol_state_session, "value", null);
+    $.$mol_state_session = $mol_state_session;
+})($ || ($ = {}));
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        /**
+         * Buttons which switching the state
+         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_switch_demo
+         */
+        class $mol_switch extends $.$mol_switch {
+            value(next) {
+                return $mol_state_session.value(`${this}.value()`, next) ?? '';
+            }
+            option_checked(key, next) {
+                if (next === undefined)
+                    return this.value() == key;
+                this.value(next ? key : '');
+                return next;
+            }
+        }
+        $$.$mol_switch = $mol_switch;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
 	($.$bog_vk_tracks) = class $bog_vk_tracks extends ($.$mol_list) {
 		track_audio(id){
 			return null;
@@ -22190,357 +22808,6 @@ var $;
 	($mol_mem(($.$bog_vk_player.prototype), "play_track"));
 	($mol_mem(($.$bog_vk_player.prototype), "pick_next"));
 
-
-;
-"use strict";
-var $;
-(function ($) {
-    /**
-     * Персональное хранилище треков пользователя в Giper Baza.
-     * Живёт в home land (персональные данные, синкаются между устройствами).
-     * Ключ — VK cache_key вида `${owner_id}_${id}`.
-     */
-    class $bog_vk_store extends $mol_object2 {
-        /** Home land текущего пользователя. НЕ @$mol_mem — чтобы не было circular. */
-        static land() {
-            return this.$.$giper_baza_glob.home().land();
-        }
-        /** Словарь треков: cache_key → $bog_vk_track_baza. НЕ @$mol_mem. */
-        static tracks_dict() {
-            const Tracks = $giper_baza_dict_to($bog_vk_track_baza);
-            return this.land().Data(Tracks);
-        }
-        /** Ключ для baza из VK-аудио. */
-        static cache_key(audio) {
-            return `${audio.owner_id}_${audio.id}`;
-        }
-        /**
-         * Собирает треки из baza. archived=false → активные, archived=true → архивные.
-         * Сортирует по Order (asc, с fallback на Added).
-         */
-        static list_audios(archived) {
-            const dict = this.tracks_dict();
-            const keys = (dict.keys() ?? []);
-            const rows = [];
-            for (const key of keys) {
-                const track = dict.key(key);
-                if (!track)
-                    continue;
-                const is_arch = track.Archived()?.val() === true;
-                if (is_arch !== archived)
-                    continue;
-                const vk_id = track.Vk_id()?.val() ?? String(key);
-                const parts = vk_id.split('_');
-                const owner_id = Number(parts[0]);
-                const id = Number(parts[1]);
-                if (!Number.isFinite(owner_id) || !Number.isFinite(id))
-                    continue;
-                const added = Number(track.Added()?.val() ?? 0);
-                const order_val = track.Order()?.val();
-                // Если Order не задан — fallback на Added (делим, чтобы был в том же порядке).
-                const order = order_val == null ? added : Number(order_val);
-                let url = track.Url()?.val() ?? '';
-                rows.push({
-                    audio: {
-                        id,
-                        owner_id,
-                        artist: track.Artist()?.val() ?? '',
-                        title: track.Title()?.val() ?? '',
-                        duration: track.Duration()?.val() ?? 0,
-                        url,
-                    },
-                    order,
-                    added,
-                });
-            }
-            rows.sort((a, b) => {
-                if (a.order !== b.order)
-                    return a.order - b.order;
-                return b.added - a.added;
-            });
-            return rows.map(r => r.audio);
-        }
-        /** Активные (не архивные) треки. */
-        static saved_audios() {
-            return this.list_audios(false);
-        }
-        /** Архивные треки. */
-        static archived_audios() {
-            return this.list_audios(true);
-        }
-        /** Максимальный Order среди всех треков (для добавления новых). */
-        static max_order() {
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return 0;
-            }
-            const keys = (dict.keys() ?? []);
-            let max = 0;
-            for (const key of keys) {
-                const track = dict.key(key);
-                if (!track)
-                    continue;
-                const o = Number(track.Order()?.val() ?? 0);
-                if (o > max)
-                    max = o;
-                const a = Number(track.Added()?.val() ?? 0);
-                if (a > max)
-                    max = a;
-            }
-            return max;
-        }
-        /** Сохраняет/обновляет трек в baza. Идемпотентно. */
-        static save_track(audio) {
-            if (!audio)
-                return;
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return;
-            }
-            const key = this.cache_key(audio);
-            const track = dict.key(key, 'auto');
-            if (!track)
-                return;
-            // Обновляем только если значения реально отличаются, чтобы не засорять CRDT.
-            if (track.Vk_id()?.val() !== key)
-                track.Vk_id('auto').val(key);
-            const title = audio.title ?? '';
-            if (track.Title()?.val() !== title)
-                track.Title('auto').val(title);
-            const artist = audio.artist ?? '';
-            if (track.Artist()?.val() !== artist)
-                track.Artist('auto').val(artist);
-            const dur = Number(audio.duration ?? 0);
-            if (track.Duration()?.val() !== dur)
-                track.Duration('auto').val(dur);
-            if (audio.url && track.Url()?.val() !== audio.url)
-                track.Url('auto').val(audio.url);
-            if (track.Added()?.val() == null)
-                track.Added('auto').val(Date.now());
-            // Назначаем Order для новых треков (max + 1), чтобы в списке шли последними.
-            if (track.Order()?.val() == null) {
-                track.Order('auto').val(this.max_order() + 1);
-            }
-            // Флаг Archived НЕ трогаем — снимается только явным restore_track.
-        }
-        /** Меняет Order двух треков местами. */
-        static swap_order(a, b) {
-            if (!a || !b)
-                return;
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return;
-            }
-            const ta = dict.key(this.cache_key(a), 'auto');
-            const tb = dict.key(this.cache_key(b), 'auto');
-            if (!ta || !tb)
-                return;
-            const oa_raw = ta.Order()?.val();
-            const ob_raw = tb.Order()?.val();
-            const aa = Number(ta.Added()?.val() ?? 0);
-            const ab = Number(tb.Added()?.val() ?? 0);
-            const oa = oa_raw == null ? aa : Number(oa_raw);
-            const ob = ob_raw == null ? ab : Number(ob_raw);
-            // Если значения равны — сдвигаем на 1, чтобы порядок действительно поменялся.
-            const next_a = ob === oa ? oa + 1 : ob;
-            const next_b = ob === oa ? oa : oa;
-            ta.Order('auto').val(next_a);
-            tb.Order('auto').val(next_b);
-        }
-        /** Помечает трек как удалённый (мягкое удаление). */
-        static archive_track(audio) {
-            if (!audio)
-                return;
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return;
-            }
-            const key = this.cache_key(audio);
-            const track = dict.key(key);
-            if (!track)
-                return;
-            track.Archived('auto').val(true);
-        }
-        /** RAM-кеш свежезагруженных файлов на текущей сессии — играем без ожидания синка baza. */
-        static fresh_files = new Map();
-        /** Достаёт blob локально загруженного трека. null если не локальный или нет файла. */
-        static local_blob(audio) {
-            if (audio.owner_id !== 0)
-                return null;
-            const key = this.cache_key(audio);
-            const fresh = this.fresh_files.get(key);
-            if (fresh) {
-                console.log('[store] local blob from RAM:', audio.title, fresh.size, 'bytes,', fresh.type);
-                return fresh;
-            }
-            const dict = this.tracks_dict();
-            const track = dict.key(key);
-            if (!track)
-                return null;
-            const file = track.File()?.remote();
-            if (!file)
-                return null;
-            const buf = file.buffer();
-            if (!buf || buf.byteLength === 0) {
-                console.warn('[store] local blob empty:', audio.title, 'type:', file.type());
-                return null;
-            }
-            const type = file.type() || 'audio/mpeg';
-            const blob = new Blob([buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength)], { type });
-            console.log('[store] local blob from baza:', audio.title, blob.size, 'bytes,', type);
-            return blob;
-        }
-        /** Парсит "Artist - Title" из имени файла. */
-        static parse_filename(name) {
-            const base = name.replace(/\.[^.]+$/, '').trim();
-            const m = base.match(/^(.+?)\s*[-–—]\s*(.+)$/);
-            if (m)
-                return { artist: m[1].trim(), title: m[2].trim() };
-            return { artist: '', title: base };
-        }
-        /**
-         * Загружает локальный аудиофайл (с телефона) в home land.
-         * Блоб кладётся в $giper_baza_file, метаданные — в $bog_vk_track_baza.
-         * Возвращает audio для воспроизведения.
-         */
-        /** Детерминированный hash по строке (FNV-1a 32 bit). */
-        static hash_str(s) {
-            let h = 2166136261;
-            for (let i = 0; i < s.length; i++) {
-                h ^= s.charCodeAt(i);
-                h = Math.imul(h, 16777619);
-            }
-            return h >>> 0;
-        }
-        static save_local_track(file, buffer) {
-            const { artist, title } = this.parse_filename(file.name);
-            // Детерминированный id — одинаковый при ретраях wire, не создаёт дубликаты.
-            const id = this.hash_str(`${file.name}|${file.size}|${file.lastModified}`);
-            const audio = {
-                id,
-                owner_id: 0,
-                artist,
-                title,
-                duration: 0,
-                url: '',
-            };
-            console.log('[store] save_local_track:', file.name, file.size, 'bytes, type:', file.type, 'key:', `0_${id}`);
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                console.warn('[store] tracks_dict failed:', e);
-                return null;
-            }
-            const key = this.cache_key(audio);
-            const track = dict.key(key, 'auto');
-            if (!track) {
-                console.warn('[store] dict.key returned null for', key);
-                return null;
-            }
-            track.Vk_id('auto').val(key);
-            track.Title('auto').val(title);
-            track.Artist('auto').val(artist);
-            if (track.Added()?.val() == null)
-                track.Added('auto').val(Date.now());
-            if (track.Order()?.val() == null)
-                track.Order('auto').val(this.max_order() + 1);
-            track.Archived('auto').val(false);
-            const store = track.File('auto').ensure(null);
-            if (store) {
-                store.buffer(buffer);
-                store.type(file.type || 'audio/mpeg');
-                if (file.name)
-                    store.name(file.name);
-                console.log('[store] file written, type:', store.type(), 'chunks:', store.chunks().length);
-            }
-            else {
-                console.warn('[store] File ensure returned null');
-            }
-            this.fresh_files.set(key, file);
-            return audio;
-        }
-        /** Окончательно удаляет трек из baza (по ключу). */
-        static delete_track(audio) {
-            if (!audio)
-                return;
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return;
-            }
-            dict.cut(this.cache_key(audio));
-        }
-        /** Удаляет флаг Archived. */
-        static restore_track(audio) {
-            if (!audio)
-                return;
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return;
-            }
-            const key = this.cache_key(audio);
-            const track = dict.key(key);
-            if (!track)
-                return;
-            track.Archived('auto').val(false);
-        }
-    }
-    __decorate([
-        $mol_mem_key
-    ], $bog_vk_store, "list_audios", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "save_track", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "swap_order", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "archive_track", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "save_local_track", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "delete_track", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "restore_track", null);
-    $.$bog_vk_store = $bog_vk_store;
-})($ || ($ = {}));
 
 ;
 "use strict";
@@ -23089,26 +23356,12 @@ var $;
 			return "my";
 		}
 		tab_options(){
-			return {
-				"my": "Моя музыка", 
-				"search": "Поиск", 
-				"archive": "Архив"
-			};
+			return {"my": "Моя музыка", "archive": "Архив"};
 		}
 		Tabs(){
 			const obj = new this.$.$mol_switch();
 			(obj.value) = (next) => ((this.page(next)));
 			(obj.options) = () => ((this.tab_options()));
-			return obj;
-		}
-		search_query(next){
-			if(next !== undefined) return next;
-			return "";
-		}
-		Search_bar(){
-			const obj = new this.$.$mol_string();
-			(obj.hint) = () => ("Поиск музыки...");
-			(obj.value) = (next) => ((this.search_query(next)));
 			return obj;
 		}
 		visible_audios(){
@@ -23193,7 +23446,6 @@ var $;
 			return [
 				(this.Account()), 
 				(this.Tabs()), 
-				(this.Search_bar()), 
 				(this.Tracks())
 			];
 		}
@@ -23219,8 +23471,6 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "Account"));
 	($mol_mem(($.$bog_vk_app.prototype), "page"));
 	($mol_mem(($.$bog_vk_app.prototype), "Tabs"));
-	($mol_mem(($.$bog_vk_app.prototype), "search_query"));
-	($mol_mem(($.$bog_vk_app.prototype), "Search_bar"));
 	($mol_mem(($.$bog_vk_app.prototype), "current_audio"));
 	($mol_mem(($.$bog_vk_app.prototype), "on_play_audio"));
 	($mol_mem(($.$bog_vk_app.prototype), "reorder_to"));
@@ -23231,5002 +23481,6 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "player_pick_next"));
 	($mol_mem(($.$bog_vk_app.prototype), "Player"));
 
-
-;
-"use strict";
-// namespace $ {
-// 	$mol_report_bugsnag = '18acf016ed2a2a4cc4445daa9dd2dd3c'
-// }
-
-;
-	($.$mol_stack) = class $mol_stack extends ($.$mol_view) {};
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/stack/stack.view.css", "[mol_stack] {\n\tdisplay: grid;\n\t/* width: max-content; */\n\t/* height: max-content; */\n\talign-items: flex-start;\n\tjustify-items: flex-start;\n}\n\n[mol_stack] > * {\n\tgrid-area: 1/1;\n}\n");
-})($ || ($ = {}));
-
-;
-"use strict";
-
-
-;
-	($.$mol_text_code_token) = class $mol_text_code_token extends ($.$mol_dimmer) {
-		type(){
-			return "";
-		}
-		attr(){
-			return {...(super.attr()), "mol_text_code_token_type": (this.type())};
-		}
-	};
-	($.$mol_text_code_token_link) = class $mol_text_code_token_link extends ($.$mol_text_code_token) {
-		uri(){
-			return "";
-		}
-		dom_name(){
-			return "a";
-		}
-		type(){
-			return "code-link";
-		}
-		attr(){
-			return {
-				...(super.attr()), 
-				"href": (this.uri()), 
-				"target": "_blank"
-			};
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        const { hsla } = $mol_style_func;
-        $mol_style_define($mol_text_code_token, {
-            display: 'inline',
-            textDecoration: 'none',
-            '@': {
-                mol_text_code_token_type: {
-                    'code-keyword': {
-                        color: hsla(0, 70, 60, 1),
-                    },
-                    'code-field': {
-                        color: hsla(300, 70, 50, 1),
-                    },
-                    'code-tag': {
-                        color: hsla(330, 70, 50, 1),
-                    },
-                    'code-global': {
-                        color: hsla(30, 80, 50, 1),
-                    },
-                    'code-decorator': {
-                        color: hsla(180, 40, 50, 1),
-                    },
-                    'code-punctuation': {
-                        color: hsla(0, 0, 50, 1),
-                    },
-                    'code-string': {
-                        color: hsla(90, 40, 50, 1),
-                    },
-                    'code-number': {
-                        color: hsla(55, 65, 45, 1),
-                    },
-                    'code-call': {
-                        color: hsla(270, 60, 50, 1),
-                    },
-                    'code-link': {
-                        color: hsla(210, 60, 50, 1),
-                    },
-                    'code-comment-inline': {
-                        opacity: .5,
-                    },
-                    'code-comment-block': {
-                        opacity: .5,
-                    },
-                    'code-docs': {
-                        opacity: .75,
-                    },
-                },
-            }
-        });
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-	($.$mol_text_code_line) = class $mol_text_code_line extends ($.$mol_paragraph) {
-		numb(){
-			return 0;
-		}
-		token_type(id){
-			return "";
-		}
-		token_text(id){
-			return "";
-		}
-		highlight(){
-			return "";
-		}
-		token_uri(id){
-			return "";
-		}
-		text(){
-			return "";
-		}
-		minimal_height(){
-			return 24;
-		}
-		numb_showed(){
-			return true;
-		}
-		syntax(){
-			return null;
-		}
-		uri_resolve(id){
-			return "";
-		}
-		Numb(){
-			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([(this.numb())]);
-			return obj;
-		}
-		Token(id){
-			const obj = new this.$.$mol_text_code_token();
-			(obj.type) = () => ((this.token_type(id)));
-			(obj.haystack) = () => ((this.token_text(id)));
-			(obj.needle) = () => ((this.highlight()));
-			return obj;
-		}
-		Token_link(id){
-			const obj = new this.$.$mol_text_code_token_link();
-			(obj.haystack) = () => ((this.token_text(id)));
-			(obj.needle) = () => ((this.highlight()));
-			(obj.uri) = () => ((this.token_uri(id)));
-			return obj;
-		}
-		find_pos(id){
-			return null;
-		}
-	};
-	($mol_mem(($.$mol_text_code_line.prototype), "Numb"));
-	($mol_mem_key(($.$mol_text_code_line.prototype), "Token"));
-	($mol_mem_key(($.$mol_text_code_line.prototype), "Token_link"));
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    /** Creates lexer by dictionary of lexems. Lexem that started first wins. Then lexem that declared earlier wins. Use regexp capture to take parts of token. */
-    class $mol_syntax2 {
-        lexems;
-        constructor(lexems) {
-            this.lexems = lexems;
-            for (let name in lexems) {
-                this.rules.push({
-                    name: name,
-                    regExp: lexems[name],
-                    size: RegExp('^$|' + lexems[name].source).exec('').length - 1,
-                });
-            }
-            const parts = '(' + this.rules.map(rule => rule.regExp.source).join(')|(') + ')';
-            this.regexp = RegExp(`([\\s\\S]*?)(?:(${parts})|$(?![^]))`, 'gmu');
-        }
-        rules = [];
-        regexp;
-        tokenize(text, handle) {
-            let end = 0;
-            lexing: while (end < text.length) {
-                const start = end;
-                this.regexp.lastIndex = start;
-                var found = this.regexp.exec(text);
-                end = this.regexp.lastIndex;
-                if (start === end)
-                    throw new Error('Empty token');
-                var prefix = found[1];
-                if (prefix)
-                    handle('', prefix, [prefix], start);
-                var suffix = found[2];
-                if (!suffix)
-                    continue;
-                let offset = 4;
-                for (let rule of this.rules) {
-                    if (found[offset - 1]) {
-                        handle(rule.name, suffix, found.slice(offset, offset + rule.size), start + prefix.length);
-                        continue lexing;
-                    }
-                    offset += rule.size + 1;
-                }
-                $mol_fail(new Error('$mol_syntax2 is broken'));
-            }
-        }
-        parse(text, handlers) {
-            this.tokenize(text, (name, ...args) => handlers[name](...args));
-        }
-    }
-    $.$mol_syntax2 = $mol_syntax2;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $.$mol_syntax2_md_flow = new $mol_syntax2({
-        'quote': /^((?:(?:[>"] )(?:[^]*?)$(\r?\n?))+)([\n\r]*)/,
-        'spoiler': /^((?:(?:[\?] )(?:[^]*?)$(\r?\n?))+)([\n\r]*)/,
-        'header': /^([#=]+)(\s+)(.*?)$([\n\r]*)/,
-        'list': /^((?:(?: ?([*+-])|(?:\d+[\.\)])+) +(?:[^]*?)$(?:\r?\n?)(?:  (?:[^]*?)$(?:\r?\n?))*)+)((?:\r?\n)*)/,
-        'code': /^(```\s*)([\w.-]*)[\r\n]+([^]*?)^(```)$([\n\r]*)/,
-        'code-indent': /^((?:(?: |\t)(?:[^]*?)$\r?\n?)+)([\n\r]*)/,
-        'table': /((?:^\|.+?$\r?\n?)+)([\n\r]*)/,
-        'grid': /((?:^ *! .*?$\r?\n?)+)([\n\r]*)/,
-        'cut': /^--+$((?:\r?\n)*)/,
-        'block': /^(.*?)$((?:\r?\n)*)/,
-    });
-    $.$mol_syntax2_md_line = new $mol_syntax2({
-        'strong': /\*\*(.+?)\*\*/,
-        'emphasis': /\*(?!\s)(.+?)\*|\/\/(?!\s)(.+?)\/\//,
-        'code': /```(.+?)```|;;(.+?);;|`(.+?)`/,
-        'insert': /\+\+(.+?)\+\+/,
-        'delete': /~~(.+?)~~|--(.+?)--/,
-        // 'remark' : /(\()(.+?)(\))/ ,
-        // 'quote' : /(")(.+?)(")/ ,
-        'embed': /""(?:(.*?)\\)?(.*?)""/,
-        'link': /\\\\(?:(.*?)\\)?(.*?)\\\\/,
-        'image-link': /!\[([^\[\]]*?)\]\((.*?)\)/,
-        'text-link': /\[(.*?(?:\[[^\[\]]*?\][^\[\]]*?)*)\]\((.*?)\)/,
-        'text-link-http': /\b(https?:\/\/[^\s,.;:!?")]+(?:[,.;:!?")][^\s,.;:!?")]+)+)/,
-    });
-    $.$mol_syntax2_md_code = new $mol_syntax2({
-        'code-indent': /\t+/,
-        'code-docs': /\/\/\/.*?$/,
-        'code-comment-block': /(?:\/\*[^]*?\*\/|\/\+[^]*?\+\/|<![^]*?>)/,
-        'code-link': /(?:\w+:\/\/|#)\S+?(?=\s|\\\\|""|$)/,
-        'code-comment-inline': /\/\/.*?(?:$|\/\/)|- \\(?!\\).*|(?<=^| )#!? .*/,
-        'code-string': /(?:".*?"|'.*?'|`.*?`| ?\\\\.+?\\\\|\/.+?\/[dygimsu]*(?!\p{Letter})|[ \t]*\\[^\n]*)/u,
-        'code-number': /[+-]?(?:\d*\.)?\d+\w*/,
-        'code-call': /\.?\w+(?=\()/,
-        'code-sexpr': /\((\w+ )/,
-        'code-field': /(?:(?<=\.|::|->)[a-z][\w-]*|(?<=[, \t] |\t)[\w-]+\??:(?!\/\/|:))/,
-        'code-keyword': /(?<=^|\t|[ )(}{=] )((throw|readonly|unknown|keyof|typeof|never|from|class|struct|interface|type|function|extends|implements|module|namespace|import|export|include|require|var|val|let|const|for|do|while|until|in|out|of|new|if|then|else|switch|case|return|async|await|yield|try|catch|break|continue|get|set|public|private|protected|void|int|float|ref)( |$|;))+/,
-        'code-global': /[$]+\w*|\b[A-Z][a-z0-9]+[A-Z]\w*/,
-        'code-word': /\w+/,
-        'code-decorator': /(?<=^|  |\t)@\s*\S+/,
-        'code-tag': /<\/?[\w-]+\/?>?|&\w+;/,
-        'code-punctuation': /[\-\[\]\{\}\(\)<=>~!\?@#%&\*_\+\\\/\|;:\.,\^]+?/,
-    });
-})($ || ($ = {}));
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        class $mol_text_code_line extends $.$mol_text_code_line {
-            maximal_width() {
-                return this.text().length * this.letter_width();
-            }
-            syntax() {
-                return this.$.$mol_syntax2_md_code;
-            }
-            tokens(path) {
-                const tokens = [];
-                const text = (path.length > 0)
-                    // @FIXME: this logic compatible only with `string`
-                    ? this.tokens(path.slice(0, path.length - 1))[path[path.length - 1]].found.slice(1, -1)
-                    : this.text();
-                this.syntax().tokenize(text, (name, found, chunks) => {
-                    if (name === 'code-sexpr') {
-                        tokens.push({ name: 'code-punctuation', found: '(', chunks: [] });
-                        tokens.push({ name: 'code-call', found: chunks[0], chunks: [] });
-                    }
-                    else {
-                        tokens.push({ name, found, chunks });
-                    }
-                });
-                return tokens;
-            }
-            sub() {
-                return [
-                    ...this.numb_showed() ? [this.Numb()] : [],
-                    ...this.row_content([])
-                ];
-            }
-            row_content(path) {
-                const content = this.tokens(path).map((t, i) => this.Token([...path, i]));
-                return content.length ? content : ['\n'];
-            }
-            Token(path) {
-                return this.token_type(path) === 'code-link' ? this.Token_link(path) : super.Token(path);
-            }
-            token_type(path) {
-                return this.tokens([...path.slice(0, path.length - 1)])[path[path.length - 1]].name;
-            }
-            token_content(path) {
-                const tokens = this.tokens([...path.slice(0, path.length - 1)]);
-                const token = tokens[path[path.length - 1]];
-                switch (token.name) {
-                    case 'code-string': return [
-                        token.found[0],
-                        ...this.row_content(path),
-                        token.found[token.found.length - 1],
-                    ];
-                    default: return [token.found];
-                }
-            }
-            token_text(path) {
-                const tokens = this.tokens([...path.slice(0, path.length - 1)]);
-                const token = tokens[path[path.length - 1]];
-                return token.found;
-            }
-            token_uri(path) {
-                const uri = this.token_text(path);
-                return this.uri_resolve(uri);
-            }
-            *view_find(check, path = []) {
-                if (check(this, this.text())) {
-                    yield [...path, this];
-                }
-            }
-            find_pos(offset) {
-                return this.find_token_pos([offset]);
-            }
-            find_token_pos([offset, ...path]) {
-                for (const [index, token] of this.tokens(path).entries()) {
-                    if (token.found.length >= offset) {
-                        const token = this.Token([...path, index]);
-                        return { token, offset };
-                    }
-                    else {
-                        offset -= token.found.length;
-                    }
-                }
-                return null;
-            }
-        }
-        __decorate([
-            $mol_mem_key
-        ], $mol_text_code_line.prototype, "tokens", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text_code_line.prototype, "row_content", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text_code_line.prototype, "token_type", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text_code_line.prototype, "token_content", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text_code_line.prototype, "token_text", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text_code_line.prototype, "token_uri", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text_code_line.prototype, "find_pos", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text_code_line.prototype, "find_token_pos", null);
-        $$.$mol_text_code_line = $mol_text_code_line;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        const { rem } = $mol_style_unit;
-        $mol_style_define($mol_text_code_line, {
-            display: 'block',
-            position: 'relative',
-            font: {
-                family: 'monospace',
-            },
-            Numb: {
-                textAlign: 'right',
-                color: $mol_theme.shade,
-                width: rem(3),
-                margin: {
-                    left: rem(-4),
-                },
-                display: 'inline-block',
-                whiteSpace: 'nowrap',
-                userSelect: 'none',
-                position: 'absolute',
-            },
-        });
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-	($.$mol_icon_clipboard) = class $mol_icon_clipboard extends ($.$mol_icon) {
-		path(){
-			return "M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$mol_icon_clipboard_outline) = class $mol_icon_clipboard_outline extends ($.$mol_icon) {
-		path(){
-			return "M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M7,7H17V5H19V19H5V5H7V7Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$mol_button_copy) = class $mol_button_copy extends ($.$mol_button_minor) {
-		text(){
-			return (this.title());
-		}
-		text_blob(next){
-			if(next !== undefined) return next;
-			const obj = new this.$.$mol_blob([(this.text())], {"type": "text/plain"});
-			return obj;
-		}
-		html(){
-			return "";
-		}
-		html_blob(next){
-			if(next !== undefined) return next;
-			const obj = new this.$.$mol_blob([(this.html())], {"type": "text/html"});
-			return obj;
-		}
-		Icon(){
-			const obj = new this.$.$mol_icon_clipboard_outline();
-			return obj;
-		}
-		title(){
-			return "";
-		}
-		blobs(){
-			return [(this.text_blob()), (this.html_blob())];
-		}
-		data(){
-			return {};
-		}
-		sub(){
-			return [(this.Icon()), (this.title())];
-		}
-	};
-	($mol_mem(($.$mol_button_copy.prototype), "text_blob"));
-	($mol_mem(($.$mol_button_copy.prototype), "html_blob"));
-	($mol_mem(($.$mol_button_copy.prototype), "Icon"));
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    const mapping = {
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        '&': '&amp;',
-    };
-    function $mol_html_encode(text) {
-        return text.replace(/[&<">]/gi, str => mapping[str]);
-    }
-    $.$mol_html_encode = $mol_html_encode;
-})($ || ($ = {}));
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        /**
-         * Button copy text() value to clipboard
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_button_demo
-         */
-        class $mol_button_copy extends $.$mol_button_copy {
-            data() {
-                return Object.fromEntries(this.blobs().map(blob => [blob.type, blob]));
-            }
-            html() {
-                return $mol_html_encode(this.text());
-            }
-            attachments() {
-                return [new ClipboardItem(this.data())];
-            }
-            click(event) {
-                const cb = $mol_wire_sync(this.$.$mol_dom_context.navigator.clipboard);
-                cb.writeText?.(this.text());
-                cb.write?.(this.attachments());
-                if (cb.writeText === undefined && cb.write === undefined) {
-                    throw new Error("doesn't support copy to clipoard");
-                }
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_button_copy.prototype, "html", null);
-        __decorate([
-            $mol_mem
-        ], $mol_button_copy.prototype, "attachments", null);
-        $$.$mol_button_copy = $mol_button_copy;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-	($.$mol_text_code) = class $mol_text_code extends ($.$mol_stack) {
-		sidebar_showed(){
-			return false;
-		}
-		render_visible_only(){
-			return false;
-		}
-		row_numb(id){
-			return 0;
-		}
-		row_theme(id){
-			return "";
-		}
-		row_text(id){
-			return "";
-		}
-		syntax(){
-			return null;
-		}
-		uri_resolve(id){
-			return "";
-		}
-		highlight(){
-			return "";
-		}
-		Row(id){
-			const obj = new this.$.$mol_text_code_line();
-			(obj.numb_showed) = () => ((this.sidebar_showed()));
-			(obj.numb) = () => ((this.row_numb(id)));
-			(obj.theme) = () => ((this.row_theme(id)));
-			(obj.text) = () => ((this.row_text(id)));
-			(obj.syntax) = () => ((this.syntax()));
-			(obj.uri_resolve) = (id) => ((this.uri_resolve(id)));
-			(obj.highlight) = () => ((this.highlight()));
-			return obj;
-		}
-		rows(){
-			return [(this.Row("0"))];
-		}
-		Rows(){
-			const obj = new this.$.$mol_list();
-			(obj.render_visible_only) = () => ((this.render_visible_only()));
-			(obj.rows) = () => ((this.rows()));
-			return obj;
-		}
-		text_export(){
-			return "";
-		}
-		Copy(){
-			const obj = new this.$.$mol_button_copy();
-			(obj.hint) = () => ((this.$.$mol_locale.text("$mol_text_code_Copy_hint")));
-			(obj.text) = () => ((this.text_export()));
-			return obj;
-		}
-		attr(){
-			return {...(super.attr()), "mol_text_code_sidebar_showed": (this.sidebar_showed())};
-		}
-		text(){
-			return "";
-		}
-		text_lines(){
-			return [];
-		}
-		find_pos(id){
-			return null;
-		}
-		uri_base(){
-			return "";
-		}
-		row_themes(){
-			return [];
-		}
-		sub(){
-			return [(this.Rows()), (this.Copy())];
-		}
-	};
-	($mol_mem_key(($.$mol_text_code.prototype), "Row"));
-	($mol_mem(($.$mol_text_code.prototype), "Rows"));
-	($mol_mem(($.$mol_text_code.prototype), "Copy"));
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        /**
-         * Code visualizer.
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_text_code_demo
-         */
-        class $mol_text_code extends $.$mol_text_code {
-            render_visible_only() {
-                return this.$.$mol_support_css_overflow_anchor();
-            }
-            text_lines() {
-                return (this.text() ?? '').split('\n');
-            }
-            rows() {
-                return this.text_lines().map((_, index) => this.Row(index + 1));
-            }
-            row_text(index) {
-                return this.text_lines()[index - 1];
-            }
-            row_numb(index) {
-                return index;
-            }
-            find_pos(offset) {
-                for (const [index, line] of this.text_lines().entries()) {
-                    if (line.length >= offset) {
-                        return this.Row(index + 1).find_pos(offset);
-                    }
-                    else {
-                        offset -= line.length + 1;
-                    }
-                }
-                return null;
-            }
-            sub() {
-                return [
-                    this.Rows(),
-                    ...this.sidebar_showed() ? [this.Copy()] : []
-                ];
-            }
-            syntax() {
-                return this.$.$mol_syntax2_md_code;
-            }
-            uri_base() {
-                return $mol_dom_context.document.location.href;
-            }
-            uri_resolve(uri) {
-                if (/^(\w+script+:)+/.test(uri))
-                    return null;
-                try {
-                    const url = new URL(uri, this.uri_base());
-                    return url.toString();
-                }
-                catch (error) {
-                    $mol_fail_log(error);
-                    return null;
-                }
-            }
-            text_export() {
-                return this.text() + '\n';
-            }
-            row_theme(row) {
-                return this.row_themes()[row - 1];
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_text_code.prototype, "text_lines", null);
-        __decorate([
-            $mol_mem
-        ], $mol_text_code.prototype, "rows", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text_code.prototype, "row_text", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text_code.prototype, "find_pos", null);
-        __decorate([
-            $mol_mem
-        ], $mol_text_code.prototype, "sub", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text_code.prototype, "uri_resolve", null);
-        $$.$mol_text_code = $mol_text_code;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        const { rem, px } = $mol_style_unit;
-        $mol_style_define($mol_text_code, {
-            whiteSpace: 'pre-wrap',
-            font: {
-                family: 'monospace',
-            },
-            Rows: {
-                padding: $mol_gap.text,
-                minWidth: 0,
-            },
-            Row: {
-                font: {
-                    family: 'inherit',
-                },
-            },
-            Copy: {
-                alignSelf: 'flex-start',
-                justifySelf: 'flex-start',
-            },
-            '@': {
-                'mol_text_code_sidebar_showed': {
-                    true: {
-                        $mol_text_code_line: {
-                            margin: {
-                                left: rem(1.75),
-                            },
-                        },
-                    },
-                },
-            },
-        });
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-	($.$mol_float) = class $mol_float extends ($.$mol_view) {
-		style(){
-			return {...(super.style()), "minHeight": "auto"};
-		}
-	};
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/float/float.view.css", "[mol_float] {\n\tposition: sticky;\n\ttop: 0;\n\tleft: 0;\n\tz-index: var(--mol_layer_float);\n\topacity: 1;\n\ttransition: opacity .25s ease-in;\n\tdisplay: block;\n\tbackground: linear-gradient( var(--mol_theme_card), var(--mol_theme_card) ), var(--mol_theme_back);\n\tbox-shadow: 0 0 .5rem hsla(0,0%,0%,.25);\n}\n\n");
-})($ || ($ = {}));
-
-;
-"use strict";
-
-
-;
-	($.$mol_icon_chevron) = class $mol_icon_chevron extends ($.$mol_icon) {
-		path(){
-			return "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$mol_check_expand) = class $mol_check_expand extends ($.$mol_check) {
-		level_style(){
-			return "0px";
-		}
-		expanded(next){
-			if(next !== undefined) return next;
-			return false;
-		}
-		expandable(){
-			return false;
-		}
-		Icon(){
-			const obj = new this.$.$mol_icon_chevron();
-			return obj;
-		}
-		level(){
-			return 0;
-		}
-		style(){
-			return {...(super.style()), "paddingLeft": (this.level_style())};
-		}
-		checked(next){
-			return (this.expanded(next));
-		}
-		enabled(){
-			return (this.expandable());
-		}
-	};
-	($mol_mem(($.$mol_check_expand.prototype), "expanded"));
-	($mol_mem(($.$mol_check_expand.prototype), "Icon"));
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        /**
-         * Expander for trees, lists, etc
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_check_expand_demo
-         */
-        class $mol_check_expand extends $.$mol_check_expand {
-            level_style() {
-                return `${this.level() * 1 - 1}rem`;
-            }
-            expandable() {
-                return this.expanded() !== null;
-            }
-        }
-        $$.$mol_check_expand = $mol_check_expand;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/check/expand/expand.view.css", "[mol_check_expand] {\n\tmin-width: 20px;\n}\n\n:where([mol_check_expand][disabled]) [mol_check_expand_icon] {\n\tvisibility: hidden;\n}\n\n[mol_check_expand_icon] {\n\tbox-shadow: none;\n\tmargin-left: -0.375rem;\n}\n[mol_check_expand_icon] {\n\ttransform: rotateZ(0deg);\n}\n\n:where([mol_check_checked]) [mol_check_expand_icon] {\n\ttransform: rotateZ(90deg);\n}\n\n[mol_check_expand_icon] {\n\tvertical-align: text-top;\n}\n\n[mol_check_expand_label] {\n\tmargin-left: 0;\n}\n");
-})($ || ($ = {}));
-
-;
-	($.$mol_grid) = class $mol_grid extends ($.$mol_view) {
-		rows(){
-			return [];
-		}
-		Table(){
-			const obj = new this.$.$mol_grid_table();
-			(obj.sub) = () => ((this.rows()));
-			return obj;
-		}
-		head_cells(){
-			return [];
-		}
-		cells(id){
-			return [];
-		}
-		cell_content(id){
-			return [];
-		}
-		cell_content_text(id){
-			return (this.cell_content(id));
-		}
-		cell_content_number(id){
-			return (this.cell_content(id));
-		}
-		col_head_content(id){
-			return [];
-		}
-		cell_level(id){
-			return 0;
-		}
-		cell_expanded(id, next){
-			if(next !== undefined) return next;
-			return false;
-		}
-		needle(){
-			return "";
-		}
-		cell_value(id){
-			return "";
-		}
-		Cell_dimmer(id){
-			const obj = new this.$.$mol_dimmer();
-			(obj.needle) = () => ((this.needle()));
-			(obj.haystack) = () => ((this.cell_value(id)));
-			return obj;
-		}
-		row_height(){
-			return 32;
-		}
-		row_ids(){
-			return [];
-		}
-		row_id(id){
-			return null;
-		}
-		col_ids(){
-			return [];
-		}
-		records(){
-			return {};
-		}
-		record(id){
-			return null;
-		}
-		hierarchy(){
-			return null;
-		}
-		hierarchy_col(){
-			return "";
-		}
-		minimal_width(){
-			return 0;
-		}
-		sub(){
-			return [(this.Head()), (this.Table())];
-		}
-		Head(){
-			const obj = new this.$.$mol_grid_row();
-			(obj.cells) = () => ((this.head_cells()));
-			return obj;
-		}
-		Row(id){
-			const obj = new this.$.$mol_grid_row();
-			(obj.minimal_height) = () => ((this.row_height()));
-			(obj.minimal_width) = () => ((this.minimal_width()));
-			(obj.cells) = () => ((this.cells(id)));
-			return obj;
-		}
-		Cell(id){
-			const obj = new this.$.$mol_view();
-			return obj;
-		}
-		cell(id){
-			return null;
-		}
-		Cell_text(id){
-			const obj = new this.$.$mol_grid_cell();
-			(obj.sub) = () => ((this.cell_content_text(id)));
-			return obj;
-		}
-		Cell_number(id){
-			const obj = new this.$.$mol_grid_number();
-			(obj.sub) = () => ((this.cell_content_number(id)));
-			return obj;
-		}
-		Col_head(id){
-			const obj = new this.$.$mol_float();
-			(obj.dom_name) = () => ("th");
-			(obj.sub) = () => ((this.col_head_content(id)));
-			return obj;
-		}
-		Cell_branch(id){
-			const obj = new this.$.$mol_check_expand();
-			(obj.level) = () => ((this.cell_level(id)));
-			(obj.label) = () => ((this.cell_content(id)));
-			(obj.expanded) = (next) => ((this.cell_expanded(id, next)));
-			return obj;
-		}
-		Cell_content(id){
-			return [(this.Cell_dimmer(id))];
-		}
-	};
-	($mol_mem(($.$mol_grid.prototype), "Table"));
-	($mol_mem_key(($.$mol_grid.prototype), "cell_expanded"));
-	($mol_mem_key(($.$mol_grid.prototype), "Cell_dimmer"));
-	($mol_mem(($.$mol_grid.prototype), "Head"));
-	($mol_mem_key(($.$mol_grid.prototype), "Row"));
-	($mol_mem_key(($.$mol_grid.prototype), "Cell"));
-	($mol_mem_key(($.$mol_grid.prototype), "Cell_text"));
-	($mol_mem_key(($.$mol_grid.prototype), "Cell_number"));
-	($mol_mem_key(($.$mol_grid.prototype), "Col_head"));
-	($mol_mem_key(($.$mol_grid.prototype), "Cell_branch"));
-	($.$mol_grid_table) = class $mol_grid_table extends ($.$mol_list) {};
-	($.$mol_grid_row) = class $mol_grid_row extends ($.$mol_view) {
-		cells(){
-			return [];
-		}
-		sub(){
-			return (this.cells());
-		}
-	};
-	($.$mol_grid_cell) = class $mol_grid_cell extends ($.$mol_view) {
-		minimal_height(){
-			return 40;
-		}
-	};
-	($.$mol_grid_number) = class $mol_grid_number extends ($.$mol_grid_cell) {};
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        class $mol_grid extends $.$mol_grid {
-            head_cells() {
-                return this.col_ids().map(colId => this.Col_head(colId));
-            }
-            col_head_content(colId) {
-                return [colId];
-            }
-            rows() {
-                return this.row_ids().map(id => this.Row(id));
-            }
-            cells(row_id) {
-                return this.col_ids().map(col_id => this.Cell({ row: row_id, col: col_id }));
-            }
-            col_type(col_id) {
-                if (col_id === this.hierarchy_col())
-                    return 'branch';
-                const rowFirst = this.row_id(0);
-                const val = this.record(rowFirst[rowFirst.length - 1])[col_id];
-                if (typeof val === 'number')
-                    return 'number';
-                return 'text';
-            }
-            Cell(id) {
-                switch (this.col_type(id.col).valueOf()) {
-                    case 'branch': return this.Cell_branch(id);
-                    case 'number': return this.Cell_number(id);
-                }
-                return this.Cell_text(id);
-            }
-            cell_content(id) {
-                return [this.record(id.row[id.row.length - 1])[id.col]];
-            }
-            cell_content_text(id) {
-                return this.cell_content(id).map(val => typeof val === 'object' ? JSON.stringify(val) : val);
-            }
-            records() {
-                return [];
-            }
-            record(id) {
-                return this.records()[id];
-            }
-            record_ids() {
-                return Object.keys(this.records());
-            }
-            row_id(index) {
-                return this.row_ids().slice(index, index + 1).valueOf()[0];
-            }
-            col_ids() {
-                const rowFirst = this.row_id(0);
-                if (rowFirst === void 0)
-                    return [];
-                const record = this.record(rowFirst[rowFirst.length - 1]);
-                if (!record)
-                    return [];
-                return Object.keys(record);
-            }
-            hierarchy() {
-                const hierarchy = {};
-                const root = hierarchy[''] = {
-                    id: '',
-                    parent: null,
-                    sub: [],
-                };
-                this.record_ids().map(id => {
-                    root.sub.push(hierarchy[id] = {
-                        id,
-                        parent: root,
-                        sub: [],
-                    });
-                });
-                return hierarchy;
-            }
-            row_sub_ids(row) {
-                return this.hierarchy()[row[row.length - 1]].sub.map(child => row.concat(child.id));
-            }
-            row_root_id() {
-                return [''];
-            }
-            cell_level(id) {
-                return id.row.length - 1;
-            }
-            row_ids() {
-                const next = [];
-                const add = (row) => {
-                    next.push(row);
-                    if (this.row_expanded(row)) {
-                        this.row_sub_ids(row).forEach(child => add(child));
-                    }
-                };
-                this.row_sub_ids(this.row_root_id()).forEach(child => add(child));
-                return next;
-            }
-            row_expanded(row_id, next) {
-                if (!this.row_sub_ids(row_id).length)
-                    return null;
-                const key = `row_expanded(${JSON.stringify(row_id)})`;
-                const next2 = $mol_state_session.value(key, next);
-                return (next2 == null) ? this.row_expanded_default(row_id) : next2;
-            }
-            row_expanded_default(row_id) {
-                return true;
-            }
-            cell_expanded(id, next) {
-                return this.row_expanded(id.row, next);
-            }
-            sub() {
-                this.head_cells();
-                this.rows();
-                return super.sub();
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_grid.prototype, "head_cells", null);
-        __decorate([
-            $mol_mem
-        ], $mol_grid.prototype, "rows", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_grid.prototype, "col_type", null);
-        __decorate([
-            $mol_mem
-        ], $mol_grid.prototype, "record_ids", null);
-        __decorate([
-            $mol_mem
-        ], $mol_grid.prototype, "hierarchy", null);
-        __decorate([
-            $mol_mem
-        ], $mol_grid.prototype, "row_ids", null);
-        $$.$mol_grid = $mol_grid;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/grid/grid.view.css", "[mol_grid] {\n\tdisplay: block;\n\tflex: 0 1 auto;\n\tposition: relative;\n\toverflow-x: auto;\n}\n\n[mol_grid_gap] {\n\tposition: absolute;\n\tpadding: .1px;\n\ttop: 0;\n\ttransform: translateZ(0);\n}\n\n[mol_grid_table] {\n\tborder-spacing: 0;\n\tdisplay: table-row-group;\n\tposition: relative;\n}\n\n[mol_grid_table] > * {\n\tdisplay: table-row;\n\ttransition: none;\n}\n\n[mol_grid_head] > *,\n[mol_grid_table] > * > * {\n\tdisplay: table-cell;\n\tpadding: var(--mol_gap_text);\n\twhite-space: nowrap;\n\tvertical-align: middle;\n\tbox-shadow: inset 2px 2px 0 -1px var(--mol_theme_line);\n}\n\n[mol_grid_row]:where(:first-child) > * {\n\tbox-shadow: inset 2px 0 0 -1px var(--mol_theme_line);\n}\n\n[mol_grid_table] > * > *:where(:first-child) {\n\tbox-shadow: inset 0px 2px 0 -1px var(--mol_theme_line);\n}\n\n[mol_grid_head] > * {\n\tbox-shadow: inset 2px -2px 0 -1px var(--mol_theme_line);\n}\n\n[mol_grid_head] > *:where(:first-child) {\n\tbox-shadow: inset 0px -2px 0 -1px var(--mol_theme_line);\n}\n\n[mol_grid_table] > [mol_grid_row]:where(:first-child) > *:where(:first-child) {\n\tbox-shadow: none;\n}\t\n\n[mol_grid_head] {\n\tdisplay: table-row;\n\ttransform: none !important;\n}\n\n/* [mol_grid_cell_number] {\n\ttext-align: right;\n} */\n\n[mol_grid_col_head] {\n\tfont-weight: inherit;\n\ttext-align: inherit;\n\tdisplay: table-cell;\n\tcolor: var(--mol_theme_shade);\n}\n\n[mol_grid_cell_dimmer] {\n\tdisplay: inline-block;\n\tvertical-align: inherit;\n}\n");
-})($ || ($ = {}));
-
-;
-	($.$mol_link_iconed) = class $mol_link_iconed extends ($.$mol_link) {
-		icon(){
-			return "";
-		}
-		Icon(){
-			const obj = new this.$.$mol_image();
-			(obj.uri) = () => ((this.icon()));
-			(obj.title) = () => ("");
-			return obj;
-		}
-		title(){
-			return (this.uri());
-		}
-		sub(){
-			return [(this.Icon())];
-		}
-		content(){
-			return [(this.title())];
-		}
-		host(){
-			return "";
-		}
-	};
-	($mol_mem(($.$mol_link_iconed.prototype), "Icon"));
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        class $mol_link_iconed extends $.$mol_link_iconed {
-            icon() {
-                return `https://favicon.yandex.net/favicon/${this.host()}?color=0,0,0,0&size=32&stub=1`;
-                // return `https://api.faviconkit.com/${ this.host() }/16`
-            }
-            host() {
-                const base = this.$.$mol_state_arg.href();
-                const url = new URL(this.uri(), base);
-                return url.hostname;
-            }
-            title() {
-                const uri = this.uri();
-                const host = this.host();
-                const suffix = (host ? uri.split(this.host(), 2)[1] : uri)?.replace(/^[\/\?#!]+/, '');
-                return decodeURIComponent(suffix || host).replace(/^\//, ' ');
-            }
-            sub() {
-                return [
-                    ...this.host() ? [this.Icon()] : [],
-                    ...this.content() ? [' ', ...this.content()] : [],
-                ];
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_link_iconed.prototype, "icon", null);
-        __decorate([
-            $mol_mem
-        ], $mol_link_iconed.prototype, "host", null);
-        __decorate([
-            $mol_mem
-        ], $mol_link_iconed.prototype, "title", null);
-        __decorate([
-            $mol_mem
-        ], $mol_link_iconed.prototype, "sub", null);
-        $$.$mol_link_iconed = $mol_link_iconed;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/link/iconed/iconed.view.css", "[mol_link_iconed] {\n\talign-items: baseline;\n\tdisplay: inline-flex;\n\tpadding: var(--mol_gap_text);\n}\n\n[mol_link_iconed_icon] {\n\tbox-shadow: none;\n\theight: 1.5em;\n\twidth: 1em;\n\tflex: 0 0 auto;\n\tdisplay: inline-block;\n\talign-self: normal;\n\tvertical-align: top;\n\tborder-radius: 0;\n\tobject-fit: scale-down;\n\topacity: .75;\n}\n\n[mol_theme=\"$mol_theme_dark\"] [mol_link_iconed_icon] {\n\tfilter: var(--mol_theme_image);\n}\n");
-})($ || ($ = {}));
-
-;
-	($.$mol_embed_native) = class $mol_embed_native extends ($.$mol_scroll) {
-		uri(next){
-			if(next !== undefined) return next;
-			return "about:config";
-		}
-		title(){
-			return "";
-		}
-		Fallback(){
-			const obj = new this.$.$mol_link();
-			(obj.uri) = () => ((this.uri()));
-			(obj.sub) = () => ([(this.title())]);
-			return obj;
-		}
-		uri_change(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		dom_name(){
-			return "iframe";
-		}
-		window(){
-			return null;
-		}
-		attr(){
-			return {...(super.attr()), "src": (this.uri())};
-		}
-		sub(){
-			return [(this.Fallback())];
-		}
-		message(){
-			return {"hashchange": (next) => (this.uri_change(next))};
-		}
-	};
-	($mol_mem(($.$mol_embed_native.prototype), "uri"));
-	($mol_mem(($.$mol_embed_native.prototype), "Fallback"));
-	($mol_mem(($.$mol_embed_native.prototype), "uri_change"));
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    function $mol_wait_timeout_async(timeout) {
-        const promise = new $mol_promise();
-        const task = new this.$mol_after_timeout(timeout, () => promise.done());
-        return Object.assign(promise, {
-            destructor: () => task.destructor()
-        });
-    }
-    $.$mol_wait_timeout_async = $mol_wait_timeout_async;
-    function $mol_wait_timeout(timeout) {
-        return this.$mol_wire_sync(this).$mol_wait_timeout_async(timeout);
-    }
-    $.$mol_wait_timeout = $mol_wait_timeout;
-})($ || ($ = {}));
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        class $mol_embed_native extends $.$mol_embed_native {
-            window() {
-                $mol_wire_solid();
-                this.uri_resource();
-                return $mol_wire_sync(this).load(this.dom_node_actual());
-            }
-            load(frame) {
-                return new Promise((done, fail) => {
-                    frame.onload = () => {
-                        try {
-                            if (frame.contentWindow.location.href === 'about:blank') {
-                                return;
-                            }
-                        }
-                        catch { }
-                        done(frame.contentWindow);
-                    };
-                    frame.onerror = (event) => {
-                        fail(typeof event === 'string' ? new Error(event) : event.error || event);
-                    };
-                });
-            }
-            uri_resource() {
-                return this.uri().replace(/#.*/, '');
-            }
-            message_listener() {
-                return new $mol_dom_listener($mol_dom_context, 'message', $mol_wire_async(this).message_receive);
-            }
-            sub_visible() {
-                this.window();
-                return super.sub_visible();
-            }
-            message_receive(event) {
-                if (!event)
-                    return;
-                if (event.source !== this.window())
-                    return;
-                if (!Array.isArray(event.data))
-                    return;
-                this.message()[event.data[0]]?.(event);
-            }
-            uri_change(event) {
-                this.$.$mol_wait_timeout(1000);
-                this.uri(event.data[1]);
-            }
-            auto() {
-                return [
-                    this.message_listener(),
-                    this.window(),
-                ];
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_embed_native.prototype, "window", null);
-        __decorate([
-            $mol_mem
-        ], $mol_embed_native.prototype, "uri_resource", null);
-        __decorate([
-            $mol_mem
-        ], $mol_embed_native.prototype, "message_listener", null);
-        $$.$mol_embed_native = $mol_embed_native;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/embed/native/native.view.css", "[mol_embed_native] {\n\tmin-width: 0;\n\tmin-height: 0;\n\tmax-width: 100%;\n\tmax-height: 100vh;\n\tobject-fit: cover;\n\tdisplay: flex;\n\tflex: 1 1 auto;\n\tobject-position: top left;\n\tborder-radius: var(--mol_gap_round);\n\taspect-ratio: 4/3;\n\tborder: none;\n}\n");
-})($ || ($ = {}));
-
-;
-	($.$mol_icon_youtube) = class $mol_icon_youtube extends ($.$mol_icon) {
-		path(){
-			return "M10,15L15.19,12L10,9V15M21.56,7.17C21.69,7.64 21.78,8.27 21.84,9.07C21.91,9.87 21.94,10.56 21.94,11.16L22,12C22,14.19 21.84,15.8 21.56,16.83C21.31,17.73 20.73,18.31 19.83,18.56C19.36,18.69 18.5,18.78 17.18,18.84C15.88,18.91 14.69,18.94 13.59,18.94L12,19C7.81,19 5.2,18.84 4.17,18.56C3.27,18.31 2.69,17.73 2.44,16.83C2.31,16.36 2.22,15.73 2.16,14.93C2.09,14.13 2.06,13.44 2.06,12.84L2,12C2,9.81 2.16,8.2 2.44,7.17C2.69,6.27 3.27,5.69 4.17,5.44C4.64,5.31 5.5,5.22 6.82,5.16C8.12,5.09 9.31,5.06 10.41,5.06L12,5C16.19,5 18.8,5.16 19.83,5.44C20.73,5.69 21.31,6.27 21.56,7.17Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$mol_frame) = class $mol_frame extends ($.$mol_embed_native) {
-		allow(){
-			return "";
-		}
-		html(){
-			return null;
-		}
-		attr(){
-			return {
-				"tabindex": (this.tabindex()), 
-				"allow": (this.allow()), 
-				"src": (this.uri()), 
-				"srcdoc": (this.html())
-			};
-		}
-		fullscreen(){
-			return true;
-		}
-		accelerometer(){
-			return true;
-		}
-		autoplay(){
-			return true;
-		}
-		encription(){
-			return true;
-		}
-		gyroscope(){
-			return true;
-		}
-		pip(){
-			return true;
-		}
-		clipboard_read(){
-			return true;
-		}
-		clipboard_write(){
-			return true;
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        /**
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_frame_demo
-         */
-        class $mol_frame extends $.$mol_frame {
-            window() {
-                // if( this.html() ) return ( this.dom_node() as HTMLIFrameElement ).contentWindow!
-                return super.window();
-            }
-            allow() {
-                return [
-                    ...this.fullscreen() ? ['fullscreen'] : [],
-                    ...this.accelerometer() ? ['accelerometer'] : [],
-                    ...this.autoplay() ? ['autoplay'] : [],
-                    ...this.encription() ? ['encrypted-media'] : [],
-                    ...this.gyroscope() ? ['gyroscope'] : [],
-                    ...this.pip() ? ['picture-in-picture'] : [],
-                    ...this.clipboard_read() ? [`clipboard-read ${this.uri()}`] : [],
-                    ...this.clipboard_write() ? [`clipboard-write ${this.uri()}`] : [],
-                ].join('; ');
-            }
-        }
-        $$.$mol_frame = $mol_frame;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_define($mol_frame, {
-        border: {
-            style: 'none',
-        },
-        maxHeight: $mol_style_unit.vh(100),
-    });
-})($ || ($ = {}));
-
-;
-	($.$mol_embed_service) = class $mol_embed_service extends ($.$mol_check) {
-		active(next){
-			if(next !== undefined) return next;
-			return false;
-		}
-		title(){
-			return "";
-		}
-		video_preview(){
-			return "";
-		}
-		Image(){
-			const obj = new this.$.$mol_image();
-			(obj.title) = () => ((this.title()));
-			(obj.uri) = () => ((this.video_preview()));
-			return obj;
-		}
-		Hint(){
-			const obj = new this.$.$mol_icon_youtube();
-			return obj;
-		}
-		video_embed(){
-			return "";
-		}
-		Frame(){
-			const obj = new this.$.$mol_frame();
-			(obj.title) = () => ((this.title()));
-			(obj.uri) = () => ((this.video_embed()));
-			return obj;
-		}
-		uri(){
-			return "";
-		}
-		video_id(){
-			return "";
-		}
-		checked(next){
-			return (this.active(next));
-		}
-		sub(){
-			return [
-				(this.Image()), 
-				(this.Hint()), 
-				(this.Frame())
-			];
-		}
-	};
-	($mol_mem(($.$mol_embed_service.prototype), "active"));
-	($mol_mem(($.$mol_embed_service.prototype), "Image"));
-	($mol_mem(($.$mol_embed_service.prototype), "Hint"));
-	($mol_mem(($.$mol_embed_service.prototype), "Frame"));
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        class $mol_embed_service extends $.$mol_embed_service {
-            sub() {
-                return this.active()
-                    ? [this.Frame()]
-                    : [this.Image(), this.Hint()];
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_embed_service.prototype, "sub", null);
-        $$.$mol_embed_service = $mol_embed_service;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/embed/service/service.view.css", "[mol_embed_service] {\n\tpadding: 0;\n\tmax-width: 100%;\n}\n\n[mol_embed_service_image] {\n\tflex: auto 1 1;\n\twidth: 100vw;\n}\n\n[mol_embed_service_frame] {\n\twidth: 100vw;\n}\n\n[mol_embed_service_hint] {\n\tposition: absolute;\n    left: 50%;\n    top: 50%;\n    width: 50%;\n    height: 50%;\n    opacity: 0.3;\n    transform: translate(-50%, -50%);\n}\n\n[mol_embed_service]:hover [mol_embed_service_hint] {\n\topacity: .6;\n}\n");
-})($ || ($ = {}));
-
-;
-	($.$mol_embed_youtube) = class $mol_embed_youtube extends ($.$mol_embed_service) {};
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        class $mol_embed_youtube extends $.$mol_embed_youtube {
-            video_embed() {
-                return `https://www.youtube.com/embed/${encodeURIComponent(this.video_id())}?autoplay=1&loop=1`;
-            }
-            video_id() {
-                return this.uri().match(/^https\:\/\/www\.youtube\.com\/(?:embed\/|shorts\/|watch\?v=)([^\/&?#]+)/)?.[1]
-                    ?? this.uri().match(/^https\:\/\/youtu\.be\/([^\/&?#]+)/)?.[1]
-                    ?? 'about:blank';
-            }
-            video_preview() {
-                return `https://i.ytimg.com/vi/${this.video_id()}/sddefault.jpg`;
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_embed_youtube.prototype, "video_embed", null);
-        __decorate([
-            $mol_mem
-        ], $mol_embed_youtube.prototype, "video_id", null);
-        __decorate([
-            $mol_mem
-        ], $mol_embed_youtube.prototype, "video_preview", null);
-        $$.$mol_embed_youtube = $mol_embed_youtube;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-	($.$mol_embed_rutube) = class $mol_embed_rutube extends ($.$mol_embed_service) {};
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        class $mol_embed_rutube extends $.$mol_embed_rutube {
-            video_embed() {
-                return `https://rutube.ru/play/embed/${encodeURIComponent(this.video_id())}`;
-            }
-            video_id() {
-                return this.uri().match(/^https:\/\/rutube.ru\/video\/([^\/&?#]+)/)?.[1] ?? 'about:blank';
-            }
-            video_preview() {
-                return `https://rutube.ru/api/video/${this.video_id()}/thumbnail/?redirect=1`;
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_embed_rutube.prototype, "video_embed", null);
-        __decorate([
-            $mol_mem
-        ], $mol_embed_rutube.prototype, "video_id", null);
-        __decorate([
-            $mol_mem
-        ], $mol_embed_rutube.prototype, "video_preview", null);
-        $$.$mol_embed_rutube = $mol_embed_rutube;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-	($.$mol_embed_vklive) = class $mol_embed_vklive extends ($.$mol_embed_service) {};
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        class $mol_embed_vklive extends $.$mol_embed_vklive {
-            video_embed() {
-                return `https://live.vkvideo.ru/app/embed/${this.channel_id()}/${this.video_id()}`;
-            }
-            channel_id() {
-                return this.uri().match(/^https:\/\/live\.vkvideo\.ru\/([^\/&?#]+)/)?.[1] ?? '';
-            }
-            video_id() {
-                return this.uri().match(/^https:\/\/live\.vkvideo\.ru\/[^\/&?#]+\/record\/([^\/&?#]+)/)?.[1] ?? '';
-            }
-            video_preview() {
-                return `https://images.live.vkvideo.ru/public_video_stream/record/${this.video_id()}/preview`;
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_embed_vklive.prototype, "video_embed", null);
-        __decorate([
-            $mol_mem
-        ], $mol_embed_vklive.prototype, "channel_id", null);
-        __decorate([
-            $mol_mem
-        ], $mol_embed_vklive.prototype, "video_id", null);
-        __decorate([
-            $mol_mem
-        ], $mol_embed_vklive.prototype, "video_preview", null);
-        $$.$mol_embed_vklive = $mol_embed_vklive;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-	($.$mol_embed_any) = class $mol_embed_any extends ($.$mol_view) {
-		title(){
-			return "";
-		}
-		uri(){
-			return "";
-		}
-		Image(){
-			const obj = new this.$.$mol_image();
-			(obj.title) = () => ((this.title()));
-			(obj.uri) = () => ((this.uri()));
-			return obj;
-		}
-		Object(){
-			const obj = new this.$.$mol_embed_native();
-			(obj.title) = () => ((this.title()));
-			(obj.uri) = () => ((this.uri()));
-			return obj;
-		}
-		Youtube(){
-			const obj = new this.$.$mol_embed_youtube();
-			(obj.title) = () => ((this.title()));
-			(obj.uri) = () => ((this.uri()));
-			return obj;
-		}
-		Rutube(){
-			const obj = new this.$.$mol_embed_rutube();
-			(obj.title) = () => ((this.title()));
-			(obj.uri) = () => ((this.uri()));
-			return obj;
-		}
-		Vklive(){
-			const obj = new this.$.$mol_embed_vklive();
-			(obj.title) = () => ((this.title()));
-			(obj.uri) = () => ((this.uri()));
-			return obj;
-		}
-	};
-	($mol_mem(($.$mol_embed_any.prototype), "Image"));
-	($mol_mem(($.$mol_embed_any.prototype), "Object"));
-	($mol_mem(($.$mol_embed_any.prototype), "Youtube"));
-	($mol_mem(($.$mol_embed_any.prototype), "Rutube"));
-	($mol_mem(($.$mol_embed_any.prototype), "Vklive"));
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        class $mol_embed_any extends $.$mol_embed_any {
-            type() {
-                try {
-                    const uri = this.uri();
-                    if (/\b(png|gif|jpg|jpeg|jfif|webp|svg)\b/.test(uri))
-                        return 'image';
-                    if (/^https:\/\/www\.youtube\.com\//.test(uri))
-                        return 'youtube';
-                    if (/^https:\/\/youtu\.be\//.test(uri))
-                        return 'youtube';
-                    if (/^https:\/\/rutube\.ru\//.test(uri))
-                        return 'rutube';
-                    if (/^https:\/\/live\.vkvideo\.ru\//.test(uri))
-                        return 'vklive';
-                }
-                catch (error) {
-                    $mol_fail_log(error);
-                    return 'image';
-                }
-                return 'object';
-            }
-            sub() {
-                switch (this.type()) {
-                    case 'image': return [this.Image()];
-                    case 'youtube': return [this.Youtube()];
-                    case 'rutube': return [this.Rutube()];
-                    case 'vklive': return [this.Vklive()];
-                    default: return [this.Object()];
-                }
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_embed_any.prototype, "type", null);
-        __decorate([
-            $mol_mem
-        ], $mol_embed_any.prototype, "sub", null);
-        $$.$mol_embed_any = $mol_embed_any;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-	($.$mol_expander) = class $mol_expander extends ($.$mol_list) {
-		expanded(next){
-			if(next !== undefined) return next;
-			return false;
-		}
-		expandable(){
-			return true;
-		}
-		label(){
-			return [(this.title())];
-		}
-		Trigger(){
-			const obj = new this.$.$mol_check_expand();
-			(obj.checked) = (next) => ((this.expanded(next)));
-			(obj.expandable) = () => ((this.expandable()));
-			(obj.label) = () => ((this.label()));
-			return obj;
-		}
-		Tools(){
-			return null;
-		}
-		Label(){
-			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([(this.Trigger()), (this.Tools())]);
-			return obj;
-		}
-		content(){
-			return [];
-		}
-		Content(){
-			const obj = new this.$.$mol_list();
-			(obj.rows) = () => ((this.content()));
-			return obj;
-		}
-		rows(){
-			return [(this.Label()), (this.Content())];
-		}
-	};
-	($mol_mem(($.$mol_expander.prototype), "expanded"));
-	($mol_mem(($.$mol_expander.prototype), "Trigger"));
-	($mol_mem(($.$mol_expander.prototype), "Label"));
-	($mol_mem(($.$mol_expander.prototype), "Content"));
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        /**
-         * Component which expands any content on title click.
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_expander_demo
-         */
-        class $mol_expander extends $.$mol_expander {
-            rows() {
-                return [
-                    this.Label(),
-                    ...this.expanded() ? [this.Content()] : []
-                ];
-            }
-            expandable() {
-                return this.content().length > 0;
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_expander.prototype, "rows", null);
-        $$.$mol_expander = $mol_expander;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/expander/expander.view.css", "[mol_expander] {\n\tflex-direction: column;\n}\n\n[mol_expander_label] {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tborder-radius: var(--mol_gap_round);\n}\n\n[mol_expander_trigger] {\n\tflex: auto;\n\tposition: relative;\n}\n");
-})($ || ($ = {}));
-
-;
-	($.$mol_text) = class $mol_text extends ($.$mol_list) {
-		auto_scroll(){
-			return null;
-		}
-		block_content(id){
-			return [];
-		}
-		uri_resolve(id){
-			return "";
-		}
-		quote_text(id){
-			return "";
-		}
-		highlight(){
-			return "";
-		}
-		list_type(id){
-			return "-";
-		}
-		list_text(id){
-			return "";
-		}
-		header_level(id){
-			return 1;
-		}
-		header_arg(id){
-			return {};
-		}
-		pre_text(id){
-			return "";
-		}
-		pre_themes(id){
-			return [];
-		}
-		code_sidebar_showed(){
-			return true;
-		}
-		pre_sidebar_showed(){
-			return (this.code_sidebar_showed());
-		}
-		table_head_cells(id){
-			return [];
-		}
-		table_rows(id){
-			return [];
-		}
-		table_cells(id){
-			return [];
-		}
-		table_cell_text(id){
-			return "";
-		}
-		grid_rows(id){
-			return [];
-		}
-		grid_cells(id){
-			return [];
-		}
-		grid_cell_text(id){
-			return "";
-		}
-		line_text(id){
-			return "";
-		}
-		line_type(id){
-			return "";
-		}
-		line_content(id){
-			return [];
-		}
-		code_syntax(){
-			return null;
-		}
-		link_uri(id){
-			return "";
-		}
-		link_host(id){
-			return "";
-		}
-		spoiler_label(id){
-			return "";
-		}
-		Spoiler_label(id){
-			const obj = new this.$.$mol_text();
-			(obj.text) = () => ((this.spoiler_label(id)));
-			return obj;
-		}
-		spoiler_content(id){
-			return "";
-		}
-		Spoiler_content(id){
-			const obj = new this.$.$mol_text();
-			(obj.text) = () => ((this.spoiler_content(id)));
-			return obj;
-		}
-		uri_base(){
-			return "";
-		}
-		text(){
-			return "";
-		}
-		param(){
-			return "";
-		}
-		flow_tokens(){
-			return [];
-		}
-		block_text(id){
-			return "";
-		}
-		auto(){
-			return [(this.auto_scroll())];
-		}
-		Paragraph(id){
-			const obj = new this.$.$mol_paragraph();
-			(obj.sub) = () => ((this.block_content(id)));
-			return obj;
-		}
-		Quote(id){
-			const obj = new this.$.$mol_text();
-			(obj.uri_resolve) = (id) => ((this.uri_resolve(id)));
-			(obj.text) = () => ((this.quote_text(id)));
-			(obj.highlight) = () => ((this.highlight()));
-			(obj.auto_scroll) = () => (null);
-			return obj;
-		}
-		List(id){
-			const obj = new this.$.$mol_text_list();
-			(obj.uri_resolve) = (id) => ((this.uri_resolve(id)));
-			(obj.type) = () => ((this.list_type(id)));
-			(obj.text) = () => ((this.list_text(id)));
-			(obj.highlight) = () => ((this.highlight()));
-			return obj;
-		}
-		item_index(id){
-			return 0;
-		}
-		Header(id){
-			const obj = new this.$.$mol_text_header();
-			(obj.minimal_height) = () => (40);
-			(obj.level) = () => ((this.header_level(id)));
-			(obj.content) = () => ((this.block_content(id)));
-			(obj.arg) = () => ((this.header_arg(id)));
-			return obj;
-		}
-		Pre(id){
-			const obj = new this.$.$mol_text_code();
-			(obj.text) = () => ((this.pre_text(id)));
-			(obj.row_themes) = () => ((this.pre_themes(id)));
-			(obj.highlight) = () => ((this.highlight()));
-			(obj.uri_resolve) = (id) => ((this.uri_resolve(id)));
-			(obj.sidebar_showed) = () => ((this.pre_sidebar_showed()));
-			return obj;
-		}
-		Cut(id){
-			const obj = new this.$.$mol_view();
-			(obj.dom_name) = () => ("hr");
-			return obj;
-		}
-		Table(id){
-			const obj = new this.$.$mol_grid();
-			(obj.head_cells) = () => ((this.table_head_cells(id)));
-			(obj.rows) = () => ((this.table_rows(id)));
-			return obj;
-		}
-		Table_row(id){
-			const obj = new this.$.$mol_grid_row();
-			(obj.cells) = () => ((this.table_cells(id)));
-			return obj;
-		}
-		Table_cell(id){
-			const obj = new this.$.$mol_text();
-			(obj.auto_scroll) = () => (null);
-			(obj.highlight) = () => ((this.highlight()));
-			(obj.uri_resolve) = (id) => ((this.uri_resolve(id)));
-			(obj.text) = () => ((this.table_cell_text(id)));
-			return obj;
-		}
-		Grid(id){
-			const obj = new this.$.$mol_grid();
-			(obj.rows) = () => ((this.grid_rows(id)));
-			return obj;
-		}
-		Grid_row(id){
-			const obj = new this.$.$mol_grid_row();
-			(obj.cells) = () => ((this.grid_cells(id)));
-			return obj;
-		}
-		Grid_cell(id){
-			const obj = new this.$.$mol_text();
-			(obj.auto_scroll) = () => (null);
-			(obj.highlight) = () => ((this.highlight()));
-			(obj.uri_resolve) = (id) => ((this.uri_resolve(id)));
-			(obj.text) = () => ((this.grid_cell_text(id)));
-			return obj;
-		}
-		String(id){
-			const obj = new this.$.$mol_dimmer();
-			(obj.dom_name) = () => ("span");
-			(obj.needle) = () => ((this.highlight()));
-			(obj.haystack) = () => ((this.line_text(id)));
-			return obj;
-		}
-		Span(id){
-			const obj = new this.$.$mol_text_span();
-			(obj.dom_name) = () => ("span");
-			(obj.type) = () => ((this.line_type(id)));
-			(obj.sub) = () => ((this.line_content(id)));
-			return obj;
-		}
-		Code_line(id){
-			const obj = new this.$.$mol_text_code_line();
-			(obj.numb_showed) = () => (false);
-			(obj.highlight) = () => ((this.highlight()));
-			(obj.text) = () => ((this.line_text(id)));
-			(obj.uri_resolve) = (id) => ((this.uri_resolve(id)));
-			(obj.syntax) = () => ((this.code_syntax()));
-			return obj;
-		}
-		Link(id){
-			const obj = new this.$.$mol_link_iconed();
-			(obj.uri) = () => ((this.link_uri(id)));
-			(obj.content) = () => ((this.line_content(id)));
-			return obj;
-		}
-		Link_http(id){
-			const obj = new this.$.$mol_link_iconed();
-			(obj.uri) = () => ((this.link_uri(id)));
-			(obj.content) = () => ([(this.link_host(id))]);
-			return obj;
-		}
-		Embed(id){
-			const obj = new this.$.$mol_embed_any();
-			(obj.uri) = () => ((this.link_uri(id)));
-			(obj.title) = () => ((this.line_text(id)));
-			return obj;
-		}
-		Spoiler(id){
-			const obj = new this.$.$mol_expander();
-			(obj.label) = () => ([(this.Spoiler_label(id))]);
-			(obj.content) = () => ([(this.Spoiler_content(id))]);
-			return obj;
-		}
-	};
-	($mol_mem_key(($.$mol_text.prototype), "Spoiler_label"));
-	($mol_mem_key(($.$mol_text.prototype), "Spoiler_content"));
-	($mol_mem_key(($.$mol_text.prototype), "Paragraph"));
-	($mol_mem_key(($.$mol_text.prototype), "Quote"));
-	($mol_mem_key(($.$mol_text.prototype), "List"));
-	($mol_mem_key(($.$mol_text.prototype), "Header"));
-	($mol_mem_key(($.$mol_text.prototype), "Pre"));
-	($mol_mem_key(($.$mol_text.prototype), "Cut"));
-	($mol_mem_key(($.$mol_text.prototype), "Table"));
-	($mol_mem_key(($.$mol_text.prototype), "Table_row"));
-	($mol_mem_key(($.$mol_text.prototype), "Table_cell"));
-	($mol_mem_key(($.$mol_text.prototype), "Grid"));
-	($mol_mem_key(($.$mol_text.prototype), "Grid_row"));
-	($mol_mem_key(($.$mol_text.prototype), "Grid_cell"));
-	($mol_mem_key(($.$mol_text.prototype), "String"));
-	($mol_mem_key(($.$mol_text.prototype), "Span"));
-	($mol_mem_key(($.$mol_text.prototype), "Code_line"));
-	($mol_mem_key(($.$mol_text.prototype), "Link"));
-	($mol_mem_key(($.$mol_text.prototype), "Link_http"));
-	($mol_mem_key(($.$mol_text.prototype), "Embed"));
-	($mol_mem_key(($.$mol_text.prototype), "Spoiler"));
-	($.$mol_text_header) = class $mol_text_header extends ($.$mol_paragraph) {
-		arg(){
-			return {};
-		}
-		content(){
-			return [];
-		}
-		Link(){
-			const obj = new this.$.$mol_link();
-			(obj.arg) = () => ((this.arg()));
-			(obj.hint) = () => ((this.$.$mol_locale.text("$mol_text_header_Link_hint")));
-			(obj.sub) = () => ((this.content()));
-			return obj;
-		}
-		level(){
-			return 1;
-		}
-		sub(){
-			return [(this.Link())];
-		}
-	};
-	($mol_mem(($.$mol_text_header.prototype), "Link"));
-	($.$mol_text_span) = class $mol_text_span extends ($.$mol_paragraph) {
-		type(){
-			return "";
-		}
-		dom_name(){
-			return "span";
-		}
-		attr(){
-			return {...(super.attr()), "mol_text_type": (this.type())};
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        /**
-         * Markdown visualizer.
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_text_demo
-         */
-        class $mol_text extends $.$mol_text {
-            flow_tokens() {
-                const tokens = [];
-                this.$.$mol_syntax2_md_flow.tokenize(this.text(), (name, found, chunks) => tokens.push({ name, found, chunks }));
-                return tokens;
-            }
-            block_type(index) {
-                return this.flow_tokens()[index].name;
-            }
-            rows() {
-                return this.flow_tokens().map(({ name }, index) => {
-                    switch (name) {
-                        case 'quote': return this.Quote(index);
-                        case 'spoiler': return this.Spoiler(index);
-                        case 'header': return this.Header(index);
-                        case 'list': return this.List(index);
-                        case 'code': return this.Pre(index);
-                        case 'code-indent': return this.Pre(index);
-                        case 'table': return this.Table(index);
-                        case 'grid': return this.Grid(index);
-                        case 'cut': return this.Cut(index);
-                        default: return this.Paragraph(index);
-                    }
-                });
-            }
-            param() {
-                return this.toString().replace(/^.*?[\)>]\./, '').replace(/[(<>)]/g, '');
-            }
-            header_level(index) {
-                return this.flow_tokens()[index].chunks[0].length;
-            }
-            header_arg(index) {
-                return {
-                    [this.param()]: this.block_text(index)
-                };
-            }
-            list_type(index) {
-                return this.flow_tokens()[index].chunks[1] ?? '';
-            }
-            item_index(index) {
-                return this.flow_tokens().slice(0, index).filter(token => token.name === 'block').length + 1;
-            }
-            pre_text(index) {
-                const token = this.flow_tokens()[index];
-                return (token.chunks[2] ?? token.chunks[0].replace(/^(\t| (?:\+\+|--|\*\*|  ) )/gm, '')).replace(/[\n\r]*$/, '');
-            }
-            pre_themes(index) {
-                const token = this.flow_tokens()[index];
-                const names = {
-                    ' ** ': '$mol_theme_accent',
-                    ' ++ ': '$mol_theme_current',
-                    ' -- ': '$mol_theme_special',
-                };
-                return token.chunks[0].split('\n')
-                    .map(line => names[line.match(/^ (?:\+\+|--|\*\*|  ) /gm)?.[0] ?? ''] ?? null);
-            }
-            quote_text(index) {
-                return this.flow_tokens()[index].chunks[0].replace(/^[>"] /mg, '');
-            }
-            list_text(index) {
-                return this.flow_tokens()[index].chunks[0].replace(/^([-*+]|(?:\d+[\.\)])+) ?/mg, '').replace(/^  ?/mg, '');
-            }
-            cell_content(indexBlock) {
-                return this.flow_tokens()[indexBlock].chunks[0]
-                    .split(/\r?\n/g)
-                    .filter(row => row && !/\|--/.test(row))
-                    .map((row, rowId) => {
-                    return row.split(/\|/g)
-                        .filter(cell => cell)
-                        .map((cell, cellId) => cell.trim());
-                });
-            }
-            table_rows(blockId) {
-                return this.cell_content(blockId)
-                    .slice(1)
-                    .map((row, rowId) => this.Table_row({ block: blockId, row: rowId + 1 }));
-            }
-            table_head_cells(blockId) {
-                return this.cell_content(blockId)[0]
-                    .map((cell, cellId) => this.Table_cell({ block: blockId, row: 0, cell: cellId }));
-            }
-            table_cells(id) {
-                return this.cell_content(id.block)[id.row]
-                    .map((cell, cellId) => this.Table_cell({ block: id.block, row: id.row, cell: cellId }));
-            }
-            table_cell_text(id) {
-                return this.cell_content(id.block)[id.row][id.cell];
-            }
-            grid_content(indexBlock) {
-                return [...this.flow_tokens()[indexBlock].chunks[0].match(/(?:^! .*?$\r?\n?)+(?:^ +! .*?$\r?\n?)*/gm)]
-                    .map((row, rowId) => {
-                    const cells = [];
-                    for (const line of row.trim().split(/\r?\n/)) {
-                        const [_, indent, content] = /^( *)! (.*)/.exec(line);
-                        const col = Math.ceil(indent.length / 2);
-                        cells[col] = (cells[col] ? cells[col] + '\n' : '') + content;
-                    }
-                    return cells;
-                });
-            }
-            grid_rows(blockId) {
-                return this.grid_content(blockId)
-                    .map((row, rowId) => this.Grid_row({ block: blockId, row: rowId }));
-            }
-            grid_cells(id) {
-                return this.grid_content(id.block)[id.row]
-                    .map((cell, cellId) => this.Grid_cell({ block: id.block, row: id.row, cell: cellId }));
-            }
-            grid_cell_text(id) {
-                return this.grid_content(id.block)[id.row][id.cell];
-            }
-            uri_base() {
-                return $mol_dom_context.document.location.href;
-            }
-            uri_base_abs() {
-                return new URL(this.uri_base(), $mol_dom_context.document.location.href);
-            }
-            uri_resolve(uri) {
-                if (/^(\w+script+:)+/.test(uri))
-                    return null;
-                if (/^#\!/.test(uri)) {
-                    const params = {};
-                    for (const chunk of uri.slice(2).split(this.$.$mol_state_arg.separator)) {
-                        if (!chunk)
-                            continue;
-                        const vals = chunk.split('=').map(decodeURIComponent);
-                        params[vals.shift()] = vals.join('=');
-                    }
-                    return this.$.$mol_state_arg.link(params);
-                }
-                try {
-                    const url = new URL(uri, this.uri_base_abs());
-                    return url.toString();
-                }
-                catch (error) {
-                    $mol_fail_log(error);
-                    return null;
-                }
-            }
-            code_syntax() {
-                return this.$.$mol_syntax2_md_code;
-            }
-            block_text(index) {
-                const token = this.flow_tokens()[index];
-                switch (token.name) {
-                    case 'header': return token.chunks[2];
-                    default: return token.chunks[0];
-                }
-            }
-            block_content(index) {
-                return this.line_content([index]);
-            }
-            line_tokens(path) {
-                const tokens = [];
-                this.$.$mol_syntax2_md_line.tokenize(this.line_text(path), (name, found, chunks) => tokens.push({ name, found, chunks }));
-                return tokens;
-            }
-            line_token(path) {
-                const tokens = this.line_tokens(path.slice(0, path.length - 1));
-                return tokens[path[path.length - 1]];
-            }
-            line_type(path) {
-                return this.line_token(path).name;
-            }
-            line_text(path) {
-                if (path.length === 1)
-                    return this.block_text(path[0]);
-                const { name, found, chunks } = this.line_token(path);
-                switch (name) {
-                    case 'link': return chunks[0] || chunks[1].replace(/^.*?\/\/|\/.*$/g, '');
-                    case 'text-link': return chunks[0] || chunks[1].replace(/^.*?\/\/|\/.*$/g, '');
-                    default: return (chunks[0] || chunks[1] || chunks[2]) ?? found;
-                }
-            }
-            line_content(path) {
-                return this.line_tokens(path).map(({ name, chunks }, index) => {
-                    const path2 = [...path, index];
-                    switch (name) {
-                        case 'embed': return this.Embed(path2);
-                        case 'link': return this.Link(path2);
-                        case 'text-link-http': return this.Link_http(path2);
-                        case 'text-link': return this.Link(path2);
-                        case 'image-link': return this.Embed(path2);
-                        case 'code': return this.Code_line(path2);
-                        case '': return this.String(path2);
-                        default: return this.Span(path2);
-                    }
-                });
-            }
-            link_uri(path) {
-                const token = this.line_token(path);
-                const uri = this.uri_resolve(token.chunks[1] ?? token.found);
-                if (!uri)
-                    throw new Error('Bad link');
-                return uri;
-            }
-            link_host(path) {
-                return this.link_uri(path).replace(/^.*?\/\/|\/.*$/g, '');
-            }
-            auto_scroll() {
-                for (const [index, token] of this.flow_tokens().entries()) {
-                    if (token.name !== 'header')
-                        continue;
-                    const header = this.Header(index);
-                    if (!header.Link().current())
-                        continue;
-                    new $mol_after_tick(() => this.ensure_visible(header));
-                }
-            }
-            spoiler_rows(index) {
-                return this.flow_tokens()[index].chunks[0].replace(/^[\?] /mg, '').split('\n');
-            }
-            spoiler_label(index) {
-                return this.spoiler_rows(index)[0];
-            }
-            spoiler_content(index) {
-                return this.spoiler_rows(index).slice(1).join('\n');
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_text.prototype, "flow_tokens", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "block_type", null);
-        __decorate([
-            $mol_mem
-        ], $mol_text.prototype, "rows", null);
-        __decorate([
-            $mol_mem
-        ], $mol_text.prototype, "param", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "header_level", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "header_arg", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "pre_text", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "pre_themes", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "quote_text", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "list_text", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "cell_content", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "table_rows", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "table_head_cells", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "table_cells", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "table_cell_text", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "grid_content", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "grid_rows", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "grid_cells", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "grid_cell_text", null);
-        __decorate([
-            $mol_mem
-        ], $mol_text.prototype, "uri_base_abs", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "uri_resolve", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "block_text", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "line_tokens", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "line_token", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "line_type", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "line_text", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "line_content", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "link_uri", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "link_host", null);
-        __decorate([
-            $mol_mem
-        ], $mol_text.prototype, "auto_scroll", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "spoiler_rows", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "spoiler_label", null);
-        __decorate([
-            $mol_mem_key
-        ], $mol_text.prototype, "spoiler_content", null);
-        $$.$mol_text = $mol_text;
-        class $mol_text_header extends $.$mol_text_header {
-            dom_name() {
-                return 'h' + this.level();
-            }
-        }
-        $$.$mol_text_header = $mol_text_header;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/text/text/text.view.css", "[mol_text] {\n\tline-height: 1.5em;\n\tbox-sizing: border-box;\n\tborder-radius: var(--mol_gap_round);\n\twhite-space: pre-line;\n\tdisplay: flex;\n\tflex-direction: column;\n\tflex: 0 0 auto;\n\ttab-size: 4;\n}\n\n[mol_text_paragraph] {\n\tpadding: var(--mol_gap_text);\n\toverflow: auto;\n\toverflow-x: overlay;\n\tmax-width: 100%;\n\tdisplay: block;\n\tmax-width: 60rem;\n\tbreak-inside: avoid;\n}\n\n[mol_text_spoiler_label_paragraph] {\n\tpadding: 0;\n}\n\n[mol_text_span] {\n\tdisplay: inline;\n}\n\n[mol_text_string] {\n\tdisplay: inline;\n\tflex: 0 1 auto;\n\twhite-space: normal;\n}\n\n[mol_text_quote] {\n\tmargin: var(--mol_gap_block);\n\tpadding: var(--mol_gap_block);\n\tbackground: var(--mol_theme_card);\n\tbox-shadow: 0 0 0 1px var(--mol_theme_back);\n\tbreak-inside: avoid;\n}\n\n[mol_text_header] {\n\tdisplay: block;\n\ttext-shadow: 0 0;\n\tfont-weight: normal;\n\tbreak-after: avoid;\n}\n\n* + [mol_text_header] {\n\tmargin-top: 0.75rem;\n}\n\nh1[mol_text_header] {\n\tfont-size: 1.5rem;\n}\n\nh2[mol_text_header] {\n\tfont-size: 1.5rem;\n\tfont-style: italic;\n}\n\nh3[mol_text_header] {\n\tfont-size: 1.25rem;\n}\n\nh4[mol_text_header] {\n\tfont-size: 1.25em;\n\tfont-style: italic;\n}\n\nh5[mol_text_header] {\n\tfont-size: 1rem;\n}\n\nh6[mol_text_header] {\n\tfont-size: 1rem;\n\tfont-style: italic;\n}\n\n[mol_text_header_link] {\n\tcolor: inherit;\n}\n\n[mol_text_table] {\n\tbreak-inside: avoid;\n}\n\n[mol_text_table_cell] {\n\twidth: auto;\n\tdisplay: table-cell;\n\tvertical-align: baseline;\n\tpadding: 0;\n\tborder-radius: 0;\n}\n\n[mol_text_grid] {\n\tbreak-inside: avoid;\n}\n\n[mol_text_grid_cell] {\n\twidth: auto;\n\tdisplay: table-cell;\n\tvertical-align: top;\n\tpadding: 0;\n\tborder-radius: 0;\n}\n\n[mol_text_cut] {\n\tborder: none;\n\twidth: 100%;\n\tbox-shadow: 0 0 0 1px var(--mol_theme_line);\n}\n\n[mol_text_link_http],\n[mol_text_link] {\n\tpadding: 0;\n\tdisplay: inline;\n\twhite-space: nowrap;\n}\n\n[mol_text_link_icon] + [mol_text_embed] {\n\tmargin-left: -1.5rem;\n}\n\n[mol_text_embed_youtube] {\n\tdisplay: inline;\n}\n\n[mol_text_embed_youtube_image],\n[mol_text_embed_youtube_frame],\n[mol_text_embed_object] {\n\tobject-fit: contain;\n\tobject-position: center;\n\twidth: 100vw;\n\tmax-height: calc( 100vh - 6rem );\n}\n[mol_text_embed_object_fallback] {\n\tpadding: 0;\n}\n[mol_text_embed_image] {\n\tobject-fit: contain;\n\tobject-position: center;\n\tdisplay: inline;\n\t/* max-height: calc( 100vh - 6rem ); */\n\tvertical-align: top;\n}\n\n[mol_text_pre] {\n\twhite-space: pre;\n\toverflow-x: auto;\n\toverflow-x: overlay;\n\ttab-size: 2;\n\tbreak-inside: avoid;\n}\n\n[mol_text_code_line] {\n\tdisplay: inline-block;\n}\n\n[mol_text_type=\"strong\"] {\n\ttext-shadow: 0 0;\n\tfilter: contrast(1.5);\n}\n\n[mol_text_type=\"emphasis\"] {\n\tfont-style: italic;\n}\n\n[mol_text_type=\"insert\"] {\n\tcolor: var(--mol_theme_special);\n}\n\n[mol_text_type=\"delete\"] {\n\tcolor: var(--mol_theme_shade);\n}\n\n[mol_text_type=\"remark\"] {\n\tcolor: var(--mol_theme_shade);\n}\n\n[mol_text_type=\"quote\"] {\n\tfont-style: italic;\n}\n");
-})($ || ($ = {}));
-
-;
-	($.$mol_icon_eye) = class $mol_icon_eye extends ($.$mol_icon) {
-		path(){
-			return "M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$mol_password) = class $mol_password extends ($.$mol_view) {
-		hint(){
-			return "";
-		}
-		value(next){
-			if(next !== undefined) return next;
-			return "";
-		}
-		submit(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		enabled(){
-			return true;
-		}
-		Pass(){
-			const obj = new this.$.$mol_string();
-			(obj.type) = () => ((this.type()));
-			(obj.hint) = () => ((this.hint()));
-			(obj.value) = (next) => ((this.value(next)));
-			(obj.submit) = (next) => ((this.submit(next)));
-			(obj.enabled) = () => ((this.enabled()));
-			return obj;
-		}
-		checked(next){
-			if(next !== undefined) return next;
-			return true;
-		}
-		Show_icon(){
-			const obj = new this.$.$mol_icon_eye();
-			return obj;
-		}
-		Show(){
-			const obj = new this.$.$mol_check_icon();
-			(obj.checked) = (next) => ((this.checked(next)));
-			(obj.Icon) = () => ((this.Show_icon()));
-			return obj;
-		}
-		content(){
-			return [(this.Pass()), (this.Show())];
-		}
-		type(next){
-			if(next !== undefined) return next;
-			return "password";
-		}
-		sub(){
-			return (this.content());
-		}
-	};
-	($mol_mem(($.$mol_password.prototype), "value"));
-	($mol_mem(($.$mol_password.prototype), "submit"));
-	($mol_mem(($.$mol_password.prototype), "Pass"));
-	($mol_mem(($.$mol_password.prototype), "checked"));
-	($mol_mem(($.$mol_password.prototype), "Show_icon"));
-	($mol_mem(($.$mol_password.prototype), "Show"));
-	($mol_mem(($.$mol_password.prototype), "type"));
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        /**
-         * Password input field
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_password_demo
-         */
-        class $mol_password extends $.$mol_password {
-            checked(next) {
-                this.type(next ? 'text' : 'password');
-                return next ?? false;
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_password.prototype, "checked", null);
-        $$.$mol_password = $mol_password;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $.$hyoo_sync_revision = "echo";
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    function $mol_int62_string_ensure(str) {
-        if (typeof str !== 'string')
-            return null;
-        return $mol_int62_from_string(str) && str;
-    }
-    $.$mol_int62_string_ensure = $mol_int62_string_ensure;
-    $.$mol_int62_max = (2 ** 30) - 1;
-    $.$mol_int62_min = -(2 ** 30);
-    $.$mol_int62_range = $.$mol_int62_max - $.$mol_int62_min + 1;
-    function $mol_int62_to_string({ lo, hi }) {
-        lo = (lo + $.$mol_int62_range) % $.$mol_int62_range;
-        hi = (hi + $.$mol_int62_range) % $.$mol_int62_range;
-        return lo.toString(36) + '_' + hi.toString(36);
-    }
-    $.$mol_int62_to_string = $mol_int62_to_string;
-    function $mol_int62_from_string(str) {
-        const [str_lo, str_hi] = str.split('_');
-        const int_lo = parseInt(str_lo, 36);
-        const int_hi = parseInt(str_hi, 36);
-        if (int_lo.toString(36) !== str_lo || int_hi.toString(36) !== str_hi) {
-            return null;
-        }
-        return {
-            lo: (int_lo - $.$mol_int62_min) % $.$mol_int62_range + $.$mol_int62_min,
-            hi: (int_hi - $.$mol_int62_min) % $.$mol_int62_range + $.$mol_int62_min,
-        };
-    }
-    $.$mol_int62_from_string = $mol_int62_from_string;
-    function $mol_int62_compare(left_lo, left_hi, right_lo, right_hi) {
-        return (right_hi - left_hi) || (right_lo - left_lo);
-    }
-    $.$mol_int62_compare = $mol_int62_compare;
-    function $mol_int62_inc(lo, hi, max = $.$mol_int62_max) {
-        if (lo === max) {
-            return { lo: -max, hi: hi + 1 };
-        }
-        else {
-            return { lo: lo + 1, hi };
-        }
-    }
-    $.$mol_int62_inc = $mol_int62_inc;
-    function $mol_int62_random() {
-        return {
-            lo: Math.floor(Math.random() * $.$mol_int62_range + $.$mol_int62_min),
-            hi: Math.floor(Math.random() * $.$mol_int62_range + $.$mol_int62_min),
-        };
-    }
-    $.$mol_int62_random = $mol_int62_random;
-    function $mol_int62_hash_string(str) {
-        return $mol_int62_to_string($mol_int62_hash_buffer($mol_charset_encode(str)));
-    }
-    $.$mol_int62_hash_string = $mol_int62_hash_string;
-    function $mol_int62_hash_buffer(buf, seed = { lo: 0, hi: 0 }) {
-        let h1 = 0xdeadbeef ^ seed.lo;
-        let h2 = 0x41c6ce57 ^ seed.hi;
-        for (const byte of buf) {
-            h1 = Math.imul(h1 ^ byte, 2654435761);
-            h2 = Math.imul(h2 ^ byte, 1597334677);
-        }
-        h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-        h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-        return { lo: h1 << 1 >> 1, hi: h2 << 1 >> 1 };
-    }
-    $.$mol_int62_hash_buffer = $mol_int62_hash_buffer;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /**
-     * Checks for value of given enum and returns expected type.
-     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_data_enum_demo
-     */
-    function $mol_data_enum(name, dict) {
-        const index = {};
-        for (let key in dict) {
-            if (Number.isNaN(Number(key))) {
-                index[dict[key]] = key;
-            }
-        }
-        return $mol_data_setup((value) => {
-            if (typeof index[value] !== 'string') {
-                return $mol_fail(new $mol_data_error(`${value} is not value of ${name} enum`));
-            }
-            return value;
-        }, { name, dict });
-    }
-    $.$mol_data_enum = $mol_data_enum;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /** @FIXME Need polyfill for Safari and Node (https://github.com/microsoft/MSR-JavaScript-Crypto/) */
-    const algorithm = {
-        name: 'ECDSA',
-        hash: 'SHA-256',
-        namedCurve: "P-256",
-    };
-    /** Asymmetric signing pair with shortest payload */
-    async function $mol_crypto_auditor_pair() {
-        const pair = await $mol_crypto_native.subtle.generateKey(algorithm, true, ['sign', 'verify']);
-        return {
-            public: new $mol_crypto_auditor_public(pair.publicKey),
-            private: new $mol_crypto_auditor_private(pair.privateKey),
-        };
-    }
-    $.$mol_crypto_auditor_pair = $mol_crypto_auditor_pair;
-    /** Asymmetric signing public key wrapper with shortest payload */
-    class $mol_crypto_auditor_public extends Object {
-        native;
-        /** Key size in bytes. */
-        static size_str = 86;
-        static size_bin = 64;
-        constructor(native) {
-            super();
-            this.native = native;
-        }
-        static async from(serial) {
-            if (typeof serial !== 'string') {
-                serial = $mol_base64_url_encode(serial.subarray(0, 32))
-                    + $mol_base64_url_encode(serial.subarray(32, 64));
-            }
-            return new this(await $mol_crypto_native.subtle.importKey('jwk', {
-                crv: "P-256",
-                ext: true,
-                key_ops: ['verify'],
-                kty: "EC",
-                x: serial.slice(0, 43),
-                y: serial.slice(43, 86),
-            }, algorithm, true, ['verify']));
-        }
-        /** 86 bytes */
-        async serial() {
-            const { x, y } = await $mol_crypto_native.subtle.exportKey('jwk', this.native);
-            return x + y;
-        }
-        /** 64 bytes */
-        async toArray() {
-            const { x, y, d } = await $mol_crypto_native.subtle.exportKey('jwk', this.native);
-            return new Uint8Array([
-                ...$mol_base64_url_decode(x),
-                ...$mol_base64_url_decode(y),
-            ]);
-        }
-        async verify(data, sign) {
-            return await $mol_crypto_native.subtle.verify(algorithm, this.native, sign, data);
-        }
-    }
-    $.$mol_crypto_auditor_public = $mol_crypto_auditor_public;
-    /** Asymmetric signing private key wrapper with shortest payload */
-    class $mol_crypto_auditor_private extends Object {
-        native;
-        /** Key size in bytes. */
-        static size_str = 129;
-        static size_bin = 96;
-        constructor(native) {
-            super();
-            this.native = native;
-        }
-        static async from(serial) {
-            if (typeof serial !== 'string') {
-                serial = $mol_base64_url_encode(serial.subarray(0, 32))
-                    + $mol_base64_url_encode(serial.subarray(32, 64))
-                    + $mol_base64_url_encode(serial.subarray(64));
-            }
-            return new this(await $mol_crypto_native.subtle.importKey('jwk', {
-                crv: "P-256",
-                ext: true,
-                key_ops: ['sign'],
-                kty: "EC",
-                x: serial.slice(0, 43),
-                y: serial.slice(43, 86),
-                d: serial.slice(86, 129),
-            }, algorithm, true, ['sign']));
-        }
-        /** 129 bytes */
-        async serial() {
-            const { x, y, d } = await $mol_crypto_native.subtle.exportKey('jwk', this.native);
-            return x + y + d;
-        }
-        /** 96 bytes */
-        async toArray() {
-            const { x, y, d } = await $mol_crypto_native.subtle.exportKey('jwk', this.native);
-            return new Uint8Array([
-                ...$mol_base64_url_decode(x),
-                ...$mol_base64_url_decode(y),
-                ...$mol_base64_url_decode(d),
-            ]);
-        }
-        /** 64 bytes */
-        async sign(data) {
-            return await $mol_crypto_native.subtle.sign(algorithm, this.native, data);
-        }
-        /** Makes public key from private */
-        async public() {
-            return await $mol_crypto_auditor_public.from($mol_crypto_auditor_private_to_public(await this.serial()));
-        }
-    }
-    $.$mol_crypto_auditor_private = $mol_crypto_auditor_private;
-    /** Sign size in bytes. */
-    $.$mol_crypto_auditor_sign_size = 64;
-    function $mol_crypto_auditor_private_to_public(serial) {
-        return serial.slice(0, 86);
-    }
-    $.$mol_crypto_auditor_private_to_public = $mol_crypto_auditor_private_to_public;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    let $hyoo_crowd_peer_level;
-    (function ($hyoo_crowd_peer_level) {
-        $hyoo_crowd_peer_level[$hyoo_crowd_peer_level["get"] = 0] = "get";
-        $hyoo_crowd_peer_level[$hyoo_crowd_peer_level["add"] = 1] = "add";
-        $hyoo_crowd_peer_level[$hyoo_crowd_peer_level["mod"] = 2] = "mod";
-        $hyoo_crowd_peer_level[$hyoo_crowd_peer_level["law"] = 3] = "law";
-    })($hyoo_crowd_peer_level = $.$hyoo_crowd_peer_level || ($.$hyoo_crowd_peer_level = {}));
-    class $hyoo_crowd_peer extends Object {
-        key_public;
-        key_public_serial;
-        key_private;
-        key_private_serial;
-        id;
-        constructor(key_public, key_public_serial, key_private, key_private_serial) {
-            super();
-            this.key_public = key_public;
-            this.key_public_serial = key_public_serial;
-            this.key_private = key_private;
-            this.key_private_serial = key_private_serial;
-            this.id = $mol_int62_hash_string(this.key_public_serial);
-        }
-        static async generate() {
-            const pair = await $$.$mol_crypto_auditor_pair();
-            const serial = await pair.private.serial();
-            return new this(pair.public, $mol_crypto_auditor_private_to_public(serial), pair.private, serial);
-        }
-        static async restore(serial) {
-            return new this(await $$.$mol_crypto_auditor_public.from(serial), $mol_crypto_auditor_private_to_public(serial), await $$.$mol_crypto_auditor_private.from(serial), serial);
-        }
-    }
-    $.$hyoo_crowd_peer = $hyoo_crowd_peer;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    const level = $mol_data_enum('level', $hyoo_crowd_peer_level);
-    let $hyoo_crowd_unit_kind;
-    (function ($hyoo_crowd_unit_kind) {
-        /** Grab Land by King */
-        $hyoo_crowd_unit_kind[$hyoo_crowd_unit_kind["grab"] = 0] = "grab";
-        /** Join Peer to Land */
-        $hyoo_crowd_unit_kind[$hyoo_crowd_unit_kind["join"] = 1] = "join";
-        /* Give Level for Peer for Land */
-        $hyoo_crowd_unit_kind[$hyoo_crowd_unit_kind["give"] = 2] = "give";
-        /** Add Data to Land by joined Peer with right Level */
-        $hyoo_crowd_unit_kind[$hyoo_crowd_unit_kind["data"] = 3] = "data";
-    })($hyoo_crowd_unit_kind = $.$hyoo_crowd_unit_kind || ($.$hyoo_crowd_unit_kind = {}));
-    let $hyoo_crowd_unit_group;
-    (function ($hyoo_crowd_unit_group) {
-        /** Join and Give units */
-        $hyoo_crowd_unit_group[$hyoo_crowd_unit_group["auth"] = 0] = "auth";
-        /** Data units */
-        $hyoo_crowd_unit_group[$hyoo_crowd_unit_group["data"] = 1] = "data";
-    })($hyoo_crowd_unit_group = $.$hyoo_crowd_unit_group || ($.$hyoo_crowd_unit_group = {}));
-    /** Independent part of data. */
-    class $hyoo_crowd_unit extends Object {
-        land;
-        auth;
-        head;
-        self;
-        next;
-        prev;
-        time;
-        data;
-        bin;
-        constructor(
-        /** Identifier of land. */
-        land, 
-        /** Identifier of auth. */
-        auth, 
-        /** Identifier of head node. */
-        head, 
-        /** Self identifier inside head after prev before next. */
-        self, 
-        /** Identifier of next node. */
-        next, 
-        /** Identifier of prev node. */
-        prev, 
-        /** Monotonic real clock. 4B / info = 31b */
-        time, 
-        /** type-size = bin<0 | null=0 | json>0 */
-        /** Associated atomic data. mem = 4B+ / bin = (0|8B)+ / type-size-info = 16b */
-        data, bin) {
-            super();
-            this.land = land;
-            this.auth = auth;
-            this.head = head;
-            this.self = self;
-            this.next = next;
-            this.prev = prev;
-            this.time = time;
-            this.data = data;
-            this.bin = bin;
-        }
-        kind() {
-            if (this.head === this.self && this.auth === this.self) {
-                if (this.head === this.land) {
-                    return $hyoo_crowd_unit_kind.grab;
-                }
-                else {
-                    return $hyoo_crowd_unit_kind.join;
-                }
-            }
-            if (this.head === this.land) {
-                return $hyoo_crowd_unit_kind.give;
-            }
-            return $hyoo_crowd_unit_kind.data;
-        }
-        group() {
-            return this.kind() === $hyoo_crowd_unit_kind.data
-                ? $hyoo_crowd_unit_group.data
-                : $hyoo_crowd_unit_group.auth;
-        }
-        level() {
-            switch (this.kind()) {
-                case $hyoo_crowd_unit_kind.grab: return $hyoo_crowd_peer_level.law;
-                case $hyoo_crowd_unit_kind.give: return level(this.data);
-                default: $mol_fail(new Error(`Wrong unit kind for getting level: ${this.kind()}`));
-            }
-        }
-        [Symbol.toPrimitive]() {
-            return JSON.stringify(this);
-        }
-        [$mol_dev_format_head]() {
-            switch (this.kind()) {
-                case $hyoo_crowd_unit_kind.grab:
-                    return $mol_dev_format_div({}, $mol_dev_format_native(this), ' 👑');
-                case $hyoo_crowd_unit_kind.join:
-                    return $mol_dev_format_div({}, $mol_dev_format_native(this), $mol_dev_format_shade(' 🔑 ', this.self));
-                case $hyoo_crowd_unit_kind.give:
-                    return $mol_dev_format_div({}, $mol_dev_format_native(this), $mol_dev_format_shade(' 🏅 ', this.self, ' '), $mol_dev_format_native($hyoo_crowd_peer_level[this.data] ?? this.data));
-                case $hyoo_crowd_unit_kind.data:
-                    return $mol_dev_format_div({}, $mol_dev_format_native(this), $mol_dev_format_shade(' 📦 ', this.head, '!', this.self, ' '), $mol_dev_format_native(this.data));
-            }
-        }
-    }
-    $.$hyoo_crowd_unit = $hyoo_crowd_unit;
-    const offset = {
-        land_lo: 0,
-        land_hi: 4,
-        auth_lo: 8,
-        auth_hi: 12,
-        head_lo: 16,
-        head_hi: 20,
-        self_lo: 24,
-        self_hi: 28,
-        next_lo: 32,
-        next_hi: 36,
-        prev_lo: 40,
-        prev_hi: 44,
-        time: 48,
-        size: 54,
-        data: 56,
-    };
-    class $hyoo_crowd_unit_bin extends DataView {
-        static from_buffer(buffer) {
-            const size = Math.ceil(Math.abs(buffer[offset.size / 2]) / 8) * 8 + offset.data + $mol_crypto_auditor_sign_size;
-            return new this(buffer.slice(0, size / 2).buffer);
-        }
-        static from_unit(unit) {
-            if (unit.bin)
-                return unit.bin;
-            const type = unit.data === null
-                ? 0
-                : unit.data instanceof Uint8Array
-                    ? -1
-                    : 1;
-            const buff = type === 0 ? null
-                : type > 0 ? $mol_charset_encode(JSON.stringify(unit.data))
-                    : unit.data;
-            const size = buff?.byteLength ?? 0;
-            if (type > 0 && size > 2 ** 15 - 1)
-                throw new Error(`Too large json data: ${size} > ${2 ** 15 - 1}`);
-            if (type < 0 && size > 2 ** 15)
-                throw new Error(`Too large binary data: ${size} > ${2 ** 15}`);
-            const total = offset.data + Math.ceil(size / 8) * 8 + $mol_crypto_auditor_sign_size;
-            const mem = new Uint8Array(total);
-            const bin = new $hyoo_crowd_unit_bin(mem.buffer);
-            const land = $mol_int62_from_string(unit.land);
-            bin.setInt32(offset.land_lo, land.lo, true);
-            bin.setInt32(offset.land_hi, land.hi, true);
-            const auth = $mol_int62_from_string(unit.auth);
-            bin.setInt32(offset.auth_lo, auth.lo, true);
-            bin.setInt32(offset.auth_hi, auth.hi, true);
-            const head = $mol_int62_from_string(unit.head);
-            bin.setInt32(offset.head_lo, head.lo, true);
-            bin.setInt32(offset.head_hi, head.hi, true);
-            const self = $mol_int62_from_string(unit.self);
-            bin.setInt32(offset.self_lo, self.lo, true);
-            bin.setInt32(offset.self_hi, self.hi, true);
-            const next = $mol_int62_from_string(unit.next);
-            bin.setInt32(offset.next_lo, next.lo, true);
-            bin.setInt32(offset.next_hi, next.hi, true);
-            const prev = $mol_int62_from_string(unit.prev);
-            bin.setInt32(offset.prev_lo, prev.lo, true);
-            bin.setInt32(offset.prev_hi, prev.hi, true);
-            bin.setInt32(offset.time, unit.time, true);
-            bin.setInt16(offset.size, type * size, true);
-            if (buff)
-                mem.set(buff, offset.data);
-            return bin;
-        }
-        sign(next) {
-            const sign_offset = this.byteOffset + this.byteLength - $mol_crypto_auditor_sign_size;
-            const buff = new Uint8Array(this.buffer, sign_offset, $mol_crypto_auditor_sign_size);
-            if (!next)
-                return buff;
-            buff.set(next);
-            return buff;
-        }
-        // land( next?: $mol_int62_pair ) {
-        // 	if( next ) {
-        // 		this.setInt32( offset.land_lo, next.lo, true )
-        // 		this.setInt32( offset.land_hi, next.hi, true )
-        // 		return next
-        // 	} else {
-        // 		return {
-        // 			lo: this.getInt32( offset.land_lo, true ),
-        // 			hi: this.getInt32( offset.land_hi, true ),
-        // 		}
-        // 	}
-        // }
-        size() {
-            return Math.ceil(Math.abs(this.getInt16(offset.size, true)) / 8) * 8 + offset.data + $mol_crypto_auditor_sign_size;
-        }
-        // data() {
-        // 	const info = this.getUint16( offset.data )
-        // 	const size = Math.abs( info )
-        // 	const buf = new Uint8Array( this.buffer, this.byteOffset + offset.sens, size )
-        // 	const data = info > 0 ? JSON.parse( $mol_charset_decode( buf ) ) : info < 0 ? buf : null
-        // 	return data
-        // }
-        sens() {
-            return new Uint8Array(this.buffer, this.byteOffset, this.size() - $mol_crypto_auditor_sign_size);
-        }
-        unit() {
-            const land = $mol_int62_to_string({
-                lo: this.getInt32(offset.land_lo, true) << 1 >> 1,
-                hi: this.getInt32(offset.land_hi, true) << 1 >> 1,
-            });
-            const auth = $mol_int62_to_string({
-                lo: this.getInt32(offset.auth_lo, true) << 1 >> 1,
-                hi: this.getInt32(offset.auth_hi, true) << 1 >> 1,
-            });
-            const head = $mol_int62_to_string({
-                lo: this.getInt32(offset.head_lo, true) << 1 >> 1,
-                hi: this.getInt32(offset.head_hi, true) << 1 >> 1,
-            });
-            const self = $mol_int62_to_string({
-                lo: this.getInt32(offset.self_lo, true) << 1 >> 1,
-                hi: this.getInt32(offset.self_hi, true) << 1 >> 1,
-            });
-            const next = $mol_int62_to_string({
-                lo: this.getInt32(offset.next_lo, true) << 1 >> 1,
-                hi: this.getInt32(offset.next_hi, true) << 1 >> 1,
-            });
-            const prev = $mol_int62_to_string({
-                lo: this.getInt32(offset.prev_lo, true) << 1 >> 1,
-                hi: this.getInt32(offset.prev_hi, true) << 1 >> 1,
-            });
-            const time = this.getInt32(offset.time, true) << 1 >> 1;
-            const type_size = this.getInt16(offset.size, true);
-            let data = null;
-            if (type_size) {
-                try {
-                    var buff = new Uint8Array(this.buffer, this.byteOffset + offset.data, Math.abs(type_size));
-                }
-                catch (error) {
-                    error['message'] += `\nhead=${head};self=${self}`;
-                    $mol_fail_hidden(error);
-                }
-                if (type_size < 0)
-                    data = buff;
-                else
-                    data = JSON.parse($mol_charset_decode(buff));
-            }
-            return new $hyoo_crowd_unit(land, auth, head, self, next, prev, time, data, this);
-        }
-    }
-    $.$hyoo_crowd_unit_bin = $hyoo_crowd_unit_bin;
-    function $hyoo_crowd_unit_compare(left, right) {
-        return (left.group() - right.group())
-            || (left.time - right.time)
-            || ((left.auth > right.auth) ? 1 : (left.auth < right.auth) ? -1 : 0)
-            || ((left.self > right.self) ? 1 : (left.self < right.self) ? -1 : 0)
-            || ((left.head > right.head) ? 1 : (left.head < right.head) ? -1 : 0)
-            || ((left.prev > right.prev) ? 1 : (left.prev < right.prev) ? -1 : 0)
-            || ((left.next > right.next) ? 1 : (left.next < right.next) ? -1 : 0)
-            || ((left.land > right.land) ? 1 : (left.land < right.land) ? -1 : 0);
-    }
-    $.$hyoo_crowd_unit_compare = $hyoo_crowd_unit_compare;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    async function $hyoo_sync_peer(path, next) {
-        let serial = $mol_state_local.value('$hyoo_sync_peer', next);
-        if (typeof serial === 'string') {
-            return await $hyoo_crowd_peer.restore(serial);
-        }
-        const peer = await $hyoo_crowd_peer.generate();
-        $mol_state_local.value('$hyoo_sync_peer', peer.key_private_serial);
-        return peer;
-    }
-    $.$hyoo_sync_peer = $hyoo_sync_peer;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /** Internal int31 representation of current time. */
-    function $hyoo_crowd_time_now() {
-        return Math.floor(Date.now() / 100) - 1767e7;
-    }
-    $.$hyoo_crowd_time_now = $hyoo_crowd_time_now;
-    /** Returns unix timestamp for internal time representation. */
-    function $hyoo_crowd_time_stamp(time) {
-        return 1767e9 + time * 100;
-    }
-    $.$hyoo_crowd_time_stamp = $hyoo_crowd_time_stamp;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /** Vector clock. Stores real timestamps. */
-    class $hyoo_crowd_clock extends Map {
-        static begin = -1 * 2 ** 30;
-        /** Maximum time for all peers. */
-        last_time = $hyoo_crowd_clock.begin;
-        constructor(entries) {
-            super(entries);
-            if (!entries)
-                return;
-            for (const [peer, time] of entries) {
-                this.see_time(time);
-            }
-        }
-        /** Synchronize this clock with another. */
-        sync(right) {
-            for (const [peer, time] of right) {
-                this.see_peer(peer, time);
-            }
-        }
-        /** Increase `last` to latest. */
-        see_time(time) {
-            if (time < this.last_time)
-                return;
-            this.last_time = time;
-        }
-        /** Add new `time` for `peer` and increase `last`. */
-        see_peer(peer, time) {
-            if (!this.fresh(peer, time))
-                return;
-            this.set(peer, time);
-            this.see_time(time);
-        }
-        see_bin(bin, group) {
-            for (let cursor = offset.clocks; cursor < bin.byteLength; cursor += 16) {
-                this.see_peer($mol_int62_to_string({
-                    lo: bin.getInt32(cursor + 0, true) << 1 >> 1,
-                    hi: bin.getInt32(cursor + 4, true) << 1 >> 1,
-                }), bin.getInt32(cursor + 8 + 4 * group, true));
-            }
-        }
-        /** Checks if time from future. */
-        fresh(peer, time) {
-            return time > this.time(peer);
-        }
-        /** Checks if this clock from future of another. */
-        ahead(clock) {
-            for (const [peer, time] of this) {
-                if (clock.fresh(peer, time))
-                    return true;
-            }
-            return false;
-        }
-        time(peer) {
-            return this.get(peer) ?? $hyoo_crowd_clock.begin;
-        }
-        now() {
-            return $hyoo_crowd_time_now();
-        }
-        last_stamp() {
-            return $hyoo_crowd_time_stamp(this.last_time);
-        }
-        /** Gererates new time for peer that greater then other seen. */
-        tick(peer) {
-            let time = this.now();
-            if (time <= this.last_time) {
-                time = this.last_time + 1;
-            }
-            this.see_peer(peer, time);
-            return time;
-        }
-        [$mol_dev_format_head]() {
-            return $mol_dev_format_span({}, $mol_dev_format_native(this), $mol_dev_format_shade(' ' + new Date(this.last_stamp()).toISOString().replace('T', ' ')));
-        }
-    }
-    $.$hyoo_crowd_clock = $hyoo_crowd_clock;
-    const offset = {
-        land_lo: 0,
-        land_hi: 4,
-        count: 8,
-        clocks: 16,
-    };
-    class $hyoo_crowd_clock_bin extends DataView {
-        static from(land_id, clocks, count) {
-            const size = offset.clocks + clocks[0].size * 16;
-            const mem = new Uint8Array(size);
-            const bin = new $hyoo_crowd_clock_bin(mem.buffer);
-            const land = $mol_int62_from_string(land_id);
-            bin.setInt32(offset.land_lo, land.lo ^ (1 << 31), true);
-            bin.setInt32(offset.land_hi, land.hi, true);
-            bin.setInt32(offset.count, count, true);
-            let cursor = offset.clocks;
-            for (const [peer_id, time] of clocks[0]) {
-                const peer = $mol_int62_from_string(peer_id);
-                bin.setInt32(cursor + 0, peer.lo, true);
-                bin.setInt32(cursor + 4, peer.hi, true);
-                bin.setInt32(cursor + 8, time, true);
-                bin.setInt32(cursor + 12, clocks[1].get(peer_id) ?? $hyoo_crowd_clock.begin, true);
-                cursor += 16;
-            }
-            return bin;
-        }
-        land() {
-            return $mol_int62_to_string({
-                lo: this.getInt32(offset.land_lo, true) << 1 >> 1,
-                hi: this.getInt32(offset.land_hi, true) << 1 >> 1,
-            });
-        }
-        count() {
-            return this.getInt32(offset.count, true);
-        }
-    }
-    $.$hyoo_crowd_clock_bin = $hyoo_crowd_clock_bin;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /** Stateless non-unique adapter to CROWD Tree for given Head. */
-    class $hyoo_crowd_node extends $mol_object2 {
-        land;
-        head;
-        constructor(land = new $hyoo_crowd_land, head = '0_0') {
-            super();
-            this.land = land;
-            this.head = head;
-        }
-        static for(land, head) {
-            return new this(land, head);
-        }
-        static toJSON() {
-            return this.name;
-        }
-        id() {
-            return this.head === '0_0'
-                ? this.land.id()
-                : `${this.land.id()}!${this.head}`;
-        }
-        world() {
-            return this.land.world();
-        }
-        /** Returns another representation of this node. */
-        as(Node) {
-            return this.world()?.Fund(Node).Item(`${this.land.id()}!${this.head}`) ?? new Node(this.land, this.head);
-        }
-        /** Ordered inner alive Units. */
-        units() {
-            return this.land.unit_alives(this.head);
-        }
-        /** Ordered inner alive Node. */
-        nodes(Node) {
-            const fund = this.world()?.Fund(Node);
-            return this.units().map(unit => fund?.Item(`${this.land.id()}!${unit.self}`) ?? new Node(this.land, unit.self));
-        }
-        /** Returns true when node value is never changed. */
-        virgin() {
-            return this.land.unit_list(this.head).length === 0;
-        }
-        [Symbol.toPrimitive]() {
-            return `${this.constructor.name}("${this.land.id()}","${this.head}")`;
-        }
-        toJSON() {
-            return this.id();
-        }
-        [$mol_dev_format_head]() {
-            return $mol_dev_format_span({}, $mol_dev_format_native(this), $mol_dev_format_shade(':'), $mol_dev_format_auto(this.land.unit_list(this.head)));
-        }
-    }
-    __decorate([
-        $mol_mem
-    ], $hyoo_crowd_node.prototype, "units", null);
-    __decorate([
-        $mol_mem_key
-    ], $hyoo_crowd_node.prototype, "nodes", null);
-    $.$hyoo_crowd_node = $hyoo_crowd_node;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    class $hyoo_crowd_reg extends $hyoo_crowd_node {
-        /** Atomic value. */
-        value(next) {
-            const unit = this.units().at(-1);
-            if (next === undefined)
-                return unit?.data ?? null;
-            if ($mol_compare_deep(unit?.data, next))
-                return next;
-            this.land.put(this.head, unit?.self ?? this.land.id_new(), '0_0', next);
-            return next;
-        }
-        /** Atomic string. */
-        str(next) {
-            return String(this.value(next) ?? '');
-        }
-        /** Atomic number. */
-        numb(next) {
-            return Number(this.value(next));
-        }
-        /** Atomic boolean. */
-        bool(next) {
-            return Boolean(this.value(next));
-        }
-        yoke(law = [''], mod = [], add = []) {
-            const world = this.world();
-            let land_id = $mol_int62_string_ensure(this.value());
-            if (land_id)
-                return world.land_sync(land_id);
-            if (!this.land.allowed_add())
-                return null;
-            const land = $mol_wire_sync(world).grab(law, mod, add);
-            this.value(land.id());
-            world.land_init(land);
-            return land;
-        }
-    }
-    $.$hyoo_crowd_reg = $hyoo_crowd_reg;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    class $hyoo_crowd_struct extends $hyoo_crowd_node {
-        /** Returns inner node for key. */
-        sub(key, Node) {
-            const head = $mol_int62_hash_string(key + '\n' + this.head);
-            return this.world()?.Fund(Node).Item(`${this.land.id()}!${head}`) ?? new Node(this.land, head);
-        }
-        yoke(key, Node, law = [''], mod = [], add = []) {
-            const land = this.sub(key, $hyoo_crowd_reg).yoke(law, mod, add);
-            return land?.chief.sub(key, Node) ?? null;
-        }
-    }
-    $.$hyoo_crowd_struct = $hyoo_crowd_struct;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /** Conflict-free Reinterpretable Ordered Washed Data Tree */
-    class $hyoo_crowd_land extends $mol_object {
-        id() {
-            return $mol_int62_to_string($mol_int62_random());
-        }
-        toJSON() {
-            return this.id();
-        }
-        peer() {
-            return this.world()?.peer;
-        }
-        peer_id() {
-            return this.peer()?.id ?? '0_0';
-        }
-        world() {
-            return null;
-        }
-        get clock_auth() {
-            this.pub.promote();
-            return this._clocks[$hyoo_crowd_unit_group.auth];
-        }
-        get clock_data() {
-            this.pub.promote();
-            return this._clocks[$hyoo_crowd_unit_group.data];
-        }
-        get clocks() {
-            this.pub.promote();
-            return this._clocks;
-        }
-        get clocks_bin() {
-            return new Uint8Array($hyoo_crowd_clock_bin.from(this.id(), this._clocks, this._unit_all.size).buffer);
-        }
-        pub = new $mol_wire_pub;
-        _clocks = [new $hyoo_crowd_clock, new $hyoo_crowd_clock];
-        /** unit by head + self */
-        _unit_all = new Map();
-        unit(head, self) {
-            return this._unit_all.get(`${head}!${self}`);
-        }
-        /** units by head */
-        _unit_lists = new Map();
-        /** Units by Head without tombstones */
-        _unit_alives = new Map();
-        size() {
-            return this._unit_all.size;
-        }
-        /** Returns list of all Units for Node. */
-        unit_list(head) {
-            let kids = this._unit_lists.get(head);
-            if (!kids)
-                this._unit_lists.set(head, kids = Object.assign([], { dirty: false }));
-            return kids;
-        }
-        /** Returns list of alive Units for Node. */
-        unit_alives(head) {
-            this.pub.promote();
-            let kids = this._unit_alives.get(head);
-            if (!kids) {
-                const all = this.unit_list(head);
-                if (all.dirty)
-                    this.resort(head);
-                kids = all.filter(kid => kid.data !== null);
-                this._unit_alives.set(head, kids);
-            }
-            return kids;
-        }
-        /** Node by id and type. */
-        node(head, Node) {
-            return new Node(this, head);
-        }
-        /** Root Node. */
-        chief = this.node('0_0', $hyoo_crowd_struct);
-        /** Generates new identifier. */
-        id_new() {
-            for (let i = 0; i < 1000; ++i) {
-                const id = $mol_int62_to_string($mol_int62_random());
-                if (id === '0_0')
-                    continue; // zero reserved for empty
-                if (id === this.id())
-                    continue; // reserved for rights
-                if (this._unit_lists.has(id))
-                    continue; // skip already exists
-                return id;
-            }
-            throw new Error(`Can't generate ID after 1000 times`);
-        }
-        /** Makes independent clone with defined peer. */
-        fork(auth) {
-            const fork = $hyoo_crowd_land.make({
-                id: $mol_const(this.id()),
-                peer: $mol_const(auth),
-            });
-            return fork.apply(this.delta());
-        }
-        /** Makes Delta bettween Clock and now. */
-        delta(clocks = [new $hyoo_crowd_clock, new $hyoo_crowd_clock]) {
-            this.pub.promote();
-            const delta = [];
-            for (const unit of this._unit_all.values()) {
-                const time = clocks[unit.group()].time(unit.auth);
-                if (unit.time <= time)
-                    continue;
-                delta.push(unit);
-            }
-            delta.sort($hyoo_crowd_unit_compare);
-            return delta;
-        }
-        resort(head) {
-            const kids = this._unit_lists.get(head);
-            if (!kids.dirty)
-                return kids;
-            if (kids.length < 2) {
-                kids.dirty = true;
-                return kids;
-            }
-            const queue = kids.splice(0).sort((left, right) => -$hyoo_crowd_unit_compare(left, right));
-            const locate = (self) => {
-                for (let i = kids.length - 1; i >= 0; --i) {
-                    if (kids[i].self === self)
-                        return i;
-                }
-                return -1;
-            };
-            while (queue.length) {
-                kids.push(queue.pop());
-                for (let cursor = queue.length - 1; cursor >= 0; --cursor) {
-                    const kid = queue[cursor];
-                    let index = 0;
-                    if (kid.prev !== '0_0') {
-                        index = locate(kid.prev) + 1;
-                        if (!index)
-                            continue;
-                    }
-                    while (kids[index] && ($hyoo_crowd_unit_compare(kids[index], kid) > 0))
-                        ++index;
-                    const exists = locate(kid.self);
-                    if (index === exists) {
-                        if (cursor === queue.length - 1)
-                            queue.pop();
-                        continue;
-                    }
-                    if (exists >= 0) {
-                        kids.splice(exists, 1);
-                        if (exists < index)
-                            --index;
-                    }
-                    kids.splice(index, 0, kid);
-                    if (cursor === queue.length - 1)
-                        queue.pop();
-                    cursor = queue.length;
-                }
-            }
-            kids.dirty = false;
-            return kids;
-        }
-        /** Applies Delta to current state. */
-        apply(delta) {
-            for (const next of delta) {
-                this._clocks[next.group()].see_peer(next.auth, next.time);
-                const kids = this.unit_list(next.head);
-                const next_id = `${next.head}!${next.self}`;
-                let prev = this._unit_all.get(next_id);
-                if (prev) {
-                    if ($hyoo_crowd_unit_compare(prev, next) > 0)
-                        continue;
-                    kids[kids.indexOf(prev)] = next;
-                }
-                else {
-                    kids.push(next);
-                }
-                this._unit_all.set(next_id, next);
-                if (kids.length > 1)
-                    kids.dirty = true;
-                this._unit_alives.set(next.head, undefined);
-            }
-            this.pub.emit();
-            return this;
-        }
-        _joined = false;
-        /** Register public key of current peer **/
-        join() {
-            if (this._joined)
-                return;
-            const auth = this.peer();
-            if (!auth)
-                return;
-            if (!auth.key_public_serial)
-                return;
-            const auth_id = `${auth.id}!${auth.id}`;
-            const auth_unit = this._unit_all.get(auth_id);
-            if (auth_unit?.data)
-                return this._joined = true;
-            const time = this._clocks[$hyoo_crowd_unit_group.auth].tick(auth.id);
-            const join_unit = new $hyoo_crowd_unit(this.id(), auth.id, auth.id, auth.id, '0_0', '0_0', time, auth.key_public_serial, null);
-            this._unit_all.set(auth_id, join_unit);
-            this._joined = true;
-            this.pub.emit();
-        }
-        /** Unregister public key of current peer **/
-        leave() {
-            const auth = this.peer();
-            if (!auth)
-                return;
-            if (!auth.key_public_serial)
-                return;
-            const auth_id = `${auth.id}!${auth.id}`;
-            const auth_unit = this._unit_all.get(auth_id);
-            if (!auth_unit || !auth_unit.data)
-                return this._joined = false;
-            const time = this._clocks[$hyoo_crowd_unit_group.auth].tick(auth.id);
-            const join_unit = new $hyoo_crowd_unit(this.id(), auth.id, auth.id, auth.id, '0_0', '0_0', time, null, null);
-            this._unit_all.set(auth_id, join_unit);
-            this._joined = false;
-            this.pub.emit();
-        }
-        allowed_add(peer = this.peer().id) {
-            return this.level(peer) >= $hyoo_crowd_peer_level.add;
-        }
-        allowed_mod(peer = this.peer().id) {
-            return this.level(peer) >= $hyoo_crowd_peer_level.mod;
-        }
-        allowed_law(peer = this.peer().id) {
-            return this.level(peer) >= $hyoo_crowd_peer_level.law;
-        }
-        level_base(next) {
-            this.level('0_0', next);
-        }
-        /** Access level for peer. Use empty string for current peer. **/
-        level(peer, next) {
-            if (next)
-                this.join();
-            else
-                this.pub.promote();
-            if (!peer)
-                peer = this.peer_id();
-            const level_id = `${this.id()}!${peer}`;
-            const prev = this._unit_all.get(level_id)?.level()
-                ?? this._unit_all.get(`${this.id()}!0_0`)?.level()
-                ?? (this.id() === peer ? $hyoo_crowd_peer_level.law : $hyoo_crowd_peer_level.get);
-            if (next === undefined)
-                return prev;
-            if (next <= prev)
-                return prev;
-            if (!this.allowed_law())
-                return prev;
-            const time = this._clocks[$hyoo_crowd_unit_group.auth].tick(peer);
-            const auth = this.peer_id();
-            const level_unit = new $hyoo_crowd_unit(this.id(), auth, this.id(), peer, '0_0', '0_0', time, next, null);
-            this._unit_all.set(level_id, level_unit);
-            this.pub.emit();
-            return next;
-        }
-        grabbed() {
-            if (this.id() === this.peer_id())
-                return true;
-            this.pub.promote();
-            return this._unit_all.size > 0;
-        }
-        /** All peers who have special rights to write o land. */
-        peers() {
-            this.pub.promote();
-            const lords = [];
-            for (const unit of this._unit_all.values()) {
-                switch (unit.kind()) {
-                    case $hyoo_crowd_unit_kind.data: continue;
-                    case $hyoo_crowd_unit_kind.join: continue;
-                    default: lords.push(unit.self);
-                }
-            }
-            return lords;
-        }
-        /** All peers who joined to land except king. */
-        residents() {
-            this.pub.promote();
-            const lords = [];
-            for (const unit of this._unit_all.values()) {
-                if (unit.data === null)
-                    continue;
-                if (unit.kind() !== $hyoo_crowd_unit_kind.join)
-                    continue;
-                lords.push(unit.self);
-            }
-            return lords;
-        }
-        /** All peers who have alive data inside land. */
-        authors() {
-            this.pub.promote();
-            const authors = new Set();
-            for (const unit of this._unit_all.values()) {
-                if (unit.kind() !== $hyoo_crowd_unit_kind.data)
-                    continue;
-                if (unit.data === null)
-                    continue;
-                authors.add(unit.auth);
-            }
-            return authors;
-        }
-        steal_rights(donor) {
-            if (!this.allowed_law())
-                return;
-            for (const peer of donor.peers()) {
-                this.level(peer, donor.level(peer));
-            }
-        }
-        first_stamp() {
-            this.pub.promote();
-            const grab_unit = this._unit_all.get(`${this.id()}!${this.id()}`);
-            return (grab_unit && $hyoo_crowd_time_stamp(grab_unit.time)) ?? null;
-        }
-        last_stamp() {
-            this.pub.promote();
-            return this.clock_data.last_stamp();
-        }
-        selection(peer) {
-            return this.world().land_sync(peer).chief.sub('$hyoo_crowd_land..selection', $hyoo_crowd_reg);
-        }
-        /** Places data to tree. */
-        put(head, self, prev, data) {
-            this.join();
-            const old_id = `${head}!${self}`;
-            let unit_old = this._unit_all.get(old_id);
-            let unit_prev = prev !== '0_0'
-                ? this._unit_all.get(`${head}!${prev}`)
-                : null;
-            const unit_list = this.unit_list(head);
-            if (unit_old)
-                unit_list.splice(unit_list.indexOf(unit_old), 1);
-            const seat = unit_prev ? unit_list.indexOf(unit_prev) + 1 : 0;
-            const next = unit_list[seat]?.self ?? '0_0';
-            const auth = this.peer_id();
-            const time = this._clocks[$hyoo_crowd_unit_group.data].tick(auth);
-            const unit_new = new $hyoo_crowd_unit(this.id(), auth, head, self, next, prev, time, data, null);
-            this._unit_all.set(old_id, unit_new);
-            unit_list.splice(seat, 0, unit_new);
-            // unit_list.dirty = true
-            this._unit_alives.set(head, undefined);
-            // this.apply([ unit_new ])
-            this.pub.emit();
-            return unit_new;
-        }
-        /** Marks unit as deleted and wipes its data. */
-        wipe(unit) {
-            if (unit.data === null)
-                return unit;
-            // for( const kid of this.unit_list( unit.self ) ) {
-            // 	this.wipe( kid )
-            // }
-            const unit_list = this.unit_list(unit.head);
-            const seat = unit_list.indexOf(unit);
-            const prev = seat > 0 ? unit_list[seat - 1].self : seat < 0 ? unit.prev : '0_0';
-            return this.put(unit.head, unit.self, prev, null);
-        }
-        /** Moves Unit after another Prev inside some Head. */
-        move(unit, head, prev) {
-            const unit_list = this.unit_list(unit.head);
-            const seat = unit_list.indexOf(unit);
-            const next = unit_list[seat + 1];
-            this.wipe(unit);
-            if (next)
-                this.put(next.head, next.self, unit_list[unit_list.indexOf(next) - 2]?.self ?? '0_0', next.data);
-            this.put(head, unit.self, prev, unit.data);
-        }
-        /** Moves Unit at given Seat inside given Head. */
-        insert(unit, head, seat) {
-            const list = this.unit_list(head);
-            const prev = seat ? list[seat - 1].self : '0_0';
-            return this.move(unit, head, prev);
-        }
-        [$mol_dev_format_head]() {
-            return $mol_dev_format_native(this);
-        }
-    }
-    __decorate([
-        $mol_memo.method
-    ], $hyoo_crowd_land.prototype, "id", null);
-    $.$hyoo_crowd_land = $hyoo_crowd_land;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /** Registry of nodes as domain entities. */
-    class $hyoo_crowd_fund extends $mol_object {
-        world;
-        node_class;
-        constructor(world, node_class) {
-            super();
-            this.world = world;
-            this.node_class = node_class;
-        }
-        Item(id) {
-            const [land, head] = id.split('!');
-            if (!head)
-                return this.Item(`${land}!0_0`);
-            return this.world.land_sync(land).node(head, this.node_class);
-        }
-        make(law = [''], mod = [], add = []) {
-            const land = $mol_wire_sync(this.world).grab(law, mod, add);
-            return this.Item(land.id());
-        }
-    }
-    __decorate([
-        $mol_mem_key
-    ], $hyoo_crowd_fund.prototype, "Item", null);
-    __decorate([
-        $mol_action
-    ], $hyoo_crowd_fund.prototype, "make", null);
-    $.$hyoo_crowd_fund = $hyoo_crowd_fund;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /** @deprecated */
-    $.$mol_dict_key = $mol_key;
-    /**
-     * Dictionary with extended keys support
-     */
-    class $mol_dict extends Map {
-        get(key) {
-            return super.get($mol_key(key));
-        }
-        has(key) {
-            return super.has($mol_key(key));
-        }
-        set(key, value) {
-            return super.set($mol_key(key), value);
-        }
-        delete(key) {
-            return super.delete($mol_key(key));
-        }
-        forEach(back, context) {
-            return super.forEach((val, key, dict) => {
-                if (typeof key === 'string')
-                    key = JSON.parse(key);
-                return back.call(this, val, key, dict);
-            }, context);
-        }
-        keys() {
-            const iterator = super.keys();
-            return {
-                [Symbol.iterator]() {
-                    return this;
-                },
-                next() {
-                    const iteration = iterator.next();
-                    if (iteration.done)
-                        return iteration;
-                    iteration.value = JSON.parse(iteration.value);
-                    return iteration;
-                }
-            };
-        }
-        entries() {
-            const iterator = super.entries();
-            return {
-                [Symbol.iterator]() {
-                    return this;
-                },
-                next() {
-                    const iteration = iterator.next();
-                    if (iteration.done)
-                        return iteration;
-                    iteration.value = [JSON.parse(iteration.value[0]), iteration.value[1]];
-                    // iteration.value[0] = JSON.parse( iteration.value[0] as any as string )
-                    return iteration;
-                }
-            };
-        }
-        [Symbol.iterator]() {
-            return this.entries();
-        }
-    }
-    $.$mol_dict = $mol_dict;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    class $hyoo_crowd_world extends $mol_object {
-        peer;
-        constructor(peer) {
-            super();
-            this.peer = peer;
-            if (peer)
-                this._knights.set(peer.id, peer);
-        }
-        lands_pub = new $mol_wire_pub;
-        _lands = new Map();
-        get lands() {
-            this.lands_pub.promote();
-            return this._lands;
-        }
-        land_init(id) { }
-        land(id) {
-            const exists = this._lands.get(id);
-            if (exists)
-                return exists;
-            const land = $hyoo_crowd_land.make({
-                id: $mol_const(id),
-                world: $mol_const(this),
-            });
-            this._lands.set(id, land);
-            this.lands_pub.emit();
-            return land;
-        }
-        land_sync(id) {
-            const land = this.land(id);
-            this.land_init(land);
-            return land;
-        }
-        Fund(Item) {
-            return new $hyoo_crowd_fund(this, Item);
-        }
-        home() {
-            return this.land_sync(this.peer.id);
-        }
-        _knights = new $mol_dict();
-        _signs = new WeakMap();
-        async grab(law = [''], mod = [], add = []) {
-            // if( !law.length && !mod.length && !add.length ) $mol_fail( new Error( 'Grabbing dead land' ) )
-            const knight = await $hyoo_crowd_peer.generate();
-            this._knights.set(knight.id, knight);
-            const land_inner = this.land(knight.id);
-            const land_outer = $hyoo_crowd_land.make({
-                id: $mol_const(knight.id),
-                peer: $mol_const(knight),
-            });
-            land_outer.join();
-            for (const peer of law)
-                land_outer.level(peer || this.peer.id, $hyoo_crowd_peer_level.law);
-            for (const peer of mod)
-                land_outer.level(peer || this.peer.id, $hyoo_crowd_peer_level.mod);
-            for (const peer of add)
-                land_outer.level(peer || this.peer.id, $hyoo_crowd_peer_level.add);
-            land_inner.apply(land_outer.delta());
-            return land_inner;
-        }
-        sign_units(units) {
-            return Promise.all(units.map(async (unit) => {
-                if (unit.bin)
-                    return unit;
-                const bin = $hyoo_crowd_unit_bin.from_unit(unit);
-                let sign = this._signs.get(unit);
-                if (!sign) {
-                    const knight = this._knights.get(unit.auth);
-                    sign = new Uint8Array(await knight.key_private.sign(bin.sens()));
-                }
-                bin.sign(sign);
-                unit.bin = bin;
-                this._signs.set(unit, sign);
-                return unit;
-            }));
-        }
-        delta_land(land, clocks = [new $hyoo_crowd_clock, new $hyoo_crowd_clock]) {
-            return this.sign_units(land.delta(clocks));
-        }
-        async delta_batch(land, clocks = [new $hyoo_crowd_clock, new $hyoo_crowd_clock]) {
-            const units = await this.delta_land(land, clocks);
-            let size = 0;
-            const bins = [];
-            for (const unit of units) {
-                const bin = unit.bin;
-                bins.push(bin);
-                size += bin.byteLength;
-            }
-            const batch = new Uint8Array(size);
-            let offset = 0;
-            for (const bin of bins) {
-                batch.set(new Uint8Array(bin.buffer, bin.byteOffset, bin.byteLength), offset);
-                offset += bin.byteLength;
-            }
-            return batch;
-        }
-        async *delta(clocks = new Map()) {
-            for (const land of this.lands.values()) {
-                const batch = await this.delta_batch(land, clocks.get(land.id()));
-                if (batch.length)
-                    yield batch;
-            }
-        }
-        async merge(donor) {
-            for await (const batch of donor.delta())
-                await this.apply(batch);
-        }
-        async apply(delta) {
-            const units = [];
-            let bin_offset = 0;
-            while (bin_offset < delta.byteLength) {
-                const buf = new Int16Array(delta.buffer, delta.byteOffset + bin_offset);
-                const bin = $hyoo_crowd_unit_bin.from_buffer(buf);
-                units.push(bin.unit());
-                bin_offset += bin.size();
-            }
-            const land = this.land(units[0].land);
-            const report = await this.audit_delta(land, units);
-            land.apply(report.allow);
-            return report;
-        }
-        async audit_delta(land, delta) {
-            const all = new Map();
-            const desync = 60 * 60 * 10; // 1 hour
-            const deadline = land.clock_data.now() + desync;
-            const get_unit = (id) => {
-                return all.get(id) ?? land._unit_all.get(id);
-            };
-            const get_level = (head, self) => {
-                return get_unit(`${head}!${self}`)?.level()
-                    ?? get_unit(`${head}!0_0`)?.level()
-                    ?? $hyoo_crowd_peer_level.get;
-            };
-            const check_unit = async (unit) => {
-                const bin = unit.bin;
-                if (unit.time > deadline)
-                    return 'Far future';
-                const auth_unit = get_unit(`${unit.auth}!${unit.auth}`);
-                const kind = unit.kind();
-                switch (kind) {
-                    case $hyoo_crowd_unit_kind.grab:
-                    case $hyoo_crowd_unit_kind.join: {
-                        const key_str = auth_unit?.data ?? unit.data;
-                        if (typeof key_str !== 'string')
-                            return 'No join key';
-                        const self = $mol_int62_hash_string(key_str);
-                        if (unit.self !== self)
-                            return 'Alien join key';
-                        const key = await $mol_crypto_auditor_public.from(key_str);
-                        const sign = bin.sign();
-                        const valid = await key.verify(bin.sens(), sign);
-                        if (!valid)
-                            return 'Wrong join sign';
-                        all.set(`${unit.head}!${unit.auth}`, unit);
-                        this._signs.set(unit, sign);
-                        return '';
-                    }
-                    case $hyoo_crowd_unit_kind.give: {
-                        const lord_level = get_level(land.id(), unit.auth);
-                        if (lord_level < $hyoo_crowd_peer_level.law)
-                            return `Level too low`;
-                        const peer_level = get_level(land.id(), unit.self);
-                        if (peer_level > unit.level())
-                            return `Cancel unsupported`;
-                        break;
-                    }
-                    case $hyoo_crowd_unit_kind.data: {
-                        const level = get_level(land.id(), unit.auth);
-                        if (level >= $hyoo_crowd_peer_level.mod)
-                            break;
-                        if (level === $hyoo_crowd_peer_level.add) {
-                            const exists = get_unit(`${unit.head}!${unit.self}`);
-                            if (!exists)
-                                break;
-                            if (exists.auth === unit.auth)
-                                break;
-                        }
-                        return `Level too low`;
-                    }
-                }
-                const key_str = auth_unit?.data;
-                if (typeof key_str !== 'string')
-                    return 'No auth key';
-                const key = await $mol_crypto_auditor_public.from(key_str);
-                const sign = bin.sign();
-                const valid = await key.verify(bin.sens(), sign);
-                if (!valid)
-                    return 'Wrong auth sign';
-                all.set(`${unit.head}!${unit.self}`, unit);
-                this._signs.set(unit, sign);
-                return '';
-            };
-            const allow = [];
-            const forbid = new Map();
-            const proceed_unit = async (unit) => {
-                const error = await check_unit(unit);
-                if (error)
-                    forbid.set(unit, error);
-                else
-                    allow.push(unit);
-            };
-            const tasks = [];
-            for (const unit of delta) {
-                const task = proceed_unit(unit);
-                tasks.push(task);
-                if (unit.group() === $hyoo_crowd_unit_group.auth)
-                    await task;
-            }
-            await Promise.all(tasks);
-            return { allow, forbid };
-        }
-    }
-    __decorate([
-        $mol_mem_key
-    ], $hyoo_crowd_world.prototype, "Fund", null);
-    $.$hyoo_crowd_world = $hyoo_crowd_world;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /** Starts subtasks concurrently instead of serial. */
-    function $mol_wire_race(...tasks) {
-        const results = tasks.map(task => {
-            try {
-                return task();
-            }
-            catch (error) {
-                return error;
-            }
-        });
-        const promises = results.filter(res => $mol_promise_like(res));
-        if (promises.length)
-            $mol_fail(Promise.race(promises));
-        const error = results.find(res => res instanceof Error);
-        if (error)
-            $mol_fail(error);
-        return results;
-    }
-    $.$mol_wire_race = $mol_wire_race;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $.$hyoo_sync_masters = [
-        `sync.hyoo.ru`,
-        //`sync-pmzz.onrender.com`,
-    ];
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    class $hyoo_sync_yard extends $mol_object2 {
-        db_unit_persisted = new WeakSet();
-        log_pack(data) {
-            return data;
-        }
-        peer(next) {
-            return $mol_wire_sync($hyoo_sync_peer)(this + '.peer()', next);
-        }
-        world() {
-            $mol_wire_solid();
-            const world = new this.$.$hyoo_crowd_world(this.peer());
-            world.land_init = land => this.land_init(land);
-            return world;
-        }
-        land_init(land) {
-            this.db_land_init(land);
-            try {
-                this.land_sync(land);
-            }
-            catch (error) {
-                $mol_fail_log(error);
-            }
-            if (!land.grabbed())
-                this.$.$mol_wait_timeout(10_000);
-        }
-        land(id) {
-            return this.world().land_sync(id);
-        }
-        land_grab(law = [''], mod = [], add = []) {
-            return $mol_wire_sync(this.world()).grab(law, mod, add);
-        }
-        home() {
-            return this.land(this.peer().id);
-        }
-        land_search(query) {
-            const stat = new Map();
-            for (const prefix of query.match(/\p{Letter}{2,}/gu) ?? []) {
-                const caps = prefix.slice(0, 1).toUpperCase() + prefix.slice(1);
-                const prefs = new Set([
-                    caps, ' ' + caps,
-                    prefix, ' ' + prefix,
-                ]);
-                const lands = new Set();
-                const founds = $mol_wire_race(...[...prefs].map(pref => () => $mol_wire_sync(this).db_land_search(pref)));
-                for (const found of founds) {
-                    for (const land of [...found].reverse())
-                        lands.add(land);
-                }
-                for (const land of lands) {
-                    stat.set(land, (stat.get(land) ?? 0) + 1);
-                }
-            }
-            return [...stat].sort((left, right) => right[1] - left[1]).map(pair => pair[0]);
-        }
-        sync() {
-            this.server();
-            for (const land of this.world().lands.values()) {
-                this.db_land_sync(land);
-            }
-            $mol_wire_race(...this.slaves().map(line => () => this.line_sync(line)));
-            try {
-                const master = this.master();
-                if (master)
-                    $mol_wire_race(...[...this.world().lands.values()].map(land => () => this.line_land_sync({ line: master, land })));
-            }
-            catch (error) {
-                $mol_fail_log(error);
-            }
-        }
-        land_sync(land) {
-            this.db_land_init(land);
-            try {
-                this.db_land_sync(land);
-            }
-            catch (error) {
-                $mol_fail_log(error);
-            }
-            try {
-                const master = this.master();
-                if (master)
-                    this.line_land_sync({ line: master, land });
-            }
-            catch (error) {
-                $mol_fail_log(error);
-            }
-            try {
-                $mol_wire_race(...this.slaves()
-                    .filter(line => this.line_lands(line).includes(land))
-                    .map(line => () => this.line_land_sync({ line, land })));
-            }
-            catch (error) {
-                $mol_fail_log(error);
-            }
-        }
-        db_land_clocks(land, next) {
-            $mol_wire_solid();
-            return next;
-        }
-        db_land_sync(land) {
-            this.db_land_init(land);
-            land.clocks;
-            const units = [];
-            for (const unit of land._unit_all.values()) {
-                if (this.db_unit_persisted.has(unit))
-                    continue;
-                units.push(unit);
-            }
-            if (!units.length)
-                return;
-            $mol_wire_sync(this.world()).sign_units(units);
-            $mol_wire_sync(this).db_land_save(land, units);
-            for (const unit of units)
-                this.db_unit_persisted.add(unit);
-            // this.$.$mol_log3_rise({
-            // 	place: this,
-            // 	land: land.id(),
-            // 	message: 'Base Save',
-            // 	units: this.log_pack( units ),
-            // })
-        }
-        db_land_init(land) {
-            try {
-                var units = $mol_wire_sync(this).db_land_load(land);
-            }
-            catch (error) {
-                if (!(error instanceof Error))
-                    $mol_fail_hidden(error);
-                this.$.$mol_log3_fail({
-                    place: this,
-                    land: land.id(),
-                    message: error.message,
-                });
-                units = [];
-            }
-            for (const unit of units)
-                this.db_unit_persisted.add(unit);
-            units.sort($hyoo_crowd_unit_compare);
-            land.apply(units);
-            // this.$.$mol_log3_rise({
-            // 	place: this,
-            // 	land: land.id(),
-            // 	message: 'Base Load',
-            // 	units: this.log_pack( units ),
-            // })
-        }
-        async db_land_load(land) {
-            return [];
-        }
-        async db_land_search(from, to = from) {
-            return new Set();
-        }
-        async db_land_save(land, units) { }
-        master_cursor(next = 0) {
-            return next;
-        }
-        master_list() {
-            const scheme = this.$.$mol_dom_context.document.location.protocol.replace(/^http/, 'ws');
-            return this.$.$hyoo_sync_masters.map(host => `${scheme}//${host}`);
-        }
-        master_link() {
-            return this.master_list()[this.master_cursor()];
-        }
-        master() {
-            return null;
-        }
-        server() {
-            return null;
-        }
-        slaves(next = []) {
-            return next;
-        }
-        line_lands(line, next = []) {
-            return next;
-        }
-        line_land_clocks({ line, land }, next) {
-            $mol_wire_solid();
-            // try{
-            // 	this.master()
-            // } catch( error ) {
-            // 	$mol_fail_log( error )
-            // }
-            return next;
-        }
-        line_sync(line) {
-            $mol_wire_race(...this.line_lands(line).map(land => () => this.line_land_sync({ line, land })));
-        }
-        line_land_sync({ line, land }) {
-            this.line_land_init({ line, land });
-            let clocks = this.line_land_clocks({ line, land });
-            if (!clocks)
-                return;
-            const units = land.delta(clocks);
-            if (!units.length)
-                return;
-            this.line_send_units(line, units);
-            /*this.$.$mol_log3_rise({
-                place: this,
-                land: land.id(),
-                message: 'Sync Sent',
-                line: $mol_key( line ),
-                units: this.log_pack( units ),
-            })*/
-            for (const unit of units) {
-                clocks[unit.group()].see_peer(unit.auth, unit.time);
-            }
-        }
-        line_land_init({ line, land }) {
-            this.db_land_init(land);
-            // const lands = this.line_land_clocks({ line, land })
-            // if( lands ) return
-            this.line_send_clocks(line, land);
-            // this.$.$mol_log3_come({
-            // 	place: this,
-            // 	land: land.id(),
-            // 	message: 'Sync Open',
-            // 	line: $mol_key( line ),
-            // 	clocks: land._clocks,
-            // })
-        }
-        line_land_neck({ line, land }, next = []) {
-            return next;
-        }
-        async line_receive(line, message) {
-            if (!message.byteLength)
-                return;
-            const view = new DataView(message.buffer, message.byteOffset, message.byteLength);
-            const int0 = view.getInt32(0, true);
-            const int1 = view.getInt32(4, true);
-            const land_id = $mol_int62_to_string({
-                lo: int0 << 1 >> 1,
-                hi: int1 << 1 >> 1,
-            });
-            const handle = async (prev) => {
-                if (prev)
-                    await prev;
-                const world = this.world();
-                const land = await $mol_wire_async(world).land(land_id);
-                let clocks = this.line_land_clocks({ line, land });
-                if (!clocks)
-                    this.line_land_clocks({ line, land }, clocks = [new $hyoo_crowd_clock, new $hyoo_crowd_clock]);
-                if (int0 << 1 >> 1 ^ int0) {
-                    const bin = new $hyoo_crowd_clock_bin(message.buffer, message.byteOffset, message.byteLength);
-                    for (let group = 0; group < clocks.length; ++group) {
-                        clocks[group].see_bin(bin, group);
-                    }
-                    if (bin.count() + land.delta(clocks).length < land._unit_all.size) {
-                        this.line_land_clocks({ line, land }, clocks = [new $hyoo_crowd_clock, new $hyoo_crowd_clock]);
-                    }
-                    const lands = this.line_lands(line);
-                    if (lands.includes(land)) {
-                        this.$.$mol_log3_warn({
-                            place: this,
-                            land: land.id(),
-                            message: 'Already syncing',
-                            hint: 'Bug at $hyoo_sync_yard',
-                            line: $mol_key(line),
-                            clocks,
-                        });
-                    }
-                    else {
-                        this.line_lands(line, [...lands, land]);
-                        // this.$.$mol_log3_done({
-                        // 	place: this,
-                        // 	land: land.id(),
-                        // 	message: 'Sync Pair',
-                        // 	line: $mol_key( line ),
-                        // 	clocks,
-                        // })
-                    }
-                    return;
-                }
-                const { allow, forbid } = await world.apply(message);
-                for (const [{ bin, ...unit }, error] of forbid) {
-                    this.$.$mol_log3_fail({
-                        place: this,
-                        land: land.id(),
-                        message: error,
-                        line: $mol_key(line),
-                        unit,
-                    });
-                }
-                if (!allow.length)
-                    return;
-                for (const unit of allow) {
-                    clocks[unit.group()].see_peer(unit.auth, unit.time);
-                }
-                this.$.$mol_log3_rise({
-                    place: this,
-                    land: land.id(),
-                    message: 'Sync Gain',
-                    line: $mol_key(line),
-                    units: this.log_pack(allow),
-                });
-            };
-            this.line_land_neck({ line, land: land_id }, [
-                handle(this.line_land_neck({ line, land: land_id })[0])
-                    .catch(error => {
-                    this.$.$mol_log3_fail({
-                        place: this,
-                        land: land_id,
-                        message: String(error?.message ?? error),
-                    });
-                })
-            ]);
-        }
-        line_send_clocks(line, land) { }
-        async line_send_units(line, units) { }
-        [$mol_dev_format_head]() {
-            return $mol_dev_format_native(this);
-        }
-    }
-    __decorate([
-        $mol_mem
-    ], $hyoo_sync_yard.prototype, "peer", null);
-    __decorate([
-        $mol_mem
-    ], $hyoo_sync_yard.prototype, "world", null);
-    __decorate([
-        $mol_mem_key
-    ], $hyoo_sync_yard.prototype, "land_init", null);
-    __decorate([
-        $mol_action
-    ], $hyoo_sync_yard.prototype, "land_search", null);
-    __decorate([
-        $mol_mem
-    ], $hyoo_sync_yard.prototype, "sync", null);
-    __decorate([
-        $mol_mem_key
-    ], $hyoo_sync_yard.prototype, "land_sync", null);
-    __decorate([
-        $mol_mem_key
-    ], $hyoo_sync_yard.prototype, "db_land_clocks", null);
-    __decorate([
-        $mol_mem_key
-    ], $hyoo_sync_yard.prototype, "db_land_sync", null);
-    __decorate([
-        $mol_mem_key
-    ], $hyoo_sync_yard.prototype, "db_land_init", null);
-    __decorate([
-        $mol_mem
-    ], $hyoo_sync_yard.prototype, "master_cursor", null);
-    __decorate([
-        $mol_mem
-    ], $hyoo_sync_yard.prototype, "master_link", null);
-    __decorate([
-        $mol_mem
-    ], $hyoo_sync_yard.prototype, "slaves", null);
-    __decorate([
-        $mol_mem_key
-    ], $hyoo_sync_yard.prototype, "line_lands", null);
-    __decorate([
-        $mol_mem_key
-    ], $hyoo_sync_yard.prototype, "line_land_clocks", null);
-    __decorate([
-        $mol_mem_key
-    ], $hyoo_sync_yard.prototype, "line_sync", null);
-    __decorate([
-        $mol_mem_key
-    ], $hyoo_sync_yard.prototype, "line_land_sync", null);
-    __decorate([
-        $mol_mem_key
-    ], $hyoo_sync_yard.prototype, "line_land_init", null);
-    __decorate([
-        $mol_mem_key
-    ], $hyoo_sync_yard.prototype, "line_land_neck", null);
-    $.$hyoo_sync_yard = $hyoo_sync_yard;
-})($ || ($ = {}));
-
-;
-	($.$mol_text_list) = class $mol_text_list extends ($.$mol_text) {
-		type(){
-			return "";
-		}
-		auto_scroll(){
-			return null;
-		}
-		attr(){
-			return {...(super.attr()), "mol_text_list_type": (this.type())};
-		}
-		Paragraph(id){
-			const obj = new this.$.$mol_text_list_item();
-			(obj.index) = () => ((this.item_index(id)));
-			(obj.sub) = () => ((this.block_content(id)));
-			return obj;
-		}
-	};
-	($mol_mem_key(($.$mol_text_list.prototype), "Paragraph"));
-	($.$mol_text_list_item) = class $mol_text_list_item extends ($.$mol_paragraph) {
-		index(){
-			return 0;
-		}
-		attr(){
-			return {...(super.attr()), "mol_text_list_item_index": (this.index())};
-		}
-	};
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/text/list/list.view.css", "[mol_text_list] {\r\n\tpadding-left: 1.75rem;\r\n}\r\n\r\n[mol_text_list_item] {\r\n\tcontain: none;\r\n\tdisplay: list-item;\r\n}\r\n\r\n[mol_text_list_item]::before {\r\n\tcontent: attr( mol_text_list_item_index ) \".\";\r\n\twidth: 1.25rem;\r\n\tdisplay: inline-block;\r\n\tposition: absolute;\r\n\tmargin-left: -1.75rem;\r\n\ttext-align: end;\r\n}\r\n\r\n[mol_text_list_type=\"-\"] > [mol_text_list_item]::before,\r\n[mol_text_list_type=\"*\"] > [mol_text_list_item]::before {\r\n\tcontent: \"•\";\r\n}\r\n");
-})($ || ($ = {}));
-
-;
-"use strict";
-
-
-;
-	($.$hyoo_meta_safe) = class $hyoo_meta_safe extends ($.$mol_page) {
-		Expot_bid(){
-			const obj = new this.$.$mol_text();
-			(obj.text) = () => ((this.$.$mol_locale.text("$hyoo_meta_safe_Expot_bid_text")));
-			return obj;
-		}
-		password_bid(){
-			return "";
-		}
-		password(next){
-			if(next !== undefined) return next;
-			return "";
-		}
-		Password(){
-			const obj = new this.$.$mol_password();
-			(obj.value) = (next) => ((this.password(next)));
-			return obj;
-		}
-		Password_field(){
-			const obj = new this.$.$mol_form_field();
-			(obj.name) = () => ((this.$.$mol_locale.text("$hyoo_meta_safe_Password_field_name")));
-			(obj.bids) = () => ([(this.password_bid())]);
-			(obj.Content) = () => ((this.Password()));
-			return obj;
-		}
-		recall_enabled(){
-			return true;
-		}
-		recall(next){
-			if(next !== undefined) return next;
-			return "";
-		}
-		Recall(){
-			const obj = new this.$.$mol_string();
-			(obj.enabled) = () => ((this.recall_enabled()));
-			(obj.value) = (next) => ((this.recall(next)));
-			return obj;
-		}
-		Recall_field(){
-			const obj = new this.$.$mol_form_field();
-			(obj.name) = () => ((this.$.$mol_locale.text("$hyoo_meta_safe_Recall_field_name")));
-			(obj.Content) = () => ((this.Recall()));
-			return obj;
-		}
-		Export_pass(){
-			const obj = new this.$.$mol_list();
-			(obj.rows) = () => ([(this.Password_field()), (this.Recall_field())]);
-			return obj;
-		}
-		export_link(){
-			return "";
-		}
-		Export_link(){
-			const obj = new this.$.$mol_link();
-			(obj.uri) = () => ((this.export_link()));
-			(obj.title) = () => ((this.$.$mol_locale.text("$hyoo_meta_safe_Export_link_title")));
-			return obj;
-		}
-		export_rows(){
-			return [
-				(this.Expot_bid()), 
-				(this.Export_pass()), 
-				(this.Export_link())
-			];
-		}
-		Export_block(){
-			const obj = new this.$.$mol_list();
-			(obj.rows) = () => ((this.export_rows()));
-			return obj;
-		}
-		Iport_descr(){
-			const obj = new this.$.$mol_text();
-			(obj.text) = () => ((this.$.$mol_locale.text("$hyoo_meta_safe_Iport_descr_text")));
-			return obj;
-		}
-		Import_pass(){
-			const obj = new this.$.$mol_list();
-			(obj.rows) = () => ([(this.Recall_field()), (this.Password_field())]);
-			return obj;
-		}
-		import_switch(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		peer_new(){
-			return "";
-		}
-		Peer_new(){
-			const obj = new this.$.$mol_avatar();
-			(obj.id) = () => ((this.peer_new()));
-			return obj;
-		}
-		impot_switch_title(){
-			return (this.$.$mol_locale.text("$hyoo_meta_safe_impot_switch_title"));
-		}
-		Import_switch(){
-			const obj = new this.$.$mol_button_minor();
-			(obj.click) = (next) => ((this.import_switch(next)));
-			(obj.sub) = () => ([(this.Peer_new()), (this.impot_switch_title())]);
-			return obj;
-		}
-		import_rows(){
-			return [
-				(this.Iport_descr()), 
-				(this.Import_pass()), 
-				(this.Import_switch())
-			];
-		}
-		Import_block(){
-			const obj = new this.$.$mol_list();
-			(obj.rows) = () => ((this.import_rows()));
-			return obj;
-		}
-		content(){
-			return [(this.Export_block()), (this.Import_block())];
-		}
-		Content(){
-			const obj = new this.$.$mol_list();
-			(obj.rows) = () => ((this.content()));
-			return obj;
-		}
-		title(){
-			return (this.$.$mol_locale.text("$hyoo_meta_safe_title"));
-		}
-		yard(){
-			const obj = new this.$.$hyoo_sync_yard();
-			return obj;
-		}
-		bid_pass_long(){
-			return (this.$.$mol_locale.text("$hyoo_meta_safe_bid_pass_long"));
-		}
-		key_size(){
-			return 144;
-		}
-		attr(){
-			return {...(super.attr()), "mol_theme": "$mol_theme_special"};
-		}
-		body(){
-			return [(this.Content())];
-		}
-	};
-	($mol_mem(($.$hyoo_meta_safe.prototype), "Expot_bid"));
-	($mol_mem(($.$hyoo_meta_safe.prototype), "password"));
-	($mol_mem(($.$hyoo_meta_safe.prototype), "Password"));
-	($mol_mem(($.$hyoo_meta_safe.prototype), "Password_field"));
-	($mol_mem(($.$hyoo_meta_safe.prototype), "recall"));
-	($mol_mem(($.$hyoo_meta_safe.prototype), "Recall"));
-	($mol_mem(($.$hyoo_meta_safe.prototype), "Recall_field"));
-	($mol_mem(($.$hyoo_meta_safe.prototype), "Export_pass"));
-	($mol_mem(($.$hyoo_meta_safe.prototype), "Export_link"));
-	($mol_mem(($.$hyoo_meta_safe.prototype), "Export_block"));
-	($mol_mem(($.$hyoo_meta_safe.prototype), "Iport_descr"));
-	($mol_mem(($.$hyoo_meta_safe.prototype), "Import_pass"));
-	($mol_mem(($.$hyoo_meta_safe.prototype), "import_switch"));
-	($mol_mem(($.$hyoo_meta_safe.prototype), "Peer_new"));
-	($mol_mem(($.$hyoo_meta_safe.prototype), "Import_switch"));
-	($mol_mem(($.$hyoo_meta_safe.prototype), "Import_block"));
-	($mol_mem(($.$hyoo_meta_safe.prototype), "Content"));
-	($mol_mem(($.$hyoo_meta_safe.prototype), "yard"));
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    const algorithm = {
-        name: 'AES-CBC',
-        length: 128,
-        tagLength: 32,
-    };
-    /**
-     * Symmetric cipher with shortest payload.
-     * @deprecated Use $mol_crypto_sacred.
-     */
-    class $mol_crypto_secret extends Object {
-        native;
-        /** Key size in bytes. */
-        static size = 16;
-        constructor(native) {
-            super();
-            this.native = native;
-        }
-        static async generate() {
-            return new this(await $mol_crypto_native.subtle.generateKey(algorithm, true, ['encrypt', 'decrypt']));
-        }
-        static async from(serial) {
-            return new this(await $mol_crypto_native.subtle.importKey('raw', serial, algorithm, true, ['encrypt', 'decrypt']));
-        }
-        static async pass(pass, salt) {
-            return new this(await $mol_crypto_native.subtle.deriveKey({
-                name: "PBKDF2",
-                salt,
-                iterations: 10_000,
-                hash: "SHA-256",
-            }, await $mol_crypto_native.subtle.importKey("raw", $mol_charset_encode(pass), "PBKDF2", false, ["deriveKey"]), algorithm, true, ['encrypt', 'decrypt']));
-        }
-        static async derive(private_serial, public_serial) {
-            const ecdh = { name: "ECDH", namedCurve: "P-256" };
-            const jwk = { crv: 'P-256', ext: true, kty: 'EC' };
-            const private_key = await $mol_crypto_native.subtle.importKey('jwk', {
-                ...jwk,
-                key_ops: ['deriveKey'],
-                x: private_serial.slice(0, 43),
-                y: private_serial.slice(43, 86),
-                d: private_serial.slice(86, 129),
-            }, ecdh, true, ['deriveKey']);
-            const public_key = await $mol_crypto_native.subtle.importKey('jwk', {
-                ...jwk,
-                key_ops: [],
-                x: public_serial.slice(0, 43),
-                y: public_serial.slice(43, 86),
-            }, ecdh, true, []);
-            const secret = await $mol_crypto_native.subtle.deriveKey({
-                name: "ECDH",
-                public: public_key,
-            }, private_key, algorithm, true, ["encrypt", "decrypt"]);
-            return new this(secret);
-        }
-        /** 16 bytes */
-        async serial() {
-            return new Uint8Array(await $mol_crypto_native.subtle.exportKey('raw', this.native));
-        }
-        /** 16n bytes */
-        async encrypt(open, salt) {
-            return new Uint8Array(await $mol_crypto_native.subtle.encrypt({
-                ...algorithm,
-                iv: salt,
-            }, this.native, open));
-        }
-        async decrypt(closed, salt) {
-            return new Uint8Array(await $mol_crypto_native.subtle.decrypt({
-                ...algorithm,
-                iv: salt,
-            }, this.native, closed));
-        }
-    }
-    $.$mol_crypto_secret = $mol_crypto_secret;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    class $mol_after_work extends $mol_object2 {
-        delay;
-        task;
-        id;
-        constructor(delay, task) {
-            super();
-            this.delay = delay;
-            this.task = task;
-            this.id = requestIdleCallback(task, { timeout: delay });
-        }
-        destructor() {
-            cancelIdleCallback(this.id);
-        }
-    }
-    $.$mol_after_work = $mol_after_work;
-    if (typeof requestIdleCallback !== 'function') {
-        $.$mol_after_work = $mol_after_timeout;
-    }
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    function $mol_wait_rest_async() {
-        return new Promise(done => {
-            new this.$mol_after_work(16, () => done(null));
-        });
-    }
-    $.$mol_wait_rest_async = $mol_wait_rest_async;
-    function $mol_wait_rest() {
-        return this.$mol_wire_sync(this).$mol_wait_rest_async();
-    }
-    $.$mol_wait_rest = $mol_wait_rest;
-})($ || ($ = {}));
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        class $hyoo_meta_safe extends $.$hyoo_meta_safe {
-            password_bid() {
-                const pass = this.password();
-                if (pass.length <= 7)
-                    return this.bid_pass_long();
-                return '';
-            }
-            content() {
-                return [
-                    this.key_import()
-                        ? this.Import_block()
-                        : this.Export_block()
-                ];
-            }
-            recall(next) {
-                const serial = this.key_import();
-                if (!serial)
-                    return next ?? '';
-                const pack = $mol_base64_decode(serial);
-                return $mol_charset_decode(pack.slice(this.key_size()));
-            }
-            recall_enabled() {
-                return !this.key_import();
-            }
-            peer_current() {
-                return this.yard().peer().id;
-            }
-            peer_new() {
-                return $mol_int62_hash_string(this.$.$mol_crypto_auditor_private_to_public(this.key_new()));
-            }
-            key_import(next) {
-                return this.$.$mol_state_arg.value('hyoo_meta_key', next) ?? null;
-            }
-            key_new() {
-                const serial = this.key_import();
-                if (!serial)
-                    return null;
-                try {
-                    const pack = $mol_base64_decode(serial);
-                    const closed = pack.slice(0, this.key_size());
-                    const salt = $mol_crypto_hash(pack.slice(this.key_size())).slice(0, 16);
-                    const pass = this.password();
-                    const secret = $mol_wire_sync(this.$.$mol_crypto_secret).pass(pass, salt);
-                    const opened = $mol_wire_sync(secret).decrypt(closed, salt);
-                    return $mol_charset_decode(opened);
-                }
-                catch (error) {
-                    $mol_fail_log(error);
-                    return null;
-                }
-            }
-            import_switch() {
-                this.yard().peer(this.key_new());
-                this.password('');
-                this.key_import(null); // 
-                this.$.$mol_wait_rest(); // wait for url sync
-                this.$.$mol_dom_context.location.reload(); // peer isn't reactive yet
-            }
-            key_export() {
-                const pass = this.password();
-                const recall = $mol_charset_encode(this.recall());
-                const salt = $mol_crypto_hash(recall).slice(0, 16);
-                const secret = $mol_wire_sync(this.$.$mol_crypto_secret).pass(pass, salt);
-                const open = this.$.$mol_charset_encode(this.yard().peer().key_private_serial);
-                const closed = new Uint8Array($mol_wire_sync(secret).encrypt(open, salt));
-                const pack = new Uint8Array(this.key_size() + recall.byteLength);
-                pack.set(closed, 0);
-                pack.set(recall, this.key_size());
-                return this.$.$mol_base64_encode(pack);
-            }
-            export_rows() {
-                return [
-                    this.Expot_bid(),
-                    this.Export_pass(),
-                    ...this.password_bid() ? [] : [this.Export_link()],
-                ];
-            }
-            import_rows() {
-                return [
-                    this.Iport_descr(),
-                    this.Import_pass(),
-                    ...this.key_new() ? [this.Import_switch()] : [],
-                ];
-            }
-            export_link() {
-                return this.$.$mol_state_arg.link({
-                    hyoo_meta_key: this.key_export(),
-                });
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $hyoo_meta_safe.prototype, "password_bid", null);
-        __decorate([
-            $mol_mem
-        ], $hyoo_meta_safe.prototype, "content", null);
-        __decorate([
-            $mol_mem
-        ], $hyoo_meta_safe.prototype, "recall", null);
-        __decorate([
-            $mol_mem
-        ], $hyoo_meta_safe.prototype, "peer_current", null);
-        __decorate([
-            $mol_mem
-        ], $hyoo_meta_safe.prototype, "peer_new", null);
-        __decorate([
-            $mol_mem
-        ], $hyoo_meta_safe.prototype, "key_new", null);
-        __decorate([
-            $mol_action
-        ], $hyoo_meta_safe.prototype, "import_switch", null);
-        __decorate([
-            $mol_mem
-        ], $hyoo_meta_safe.prototype, "key_export", null);
-        __decorate([
-            $mol_mem
-        ], $hyoo_meta_safe.prototype, "export_link", null);
-        $$.$hyoo_meta_safe = $hyoo_meta_safe;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        $mol_style_define($hyoo_meta_safe, {
-            flex: {
-                basis: `20rem`,
-            },
-            Export_block: {
-                gap: $mol_gap.block,
-            },
-            Import_block: {
-                gap: $mol_gap.block,
-            },
-        });
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
 
 ;
 "use strict";
@@ -28381,37 +23635,13 @@ var $;
     var $$;
     (function ($$) {
         /**
-         * Подтягиваем VK access_token из chrome.storage.local — туда его кладёт
-         * content script на vk.com (см. bog/vk/ext/content.js). Юзеру не нужно
-         * копировать cURL — достаточно зайти на vk.com в обычной вкладке.
+         * В chrome-extension/moz-extension контексте `location.origin` имеет схему
+         * `chrome-extension://`, и yard.web.ts пушит его в masters_default. Кроме того,
+         * peer-ы из Seed().peers() могут принести относительные URL, которые в extension
+         * резолвятся в chrome-extension://. Любой такой URL → `new WebSocket(...)` →
+         * SyntaxError. Чистим default-список и подкладываем публичный baza-master.
          */
         ;
-        (function sync_vk_token_from_chrome_storage() {
-            try {
-                const ext = globalThis.chrome;
-                if (!ext?.storage?.local)
-                    return;
-                ext.storage.local.get(['vk_token'], (res) => {
-                    const tok = res?.vk_token;
-                    if (tok && $mol_state_local.value('vk_token') !== tok) {
-                        $mol_state_local.value('vk_token', tok);
-                        console.info('[app] vk_token loaded from extension storage');
-                    }
-                });
-                ext.storage.onChanged.addListener((changes, area) => {
-                    if (area !== 'local')
-                        return;
-                    const next = changes?.vk_token?.newValue;
-                    if (next && $mol_state_local.value('vk_token') !== next) {
-                        $mol_state_local.value('vk_token', next);
-                        console.info('[app] vk_token updated from extension storage');
-                    }
-                });
-            }
-            catch (e) {
-                console.warn('[app] vk_token sync failed:', e?.message);
-            }
-        })();
         (function fix_yard_masters_in_extension() {
             try {
                 if (typeof location === 'undefined')
@@ -28438,7 +23668,6 @@ var $;
                     });
                     yard.__bog_vk_masters_patched = true;
                 }
-                console.info('[app] yard masters in extension:', yard.masters());
             }
             catch (e) {
                 console.warn('[app] yard masters fix failed:', e?.message);
@@ -28453,97 +23682,37 @@ var $;
                 if (!match)
                     return;
                 const key = decodeURIComponent(match[1]);
-                // Должен быть 4 × 43 = 172 символа base64_url
                 if (key.length < 172) {
                     console.warn('[app] account key too short, ignoring');
                     return;
                 }
                 const current = $mol_state_local.value('$giper_baza_auth');
                 $mol_state_local.value('$giper_baza_auth', key);
-                // Убираем секрет из адресной строки
                 const clean_hash = hash.replace(/[#&]?account=[^&]*/, '').replace(/^#&/, '#');
                 const new_url = location.origin + location.pathname + location.search + (clean_hash && clean_hash !== '#' ? clean_hash : '');
                 history.replaceState(null, '', new_url);
-                console.info('[app] account imported from URL');
-                // Если ключ реально менялся — перезагружаем, чтобы yard/glob/auth
-                // перечитали состояние с нуля и не зависли в connecting со старым lord.
-                if (current !== key) {
+                if (current !== key)
                     location.reload();
-                }
             }
             catch (e) {
                 console.warn('[app] account import failed:', e?.message);
             }
         })();
         class $bog_vk_app extends $.$bog_vk_app {
-            online(next) {
-                if (next !== undefined)
-                    return next;
-                const val = navigator.onLine;
-                window.addEventListener('online', () => this.online(true), { once: true });
-                window.addEventListener('offline', () => this.online(false), { once: true });
-                return val;
-            }
-            token_expired(next) {
-                return next ?? false;
-            }
-            token_invalid() {
-                const t = this.token();
-                return !!t && !t.startsWith('vk1.a.');
-            }
-            offline_mode() {
-                return !this.token() || this.token_invalid() || !this.online() || this.token_expired();
-            }
             title() {
                 return 'Bog Music';
-            }
-            token(next) {
-                if (next !== undefined) {
-                    const extracted = this.extract_token(next);
-                    const cookies = this.extract_cookies(next);
-                    this.$.$bog_vk_api.token(extracted);
-                    if (cookies)
-                        this.$.$bog_vk_api.cookies(cookies);
-                    this.token_expired(false);
-                }
-                return this.$.$bog_vk_api.token();
-            }
-            extract_token(input) {
-                const trimmed = input.trim();
-                const match = trimmed.match(/access_token=([^&\s'"]+)/);
-                if (match)
-                    return match[1];
-                const vk_match = trimmed.match(/vk1\.a\.[A-Za-z0-9_-]+/);
-                if (vk_match)
-                    return vk_match[0];
-                return trimmed;
-            }
-            extract_cookies(input) {
-                const match = input.match(/-b\s+'([^']+)'/);
-                if (match)
-                    return match[1];
-                const match2 = input.match(/--cookie\s+'([^']+)'/);
-                if (match2)
-                    return match2[1];
-                return '';
             }
             page(next) {
                 if (next !== undefined) {
                     $mol_state_arg.value('page', next);
-                    if (next !== 'search')
-                        this.search_query('');
                     return next;
                 }
                 return $mol_state_arg.value('page') ?? 'my';
             }
-            cached_audios() {
-                $bog_vk_cache.version();
-                return $mol_wire_sync($bog_vk_cache).all_cached();
+            archive_mode() {
+                return this.page() === 'archive';
             }
-            /**
-             * Персональные треки пользователя из Giper Baza — синкаются между устройствами.
-             * Возвращает массив примитивов, поэтому @$mol_mem безопасен.
-             */
+            /** Активные треки из Giper Baza home land. */
             synced_audios() {
                 try {
                     return $bog_vk_store.saved_audios();
@@ -28555,7 +23724,6 @@ var $;
                     return [];
                 }
             }
-            /** Архивные треки (мягко удалённые). */
             archived_audios() {
                 try {
                     return $bog_vk_store.archived_audios();
@@ -28567,107 +23735,16 @@ var $;
                     return [];
                 }
             }
-            /** Множество ключей архивных треков — для фильтрации из VK-списка. */
-            archived_keys() {
-                return new Set(this.archived_audios().map(a => `${a.owner_id}_${a.id}`));
-            }
-            /** Склейка cached + synced без дубликатов, с сортировкой по Order из baza. */
-            merged_offline() {
-                const cached = this.cached_audios();
-                const synced = this.synced_audios();
-                const archived = this.archived_keys();
-                // Убираем из cached то, что помечено Archived.
-                const cached_active = cached.filter(a => !archived.has(`${a.owner_id}_${a.id}`));
-                if (!synced.length)
-                    return cached_active;
-                // synced уже отсортирован по Order. Берём его порядок, добавляем cached-only в конец.
-                const by_key = new Map();
-                for (const a of cached_active)
-                    by_key.set(`${a.owner_id}_${a.id}`, a);
-                const out = [];
-                const used = new Set();
-                for (const a of synced) {
-                    const key = `${a.owner_id}_${a.id}`;
-                    // Берём cached если есть (там реальный URL для HLS).
-                    out.push(by_key.get(key) ?? a);
-                    used.add(key);
-                }
-                for (const a of cached_active) {
-                    const key = `${a.owner_id}_${a.id}`;
-                    if (!used.has(key))
-                        out.push(a);
-                }
-                return out;
-            }
-            my_audios() {
-                if (this.offline_mode())
-                    return this.ordered_online(this.merged_offline());
-                try {
-                    const result = this.$.$bog_vk_api.my_audios()?.items ?? [];
-                    this.token_expired(false);
-                    const archived = this.archived_keys();
-                    const active = result.filter((a) => !archived.has(`${a.owner_id}_${a.id}`));
-                    return this.ordered_online(active);
-                }
-                catch (e) {
-                    if (e instanceof Promise || e?.constructor?.name === '$mol_fail_hidden')
-                        throw e;
-                    const msg = String(e?.message);
-                    if (msg.includes('expired') || msg.includes('authorization') || msg.includes('User authorization failed')) {
-                        this.token_expired(true);
-                    }
-                    console.warn('[app] API failed, using cache:', msg);
-                    return this.ordered_online(this.merged_offline());
-                }
-            }
-            /**
-             * Переупорядочивает онлайн-список: сначала треки в порядке synced (Order из baza),
-             * затем те, что есть только в VK-списке.
-             */
-            ordered_online(source) {
-                const synced = this.synced_audios();
-                if (!synced.length)
-                    return source;
-                const by_key = new Map();
-                for (const a of source)
-                    by_key.set(`${a.owner_id}_${a.id}`, a);
-                const out = [];
-                const used = new Set();
-                for (const s of synced) {
-                    const key = `${s.owner_id}_${s.id}`;
-                    const found = by_key.get(key);
-                    // Локальные треки (owner_id === 0) живут только в baza — берём их оттуда.
-                    if (found || s.owner_id === 0) {
-                        out.push(found ?? s);
-                        used.add(key);
-                    }
-                }
-                for (const a of source) {
-                    const key = `${a.owner_id}_${a.id}`;
-                    if (!used.has(key))
-                        out.push(a);
-                }
-                return out;
-            }
-            search_results() {
-                const query = this.search_query().trim();
-                if (!query)
-                    return [];
-                if (this.offline_mode())
-                    return [];
-                return this.$.$bog_vk_api.search_audios(query)?.items ?? [];
-            }
             visible_audios() {
-                if (this.page() === 'archive')
-                    return this.archived_audios();
-                if (this.page() === 'search' && this.search_query().trim()) {
-                    return this.search_results();
-                }
-                return this.my_audios();
+                return this.archive_mode() ? this.archived_audios() : this.synced_audios();
             }
-            /** В архиве показываем архивные как "текущий контекст", но UI-кнопки разные. */
-            archive_mode() {
-                return this.page() === 'archive';
+            tab_options() {
+                const my = this.synced_audios().length;
+                const arch = this.archived_audios().length;
+                return {
+                    my: my ? `Моя музыка ${my}` : 'Моя музыка',
+                    archive: arch ? `Архив ${arch}` : 'Архив',
+                };
             }
             current_audio(next) {
                 return next ?? null;
@@ -28684,8 +23761,6 @@ var $;
                 const moving = list[from];
                 if (!moving)
                     return;
-                // Прогоняем серию swap'ов — каждый перестановкой сдвигает moving на одну позицию
-                // в нужную сторону. Локальный list статичен, а в baza Order меняется реально.
                 try {
                     $bog_vk_store.save_track(moving);
                 }
@@ -28788,7 +23863,6 @@ var $;
                 const idx = audios.findIndex((a) => a.id === audio.id && a.owner_id === audio.owner_id);
                 this.Player().queue_index(idx >= 0 ? idx : 0);
                 this.Player().play_track(audio);
-                // Сохраняем трек в персональный Giper Baza home land — для синка между устройствами.
                 try {
                     $bog_vk_store.save_track(audio);
                 }
@@ -28797,7 +23871,6 @@ var $;
                         return;
                     console.warn('[app] baza save failed:', e?.message);
                 }
-                // Положительный сигнал в Мою волну — этот тег user слушает.
                 const item = this.recsys_item(audio);
                 if (item) {
                     $bog_recsys.namespace('vk');
@@ -28809,39 +23882,26 @@ var $;
             }
             upload_files(next) {
                 if (next?.length) {
-                    console.log('[app] upload_files received:', next.length, 'file(s):', next.map(f => `${f.name} (${f.size}B, ${f.type})`).join(', '));
                     for (const file of next) {
                         try {
-                            // arrayBuffer() читается через wire-sync ВНЕ @$mol_action —
-                            // иначе action откатывается и Type/Chunks не записываются.
                             const buffer = new Uint8Array($mol_wire_sync(file).arrayBuffer());
-                            console.log('[app] arrayBuffer ready for', file.name, buffer.byteLength, 'bytes');
-                            const audio = $bog_vk_store.save_local_track(file, buffer);
-                            console.log('[app] save_local_track ok:', audio?.title, 'id:', audio?.id);
+                            $bog_vk_store.save_local_track(file, buffer);
                         }
                         catch (e) {
-                            if (e instanceof Promise) {
-                                console.log('[app] upload waiting on promise:', file.name);
+                            if (e instanceof Promise)
                                 throw e;
-                            }
-                            console.warn('[app] upload failed:', file.name, e?.message, e);
+                            console.warn('[app] upload failed:', file.name, e?.message);
                         }
                     }
                 }
                 return next ?? [];
             }
-            /**
-             * Каждая overlay-панель — независимый булевый toggle в localStorage,
-             * как было у старого show_hint. Несколько панелей могут быть открыты
-             * одновременно, треки/таб-бар при этом не прячутся.
-             */
             account_open(next) {
                 return $mol_state_local.value('vk_account_open', next) ?? false;
             }
             wave_mode(next) {
                 return $mol_state_local.value('vk_wave_mode', next) ?? false;
             }
-            /** Превращает audio в item для $bog_recsys: id + tag по исполнителю. */
             recsys_item(audio) {
                 if (!audio)
                     return null;
@@ -28850,10 +23910,6 @@ var $;
                     tags.push('artist:' + audio.artist.toLowerCase().trim());
                 return { id: `${audio.owner_id}_${audio.id}`, tags };
             }
-            /**
-             * Хук для Player.next(): когда включена «Моя волна», берём следующий трек
-             * через $bog_recsys по cosine + ε-greedy на per-tag rewards.
-             */
             player_pick_next(current) {
                 if (!this.wave_mode())
                     return null;
@@ -28877,17 +23933,6 @@ var $;
                     return null;
                 return super.Account();
             }
-            /** Динамические лейблы вкладок с количеством треков. */
-            tab_options() {
-                const my = this.my_audios().length;
-                const arch = this.archived_audios().length;
-                return {
-                    my: my ? `Моя музыка ${my}` : 'Моя музыка',
-                    search: 'Поиск',
-                    archive: arch ? `Архив ${arch}` : 'Архив',
-                };
-            }
-            /** Никнейм для шапки — берём прямо из home land профиля. */
             nickname_label() {
                 try {
                     const land = $bog_vk_account.profile();
@@ -28904,10 +23949,6 @@ var $;
                     return null;
                 return super.Nickname_label();
             }
-            /**
-             * Держим home land живым пока приложение в DOM —
-             * чтобы $giper_baza_glob не вызвал destructor() и не порвал подписки.
-             */
             auto() {
                 try {
                     $bog_vk_store.saved_audios();
@@ -28915,42 +23956,16 @@ var $;
                 catch { }
                 return super.auto();
             }
-            Search_bar() {
-                if (this.page() !== 'search')
-                    return null;
-                return super.Search_bar();
-            }
         }
         __decorate([
             $mol_mem
-        ], $bog_vk_app.prototype, "online", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_app.prototype, "token_expired", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_app.prototype, "token", null);
-        __decorate([
-            $mol_mem
         ], $bog_vk_app.prototype, "page", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_app.prototype, "cached_audios", null);
         __decorate([
             $mol_mem
         ], $bog_vk_app.prototype, "synced_audios", null);
         __decorate([
             $mol_mem
         ], $bog_vk_app.prototype, "archived_audios", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_app.prototype, "archived_keys", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_app.prototype, "my_audios", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_app.prototype, "search_results", null);
         __decorate([
             $mol_mem
         ], $bog_vk_app.prototype, "visible_audios", null);
@@ -29014,17 +24029,6 @@ var $;
                 gap: '0.25rem',
                 padding: {
                     top: '0.5rem',
-                    bottom: '0.25rem',
-                    left: '0.5rem',
-                    right: '0.5rem',
-                },
-            },
-            Search_bar: {
-                font: {
-                    size: '1rem',
-                },
-                margin: {
-                    top: '0.25rem',
                     bottom: '0.25rem',
                     left: '0.5rem',
                     right: '0.5rem',

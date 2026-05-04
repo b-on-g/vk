@@ -152,9 +152,6 @@
 	pack intern git \https://github.com/hyoo-ru/intern.hyoo.ru.git
 \/giper/baza/file
 	include \/mol/offline/install
-\/hyoo/sync
-	- build $hyoo_sync_revision \git rev-parse --short HEAD
-	build $hyoo_sync_revision \echo echo
 \/bog/vk/app
 	include \/mol/offline/install
 	deploy \/bog/vk/app/favicon.svg

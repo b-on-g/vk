@@ -520,6 +520,8 @@ $giper_baza_status $mol_select
 				<= Fail $mol_icon_sync_off
 			hint <= message <= hint \Sync status
 
+$mol_icon_download $mol_icon path \M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z
+
 $mol_labeler $mol_list
 	rows /
 		<= Label $mol_view
@@ -1221,8 +1223,6 @@ $giper_baza_pawn_dump $mol_expander
 $mol_icon_source $mol_icon path \M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z
 
 $mol_icon_source_fork $mol_icon path \M6,2A3,3 0 0,1 9,5C9,6.28 8.19,7.38 7.06,7.81C7.15,8.27 7.39,8.83 8,9.63C9,10.92 11,12.83 12,14.17C13,12.83 15,10.92 16,9.63C16.61,8.83 16.85,8.27 16.94,7.81C15.81,7.38 15,6.28 15,5A3,3 0 0,1 18,2A3,3 0 0,1 21,5C21,6.32 20.14,7.45 18.95,7.85C18.87,8.37 18.64,9 18,9.83C17,11.17 15,13.08 14,14.38C13.39,15.17 13.15,15.73 13.06,16.19C14.19,16.62 15,17.72 15,19A3,3 0 0,1 12,22A3,3 0 0,1 9,19C9,17.72 9.81,16.62 10.94,16.19C10.85,15.73 10.61,15.17 10,14.38C9,13.08 7,11.17 6,9.83C5.36,9 5.13,8.37 5.05,7.85C3.86,7.45 3,6.32 3,5A3,3 0 0,1 6,2M6,4A1,1 0 0,0 5,5A1,1 0 0,0 6,6A1,1 0 0,0 7,5A1,1 0 0,0 6,4M18,4A1,1 0 0,0 17,5A1,1 0 0,0 18,6A1,1 0 0,0 19,5A1,1 0 0,0 18,4M12,18A1,1 0 0,0 11,19A1,1 0 0,0 12,20A1,1 0 0,0 13,19A1,1 0 0,0 12,18Z
-
-$mol_icon_download $mol_icon path \M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z
 
 $mol_button_download $mol_button_minor
 	blob null
@@ -1991,7 +1991,15 @@ $mol_form $mol_list
 
 $bog_vk_account $mol_list
 	rows /
-		<= Sync_status $giper_baza_status
+		<= Sync_row $mol_view
+			sub /
+				<= Sync_status $giper_baza_status
+				<= Download_all $mol_button_minor
+					title \Скачать всё в zip
+					click? <=> download_all? null
+					sub /
+						<= Download_all_icon $mol_icon_download
+				<= Download_all_status $mol_view sub / <= download_all_status \
 		<= Nickname_field $mol_form_field
 			name \Имя
 			Content <= Nickname_input $mol_string
@@ -2021,22 +2029,6 @@ $bog_vk_account $mol_list
 		<= Reset_button $mol_button_minor
 			title \Сбросить локальный аккаунт
 			click? <=> reset_account? null
-
-$mol_check_list $mol_view
-	dictionary *
-	Option* $mol_check
-		checked? <=> option_checked*? false
-		label <= option_label* /
-			<= option_title* \
-		enabled <= option_enabled* <= enabled true
-		hint <= option_hint* \
-		minimal_height 24
-	options *
-	keys /string
-	sub <= items /$mol_check
-
-$mol_switch $mol_check_list
-	value? \
 
 $mol_icon_music $mol_icon path \M21,3V15.5A3.5,3.5 0 0,1 17.5,19A3.5,3.5 0 0,1 14,15.5A3.5,3.5 0 0,1 17.5,12C18.04,12 18.55,12.12 19,12.34V6.47L9,8.6V17.5A3.5,3.5 0 0,1 5.5,21A3.5,3.5 0 0,1 2,17.5A3.5,3.5 0 0,1 5.5,14C6.04,14 6.55,14.12 7,14.34V6L21,3Z
 
@@ -2099,6 +2091,22 @@ $bog_vk_track $mol_view
 			click? <=> delete_forever? null
 			sub /
 				<= Delete_forever_icon $mol_icon_delete_forever
+
+$mol_check_list $mol_view
+	dictionary *
+	Option* $mol_check
+		checked? <=> option_checked*? false
+		label <= option_label* /
+			<= option_title* \
+		enabled <= option_enabled* <= enabled true
+		hint <= option_hint* \
+		minimal_height 24
+	options *
+	keys /string
+	sub <= items /$mol_check
+
+$mol_switch $mol_check_list
+	value? \
 
 $bog_vk_tracks $mol_list
 	audios /
@@ -2203,11 +2211,7 @@ $bog_vk_app $mol_page
 			value? <=> page? \my
 			options <= tab_options *
 				my \Моя музыка
-				search \Поиск
 				archive \Архив
-		<= Search_bar $mol_string
-			hint \Поиск музыки...
-			value? <=> search_query? \
 		<= Tracks $bog_vk_tracks
 			audios <= visible_audios /
 			current_audio <= current_audio null
@@ -2222,280 +2226,3 @@ $bog_vk_app $mol_page
 			queue <= visible_audios /
 			current_audio? <=> current_audio? null
 			pick_next? <=> player_pick_next? null
-
-$mol_float $mol_view
-	style *
-		^
-		minHeight \auto
-
-$mol_grid $mol_view
-	row_height 32
-	row_ids /string[]
-	row_id* null
-	col_ids /
-	records *
-	record* null
-	hierarchy null
-	hierarchy_col \
-	minimal_width 0
-	-
-	sub /
-		<= Head
-		<= Table $mol_grid_table
-			sub <= rows /$mol_view
-	Head $mol_grid_row
-		cells <= head_cells /$mol_view
-	Row* $mol_grid_row
-		minimal_height <= row_height
-		minimal_width <= minimal_width
-		cells <= cells* /$mol_view
-	-
-	Cell* $mol_view
-	cell* null
-	Cell_text* $mol_grid_cell
-		sub <= cell_content_text* <= cell_content* /$mol_view_content
-	Cell_number* $mol_grid_number
-		sub <= cell_content_number* <= cell_content* /$mol_view_content
-	Col_head* $mol_float
-		dom_name \th
-		sub <= col_head_content* /$mol_view_content
-	Cell_branch* $mol_check_expand
-		level <= cell_level* 0
-		label <= cell_content* /$mol_view_content
-		expanded? <=> cell_expanded*? false
-	Cell_content* /
-		<= Cell_dimmer* $mol_dimmer
-			needle <= needle \
-			haystack <= cell_value* \
-
-$mol_grid_table $mol_list
-	- dom_name \table
-
-$mol_grid_row $mol_view
-	- dom_name \tr
-	sub <= cells /$mol_view
-
-$mol_grid_cell $mol_view
-	- dom_name \td
-	minimal_height 40
-
-$mol_grid_number $mol_grid_cell
-
-$mol_link_iconed $mol_link
-	sub /
-		<= Icon $mol_image
-			uri <= icon \
-			title \
-	content /
-		<= title <= uri
-	host \
-
-$mol_icon_youtube $mol_icon path \M10,15L15.19,12L10,9V15M21.56,7.17C21.69,7.64 21.78,8.27 21.84,9.07C21.91,9.87 21.94,10.56 21.94,11.16L22,12C22,14.19 21.84,15.8 21.56,16.83C21.31,17.73 20.73,18.31 19.83,18.56C19.36,18.69 18.5,18.78 17.18,18.84C15.88,18.91 14.69,18.94 13.59,18.94L12,19C7.81,19 5.2,18.84 4.17,18.56C3.27,18.31 2.69,17.73 2.44,16.83C2.31,16.36 2.22,15.73 2.16,14.93C2.09,14.13 2.06,13.44 2.06,12.84L2,12C2,9.81 2.16,8.2 2.44,7.17C2.69,6.27 3.27,5.69 4.17,5.44C4.64,5.31 5.5,5.22 6.82,5.16C8.12,5.09 9.31,5.06 10.41,5.06L12,5C16.19,5 18.8,5.16 19.83,5.44C20.73,5.69 21.31,6.27 21.56,7.17Z
-
-$mol_embed_service $mol_check
-	uri \
-	video_preview \
-	video_id \
-	checked? <=> active? false
-	sub /
-		<= Image $mol_image
-			title <= title \
-			uri <= video_preview \
-		<= Hint $mol_icon_youtube
-		<= Frame $mol_frame
-			title <= title \
-			uri <= video_embed \
-
-
-$mol_embed_youtube $mol_embed_service
-
-$mol_embed_rutube $mol_embed_service
-
-$mol_embed_vklive $mol_embed_service
-
-$mol_embed_any $mol_view
-	Image $mol_image
-		title <= title \
-		uri <= uri \
-	Object $mol_embed_native
-		title <= title \
-		uri <= uri \
-	Youtube $mol_embed_youtube
-		title <= title \
-		uri <= uri \
-	Rutube $mol_embed_rutube
-		title <= title \
-		uri <= uri \
-	Vklive $mol_embed_vklive
-		title <= title \
-		uri <= uri \
-
-$mol_text $mol_list
-	uri_base \
-	text \
-	param \
-	flow_tokens /
-	block_text* \
-	auto /
-		<= auto_scroll null
-	- \Blocks
-	Paragraph* $mol_paragraph
-		sub <= block_content* /
-	Quote* $mol_text
-		uri_resolve* <= uri_resolve* \
-		text <= quote_text* \
-		highlight <= highlight \
-		auto_scroll null
-	List* $mol_text_list
-		uri_resolve* <= uri_resolve* \
-		type <= list_type* \-
-		text <= list_text* \
-		highlight <= highlight \
-	item_index* 0
-	Header* $mol_text_header
-		minimal_height 40
-		level <= header_level* 1
-		content <= block_content* /
-		arg <= header_arg* *
-	Pre* $mol_text_code
-		text <= pre_text* \
-		row_themes <= pre_themes* /string
-		highlight <= highlight \
-		uri_resolve* <= uri_resolve* \
-		sidebar_showed <= pre_sidebar_showed <= code_sidebar_showed true
-	Cut* $mol_view dom_name \hr
-	- \Table
-	Table* $mol_grid
-		head_cells <= table_head_cells* /
-		rows <= table_rows* /
-	Table_row* $mol_grid_row
-		cells <= table_cells* /
-	Table_cell* $mol_text
-		auto_scroll null
-		highlight <= highlight \
-		uri_resolve* <= uri_resolve* \
-		text <= table_cell_text* \
-	- \Grid
-	Grid* $mol_grid
-		rows <= grid_rows* /
-	Grid_row* $mol_grid_row
-		cells <= grid_cells* /
-	Grid_cell* $mol_text
-		auto_scroll null
-		highlight <= highlight \
-		uri_resolve* <= uri_resolve* \
-		text <= grid_cell_text* \
-	- \Lines
-	String* $mol_dimmer
-		dom_name \span
-		needle <= highlight \
-		haystack <= line_text* \
-	Span* $mol_text_span
-		dom_name \span
-		type <= line_type* \
-		sub <= line_content* /
-	Code_line* $mol_text_code_line
-		numb_showed false
-		highlight <= highlight \
-		text <= line_text* \
-		uri_resolve* <= uri_resolve* \
-		syntax <= code_syntax null
-	Link* $mol_link_iconed
-		uri <= link_uri* \
-		content <= line_content* /
-	Link_http* $mol_link_iconed
-		uri <= link_uri* \
-		content / <= link_host* \
-	Embed* $mol_embed_any
-		uri <= link_uri* \
-		title <= line_text* \
-	- \Spoilers
-	Spoiler* $mol_expander
-		label /
-			<= Spoiler_label* $mol_text
-				text <= spoiler_label* \
-		content /
-			<= Spoiler_content* $mol_text
-				text <= spoiler_content* \
-
-$mol_text_header $mol_paragraph
-	level 1
-	sub /
-		<= Link $mol_link
-			arg <= arg *
-			hint @ \Permalink to this section
-			sub <= content /
-
-$mol_text_span $mol_paragraph
-	dom_name \span
-	attr *
-		^
-		mol_text_type <= type \
-
-$mol_icon_eye $mol_icon path \M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z
-
-$mol_password $mol_view
-	type? \password
-	sub <= content /
-		<= Pass $mol_string
-			type <= type
-			hint <= hint \
-			value? <=> value? \
-			submit?event <=> submit?event null
-			enabled <= enabled true
-		<= Show $mol_check_icon
-			checked? <=> checked? true
-			Icon <= Show_icon $mol_icon_eye
-
-$mol_text_list $mol_text
-	auto_scroll null
-	attr *
-		^
-		mol_text_list_type <= type \
-	Paragraph* $mol_text_list_item
-		index <= item_index*
-		sub <= block_content*
-
-$mol_text_list_item $mol_paragraph
-	attr *
-		^
-		mol_text_list_item_index <= index 0
-
-$hyoo_meta_safe $mol_page
-	title @ \Private keys
-	yard $hyoo_sync_yard<any>
-	bid_pass_long @ \> 7 letters
-	key_size 144
-	attr *
-		^
-		mol_theme \$mol_theme_special
-	body /
-		<= Content $mol_list rows <= content /
-			<= Export_block $mol_list rows <= export_rows /
-				<= Expot_bid $mol_text text @ \Your private access keys are stored in the browser. In order not to lose them or transfer to another device, it is recommended to come up with a strong password for exporting them.
-				<= Export_pass $mol_list rows /
-					<= Password_field $mol_form_field
-						name @ \Password
-						bids / <= password_bid \
-						Content <= Password $mol_password
-							value? <=> password? \
-					<= Recall_field $mol_form_field
-						name @ \Hint for recall
-						Content <= Recall $mol_string
-							enabled <= recall_enabled true
-							value? <=> recall? \
-				<= Export_link $mol_link
-					uri <= export_link \
-					title @ \This link contains your encrypted prvate keys. Save it to a secure place on another physical device. Using this link you can restore your private keys by enterig same password.
-			<= Import_block $mol_list rows <= import_rows /
-				<= Iport_descr $mol_text text @ \
-					\To import a private key, you must enter the password from it.
-					\**If the current key is not saved, it will be lost forever.**
-				<= Import_pass $mol_list rows /
-					<= Recall_field
-					<= Password_field
-				<= Import_switch $mol_button_minor
-					click? <=> import_switch? null
-					sub /
-						<= Peer_new $mol_avatar id <= peer_new \
-						<= impot_switch_title @ \Switch
