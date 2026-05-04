@@ -9,7 +9,20 @@ namespace $ {
 
 		/** Home land текущего пользователя. НЕ @$mol_mem — чтобы не было circular. */
 		static land() {
-			return this.$.$giper_baza_glob.home().land()
+			const land = this.$.$giper_baza_glob.home().land()
+			// По умолчанию home land незашифрован (читаем по lord-ключу всем подряд).
+			// Включаем шифрование один раз при первом обращении — пока в land нет sand units.
+			// Для уже существующих юзеров с данными `encryptable()` вернёт false и мы тихо пропустим.
+			try {
+				if (land.encryptable() && !land.encrypted()) {
+					land.encrypted(true)
+					console.info('[store] home land encrypted')
+				}
+			} catch (e: any) {
+				if (e instanceof Promise) throw e
+				// 'Change encryption is forbidden' — у юзера уже есть открытые данные, миграция отдельным шагом.
+			}
+			return land
 		}
 
 		/** Словарь треков: cache_key → $bog_vk_track_baza. НЕ @$mol_mem. */
