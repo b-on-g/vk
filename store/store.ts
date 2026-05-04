@@ -178,13 +178,16 @@ namespace $ {
 		/** RAM-кеш свежезагруженных файлов на текущей сессии — играем без ожидания синка baza. */
 		private static fresh_files = new Map<string, File>()
 
-		/** Достаёт blob локально загруженного трека. null если не локальный или нет файла. */
+		/**
+		 * Достаёт blob трека из Giper Baza. null если в baza нет файла.
+		 * Работает и для локальных загрузок (owner_id === 0), и для VK-треков —
+		 * baza используется как cross-device blob storage.
+		 */
 		static local_blob(audio: $bog_vk_api_audio): Blob | null {
-			if (audio.owner_id !== 0) return null
 			const key = this.cache_key(audio)
 			const fresh = this.fresh_files.get(key)
 			if (fresh) {
-				console.log('[store] local blob from RAM:', audio.title, fresh.size, 'bytes,', fresh.type)
+				console.log('[store] blob from RAM:', audio.title, fresh.size, 'bytes,', fresh.type)
 				return fresh
 			}
 			const dict = this.tracks_dict()
@@ -193,14 +196,36 @@ namespace $ {
 			const file = track.File()?.remote()
 			if (!file) return null
 			const buf = file.buffer()
-			if (!buf || buf.byteLength === 0) {
-				console.warn('[store] local blob empty:', audio.title, 'type:', file.type())
-				return null
-			}
+			if (!buf || buf.byteLength === 0) return null
 			const type = file.type() || 'audio/mpeg'
 			const blob = new Blob([buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer], { type })
-			console.log('[store] local blob from baza:', audio.title, blob.size, 'bytes,', type)
+			console.log('[store] blob from baza:', audio.title, blob.size, 'bytes,', type)
 			return blob
+		}
+
+		/**
+		 * Сохраняет байты аудио в baza (поле File у $bog_vk_track_baza).
+		 * Вызывается из cache.save_hls после успешной выкачки HLS — чтобы блоб
+		 * синкался на другие устройства через Giper Baza.
+		 */
+		@$mol_action
+		static save_blob(audio: $bog_vk_api_audio, buffer: Uint8Array, mime: string): void {
+			if (!audio) return
+			let dict: ReturnType<typeof $bog_vk_store.tracks_dict>
+			try {
+				dict = this.tracks_dict()
+			} catch (e) {
+				if (e instanceof Promise) throw e
+				return
+			}
+			const key = this.cache_key(audio)
+			const track = dict.key(key, 'auto')
+			if (!track) return
+			const store = track.File('auto')!.ensure(null)
+			if (!store) return
+			store.buffer(buffer as Uint8Array<ArrayBuffer>)
+			store.type(mime || 'audio/mpeg')
+			console.log('[store] blob saved to baza:', audio.title, buffer.byteLength, 'bytes,', mime)
 		}
 
 		/** Парсит "Artist - Title" из имени файла. */

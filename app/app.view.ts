@@ -37,6 +37,39 @@ namespace $.$$ {
 	})()
 
 	/**
+	 * Мост `chrome.storage.local.vk_token` → `localStorage.vk_token`.
+	 * `content.js` пишет VK-токен в `chrome.storage.local` (изолированный
+	 * world content script-а), а $bog_vk_api.token() читает из `localStorage`
+	 * через $mol_state_local. Без моста popup никогда не видит токен.
+	 *
+	 * Подписка onChanged держит синхронизацию live: пользователь зашёл на
+	 * vk.com с открытым popup → токен подхватился без перезапуска.
+	 */
+	;(function bridge_vk_token_from_chrome_storage() {
+		try {
+			const ext = (globalThis as any).chrome
+			if (!ext?.storage?.local?.get) return
+			const apply = (token: string) => {
+				if (!token) return
+				try {
+					if (window.localStorage.getItem('vk_token') === JSON.stringify(token)) return
+					window.localStorage.setItem('vk_token', JSON.stringify(token))
+					window.dispatchEvent(new StorageEvent('storage', { key: 'vk_token' }))
+				} catch (e: any) {
+					console.warn('[app] vk_token write failed:', e?.message)
+				}
+			}
+			ext.storage.local.get(['vk_token'], (r: any) => apply(r?.vk_token ?? ''))
+			ext.storage.onChanged?.addListener?.((changes: any, area: string) => {
+				if (area !== 'local' || !changes?.vk_token) return
+				apply(changes.vk_token.newValue ?? '')
+			})
+		} catch (e: any) {
+			console.warn('[app] vk_token bridge failed:', e?.message)
+		}
+	})()
+
+	/**
 	 * Импорт ЛК из URL вида `#account=<key>`. Должен сработать ДО первого
 	 * обращения к $giper_baza_auth.current(), поэтому выполняется на уровне
 	 * модуля (IIFE).
@@ -275,8 +308,41 @@ namespace $.$$ {
 			return super.Nickname_label()
 		}
 
+		/**
+		 * Авто-импорт треков из VK в Giper Baza.
+		 * Вызывается реактивно из auto() — `@$mol_mem` ретраит при появлении
+		 * токена / готовности baza. Идемпотентно (save_track обновляет только
+		 * изменившиеся поля), так что вызов на каждом тике безопасен.
+		 */
+		@$mol_mem
+		auto_import() {
+			if (!$bog_vk_api.in_extension()) return null
+			const token = $bog_vk_api.token()
+			if (!token) return null
+			let list: $bog_vk_api_audio_list
+			try {
+				list = $bog_vk_api.my_audios()
+			} catch (e: any) {
+				if (e instanceof Promise) throw e
+				console.warn('[app] auto_import fetch failed:', e?.message)
+				return null
+			}
+			const items = list?.items ?? []
+			if (!items.length) return null
+			for (const audio of items) {
+				try { $bog_vk_store.save_track(audio) } catch (e: any) {
+					if (e instanceof Promise) throw e
+					console.warn('[app] auto_import save failed:', audio.title, e?.message)
+				}
+			}
+			return items.length
+		}
+
 		auto() {
 			try { $bog_vk_store.saved_audios() } catch {}
+			try { this.auto_import() } catch (e: any) {
+				if (e instanceof Promise) throw e
+			}
 			return super.auto()
 		}
 	}

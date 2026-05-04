@@ -153,18 +153,15 @@ namespace $.$$ {
 					this._last_blob_url = ''
 				}
 
-				// 0. Локальный трек — blob лежит в Giper Baza.
-				if (audio.owner_id === 0) {
-					// $mol_wire_async (не sync!) внутри обычной async-функции —
-					// возвращает Promise, который реально ждёт IDB ball_load.
-					const blob = await ($mol_wire_async($bog_vk_store) as any).local_blob(audio) as Blob | null
-					if (blob) {
-						const url = URL.createObjectURL(blob)
-						this._last_blob_url = url
-						el.src = url
-						await this.safe_play(el)
-						return
-					}
+				// 0. Blob из Giper Baza (локальные загрузки + VK-треки, синкнутые с другого устройства).
+				// $mol_wire_async внутри обычной async-функции реально ждёт IDB ball_load.
+				const blob = await ($mol_wire_async($bog_vk_store) as any).local_blob(audio) as Blob | null
+				if (blob) {
+					const url = URL.createObjectURL(blob)
+					this._last_blob_url = url
+					el.src = url
+					await this.safe_play(el)
+					return
 				}
 
 				// 1. Try cache (has actual audio data, works offline)

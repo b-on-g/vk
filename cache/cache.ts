@@ -493,6 +493,15 @@ namespace $ {
 				db.destructor()
 
 				console.log(`[cache] saved: ${audio.artist} — ${audio.title} (${sizeMB} MB)`)
+
+				// Дублируем blob в Giper Baza, чтобы offline-воспроизведение работало
+				// и на других устройствах (sync через GB).
+				try {
+					$bog_vk_store.save_blob(audio, audioData, mime)
+				} catch (e: any) {
+					if (e instanceof Promise) throw e
+					console.warn(`[cache] baza save failed: ${audio.artist} — ${audio.title}:`, e?.message)
+				}
 			} catch (e: any) {
 				console.warn(`[cache] FAILED: ${audio.artist} — ${audio.title}:`, e?.message || e?.name || String(e), e)
 			}
