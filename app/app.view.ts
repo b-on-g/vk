@@ -417,28 +417,11 @@ namespace $.$$ {
 			return next ?? []
 		}
 
-		@$mol_action
-		clear_token() {
-			this.token('')
-			this.token_expired(false)
-			this.token_open(false)
-		}
-
 		/**
 		 * Каждая overlay-панель — независимый булевый toggle в localStorage,
 		 * как было у старого show_hint. Несколько панелей могут быть открыты
 		 * одновременно, треки/таб-бар при этом не прячутся.
 		 */
-		@$mol_mem
-		token_open(next?: boolean) {
-			return $mol_state_local.value('vk_token_open', next) ?? false
-		}
-
-		@$mol_mem
-		settings_open(next?: boolean) {
-			return $mol_state_local.value('vk_settings_open', next) ?? false
-		}
-
 		@$mol_mem
 		account_open(next?: boolean) {
 			return $mol_state_local.value('vk_account_open', next) ?? false
@@ -449,38 +432,9 @@ namespace $.$$ {
 			return $mol_state_local.value('vk_help_open', next) ?? true
 		}
 
-		Token_panel() {
-			if (!this.token_open()) return null as any
-			return super.Token_panel()
-		}
-
-		Settings_panel() {
-			if (!this.settings_open()) return null as any
-			return super.Settings_panel()
-		}
-
 		Account() {
 			if (!this.account_open()) return null as any
 			return super.Account()
-		}
-
-
-		/**
-		 * Пользовательский URL прокси (для обхода блокировок VK API).
-		 * Пустая строка — дефолтный прокси.
-		 */
-		@$mol_mem
-		proxy_url(next?: string) {
-			if (next !== undefined) {
-				$mol_state_local.value('vk_proxy_url', next || null)
-				return next
-			}
-			return $mol_state_local.value('vk_proxy_url') as string ?? ''
-		}
-
-		@$mol_action
-		reset_proxy() {
-			this.proxy_url('')
 		}
 
 		/** Никнейм для шапки — берём прямо из home land профиля. */
