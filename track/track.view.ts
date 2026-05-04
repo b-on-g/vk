@@ -65,13 +65,6 @@ namespace $.$$ {
 			return super.Delete_forever()
 		}
 
-		Download() {
-			if (this.archive_mode()) return null as any
-			if (this.is_local()) return null as any
-			if (this.cached()) return null as any
-			return super.Download()
-		}
-
 		Delete() {
 			if (this.archive_mode()) return null as any
 			if (this.is_local()) return null as any
@@ -105,19 +98,6 @@ namespace $.$$ {
 			if (!this.can_drag()) return
 			event.preventDefault()
 			this.drop_here()
-		}
-
-		download() {
-			const audio = this.audio_data()
-			if (!audio || !audio.url) {
-				throw new Error(`Нет ссылки для скачивания`)
-			}
-			;($mol_wire_sync($bog_vk_cache) as any).save_hls(audio)
-			this.cached(true)
-			try { $bog_vk_store.save_track(audio) } catch (e: any) {
-				if (e instanceof Promise) return
-				console.warn('[track] baza save failed:', e?.message)
-			}
 		}
 
 		delete_cached() {

@@ -473,29 +473,11 @@ namespace $.$$ {
 			return '1. Открой аудио (ссылка выше)\n2. F12 → Network → фильтр «api»\n3. Любой запрос → ПКМ → Copy as cURL\n4. Вставь в поле токена наверху'
 		}
 
-		Download_all() {
-			if (this.offline_mode()) return null as any
-			return super.Download_all()
-		}
 
 		Search_bar() {
 			if (this.page() !== 'search') return null as any
 			return super.Search_bar()
 		}
 
-		download_all() {
-			const audios = this.visible_audios()
-			if (!audios.length) return
-			for (const audio of audios) {
-				if (!audio.url) continue
-				if (audio.owner_id === 0) continue
-				;($mol_wire_sync($bog_vk_cache) as any).save_hls(audio)
-				$bog_vk_cache.version($bog_vk_cache.version() + 1)
-				try { $bog_vk_store.save_track(audio) } catch (e: any) {
-					if (e instanceof Promise) return
-					console.warn('[app] baza save failed:', e?.message)
-				}
-			}
-		}
 	}
 }

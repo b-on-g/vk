@@ -2,6 +2,7 @@ $bog_vk_app $mol_page
 	plugins /
 		<= Theme $mol_theme_auto
 		<= Popup_fix $bog_popup_plugin
+		<= Tooltip $bog_tooltip_plugin
 	title \Bog Music
 	token_hint \
 	Title <= Brand $mol_image
@@ -22,10 +23,6 @@ $bog_vk_app $mol_page
 			hint \Загрузить с устройства
 			accept \audio/*
 			files? <=> upload_files? /File
-		<= Download_all $mol_button_minor
-			click? <=> download_all? null
-			sub /
-				<= Download_all_icon $mol_icon_download
 		<= Version $bog_version
 			version \0.2.2
 		<= Sync_status $giper_baza_status

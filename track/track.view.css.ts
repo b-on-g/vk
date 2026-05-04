@@ -86,11 +86,6 @@ namespace $.$$ {
 			color: $mol_theme.shade,
 		},
 
-		Download: {
-			flex: { shrink: 0 },
-			justify: { content: 'flex-end' },
-		},
-
 		Delete: {
 			flex: { shrink: 0 },
 			justify: { content: 'flex-end' },

@@ -75,6 +75,24 @@ namespace $.$$ {
 		}
 
 		@$mol_action
+		reset_account() {
+			if (typeof window === 'undefined') return
+			try {
+				const ext = (globalThis as any).chrome
+				if (ext?.storage?.local?.clear) ext.storage.local.clear()
+			} catch {}
+			try { window.localStorage.clear() } catch {}
+			try {
+				const idb = (globalThis as any).indexedDB
+				if (idb?.deleteDatabase) {
+					idb.deleteDatabase('$giper_baza_mine')
+					idb.deleteDatabase('vk_audio_cache')
+				}
+			} catch {}
+			setTimeout(() => location.reload(), 100)
+		}
+
+		@$mol_action
 		apply_import() {
 			const raw = this.import_link().trim()
 			if (!raw) {

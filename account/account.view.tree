@@ -24,3 +24,8 @@ $bog_vk_account $mol_list
 			title \Применить
 			click? <=> apply_import? null
 		<= Import_status $mol_view sub / <= import_status \
+		<= Reset_hint $mol_paragraph
+			title \Сбросить состояние и сгенерировать новый аккаунт. Текущие треки в Giper Baza останутся orphan.
+		<= Reset_button $mol_button_minor
+			title \Сбросить локальный аккаунт
+			click? <=> reset_account? null

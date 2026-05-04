@@ -34,10 +34,6 @@ $bog_vk_track $mol_view
 					title <= artist \
 				<= Duration $mol_paragraph
 					title <= duration_text \
-		<= Download $mol_button_minor
-			click? <=> download? null
-			sub /
-				<= Download_icon $mol_icon_download
 		<= Delete $mol_button_minor
 			click? <=> delete_cached? null
 			sub /
