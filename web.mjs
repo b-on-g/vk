@@ -28690,6 +28690,571 @@ var $;
 
 
 ;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        const CRC_TABLE = (() => {
+            const t = new Uint32Array(256);
+            for (let n = 0; n < 256; n++) {
+                let c = n;
+                for (let k = 0; k < 8; k++)
+                    c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
+                t[n] = c;
+            }
+            return t;
+        })();
+        function crc32(buf) {
+            let c = 0xFFFFFFFF;
+            for (let i = 0; i < buf.length; i++)
+                c = CRC_TABLE[(c ^ buf[i]) & 0xFF] ^ (c >>> 8);
+            return (c ^ 0xFFFFFFFF) >>> 0;
+        }
+        /** Минимальный stored (uncompressed) ZIP encoder — см. APPNOTE.TXT. */
+        function build_zip(files) {
+            const enc = new TextEncoder();
+            const entries = [];
+            let total_local = 0;
+            for (const f of files) {
+                const name_bytes = enc.encode(f.name);
+                const crc = crc32(f.data);
+                entries.push({ name_bytes, data: f.data, crc, offset: total_local });
+                total_local += 30 + name_bytes.length + f.data.length;
+            }
+            let total_central = 0;
+            for (const e of entries)
+                total_central += 46 + e.name_bytes.length;
+            const total_size = total_local + total_central + 22;
+            const buf = new Uint8Array(total_size);
+            const dv = new DataView(buf.buffer);
+            let p = 0;
+            for (const e of entries) {
+                dv.setUint32(p, 0x04034b50, true);
+                p += 4;
+                dv.setUint16(p, 20, true);
+                p += 2;
+                dv.setUint16(p, 0, true);
+                p += 2;
+                dv.setUint16(p, 0, true);
+                p += 2;
+                dv.setUint16(p, 0, true);
+                p += 2;
+                dv.setUint16(p, 0, true);
+                p += 2;
+                dv.setUint32(p, e.crc, true);
+                p += 4;
+                dv.setUint32(p, e.data.length, true);
+                p += 4;
+                dv.setUint32(p, e.data.length, true);
+                p += 4;
+                dv.setUint16(p, e.name_bytes.length, true);
+                p += 2;
+                dv.setUint16(p, 0, true);
+                p += 2;
+                buf.set(e.name_bytes, p);
+                p += e.name_bytes.length;
+                buf.set(e.data, p);
+                p += e.data.length;
+            }
+            const cd_offset = p;
+            for (const e of entries) {
+                dv.setUint32(p, 0x02014b50, true);
+                p += 4;
+                dv.setUint16(p, 20, true);
+                p += 2;
+                dv.setUint16(p, 20, true);
+                p += 2;
+                dv.setUint16(p, 0, true);
+                p += 2;
+                dv.setUint16(p, 0, true);
+                p += 2;
+                dv.setUint16(p, 0, true);
+                p += 2;
+                dv.setUint16(p, 0, true);
+                p += 2;
+                dv.setUint32(p, e.crc, true);
+                p += 4;
+                dv.setUint32(p, e.data.length, true);
+                p += 4;
+                dv.setUint32(p, e.data.length, true);
+                p += 4;
+                dv.setUint16(p, e.name_bytes.length, true);
+                p += 2;
+                dv.setUint16(p, 0, true);
+                p += 2;
+                dv.setUint16(p, 0, true);
+                p += 2;
+                dv.setUint16(p, 0, true);
+                p += 2;
+                dv.setUint16(p, 0, true);
+                p += 2;
+                dv.setUint32(p, 0, true);
+                p += 4;
+                dv.setUint32(p, e.offset, true);
+                p += 4;
+                buf.set(e.name_bytes, p);
+                p += e.name_bytes.length;
+            }
+            const cd_size = p - cd_offset;
+            dv.setUint32(p, 0x06054b50, true);
+            p += 4;
+            dv.setUint16(p, 0, true);
+            p += 2;
+            dv.setUint16(p, 0, true);
+            p += 2;
+            dv.setUint16(p, entries.length, true);
+            p += 2;
+            dv.setUint16(p, entries.length, true);
+            p += 2;
+            dv.setUint32(p, cd_size, true);
+            p += 4;
+            dv.setUint32(p, cd_offset, true);
+            p += 4;
+            dv.setUint16(p, 0, true);
+            p += 2;
+            return buf;
+        }
+        class $bog_vk_account extends $.$bog_vk_account {
+            /** Профиль в home land — паттерн blitz: instance-метод, БЕЗ @$mol_mem. */
+            profile_data() {
+                const home = this.$.$giper_baza_glob.home();
+                return home.land().Data($bog_vk_account_baza);
+            }
+            /**
+             * Реактивный геттер/сеттер ника. БЕЗ @$mol_mem — baza сама реактивит val(),
+             * а @$mol_mem на методах, отдающих/трогающих pawn-инстансы, вызывает destructor → Circular.
+             */
+            nickname(next) {
+                const profile = this.profile_data();
+                if (next !== undefined) {
+                    profile.Nickname('auto').val(next);
+                    return next;
+                }
+                return profile.Nickname()?.val() ?? '';
+            }
+            nickname_label() {
+                try {
+                    return this.nickname();
+                }
+                catch (e) {
+                    if (e instanceof Promise)
+                        throw e;
+                    return '';
+                }
+            }
+            lord_short() {
+                try {
+                    const auth = this.$.$giper_baza_auth.current();
+                    if (!auth)
+                        return '—';
+                    return auth.pass().lord().str.slice(0, 8) + '…';
+                }
+                catch (e) {
+                    if (e instanceof Promise)
+                        throw e;
+                    return '—';
+                }
+            }
+            account_key() {
+                return String(this.$.$mol_state_local.value('$giper_baza_auth') ?? '');
+            }
+            account_link() {
+                const key = this.account_key();
+                if (!key)
+                    return '';
+                const proto = location.protocol;
+                if (proto === 'chrome-extension:' || proto === 'moz-extension:') {
+                    return 'https://b-on-g.github.io/vk/#account=' + encodeURIComponent(key);
+                }
+                const base = location.origin + location.pathname + location.search;
+                return base + '#account=' + encodeURIComponent(key);
+            }
+            copy_status(next) {
+                return next ?? '';
+            }
+            copy() {
+                const link = this.account_link();
+                if (!link) {
+                    this.copy_status('Ключ не найден');
+                    return;
+                }
+                try {
+                    navigator.clipboard.writeText(link);
+                    this.copy_status('Скопировано. Не делись публично!');
+                }
+                catch (e) {
+                    console.warn('[account] clipboard failed:', e?.message);
+                    this.copy_status('Не удалось — скопируй из адресной строки: ' + link);
+                }
+            }
+            import_link(next) {
+                return next ?? '';
+            }
+            import_status(next) {
+                return next ?? '';
+            }
+            download_all_status(next) {
+                return next ?? '';
+            }
+            /** Триггер: запускает async-генератор ZIP из baza-блобов. */
+            download_all() {
+                $mol_wire_async(this).download_all_async();
+                return null;
+            }
+            async download_all_async() {
+                const safe = (s) => (s || '').replace(/[\\/:*?"<>|]/g, '_').slice(0, 80).trim() || 'track';
+                const ext_of = (mime) => {
+                    if (!mime)
+                        return 'aac';
+                    if (mime.includes('mpeg') || mime.includes('mp3'))
+                        return 'mp3';
+                    if (mime.includes('mp4') || mime.includes('m4a'))
+                        return 'm4a';
+                    if (mime.includes('aac'))
+                        return 'aac';
+                    if (mime.includes('wav'))
+                        return 'wav';
+                    if (mime.includes('ogg'))
+                        return 'ogg';
+                    if (mime.includes('flac'))
+                        return 'flac';
+                    return 'bin';
+                };
+                const app = $bog_vk_app.Root(0);
+                const tracks = [
+                    ...app.saved_audios(),
+                    ...app.archived_audios(),
+                ];
+                if (!tracks.length) {
+                    this.download_all_status('Нечего скачивать');
+                    return;
+                }
+                const entries = [];
+                let i = 0;
+                for (const audio of tracks) {
+                    ++i;
+                    this.download_all_status(`Сборка ${i}/${tracks.length}…`);
+                    let blob = null;
+                    let mime = 'audio/aac';
+                    try {
+                        blob = app.local_blob(audio);
+                        mime = blob?.type || 'audio/mpeg';
+                    }
+                    catch (e) {
+                        console.warn('[account] zip skip:', audio.title, e?.message);
+                    }
+                    if (!blob)
+                        continue;
+                    const ext = ext_of(mime);
+                    const name = `${safe(audio.artist)} - ${safe(audio.title)}.${ext}`.replace(/^_? - /, '');
+                    entries.push({ name, data: new Uint8Array(await blob.arrayBuffer()) });
+                }
+                if (!entries.length) {
+                    this.download_all_status('Нет доступных аудио');
+                    return;
+                }
+                this.download_all_status(`Упаковка ${entries.length}…`);
+                const zip = build_zip(entries);
+                const url = URL.createObjectURL(new Blob([zip.buffer.slice(zip.byteOffset, zip.byteOffset + zip.byteLength)], { type: 'application/zip' }));
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `bog-vk-music-${new Date().toISOString().slice(0, 10)}.zip`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 60_000);
+                this.download_all_status(`Готово, ${entries.length} файлов`);
+            }
+            reset_account() {
+                if (typeof window === 'undefined')
+                    return;
+                try {
+                    const ext = globalThis.chrome;
+                    if (ext?.storage?.local?.clear)
+                        ext.storage.local.clear();
+                }
+                catch { }
+                try {
+                    window.localStorage.clear();
+                }
+                catch { }
+                try {
+                    const idb = globalThis.indexedDB;
+                    if (idb?.deleteDatabase) {
+                        idb.deleteDatabase('$giper_baza_mine');
+                        idb.deleteDatabase('vk_audio_cache');
+                    }
+                }
+                catch { }
+                setTimeout(() => location.reload(), 100);
+            }
+            apply_import() {
+                const raw = this.import_link().trim();
+                if (!raw) {
+                    this.import_status('Вставь ссылку с #account=…');
+                    return;
+                }
+                const match = raw.match(/[#&]account=([^&\s]+)/);
+                const key = match ? decodeURIComponent(match[1]) : raw;
+                if (key.length < 172) {
+                    this.import_status('Ключ слишком короткий');
+                    return;
+                }
+                const current = this.$.$mol_state_local.value('$giper_baza_auth');
+                if (current !== key)
+                    this.$.$mol_state_local.value('$giper_baza_auth', key);
+                this.import_status(current === key ? 'Перезапуск…' : 'Применено, перезагрузка…');
+                location.reload();
+            }
+        }
+        __decorate([
+            $mol_mem
+        ], $bog_vk_account.prototype, "nickname_label", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_account.prototype, "lord_short", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_account.prototype, "copy_status", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_account.prototype, "copy", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_account.prototype, "import_link", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_account.prototype, "import_status", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_account.prototype, "download_all_status", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_account.prototype, "reset_account", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_account.prototype, "apply_import", null);
+        $$.$bog_vk_account = $bog_vk_account;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    /**
+     * Профиль пользователя в home land — чистая baza-схема.
+     * CRUD — в $bog_vk_account как instance-методы.
+     */
+    class $bog_vk_account_baza extends $giper_baza_dict.with({
+        Nickname: $giper_baza_atom_text,
+    }) {
+    }
+    $.$bog_vk_account_baza = $bog_vk_account_baza;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        $mol_style_define($bog_vk_account, {
+            width: '100%',
+            maxWidth: $mol_style_func.calc('100vw - 1rem'),
+            boxSizing: 'border-box',
+            padding: {
+                top: '0.5rem',
+                bottom: '0.5rem',
+                left: '0.5rem',
+                right: '0.5rem',
+            },
+            gap: '0.25rem',
+            Lord: {
+                font: {
+                    family: 'monospace',
+                    size: '0.875rem',
+                },
+                padding: {
+                    top: '0.25rem',
+                    bottom: '0.25rem',
+                },
+                gap: '0.5rem',
+            },
+            Warning: {
+                font: { size: '0.8125rem' },
+                color: '#d33',
+            },
+            Copy_status: {
+                font: { size: '0.8125rem' },
+                color: $mol_theme.shade,
+                minHeight: '1rem',
+            },
+            Import_status: {
+                font: { size: '0.8125rem' },
+                color: $mol_theme.shade,
+                minHeight: '1rem',
+            },
+            Import_hint: {
+                font: { size: '0.8125rem' },
+                color: $mol_theme.shade,
+            },
+        });
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+	($.$mol_check_list) = class $mol_check_list extends ($.$mol_view) {
+		option_checked(id, next){
+			if(next !== undefined) return next;
+			return false;
+		}
+		option_title(id){
+			return "";
+		}
+		option_label(id){
+			return [(this.option_title(id))];
+		}
+		enabled(){
+			return true;
+		}
+		option_enabled(id){
+			return (this.enabled());
+		}
+		option_hint(id){
+			return "";
+		}
+		items(){
+			return [];
+		}
+		dictionary(){
+			return {};
+		}
+		Option(id){
+			const obj = new this.$.$mol_check();
+			(obj.checked) = (next) => ((this.option_checked(id, next)));
+			(obj.label) = () => ((this.option_label(id)));
+			(obj.enabled) = () => ((this.option_enabled(id)));
+			(obj.hint) = () => ((this.option_hint(id)));
+			(obj.minimal_height) = () => (24);
+			return obj;
+		}
+		options(){
+			return {};
+		}
+		keys(){
+			return [];
+		}
+		sub(){
+			return (this.items());
+		}
+	};
+	($mol_mem_key(($.$mol_check_list.prototype), "option_checked"));
+	($mol_mem_key(($.$mol_check_list.prototype), "Option"));
+
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        /**
+         * List of checkboxes
+         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_check_list_demo
+         */
+        class $mol_check_list extends $.$mol_check_list {
+            options() {
+                return {};
+            }
+            dictionary(next) {
+                return next ?? {};
+            }
+            option_checked(id, next) {
+                const prev = this.dictionary();
+                if (next === undefined)
+                    return prev[id] ?? null;
+                const next_rec = { ...prev, [id]: next };
+                if (next === null)
+                    delete next_rec[id];
+                return this.dictionary(next_rec)[id] ?? null;
+            }
+            keys() {
+                return Object.keys(this.options());
+            }
+            items() {
+                return this.keys().map(key => this.Option(key));
+            }
+            option_title(key) {
+                return this.options()[key] || key;
+            }
+        }
+        __decorate([
+            $mol_mem
+        ], $mol_check_list.prototype, "keys", null);
+        __decorate([
+            $mol_mem
+        ], $mol_check_list.prototype, "items", null);
+        $$.$mol_check_list = $mol_check_list;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_style_attach("mol/check/list/list.view.css", "[mol_check_list] {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tflex: 1 1 auto;\n\tborder-radius: var(--mol_gap_round);\n\tgap: 1px;\n}\n\n[mol_check_list_option] {\n\tflex: 0 1 auto;\n}\n\n[mol_check_list_option]:where([mol_check_checked=\"true\"]) {\n\ttext-shadow: 0 0;\n\tcolor: var(--mol_theme_current);\n}\n\n[mol_check_list_option]:where([mol_check_checked=\"true\"][disabled]) {\n\tcolor: var(--mol_theme_text);\n}\n");
+})($ || ($ = {}));
+
+;
+	($.$mol_switch) = class $mol_switch extends ($.$mol_check_list) {
+		value(next){
+			if(next !== undefined) return next;
+			return "";
+		}
+	};
+	($mol_mem(($.$mol_switch.prototype), "value"));
+
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        /**
+         * Buttons which switching the state
+         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_switch_demo
+         */
+        class $mol_switch extends $.$mol_switch {
+            value(next) {
+                return $mol_state_session.value(`${this}.value()`, next) ?? '';
+            }
+            option_checked(key, next) {
+                if (next === undefined)
+                    return this.value() == key;
+                this.value(next ? key : '');
+                return next;
+            }
+        }
+        $$.$mol_switch = $mol_switch;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
 	($.$mol_icon_music) = class $mol_icon_music extends ($.$mol_icon) {
 		path(){
 			return "M21,3V15.5A3.5,3.5 0 0,1 17.5,19A3.5,3.5 0 0,1 14,15.5A3.5,3.5 0 0,1 17.5,12C18.04,12 18.55,12.12 19,12.34V6.47L9,8.6V17.5A3.5,3.5 0 0,1 5.5,21A3.5,3.5 0 0,1 2,17.5A3.5,3.5 0 0,1 5.5,14C6.04,14 6.55,14.12 7,14.34V6L21,3Z";
@@ -29675,8 +30240,14 @@ var $;
                     return false;
                 if (next !== undefined)
                     return next;
-                $bog_vk_cache.version();
-                return $mol_wire_sync($bog_vk_cache).is_cached(audio);
+                try {
+                    return $bog_vk_app.Root(0).is_cached(audio);
+                }
+                catch (e) {
+                    if (e instanceof Promise)
+                        throw e;
+                    return false;
+                }
             }
             is_local() {
                 return this.audio_data()?.owner_id === 0;
@@ -29741,9 +30312,8 @@ var $;
                 const audio = this.audio_data();
                 if (!audio)
                     return;
-                $mol_wire_sync($bog_vk_cache).drop(audio);
+                $bog_vk_app.Root(0).drop_blob(audio);
                 this.cached(false);
-                $bog_vk_cache.version($bog_vk_cache.version() + 1);
             }
         }
         __decorate([
@@ -29886,1457 +30456,6 @@ var $;
                 },
             },
         });
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /**
-     * Персональное хранилище треков пользователя в Giper Baza.
-     * Живёт в home land (персональные данные, синкаются между устройствами).
-     * Ключ — VK cache_key вида `${owner_id}_${id}`.
-     */
-    class $bog_vk_store extends $mol_object2 {
-        /** Home land текущего пользователя. НЕ @$mol_mem — чтобы не было circular. */
-        static land() {
-            return this.$.$giper_baza_glob.home().land();
-        }
-        /** Словарь треков: cache_key → $bog_vk_track_baza. НЕ @$mol_mem. */
-        static tracks_dict() {
-            const Tracks = $giper_baza_dict_to($bog_vk_track_baza);
-            return this.land().Data(Tracks);
-        }
-        /** Ключ для baza из VK-аудио. */
-        static cache_key(audio) {
-            return `${audio.owner_id}_${audio.id}`;
-        }
-        /**
-         * Собирает треки из baza. archived=false → активные, archived=true → архивные.
-         * Сортирует по Order (asc, с fallback на Added).
-         */
-        static list_audios(archived) {
-            const dict = this.tracks_dict();
-            const keys = (dict.keys() ?? []);
-            const rows = [];
-            for (const key of keys) {
-                const track = dict.key(key);
-                if (!track)
-                    continue;
-                const is_arch = track.Archived()?.val() === true;
-                if (is_arch !== archived)
-                    continue;
-                const vk_id = track.Vk_id()?.val() ?? String(key);
-                const parts = vk_id.split('_');
-                const owner_id = Number(parts[0]);
-                const id = Number(parts[1]);
-                if (!Number.isFinite(owner_id) || !Number.isFinite(id))
-                    continue;
-                const added = Number(track.Added()?.val() ?? 0);
-                const order_val = track.Order()?.val();
-                // Если Order не задан — fallback на Added (делим, чтобы был в том же порядке).
-                const order = order_val == null ? added : Number(order_val);
-                let url = track.Url()?.val() ?? '';
-                rows.push({
-                    audio: {
-                        id,
-                        owner_id,
-                        artist: track.Artist()?.val() ?? '',
-                        title: track.Title()?.val() ?? '',
-                        duration: track.Duration()?.val() ?? 0,
-                        url,
-                    },
-                    order,
-                    added,
-                });
-            }
-            rows.sort((a, b) => {
-                if (a.order !== b.order)
-                    return a.order - b.order;
-                return b.added - a.added;
-            });
-            return rows.map(r => r.audio);
-        }
-        /** Активные (не архивные) треки. */
-        static saved_audios() {
-            return this.list_audios(false);
-        }
-        /** Архивные треки. */
-        static archived_audios() {
-            return this.list_audios(true);
-        }
-        /** Максимальный Order среди всех треков (для добавления новых). */
-        static max_order() {
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return 0;
-            }
-            const keys = (dict.keys() ?? []);
-            let max = 0;
-            for (const key of keys) {
-                const track = dict.key(key);
-                if (!track)
-                    continue;
-                const o = Number(track.Order()?.val() ?? 0);
-                if (o > max)
-                    max = o;
-                const a = Number(track.Added()?.val() ?? 0);
-                if (a > max)
-                    max = a;
-            }
-            return max;
-        }
-        /** Сохраняет/обновляет трек в baza. Идемпотентно. */
-        static save_track(audio) {
-            if (!audio)
-                return;
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return;
-            }
-            const key = this.cache_key(audio);
-            const track = dict.key(key, 'auto');
-            if (!track)
-                return;
-            // Обновляем только если значения реально отличаются, чтобы не засорять CRDT.
-            if (track.Vk_id()?.val() !== key)
-                track.Vk_id('auto').val(key);
-            const title = audio.title ?? '';
-            if (track.Title()?.val() !== title)
-                track.Title('auto').val(title);
-            const artist = audio.artist ?? '';
-            if (track.Artist()?.val() !== artist)
-                track.Artist('auto').val(artist);
-            const dur = Number(audio.duration ?? 0);
-            if (track.Duration()?.val() !== dur)
-                track.Duration('auto').val(dur);
-            if (audio.url && track.Url()?.val() !== audio.url)
-                track.Url('auto').val(audio.url);
-            if (track.Added()?.val() == null)
-                track.Added('auto').val(Date.now());
-            // Назначаем Order для новых треков (max + 1), чтобы в списке шли последними.
-            if (track.Order()?.val() == null) {
-                track.Order('auto').val(this.max_order() + 1);
-            }
-            // Флаг Archived НЕ трогаем — снимается только явным restore_track.
-        }
-        /** Меняет Order двух треков местами. */
-        static swap_order(a, b) {
-            if (!a || !b)
-                return;
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return;
-            }
-            const ta = dict.key(this.cache_key(a), 'auto');
-            const tb = dict.key(this.cache_key(b), 'auto');
-            if (!ta || !tb)
-                return;
-            const oa_raw = ta.Order()?.val();
-            const ob_raw = tb.Order()?.val();
-            const aa = Number(ta.Added()?.val() ?? 0);
-            const ab = Number(tb.Added()?.val() ?? 0);
-            const oa = oa_raw == null ? aa : Number(oa_raw);
-            const ob = ob_raw == null ? ab : Number(ob_raw);
-            // Если значения равны — сдвигаем на 1, чтобы порядок действительно поменялся.
-            const next_a = ob === oa ? oa + 1 : ob;
-            const next_b = ob === oa ? oa : oa;
-            ta.Order('auto').val(next_a);
-            tb.Order('auto').val(next_b);
-        }
-        /** Помечает трек как удалённый (мягкое удаление). */
-        static archive_track(audio) {
-            if (!audio)
-                return;
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return;
-            }
-            const key = this.cache_key(audio);
-            const track = dict.key(key);
-            if (!track)
-                return;
-            track.Archived('auto').val(true);
-        }
-        /** RAM-кеш свежезагруженных файлов на текущей сессии — играем без ожидания синка baza. */
-        static fresh_files = new Map();
-        /**
-         * Достаёт blob трека из Giper Baza. null если в baza нет файла.
-         * Работает и для локальных загрузок (owner_id === 0), и для VK-треков —
-         * baza используется как cross-device blob storage.
-         */
-        static local_blob(audio) {
-            const key = this.cache_key(audio);
-            const fresh = this.fresh_files.get(key);
-            if (fresh) {
-                console.log('[store] blob from RAM:', audio.title, fresh.size, 'bytes,', fresh.type);
-                return fresh;
-            }
-            const dict = this.tracks_dict();
-            const track = dict.key(key);
-            if (!track)
-                return null;
-            const file = track.File()?.remote();
-            if (!file)
-                return null;
-            const buf = file.buffer();
-            if (!buf || buf.byteLength === 0)
-                return null;
-            const type = file.type() || 'audio/mpeg';
-            const blob = new Blob([buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength)], { type });
-            console.log('[store] blob from baza:', audio.title, blob.size, 'bytes,', type);
-            return blob;
-        }
-        /**
-         * Сохраняет байты аудио в baza (поле File у $bog_vk_track_baza).
-         * Вызывается из cache.save_hls после успешной выкачки HLS — чтобы блоб
-         * синкался на другие устройства через Giper Baza.
-         */
-        static save_blob(audio, buffer, mime) {
-            if (!audio)
-                return;
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return;
-            }
-            const key = this.cache_key(audio);
-            const track = dict.key(key, 'auto');
-            if (!track)
-                return;
-            const store = track.File('auto').ensure(null);
-            if (!store)
-                return;
-            store.buffer(buffer);
-            store.type(mime || 'audio/mpeg');
-            // Финализируем link → store. Без этого File-поле не синкается на другие устройства
-            // (паттерн из blitz: всегда `.remote(store)` после `.ensure(null)`).
-            track.File('auto').remote(store);
-            console.log('[store] blob saved to baza:', audio.title, buffer.byteLength, 'bytes,', mime);
-        }
-        /**
-         * Миграция: для каждого трека с непустым buffer'ом форсит
-         * `track.File('auto')!.remote(store)`. Старые блобы писались без этого
-         * вызова → link существовал только локально и не синкался на другие
-         * устройства. Идемпотентно — повторный вызов на уже мигрированных
-         * треках безопасен.
-         */
-        static migrate_blob_links() {
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return 0;
-            }
-            const keys = (dict.keys() ?? []);
-            let migrated = 0;
-            for (const key of keys) {
-                const track = dict.key(key);
-                if (!track)
-                    continue;
-                const file = track.File()?.remote();
-                if (!file)
-                    continue;
-                const buf = file.buffer();
-                if (!buf || buf.byteLength === 0)
-                    continue;
-                try {
-                    track.File('auto').remote(file);
-                    migrated++;
-                }
-                catch (e) {
-                    if (e instanceof Promise)
-                        throw e;
-                }
-            }
-            if (migrated)
-                console.log('[store] migrated', migrated, 'blob links for sync');
-            return migrated;
-        }
-        /** Удаляет blob (поле File) из baza, оставляя метаданные трека. */
-        static drop_blob(audio) {
-            if (!audio)
-                return;
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return;
-            }
-            const key = this.cache_key(audio);
-            const track = dict.key(key);
-            if (!track)
-                return;
-            track.File('auto').val(null);
-            this.fresh_files.delete(key);
-        }
-        /** Парсит "Artist - Title" из имени файла. */
-        static parse_filename(name) {
-            const base = name.replace(/\.[^.]+$/, '').trim();
-            const m = base.match(/^(.+?)\s*[-–—]\s*(.+)$/);
-            if (m)
-                return { artist: m[1].trim(), title: m[2].trim() };
-            return { artist: '', title: base };
-        }
-        /**
-         * Загружает локальный аудиофайл (с телефона) в home land.
-         * Блоб кладётся в $giper_baza_file, метаданные — в $bog_vk_track_baza.
-         * Возвращает audio для воспроизведения.
-         */
-        /** Детерминированный hash по строке (FNV-1a 32 bit). */
-        static hash_str(s) {
-            let h = 2166136261;
-            for (let i = 0; i < s.length; i++) {
-                h ^= s.charCodeAt(i);
-                h = Math.imul(h, 16777619);
-            }
-            return h >>> 0;
-        }
-        static save_local_track(file, buffer) {
-            const { artist, title } = this.parse_filename(file.name);
-            // Детерминированный id — одинаковый при ретраях wire, не создаёт дубликаты.
-            const id = this.hash_str(`${file.name}|${file.size}|${file.lastModified}`);
-            const audio = {
-                id,
-                owner_id: 0,
-                artist,
-                title,
-                duration: 0,
-                url: '',
-            };
-            console.log('[store] save_local_track:', file.name, file.size, 'bytes, type:', file.type, 'key:', `0_${id}`);
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                console.warn('[store] tracks_dict failed:', e);
-                return null;
-            }
-            const key = this.cache_key(audio);
-            const track = dict.key(key, 'auto');
-            if (!track) {
-                console.warn('[store] dict.key returned null for', key);
-                return null;
-            }
-            track.Vk_id('auto').val(key);
-            track.Title('auto').val(title);
-            track.Artist('auto').val(artist);
-            if (track.Added()?.val() == null)
-                track.Added('auto').val(Date.now());
-            if (track.Order()?.val() == null)
-                track.Order('auto').val(this.max_order() + 1);
-            track.Archived('auto').val(false);
-            const store = track.File('auto').ensure(null);
-            if (store) {
-                store.buffer(buffer);
-                store.type(file.type || 'audio/mpeg');
-                if (file.name)
-                    store.name(file.name);
-                // Финализируем link → store, иначе file не пушится в sync на другие устройства.
-                track.File('auto').remote(store);
-                console.log('[store] file written, type:', store.type(), 'chunks:', store.chunks().length);
-            }
-            else {
-                console.warn('[store] File ensure returned null');
-            }
-            this.fresh_files.set(key, file);
-            return audio;
-        }
-        /** Окончательно удаляет трек из baza (по ключу). */
-        static delete_track(audio) {
-            if (!audio)
-                return;
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return;
-            }
-            dict.cut(this.cache_key(audio));
-        }
-        /** Удаляет флаг Archived. */
-        static restore_track(audio) {
-            if (!audio)
-                return;
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return;
-            }
-            const key = this.cache_key(audio);
-            const track = dict.key(key);
-            if (!track)
-                return;
-            track.Archived('auto').val(false);
-        }
-    }
-    __decorate([
-        $mol_mem_key
-    ], $bog_vk_store, "list_audios", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "save_track", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "swap_order", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "archive_track", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "save_blob", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "migrate_blob_links", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "drop_blob", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "save_local_track", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "delete_track", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "restore_track", null);
-    $.$bog_vk_store = $bog_vk_store;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /**
-     * Тонкий фасад над Giper Baza для аудио-блобов.
-     * Раньше был отдельный IndexedDB (`vk_audio_cache`), но теперь источник один —
-     * baza, чтобы блобы автоматически синкались на другие устройства.
-     */
-    class $bog_vk_cache extends $mol_object {
-        static version(next) {
-            return next ?? 0;
-        }
-        static cache_key(audio) {
-            return `${audio.owner_id}_${audio.id}`;
-        }
-        /**
-         * Тонкая обёртка над `$bog_vk_store.local_blob` — отдаёт URL для воспроизведения.
-         * Раньше тут был IndexedDB-кэш; теперь источник один — Giper Baza, чтобы блобы
-         * автоматически синкались между устройствами (не дублируем хранилище).
-         */
-        static async get(audio) {
-            try {
-                const blob = $bog_vk_store.local_blob(audio);
-                if (!blob)
-                    return null;
-                return URL.createObjectURL(blob);
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                console.warn(`[cache] get error: ${audio.artist} — ${audio.title}`, e?.message);
-                return null;
-            }
-        }
-        static is_cached(audio) {
-            try {
-                return $bog_vk_store.local_blob(audio) !== null;
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return false;
-            }
-        }
-        static drop(audio) {
-            try {
-                $bog_vk_store.drop_blob(audio);
-                console.log(`[cache] dropped: ${audio.artist} — ${audio.title}`);
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                console.warn(`[cache] drop error: ${audio.artist} — ${audio.title}`, e?.message);
-            }
-        }
-        static adts_to_m4a(adts) {
-            const frames = [];
-            const frameSizes = [];
-            let audioObjectType = 2;
-            let sampleRateIndex = 4;
-            let channelConfig = 2;
-            let i = 0;
-            while (i < adts.length - 7) {
-                if (adts[i] !== 0xFF || (adts[i + 1] & 0xF6) !== 0xF0) {
-                    i++;
-                    continue;
-                }
-                const protAbsent = adts[i + 1] & 0x01;
-                const profile = (adts[i + 2] >> 6) & 0x03;
-                const srIdx = (adts[i + 2] >> 2) & 0x0F;
-                const chCfg = ((adts[i + 2] & 0x01) << 2) | ((adts[i + 3] >> 6) & 0x03);
-                const frameLen = ((adts[i + 3] & 0x03) << 11) | (adts[i + 4] << 3) | ((adts[i + 5] >> 5) & 0x07);
-                if (frameLen < 7 || frameLen > 8192 || i + frameLen > adts.length) {
-                    i++;
-                    continue;
-                }
-                // Verify next frame sync to filter false positives
-                if (i + frameLen + 1 < adts.length) {
-                    if (adts[i + frameLen] !== 0xFF || (adts[i + frameLen + 1] & 0xF6) !== 0xF0) {
-                        i++;
-                        continue;
-                    }
-                }
-                // Lock codec params from first valid frame
-                if (frames.length === 0) {
-                    audioObjectType = profile + 1;
-                    sampleRateIndex = srIdx;
-                    channelConfig = chCfg;
-                }
-                const hdrLen = protAbsent ? 7 : 9;
-                if (hdrLen >= frameLen) {
-                    i++;
-                    continue;
-                }
-                const raw = adts.slice(i + hdrLen, i + frameLen);
-                frames.push(raw);
-                frameSizes.push(raw.length);
-                i += frameLen;
-            }
-            if (frames.length === 0)
-                return adts;
-            const sampleRates = [96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350];
-            const sampleRate = sampleRates[sampleRateIndex] || 44100;
-            const totalSamples = frames.length * 1024;
-            const rawSize = frameSizes.reduce((a, b) => a + b, 0);
-            // AudioSpecificConfig (2 bytes)
-            const asc0 = (audioObjectType << 3) | (sampleRateIndex >> 1);
-            const asc1 = ((sampleRateIndex & 1) << 7) | (channelConfig << 3);
-            const u32 = (v) => [(v >>> 24) & 0xFF, (v >>> 16) & 0xFF, (v >>> 8) & 0xFF, v & 0xFF];
-            const u16 = (v) => [(v >> 8) & 0xFF, v & 0xFF];
-            const str = (s) => s.split('').map(c => c.charCodeAt(0));
-            const box = (type, payload) => [...u32(8 + payload.length), ...str(type), ...payload];
-            const fbox = (type, ver, fl, payload) => [...u32(12 + payload.length), ...str(type), ver, (fl >> 16) & 0xFF, (fl >> 8) & 0xFF, fl & 0xFF, ...payload];
-            // ftyp
-            const ftyp = box('ftyp', [...str('M4A '), ...u32(0), ...str('M4A '), ...str('isom'), ...str('mp42')]);
-            // esds descriptor chain
-            const decSpecInfo = [0x05, 0x02, asc0, asc1];
-            const decConfigPayload = [0x40, 0x15, 0x00, 0x00, 0x00, ...u32(0), ...u32(0), ...decSpecInfo];
-            const decConfig = [0x04, decConfigPayload.length, ...decConfigPayload];
-            const slConfig = [0x06, 0x01, 0x02];
-            const esPayload = [...u16(1), 0x00, ...decConfig, ...slConfig];
-            const esDescr = [0x03, esPayload.length, ...esPayload];
-            const esds = fbox('esds', 0, 0, esDescr);
-            // mp4a sample entry
-            const mp4aPayload = [
-                ...Array(6).fill(0), ...u16(1), // reserved + data_reference_index
-                ...Array(8).fill(0), // reserved
-                ...u16(channelConfig), ...u16(16), // channels, sample_size
-                ...u16(0), ...u16(0), // compression_id, packet_size
-                ...u16(sampleRate), ...u16(0), // samplerate 16.16 fixed
-                ...esds,
-            ];
-            const mp4a = [...u32(8 + mp4aPayload.length), ...str('mp4a'), ...mp4aPayload];
-            const stsd = fbox('stsd', 0, 0, [...u32(1), ...mp4a]);
-            const stts = fbox('stts', 0, 0, [...u32(1), ...u32(frames.length), ...u32(1024)]);
-            const stsc = fbox('stsc', 0, 0, [...u32(1), ...u32(1), ...u32(frames.length), ...u32(1)]);
-            const stsz = fbox('stsz', 0, 0, [...u32(0), ...u32(frames.length), ...frameSizes.flatMap(s => u32(s))]);
-            const stco = fbox('stco', 0, 0, [...u32(1), ...u32(0)]); // offset patched below
-            const stbl = box('stbl', [...stsd, ...stts, ...stsc, ...stsz, ...stco]);
-            const smhd = fbox('smhd', 0, 0, [...u16(0), ...u16(0)]);
-            const urlBox = fbox('url ', 0, 1, []);
-            const dref = fbox('dref', 0, 0, [...u32(1), ...urlBox]);
-            const dinf = box('dinf', dref);
-            const minf = box('minf', [...smhd, ...dinf, ...stbl]);
-            const mdhd = fbox('mdhd', 0, 0, [...u32(0), ...u32(0), ...u32(sampleRate), ...u32(totalSamples), ...u16(0x55C4), ...u16(0)]);
-            const hdlr = fbox('hdlr', 0, 0, [...u32(0), ...str('soun'), ...u32(0), ...u32(0), ...u32(0), 0]);
-            const mdia = box('mdia', [...mdhd, ...hdlr, ...minf]);
-            const identity = [
-                0x00, 0x01, 0x00, 0x00, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0x00, 0x01, 0x00, 0x00, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0x40, 0x00, 0x00, 0x00,
-            ];
-            const tkhd = fbox('tkhd', 0, 3, [
-                ...u32(0), ...u32(0), ...u32(1), ...u32(0), ...u32(totalSamples),
-                ...u32(0), ...u32(0), ...u16(0), ...u16(0), ...u16(0x0100), ...u16(0),
-                ...identity, ...u32(0), ...u32(0),
-            ]);
-            const trak = box('trak', [...tkhd, ...mdia]);
-            const mvhd = fbox('mvhd', 0, 0, [
-                ...u32(0), ...u32(0), ...u32(sampleRate), ...u32(totalSamples),
-                ...u32(0x00010000), ...u16(0x0100), ...Array(10).fill(0),
-                ...identity, ...Array(24).fill(0), ...u32(2),
-            ]);
-            const moov = box('moov', [...mvhd, ...trak]);
-            // Patch stco chunk_offset: mdat data starts after ftyp + moov + mdat header(8)
-            const mdatDataOffset = ftyp.length + moov.length + 8;
-            for (let j = 0; j < moov.length - 4; j++) {
-                if (moov[j] === 0x73 && moov[j + 1] === 0x74 && moov[j + 2] === 0x63 && moov[j + 3] === 0x6F) {
-                    // 'stco' found: type(4) + version(1) + flags(3) + entry_count(4) = 12 bytes to offset
-                    const p = j + 12;
-                    moov[p] = (mdatDataOffset >>> 24) & 0xFF;
-                    moov[p + 1] = (mdatDataOffset >>> 16) & 0xFF;
-                    moov[p + 2] = (mdatDataOffset >>> 8) & 0xFF;
-                    moov[p + 3] = mdatDataOffset & 0xFF;
-                    break;
-                }
-            }
-            // Assemble: ftyp + moov + mdat
-            const mdatHeader = [...u32(8 + rawSize), ...str('mdat')];
-            const total = ftyp.length + moov.length + mdatHeader.length + rawSize;
-            const out = new Uint8Array(total);
-            let pos = 0;
-            out.set(ftyp, pos);
-            pos += ftyp.length;
-            out.set(moov, pos);
-            pos += moov.length;
-            out.set(mdatHeader, pos);
-            pos += mdatHeader.length;
-            for (const frame of frames) {
-                out.set(frame, pos);
-                pos += frame.length;
-            }
-            console.log(`[cache] muxed ${frames.length} AAC frames → ${(total / 1024).toFixed(0)} KB M4A`);
-            return out;
-        }
-        static extract_audio(ts) {
-            // Already raw AAC (ADTS)
-            if (ts[0] === 0xFF && (ts[1] & 0xF0) === 0xF0) {
-                return { data: ts, mime: 'audio/aac' };
-            }
-            // Already MP3
-            if (ts[0] === 0xFF && (ts[1] & 0xE0) === 0xE0) {
-                return { data: ts, mime: 'audio/mpeg' };
-            }
-            // ID3 tag (MP3 with metadata)
-            if (ts[0] === 0x49 && ts[1] === 0x44 && ts[2] === 0x33) {
-                return { data: ts, mime: 'audio/mpeg' };
-            }
-            // MPEG-TS → proper demux: parse TS packets, extract PES audio payloads
-            if (ts[0] === 0x47) {
-                const audio = this.demux_ts_audio(ts);
-                if (audio)
-                    return { data: audio, mime: 'audio/aac' };
-            }
-            // Fallback: return as-is
-            return { data: ts, mime: 'audio/mpeg' };
-        }
-        static demux_ts_audio(ts) {
-            // Phase 1: parse TS packets, group payloads by PID
-            const pidChunks = new Map();
-            for (let pos = 0; pos + 188 <= ts.length; pos += 188) {
-                if (ts[pos] !== 0x47)
-                    continue;
-                const pusi = !!(ts[pos + 1] & 0x40);
-                const pid = ((ts[pos + 1] & 0x1F) << 8) | ts[pos + 2];
-                const afc = (ts[pos + 3] >> 4) & 0x03;
-                if (pid === 0 || pid === 0x1FFF)
-                    continue; // skip PAT / null
-                if (!(afc & 0x01))
-                    continue; // no payload
-                let off = 4;
-                if (afc & 0x02)
-                    off += 1 + ts[pos + 4]; // adaptation field
-                if (off >= 188)
-                    continue;
-                if (!pidChunks.has(pid))
-                    pidChunks.set(pid, []);
-                pidChunks.get(pid).push({ pusi, data: ts.slice(pos + off, pos + 188) });
-            }
-            // Phase 2: find audio PID (PES stream_id 0xC0..0xDF)
-            for (const [pid, chunks] of pidChunks) {
-                const first = chunks.find(c => c.pusi);
-                if (!first)
-                    continue;
-                const d = first.data;
-                if (d.length < 9)
-                    continue;
-                if (d[0] !== 0x00 || d[1] !== 0x00 || d[2] !== 0x01)
-                    continue;
-                if (d[3] < 0xC0 || d[3] > 0xDF)
-                    continue; // not audio
-                // Phase 3: reassemble PES payloads, strip PES headers → raw ADTS
-                const parts = [];
-                for (const chunk of chunks) {
-                    if (chunk.pusi) {
-                        const p = chunk.data;
-                        if (p.length < 9 || p[0] !== 0x00 || p[1] !== 0x00 || p[2] !== 0x01)
-                            continue;
-                        const pesHdrLen = 9 + p[8];
-                        if (pesHdrLen < p.length) {
-                            parts.push(p.slice(pesHdrLen));
-                        }
-                    }
-                    else {
-                        parts.push(chunk.data);
-                    }
-                }
-                const total = parts.reduce((s, p) => s + p.length, 0);
-                if (total === 0)
-                    continue;
-                const out = new Uint8Array(total);
-                let off = 0;
-                for (const p of parts) {
-                    out.set(p, off);
-                    off += p.length;
-                }
-                console.log(`[cache] demuxed TS: PID ${pid}, ${total} bytes raw ADTS`);
-                return out;
-            }
-            return null;
-        }
-        static parse_m3u8(text, base_url) {
-            const lines = text.split('\n');
-            let key_url = '';
-            let key_iv = '';
-            const segments = [];
-            for (const line of lines) {
-                const trimmed = line.trim();
-                if (trimmed.startsWith('#EXT-X-KEY:')) {
-                    const uri_match = trimmed.match(/URI="([^"]+)"/);
-                    if (uri_match) {
-                        key_url = uri_match[1].startsWith('http') ? uri_match[1] : base_url + uri_match[1];
-                    }
-                    const iv_match = trimmed.match(/IV=0x([0-9a-fA-F]+)/);
-                    if (iv_match) {
-                        key_iv = iv_match[1];
-                    }
-                }
-                else if (trimmed && !trimmed.startsWith('#')) {
-                    segments.push(trimmed.startsWith('http') ? trimmed : base_url + trimmed);
-                }
-            }
-            return { segments, key_url, key_iv };
-        }
-        static async decrypt_segment(data, cryptoKey, index, iv_hex) {
-            let iv;
-            if (iv_hex) {
-                const bytes = new Uint8Array(16);
-                for (let i = 0; i < 16 && i * 2 < iv_hex.length; i++) {
-                    bytes[i] = parseInt(iv_hex.substring(i * 2, i * 2 + 2), 16);
-                }
-                iv = bytes.buffer;
-            }
-            else {
-                const bytes = new Uint8Array(16);
-                bytes[15] = index & 0xFF;
-                bytes[14] = (index >> 8) & 0xFF;
-                bytes[13] = (index >> 16) & 0xFF;
-                bytes[12] = (index >> 24) & 0xFF;
-                iv = bytes.buffer;
-            }
-            return crypto.subtle.decrypt({ name: 'AES-CBC', iv }, cryptoKey, data);
-        }
-        /**
-         * Освежает audio.url через VK audio.getById — HLS ссылки протухают ~60 мин.
-         * Возвращает рабочий URL или пустую строку если не получилось.
-         */
-        static async refresh_url(audio) {
-            try {
-                const key = `${audio.owner_id}_${audio.id}${audio.access_key ? '_' + audio.access_key : ''}`;
-                const fresh = $mol_wire_sync($bog_vk_api).refresh_audio(key);
-                return fresh?.url ?? '';
-            }
-            catch (e) {
-                console.warn('[cache] refresh_url failed:', e?.message);
-                return '';
-            }
-        }
-        static async save_hls(audio) {
-            let url = audio.url;
-            if (!url) {
-                console.warn('[cache] skip — no URL:', audio.artist, '—', audio.title);
-                return;
-            }
-            try {
-                if (this.is_cached(audio)) {
-                    console.log('[cache] already in baza:', audio.artist, '—', audio.title);
-                    return;
-                }
-                console.log('[cache] start download:', audio.artist, '—', audio.title);
-                let m3u8_resp = await fetch(url);
-                // Если url протух — пробуем обновить через audio.getById.
-                if (m3u8_resp.status === 403 || m3u8_resp.status === 404) {
-                    console.log('[cache] url expired, refreshing:', audio.artist, '—', audio.title);
-                    const fresh_url = await this.refresh_url(audio);
-                    if (fresh_url) {
-                        url = fresh_url;
-                        m3u8_resp = await fetch(url);
-                    }
-                }
-                if (!m3u8_resp.ok)
-                    throw new Error(`m3u8 fetch ${m3u8_resp.status}`);
-                const m3u8_text = await m3u8_resp.text();
-                const base_url = url.substring(0, url.lastIndexOf('/') + 1);
-                // (url мог быть подменён на fresh_url выше — base пересчитывается от него)
-                const { segments, key_url, key_iv } = this.parse_m3u8(m3u8_text, base_url);
-                if (!segments.length)
-                    throw new Error('No segments in m3u8');
-                let cryptoKey = null;
-                if (key_url) {
-                    console.log(`[cache] encrypted HLS, fetching key from:`, key_url);
-                    const key_resp = await fetch(key_url);
-                    if (!key_resp.ok)
-                        throw new Error(`Key fetch failed: ${key_resp.status}`);
-                    const key_data = await key_resp.arrayBuffer();
-                    console.log(`[cache] key size: ${key_data.byteLength} bytes, hex: ${Array.from(new Uint8Array(key_data)).map(b => b.toString(16).padStart(2, '0')).join('')}`);
-                    if (key_data.byteLength !== 16) {
-                        console.warn(`[cache] unexpected key size ${key_data.byteLength}, expected 16`);
-                    }
-                    cryptoKey = await crypto.subtle.importKey('raw', key_data, 'AES-CBC', false, ['decrypt']);
-                    console.log(`[cache] key imported, IV: ${key_iv || '(sequence number)'}`);
-                }
-                console.log(`[cache] ${segments.length} segments to download${cryptoKey ? ' (encrypted)' : ''}`);
-                const chunks = [];
-                for (let i = 0; i < segments.length; i++) {
-                    const resp = await fetch(segments[i]);
-                    if (!resp.ok)
-                        throw new Error(`Segment ${i + 1}/${segments.length} failed: ${resp.status}`);
-                    let data = await resp.arrayBuffer();
-                    const firstByte = new Uint8Array(data)[0];
-                    if (cryptoKey && firstByte !== 0x47) {
-                        data = await this.decrypt_segment(data, cryptoKey, i, key_iv);
-                    }
-                    chunks.push(data);
-                }
-                const total = chunks.reduce((s, c) => s + c.byteLength, 0);
-                const merged = new Uint8Array(total);
-                let offset = 0;
-                for (const chunk of chunks) {
-                    merged.set(new Uint8Array(chunk), offset);
-                    offset += chunk.byteLength;
-                }
-                let { data: audioData, mime } = this.extract_audio(merged);
-                if (mime === 'audio/aac') {
-                    audioData = this.adts_to_m4a(audioData);
-                    mime = 'audio/mp4';
-                }
-                const sizeMB = (audioData.byteLength / 1024 / 1024).toFixed(1);
-                console.log(`[cache] format: ${mime}, extracted ${sizeMB} MB from ${(total / 1024 / 1024).toFixed(1)} MB raw`);
-                $bog_vk_store.save_blob(audio, audioData, mime);
-                console.log(`[cache] saved to baza: ${audio.artist} — ${audio.title} (${sizeMB} MB)`);
-                this.version(this.version() + 1);
-            }
-            catch (e) {
-                console.warn(`[cache] FAILED: ${audio.artist} — ${audio.title}:`, e?.message || e?.name || String(e), e);
-            }
-        }
-    }
-    __decorate([
-        $mol_mem
-    ], $bog_vk_cache, "version", null);
-    $.$bog_vk_cache = $bog_vk_cache;
-})($ || ($ = {}));
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        // CRC-32 IEEE polynomial 0xEDB88320, table-driven.
-        const CRC_TABLE = (() => {
-            const t = new Uint32Array(256);
-            for (let n = 0; n < 256; n++) {
-                let c = n;
-                for (let k = 0; k < 8; k++)
-                    c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
-                t[n] = c;
-            }
-            return t;
-        })();
-        function crc32(buf) {
-            let c = 0xFFFFFFFF;
-            for (let i = 0; i < buf.length; i++)
-                c = CRC_TABLE[(c ^ buf[i]) & 0xFF] ^ (c >>> 8);
-            return (c ^ 0xFFFFFFFF) >>> 0;
-        }
-        /** Минимальный stored (uncompressed) ZIP encoder — см. APPNOTE.TXT. */
-        function build_zip(files) {
-            const enc = new TextEncoder();
-            const entries = [];
-            let total_local = 0;
-            for (const f of files) {
-                const name_bytes = enc.encode(f.name);
-                const crc = crc32(f.data);
-                entries.push({ name_bytes, data: f.data, crc, offset: total_local });
-                total_local += 30 + name_bytes.length + f.data.length;
-            }
-            let total_central = 0;
-            for (const e of entries)
-                total_central += 46 + e.name_bytes.length;
-            const total_size = total_local + total_central + 22;
-            const buf = new Uint8Array(total_size);
-            const dv = new DataView(buf.buffer);
-            let p = 0;
-            for (const e of entries) {
-                dv.setUint32(p, 0x04034b50, true);
-                p += 4; // local file header sig
-                dv.setUint16(p, 20, true);
-                p += 2; // version needed
-                dv.setUint16(p, 0, true);
-                p += 2; // flags
-                dv.setUint16(p, 0, true);
-                p += 2; // method (store)
-                dv.setUint16(p, 0, true);
-                p += 2; // mtime
-                dv.setUint16(p, 0, true);
-                p += 2; // mdate
-                dv.setUint32(p, e.crc, true);
-                p += 4; // crc
-                dv.setUint32(p, e.data.length, true);
-                p += 4; // compressed size
-                dv.setUint32(p, e.data.length, true);
-                p += 4; // uncompressed size
-                dv.setUint16(p, e.name_bytes.length, true);
-                p += 2; // name len
-                dv.setUint16(p, 0, true);
-                p += 2; // extra len
-                buf.set(e.name_bytes, p);
-                p += e.name_bytes.length;
-                buf.set(e.data, p);
-                p += e.data.length;
-            }
-            const cd_offset = p;
-            for (const e of entries) {
-                dv.setUint32(p, 0x02014b50, true);
-                p += 4; // central dir entry sig
-                dv.setUint16(p, 20, true);
-                p += 2; // version made by
-                dv.setUint16(p, 20, true);
-                p += 2; // version needed
-                dv.setUint16(p, 0, true);
-                p += 2; // flags
-                dv.setUint16(p, 0, true);
-                p += 2; // method
-                dv.setUint16(p, 0, true);
-                p += 2; // mtime
-                dv.setUint16(p, 0, true);
-                p += 2; // mdate
-                dv.setUint32(p, e.crc, true);
-                p += 4;
-                dv.setUint32(p, e.data.length, true);
-                p += 4;
-                dv.setUint32(p, e.data.length, true);
-                p += 4;
-                dv.setUint16(p, e.name_bytes.length, true);
-                p += 2;
-                dv.setUint16(p, 0, true);
-                p += 2; // extra len
-                dv.setUint16(p, 0, true);
-                p += 2; // comment len
-                dv.setUint16(p, 0, true);
-                p += 2; // disk #
-                dv.setUint16(p, 0, true);
-                p += 2; // internal attr
-                dv.setUint32(p, 0, true);
-                p += 4; // external attr
-                dv.setUint32(p, e.offset, true);
-                p += 4; // local header offset
-                buf.set(e.name_bytes, p);
-                p += e.name_bytes.length;
-            }
-            const cd_size = p - cd_offset;
-            dv.setUint32(p, 0x06054b50, true);
-            p += 4; // EOCD sig
-            dv.setUint16(p, 0, true);
-            p += 2; // disk #
-            dv.setUint16(p, 0, true);
-            p += 2; // disk with cd
-            dv.setUint16(p, entries.length, true);
-            p += 2;
-            dv.setUint16(p, entries.length, true);
-            p += 2;
-            dv.setUint32(p, cd_size, true);
-            p += 4;
-            dv.setUint32(p, cd_offset, true);
-            p += 4;
-            dv.setUint16(p, 0, true);
-            p += 2; // comment len
-            return buf;
-        }
-        class $bog_vk_account extends $.$bog_vk_account {
-            static land() {
-                return this.$.$giper_baza_glob.home().land();
-            }
-            /** БЕЗ `@$mol_mem` — иначе $mol вызывает `destructor()` на pawn и ломает
-             *  реактивные подписки baza (см. MEMORY паттерн blitz: `profile_data()`).
-             *  baza сама интернит pawn по id, так что `Data(Profile)` всегда отдаёт тот же инстанс. */
-            static profile() {
-                return this.land().Data($bog_vk_account_baza);
-            }
-            /** Без `@$mol_mem` — getter напрямую читает Giper Baza, и любое
-             *  внешнее изменение (включая sync с другого устройства) ре-рендерит UI
-             *  через стандартную реактивность baza. */
-            nickname(next) {
-                const profile = $bog_vk_account.profile();
-                if (next !== undefined) {
-                    profile.Nickname('auto').val(next);
-                    return next;
-                }
-                return profile.Nickname()?.val() ?? '';
-            }
-            lord_short() {
-                try {
-                    const auth = $giper_baza_auth.current();
-                    if (!auth)
-                        return '—';
-                    return auth.pass().lord().str.slice(0, 8) + '…';
-                }
-                catch (e) {
-                    if (e instanceof Promise)
-                        throw e;
-                    return '—';
-                }
-            }
-            account_key() {
-                return String($mol_state_local.value('$giper_baza_auth') ?? '');
-            }
-            account_link() {
-                const key = this.account_key();
-                if (!key)
-                    return '';
-                const proto = location.protocol;
-                // В расширении origin = chrome-extension://<id>/ — такая ссылка не откроется на чужом
-                // устройстве. Подменяем на публичный gh-pages хост, куда деплоится тот же билд.
-                if (proto === 'chrome-extension:' || proto === 'moz-extension:') {
-                    return 'https://b-on-g.github.io/vk/#account=' + encodeURIComponent(key);
-                }
-                const base = location.origin + location.pathname + location.search;
-                return base + '#account=' + encodeURIComponent(key);
-            }
-            copy_status(next) {
-                return next ?? '';
-            }
-            copy() {
-                const link = this.account_link();
-                if (!link) {
-                    this.copy_status('Ключ не найден');
-                    return;
-                }
-                try {
-                    navigator.clipboard.writeText(link);
-                    this.copy_status('Скопировано. Не делись публично!');
-                }
-                catch (e) {
-                    console.warn('[account] clipboard failed:', e?.message);
-                    this.copy_status('Не удалось — скопируй из адресной строки: ' + link);
-                }
-            }
-            import_link(next) {
-                return next ?? '';
-            }
-            import_status(next) {
-                return next ?? '';
-            }
-            download_all_status(next) {
-                return next ?? '';
-            }
-            /**
-             * Собирает все треки (активные + архив) в один uncompressed ZIP и
-             * отдаёт пользователю через `<a download>`. Без npm-зависимостей —
-             * минимальный stored ZIP encoder, см. APPNOTE.TXT.
-             */
-            download_all() {
-                $mol_wire_async($bog_vk_account).download_all_async();
-            }
-            static async download_all_async() {
-                const set_status = (s) => {
-                    try {
-                        const inst = $bog_vk_account.bound?.() ?? null;
-                        if (inst?.download_all_status)
-                            inst.download_all_status(s);
-                    }
-                    catch { }
-                };
-                const safe = (s) => (s || '').replace(/[\\/:*?"<>|]/g, '_').slice(0, 80).trim() || 'track';
-                const ext_of = (mime) => {
-                    if (!mime)
-                        return 'aac';
-                    if (mime.includes('mpeg') || mime.includes('mp3'))
-                        return 'mp3';
-                    if (mime.includes('mp4') || mime.includes('m4a'))
-                        return 'm4a';
-                    if (mime.includes('aac'))
-                        return 'aac';
-                    if (mime.includes('wav'))
-                        return 'wav';
-                    if (mime.includes('ogg'))
-                        return 'ogg';
-                    if (mime.includes('flac'))
-                        return 'flac';
-                    return 'bin';
-                };
-                const tracks = [
-                    ...$bog_vk_store.saved_audios(),
-                    ...$bog_vk_store.archived_audios(),
-                ];
-                if (!tracks.length) {
-                    set_status('Нечего скачивать');
-                    return;
-                }
-                const entries = [];
-                let i = 0;
-                for (const audio of tracks) {
-                    ++i;
-                    set_status(`Сборка ${i}/${tracks.length}…`);
-                    let blob = null;
-                    let mime = 'audio/aac';
-                    try {
-                        blob = $bog_vk_store.local_blob(audio);
-                        mime = blob?.type || 'audio/mpeg';
-                    }
-                    catch (e) {
-                        console.warn('[account] zip skip:', audio.title, e?.message);
-                    }
-                    if (!blob)
-                        continue;
-                    const ext = ext_of(mime);
-                    const name = `${safe(audio.artist)} - ${safe(audio.title)}.${ext}`.replace(/^_? - /, '');
-                    entries.push({ name, data: new Uint8Array(await blob.arrayBuffer()) });
-                }
-                if (!entries.length) {
-                    set_status('Нет доступных аудио');
-                    return;
-                }
-                set_status(`Упаковка ${entries.length}…`);
-                const zip = build_zip(entries);
-                const url = URL.createObjectURL(new Blob([zip.buffer.slice(zip.byteOffset, zip.byteOffset + zip.byteLength)], { type: 'application/zip' }));
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `bog-vk-music-${new Date().toISOString().slice(0, 10)}.zip`;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                setTimeout(() => URL.revokeObjectURL(url), 60_000);
-                set_status(`Готово, ${entries.length} файлов`);
-            }
-            reset_account() {
-                if (typeof window === 'undefined')
-                    return;
-                try {
-                    const ext = globalThis.chrome;
-                    if (ext?.storage?.local?.clear)
-                        ext.storage.local.clear();
-                }
-                catch { }
-                try {
-                    window.localStorage.clear();
-                }
-                catch { }
-                try {
-                    const idb = globalThis.indexedDB;
-                    if (idb?.deleteDatabase) {
-                        idb.deleteDatabase('$giper_baza_mine');
-                        idb.deleteDatabase('vk_audio_cache');
-                    }
-                }
-                catch { }
-                setTimeout(() => location.reload(), 100);
-            }
-            apply_import() {
-                const raw = this.import_link().trim();
-                if (!raw) {
-                    this.import_status('Вставь ссылку с #account=…');
-                    return;
-                }
-                const match = raw.match(/[#&]account=([^&\s]+)/);
-                const key = match ? decodeURIComponent(match[1]) : raw;
-                if (key.length < 172) {
-                    this.import_status('Ключ слишком короткий');
-                    return;
-                }
-                const current = $mol_state_local.value('$giper_baza_auth');
-                if (current !== key)
-                    $mol_state_local.value('$giper_baza_auth', key);
-                this.import_status(current === key ? 'Перезапуск…' : 'Применено, перезагрузка…');
-                location.reload();
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $bog_vk_account.prototype, "lord_short", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_account.prototype, "copy_status", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_account.prototype, "copy", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_account.prototype, "import_link", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_account.prototype, "import_status", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_account.prototype, "download_all_status", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_account.prototype, "download_all", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_account.prototype, "reset_account", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_account.prototype, "apply_import", null);
-        $$.$bog_vk_account = $bog_vk_account;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /**
-     * Профиль пользователя в home land.
-     * Никнейм отображается в шапке/попапе аккаунта.
-     */
-    class $bog_vk_account_baza extends $giper_baza_dict.with({
-        Nickname: $giper_baza_atom_text,
-    }) {
-    }
-    $.$bog_vk_account_baza = $bog_vk_account_baza;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        $mol_style_define($bog_vk_account, {
-            width: '100%',
-            maxWidth: $mol_style_func.calc('100vw - 1rem'),
-            boxSizing: 'border-box',
-            padding: {
-                top: '0.5rem',
-                bottom: '0.5rem',
-                left: '0.5rem',
-                right: '0.5rem',
-            },
-            gap: '0.25rem',
-            Lord: {
-                font: {
-                    family: 'monospace',
-                    size: '0.875rem',
-                },
-                padding: {
-                    top: '0.25rem',
-                    bottom: '0.25rem',
-                },
-                gap: '0.5rem',
-            },
-            Warning: {
-                font: { size: '0.8125rem' },
-                color: '#d33',
-            },
-            Copy_status: {
-                font: { size: '0.8125rem' },
-                color: $mol_theme.shade,
-                minHeight: '1rem',
-            },
-            Import_status: {
-                font: { size: '0.8125rem' },
-                color: $mol_theme.shade,
-                minHeight: '1rem',
-            },
-            Import_hint: {
-                font: { size: '0.8125rem' },
-                color: $mol_theme.shade,
-            },
-        });
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-	($.$mol_check_list) = class $mol_check_list extends ($.$mol_view) {
-		option_checked(id, next){
-			if(next !== undefined) return next;
-			return false;
-		}
-		option_title(id){
-			return "";
-		}
-		option_label(id){
-			return [(this.option_title(id))];
-		}
-		enabled(){
-			return true;
-		}
-		option_enabled(id){
-			return (this.enabled());
-		}
-		option_hint(id){
-			return "";
-		}
-		items(){
-			return [];
-		}
-		dictionary(){
-			return {};
-		}
-		Option(id){
-			const obj = new this.$.$mol_check();
-			(obj.checked) = (next) => ((this.option_checked(id, next)));
-			(obj.label) = () => ((this.option_label(id)));
-			(obj.enabled) = () => ((this.option_enabled(id)));
-			(obj.hint) = () => ((this.option_hint(id)));
-			(obj.minimal_height) = () => (24);
-			return obj;
-		}
-		options(){
-			return {};
-		}
-		keys(){
-			return [];
-		}
-		sub(){
-			return (this.items());
-		}
-	};
-	($mol_mem_key(($.$mol_check_list.prototype), "option_checked"));
-	($mol_mem_key(($.$mol_check_list.prototype), "Option"));
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        /**
-         * List of checkboxes
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_check_list_demo
-         */
-        class $mol_check_list extends $.$mol_check_list {
-            options() {
-                return {};
-            }
-            dictionary(next) {
-                return next ?? {};
-            }
-            option_checked(id, next) {
-                const prev = this.dictionary();
-                if (next === undefined)
-                    return prev[id] ?? null;
-                const next_rec = { ...prev, [id]: next };
-                if (next === null)
-                    delete next_rec[id];
-                return this.dictionary(next_rec)[id] ?? null;
-            }
-            keys() {
-                return Object.keys(this.options());
-            }
-            items() {
-                return this.keys().map(key => this.Option(key));
-            }
-            option_title(key) {
-                return this.options()[key] || key;
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_check_list.prototype, "keys", null);
-        __decorate([
-            $mol_mem
-        ], $mol_check_list.prototype, "items", null);
-        $$.$mol_check_list = $mol_check_list;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/check/list/list.view.css", "[mol_check_list] {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tflex: 1 1 auto;\n\tborder-radius: var(--mol_gap_round);\n\tgap: 1px;\n}\n\n[mol_check_list_option] {\n\tflex: 0 1 auto;\n}\n\n[mol_check_list_option]:where([mol_check_checked=\"true\"]) {\n\ttext-shadow: 0 0;\n\tcolor: var(--mol_theme_current);\n}\n\n[mol_check_list_option]:where([mol_check_checked=\"true\"][disabled]) {\n\tcolor: var(--mol_theme_text);\n}\n");
-})($ || ($ = {}));
-
-;
-	($.$mol_switch) = class $mol_switch extends ($.$mol_check_list) {
-		value(next){
-			if(next !== undefined) return next;
-			return "";
-		}
-	};
-	($mol_mem(($.$mol_switch.prototype), "value"));
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        /**
-         * Buttons which switching the state
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_switch_demo
-         */
-        class $mol_switch extends $.$mol_switch {
-            value(next) {
-                return $mol_state_session.value(`${this}.value()`, next) ?? '';
-            }
-            option_checked(key, next) {
-                if (next === undefined)
-                    return this.value() == key;
-                this.value(next ? key : '');
-                return next;
-            }
-        }
-        $$.$mol_switch = $mol_switch;
     })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));
 
@@ -31768,7 +30887,7 @@ var $;
                         const finished = this.current_audio();
                         this.next();
                         if (finished && navigator.onLine) {
-                            $bog_vk_cache.save_hls(finished).catch(() => { });
+                            $bog_vk_app.Root(0).save_hls(finished).catch(() => { });
                         }
                     }
                     catch (e) {
@@ -31907,9 +31026,9 @@ var $;
                         URL.revokeObjectURL(this._last_blob_url);
                         this._last_blob_url = '';
                     }
+                    const app = $bog_vk_app.Root(0);
                     // 0. Blob из Giper Baza — единый источник для offline (локальные + VK).
-                    // $mol_wire_async внутри обычной async-функции реально ждёт ball_load.
-                    const blob = await $mol_wire_async($bog_vk_store).local_blob(audio);
+                    const blob = await $mol_wire_async(app).local_blob(audio);
                     if (blob) {
                         const url = URL.createObjectURL(blob);
                         this._last_blob_url = url;
@@ -31922,7 +31041,7 @@ var $;
                         el.src = audio.url;
                         try {
                             await this.safe_play(el);
-                            $bog_vk_cache.save_hls(audio).catch(() => { });
+                            app.save_hls(audio).catch(() => { });
                             return;
                         }
                         catch {
@@ -31931,8 +31050,8 @@ var $;
                     }
                     // 2. Forced download → save blob to baza → play from baza.
                     if (audio.url) {
-                        await $bog_vk_cache.save_hls(audio);
-                        const blob2 = $bog_vk_store.local_blob(audio);
+                        await app.save_hls(audio);
+                        const blob2 = app.local_blob(audio);
                         if (blob2) {
                             const url = URL.createObjectURL(blob2);
                             this._last_blob_url = url;
@@ -32567,13 +31686,6 @@ var $;
          * резолвятся в chrome-extension://. Любой такой URL → `new WebSocket(...)` →
          * SyntaxError. Чистим default-список и подкладываем публичный baza-master.
          */
-        /**
-         * В chrome-extension/moz-extension контексте `location.origin` имеет схему
-         * `chrome-extension://`, и yard.web.ts пушит его в masters_default. Кроме того,
-         * peer-ы из Seed().peers() могут принести относительные URL, которые в extension
-         * резолвятся в chrome-extension://. Любой такой URL → `new WebSocket(...)` →
-         * SyntaxError. Чистим default-список и подкладываем публичный baza-master.
-         */
         ;
         (function fix_yard_masters_in_extension() {
             try {
@@ -32674,34 +31786,331 @@ var $;
             archive_mode() {
                 return this.page() === 'archive';
             }
-            /** Активные треки из Giper Baza home land. */
-            synced_audios() {
+            // =========================================================================
+            // Giper Baza store — паттерн blitz: instance-методы view'а, БЕЗ @$mol_mem
+            // (memory: @$mol_mem на pawn-методах → destructor → Circular subscription)
+            // =========================================================================
+            /** $bog_vk_store в home land текущего юзера. */
+            tracks_store() {
+                const home = this.$.$giper_baza_glob.home();
+                return home.land().Data($bog_vk_store);
+            }
+            /** Словарь треков (Tracks). */
+            tracks_dict() {
+                return this.tracks_store().Tracks(null);
+            }
+            // ---------- утилиты, не трогающие baza ----------
+            cache_key(audio) {
+                return `${audio.owner_id}_${audio.id}`;
+            }
+            parse_filename(name) {
+                const base = name.replace(/\.[^.]+$/, '').trim();
+                const m = base.match(/^(.+?)\s*[-–—]\s*(.+)$/);
+                if (m)
+                    return { artist: m[1].trim(), title: m[2].trim() };
+                return { artist: '', title: base };
+            }
+            /** Детерминированный hash (FNV-1a 32 bit). */
+            hash_str(s) {
+                let h = 2166136261;
+                for (let i = 0; i < s.length; i++) {
+                    h ^= s.charCodeAt(i);
+                    h = Math.imul(h, 16777619);
+                }
+                return h >>> 0;
+            }
+            // ---------- чтение из baza ----------
+            /** RAM-кеш свежезагруженных файлов на текущей сессии. */
+            fresh_files = new Map();
+            /** Blob трека из baza или RAM. null если нет. */
+            local_blob(audio) {
+                const key = this.cache_key(audio);
+                const fresh = this.fresh_files.get(key);
+                if (fresh)
+                    return fresh;
+                const dict = this.tracks_dict();
+                const track = dict.key(key);
+                if (!track)
+                    return null;
+                const file = track.File()?.remote();
+                if (!file)
+                    return null;
+                const buf = file.buffer();
+                if (!buf || buf.byteLength === 0)
+                    return null;
+                const type = file.type() || 'audio/mpeg';
+                return new Blob([buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength)], { type });
+            }
+            is_cached(audio) {
                 try {
-                    return $bog_vk_store.saved_audios();
+                    return this.local_blob(audio) !== null;
                 }
                 catch (e) {
                     if (e instanceof Promise)
                         throw e;
-                    console.warn('[app] baza read failed:', e?.message);
+                    return false;
+                }
+            }
+            /** Активные/архивные треки, отсортированные по Order (asc, fallback Added). */
+            list_audios(archived) {
+                const dict = this.tracks_dict();
+                const keys = (dict.keys() ?? []);
+                const rows = [];
+                for (const key of keys) {
+                    const track = dict.key(key);
+                    if (!track)
+                        continue;
+                    const is_arch = track.Archived()?.val() === true;
+                    if (is_arch !== archived)
+                        continue;
+                    const vk_id = track.Vk_id()?.val() ?? String(key);
+                    const parts = vk_id.split('_');
+                    const owner_id = Number(parts[0]);
+                    const id = Number(parts[1]);
+                    if (!Number.isFinite(owner_id) || !Number.isFinite(id))
+                        continue;
+                    const added = Number(track.Added()?.val() ?? 0);
+                    const order_val = track.Order()?.val();
+                    const order = order_val == null ? added : Number(order_val);
+                    rows.push({
+                        audio: {
+                            id,
+                            owner_id,
+                            artist: track.Artist()?.val() ?? '',
+                            title: track.Title()?.val() ?? '',
+                            duration: track.Duration()?.val() ?? 0,
+                            url: track.Url()?.val() ?? '',
+                        },
+                        order,
+                        added,
+                    });
+                }
+                rows.sort((a, b) => a.order !== b.order ? a.order - b.order : b.added - a.added);
+                return rows.map(r => r.audio);
+            }
+            saved_audios() {
+                try {
+                    return this.list_audios(false);
+                }
+                catch (e) {
+                    if (e instanceof Promise)
+                        throw e;
+                    console.warn('[app] saved_audios read failed:', e?.message);
                     return [];
                 }
             }
             archived_audios() {
                 try {
-                    return $bog_vk_store.archived_audios();
+                    return this.list_audios(true);
                 }
                 catch (e) {
                     if (e instanceof Promise)
                         throw e;
-                    console.warn('[app] baza read failed:', e?.message);
+                    console.warn('[app] archived_audios read failed:', e?.message);
                     return [];
                 }
             }
             visible_audios() {
-                return this.archive_mode() ? this.archived_audios() : this.synced_audios();
+                return this.archive_mode() ? this.archived_audios() : this.saved_audios();
             }
+            // ---------- запись в baza (паттерн blitz: @$mol_action instance) ----------
+            max_order() {
+                const dict = this.tracks_dict();
+                const keys = (dict.keys() ?? []);
+                let max = 0;
+                for (const key of keys) {
+                    const track = dict.key(key);
+                    if (!track)
+                        continue;
+                    const o = Number(track.Order()?.val() ?? 0);
+                    if (o > max)
+                        max = o;
+                    const a = Number(track.Added()?.val() ?? 0);
+                    if (a > max)
+                        max = a;
+                }
+                return max;
+            }
+            save_track(audio) {
+                if (!audio)
+                    return;
+                const dict = this.tracks_dict();
+                const key = this.cache_key(audio);
+                const track = dict.key(key, 'auto');
+                if (!track)
+                    return;
+                if (track.Vk_id()?.val() !== key)
+                    track.Vk_id('auto').val(key);
+                const title = audio.title ?? '';
+                if (track.Title()?.val() !== title)
+                    track.Title('auto').val(title);
+                const artist = audio.artist ?? '';
+                if (track.Artist()?.val() !== artist)
+                    track.Artist('auto').val(artist);
+                const dur = Number(audio.duration ?? 0);
+                if (track.Duration()?.val() !== dur)
+                    track.Duration('auto').val(dur);
+                if (audio.url && track.Url()?.val() !== audio.url)
+                    track.Url('auto').val(audio.url);
+                if (track.Added()?.val() == null)
+                    track.Added('auto').val(Date.now());
+                if (track.Order()?.val() == null)
+                    track.Order('auto').val(this.max_order() + 1);
+            }
+            save_blob(audio, buffer, mime) {
+                if (!audio)
+                    return;
+                const dict = this.tracks_dict();
+                const key = this.cache_key(audio);
+                const track = dict.key(key, 'auto');
+                if (!track)
+                    return;
+                const store = track.File('auto').ensure(null);
+                if (!store)
+                    return;
+                store.buffer(buffer);
+                store.type(mime || 'audio/mpeg');
+                // Без .remote(store) link существует только локально — в pack для пуша не попадает.
+                track.File('auto').remote(store);
+            }
+            save_local_track(file, buffer) {
+                const { artist, title } = this.parse_filename(file.name);
+                const id = this.hash_str(`${file.name}|${file.size}|${file.lastModified}`);
+                const audio = {
+                    id,
+                    owner_id: 0,
+                    artist,
+                    title,
+                    duration: 0,
+                    url: '',
+                };
+                const dict = this.tracks_dict();
+                const key = this.cache_key(audio);
+                const track = dict.key(key, 'auto');
+                if (!track)
+                    return null;
+                track.Vk_id('auto').val(key);
+                track.Title('auto').val(title);
+                track.Artist('auto').val(artist);
+                if (track.Added()?.val() == null)
+                    track.Added('auto').val(Date.now());
+                if (track.Order()?.val() == null)
+                    track.Order('auto').val(this.max_order() + 1);
+                track.Archived('auto').val(false);
+                const store = track.File('auto').ensure(null);
+                if (store) {
+                    store.buffer(buffer);
+                    store.type(file.type || 'audio/mpeg');
+                    if (file.name)
+                        store.name(file.name);
+                    track.File('auto').remote(store);
+                }
+                this.fresh_files.set(key, file);
+                return audio;
+            }
+            swap_order(a, b) {
+                if (!a || !b)
+                    return;
+                const dict = this.tracks_dict();
+                const ta = dict.key(this.cache_key(a), 'auto');
+                const tb = dict.key(this.cache_key(b), 'auto');
+                if (!ta || !tb)
+                    return;
+                const oa_raw = ta.Order()?.val();
+                const ob_raw = tb.Order()?.val();
+                const aa = Number(ta.Added()?.val() ?? 0);
+                const ab = Number(tb.Added()?.val() ?? 0);
+                const oa = oa_raw == null ? aa : Number(oa_raw);
+                const ob = ob_raw == null ? ab : Number(ob_raw);
+                const next_a = ob === oa ? oa + 1 : ob;
+                const next_b = ob === oa ? oa : oa;
+                ta.Order('auto').val(next_a);
+                tb.Order('auto').val(next_b);
+            }
+            archive_track(audio) {
+                if (!audio)
+                    return;
+                const dict = this.tracks_dict();
+                const track = dict.key(this.cache_key(audio));
+                if (!track)
+                    return;
+                track.Archived('auto').val(true);
+            }
+            restore_track(audio) {
+                if (!audio)
+                    return;
+                const dict = this.tracks_dict();
+                const track = dict.key(this.cache_key(audio));
+                if (!track)
+                    return;
+                track.Archived('auto').val(false);
+            }
+            delete_track(audio) {
+                if (!audio)
+                    return;
+                const dict = this.tracks_dict();
+                dict.cut(this.cache_key(audio));
+            }
+            drop_blob(audio) {
+                if (!audio)
+                    return;
+                const dict = this.tracks_dict();
+                const track = dict.key(this.cache_key(audio));
+                if (!track)
+                    return;
+                track.File('auto').val(null);
+                this.fresh_files.delete(this.cache_key(audio));
+            }
+            /**
+             * Миграция: для треков с непустым buffer'ом форсит .remote(store).
+             * Старые блобы писались без этого вызова → не синкались.
+             */
+            migrate_blob_links() {
+                const dict = this.tracks_dict();
+                const keys = (dict.keys() ?? []);
+                let migrated = 0;
+                for (const key of keys) {
+                    const track = dict.key(key);
+                    if (!track)
+                        continue;
+                    const file = track.File()?.remote();
+                    if (!file)
+                        continue;
+                    const buf = file.buffer();
+                    if (!buf || buf.byteLength === 0)
+                        continue;
+                    try {
+                        track.File('auto').remote(file);
+                        migrated++;
+                    }
+                    catch (e) {
+                        if (e instanceof Promise)
+                            throw e;
+                    }
+                }
+                if (migrated)
+                    console.log('[app] migrated', migrated, 'blob links for sync');
+                return migrated;
+            }
+            /** Качает HLS и сразу пишет в baza. Используется player'ом и prefetch. */
+            async save_hls(audio) {
+                try {
+                    if (this.is_cached(audio))
+                        return;
+                    const result = await $bog_vk_cache.download_hls(audio);
+                    if (!result)
+                        return;
+                    this.save_blob(audio, result.buffer, result.mime);
+                }
+                catch (e) {
+                    if (e instanceof Promise)
+                        throw e;
+                    console.warn(`[app] save_hls failed: ${audio.artist} — ${audio.title}:`, e?.message ?? e);
+                }
+            }
+            // ---------- UI ----------
             tab_options() {
-                const my = this.synced_audios().length;
+                const my = this.saved_audios().length;
                 const arch = this.archived_audios().length;
                 return {
                     my: my ? `Моя музыка ${my}` : 'Моя музыка',
@@ -32723,33 +32132,14 @@ var $;
                 const moving = list[from];
                 if (!moving)
                     return;
-                try {
-                    $bog_vk_store.save_track(moving);
-                }
-                catch (e) {
-                    if (e instanceof Promise)
-                        return;
-                }
+                this.save_track(moving);
                 if (from < to) {
                     for (let i = from; i < to; i++) {
                         const next = list[i + 1];
                         if (!next)
                             break;
-                        try {
-                            $bog_vk_store.save_track(next);
-                        }
-                        catch (e) {
-                            if (e instanceof Promise)
-                                return;
-                        }
-                        try {
-                            $bog_vk_store.swap_order(moving, next);
-                        }
-                        catch (e) {
-                            if (e instanceof Promise)
-                                return;
-                            console.warn('[app] reorder_to swap failed:', e?.message);
-                        }
+                        this.save_track(next);
+                        this.swap_order(moving, next);
                     }
                 }
                 else {
@@ -32757,66 +32147,26 @@ var $;
                         const prev = list[i - 1];
                         if (!prev)
                             break;
-                        try {
-                            $bog_vk_store.save_track(prev);
-                        }
-                        catch (e) {
-                            if (e instanceof Promise)
-                                return;
-                        }
-                        try {
-                            $bog_vk_store.swap_order(moving, prev);
-                        }
-                        catch (e) {
-                            if (e instanceof Promise)
-                                return;
-                            console.warn('[app] reorder_to swap failed:', e?.message);
-                        }
+                        this.save_track(prev);
+                        this.swap_order(moving, prev);
                     }
                 }
             }
             archive_audio(audio) {
                 if (!audio)
                     return;
-                try {
-                    $bog_vk_store.save_track(audio);
-                }
-                catch (e) {
-                    if (e instanceof Promise)
-                        return;
-                }
-                try {
-                    $bog_vk_store.archive_track(audio);
-                }
-                catch (e) {
-                    if (e instanceof Promise)
-                        return;
-                    console.warn('[app] baza archive failed:', e?.message);
-                }
+                this.save_track(audio);
+                this.archive_track(audio);
             }
             restore_audio(audio) {
                 if (!audio)
                     return;
-                try {
-                    $bog_vk_store.restore_track(audio);
-                }
-                catch (e) {
-                    if (e instanceof Promise)
-                        return;
-                    console.warn('[app] baza restore failed:', e?.message);
-                }
+                this.restore_track(audio);
             }
             delete_audio(audio) {
                 if (!audio)
                     return;
-                try {
-                    $bog_vk_store.delete_track(audio);
-                }
-                catch (e) {
-                    if (e instanceof Promise)
-                        return;
-                    console.warn('[app] baza delete failed:', e?.message);
-                }
+                this.delete_track(audio);
             }
             on_play_audio(audio) {
                 if (!audio)
@@ -32825,14 +32175,7 @@ var $;
                 const idx = audios.findIndex((a) => a.id === audio.id && a.owner_id === audio.owner_id);
                 this.Player().queue_index(idx >= 0 ? idx : 0);
                 this.Player().play_track(audio);
-                try {
-                    $bog_vk_store.save_track(audio);
-                }
-                catch (e) {
-                    if (e instanceof Promise)
-                        return;
-                    console.warn('[app] baza save failed:', e?.message);
-                }
+                this.save_track(audio);
                 const item = this.recsys_item(audio);
                 if (item) {
                     $bog_recsys.namespace('vk');
@@ -32847,7 +32190,7 @@ var $;
                     for (const file of next) {
                         try {
                             const buffer = new Uint8Array($mol_wire_sync(file).arrayBuffer());
-                            $bog_vk_store.save_local_track(file, buffer);
+                            this.save_local_track(file, buffer);
                         }
                         catch (e) {
                             if (e instanceof Promise)
@@ -32897,8 +32240,8 @@ var $;
             }
             nickname_label() {
                 try {
-                    const land = $bog_vk_account.profile();
-                    return land.Nickname()?.val() || '';
+                    const profile = this.$.$giper_baza_glob.home().land().Data($bog_vk_account_baza);
+                    return profile.Nickname()?.val() || '';
                 }
                 catch (e) {
                     if (e instanceof Promise)
@@ -32911,75 +32254,67 @@ var $;
                     return null;
                 return super.Nickname_label();
             }
+            // =========================================================================
+            // Реактивный авто-импорт VK-треков + фоновый префетч блобов.
+            // =========================================================================
             /**
-             * Авто-импорт треков из VK в Giper Baza.
-             * Вызывается реактивно из auto() — `@$mol_mem` ретраит при появлении
-             * токена / готовности baza. Идемпотентно (save_track обновляет только
-             * изменившиеся поля), так что вызов на каждом тике безопасен.
-             *
-             * Фоном дёргает `prefetch_blobs` для треков без `File` в baza, чтобы сразу
-             * после синка metadata пользователь мог играть offline.
+             * Список треков из VK. @$mol_mem ретраит fetch при появлении токена.
+             * Возвращает пустой массив если не в extension / без токена.
              */
-            auto_import() {
+            vk_audios() {
                 if (!$bog_vk_api.in_extension())
-                    return null;
+                    return [];
                 const token = $bog_vk_api.token();
                 if (!token)
-                    return null;
-                let list;
+                    return [];
                 try {
-                    list = $bog_vk_api.my_audios();
+                    const list = $bog_vk_api.my_audios();
+                    return list?.items ?? [];
                 }
                 catch (e) {
                     if (e instanceof Promise)
                         throw e;
-                    console.warn('[app] auto_import fetch failed:', e?.message);
-                    return null;
+                    console.warn('[app] vk_audios fetch failed:', e?.message);
+                    return [];
                 }
-                const items = list?.items ?? [];
+            }
+            /**
+             * Реактивная авторегистрация: при готовности baza + появлении треков
+             * стартует фоновый префетч. Идемпотентно через флаг.
+             */
+            auto_import() {
+                const items = this.vk_audios();
                 if (!items.length)
-                    return null;
-                // Метаданные сохраняем НЕ скопом — а внутри prefetch_blobs по одному
-                // перед каждой выкачкой блоба. Так список растёт постепенно и
-                // пользователю видно, что загрузка идёт.
-                if (!$bog_vk_app.__prefetch_started) {
-                    $bog_vk_app.__prefetch_started = true;
-                    $bog_vk_app.prefetch_blobs(items).catch(e => {
-                        console.warn('[app] prefetch crashed:', e?.message ?? e);
-                    });
+                    return 0;
+                // прогрев dict — кидает Promise если baza ещё грузится, @$mol_mem ретраит.
+                this.tracks_dict();
+                if (!this._prefetch_started) {
+                    this._prefetch_started = true;
+                    $mol_wire_async(this).prefetch_blobs(items);
                 }
                 return items.length;
             }
-            static __prefetch_started = false;
-            /**
-             * Реактивный статус префетча для UI.
-             * `total` — всего треков, `done` — скачано в baza, `failed` — упало.
-             */
-            static prefetch_state(next) {
+            _prefetch_started = false;
+            prefetch_state(next) {
                 return next ?? { total: 0, done: 0, failed: 0 };
             }
             /**
-             * Скачивает HLS-блобы для треков без `File` в baza.
-             * Чистый async — без `$mol_wire_*`, чтобы гарантированно стартовало
-             * из обычного callback-контекста. Внутри для refresh URL'а дёргает
-             * `fetch_vk_direct` (тоже plain async), а не `refresh_audio` (mem_key
-             * с wire_sync — требует фибра).
+             * Фоновый префетч — реактивный wire_async fiber, ретраит при Promise.
+             * Метаданные сохраняются по одному перед каждой выкачкой блоба, чтобы
+             * baza успевала пушить sand/seal мелкими пакетами.
              */
-            static async prefetch_blobs(items) {
+            async prefetch_blobs(items) {
                 if (!items?.length)
                     return;
                 console.log('[app] prefetch start:', items.length, 'tracks');
-                $bog_vk_app.prefetch_state({ total: items.length, done: 0, failed: 0 });
+                this.prefetch_state({ total: items.length, done: 0, failed: 0 });
                 let done = 0, failed = 0;
                 for (let i = 0; i < items.length; i++) {
                     const audio = items[i];
                     try {
-                        // Метаданные сейвим в отдельном тике перед скачиванием — даём baza
-                        // запушить sand/seal на сервер мелкими пакетами, а не одним
-                        // гигантским pack из 300+ юнитов.
-                        $bog_vk_store.save_track(audio);
+                        this.save_track(audio);
                         await new Promise(r => setTimeout(r, 50));
-                        if ($bog_vk_cache.is_cached(audio)) {
+                        if (this.is_cached(audio)) {
                             done++;
                             continue;
                         }
@@ -32991,12 +32326,12 @@ var $;
                             if (!fresh?.url) {
                                 failed++;
                                 console.warn('[app] no fresh url:', audio.artist, '—', audio.title);
-                                $bog_vk_app.prefetch_state({ total: items.length, done, failed });
+                                this.prefetch_state({ total: items.length, done, failed });
                                 continue;
                             }
                             target = { ...audio, url: fresh.url };
                         }
-                        await $bog_vk_cache.save_hls(target);
+                        await this.save_hls(target);
                         done++;
                     }
                     catch (e) {
@@ -33008,27 +32343,32 @@ var $;
                         failed++;
                         console.warn('[app] prefetch failed:', audio.artist, '—', audio.title, '|', e?.message ?? String(e));
                     }
-                    $bog_vk_app.prefetch_state({ total: items.length, done, failed });
+                    this.prefetch_state({ total: items.length, done, failed });
                 }
                 console.log('[app] prefetch done:', done, 'downloaded,', failed, 'failed');
             }
+            _migration_done = false;
             auto() {
+                // Прогрев чтения из baza — кидает Promise при загрузке, ретраится здесь.
                 try {
-                    $bog_vk_store.saved_audios();
+                    this.saved_audios();
                 }
-                catch { }
-                // Одноразовая миграция: дотягиваем `.remote(store)` для старых блобов,
-                // записанных до фикса. Идемпотентна, флаг гарантирует один прогон за сессию.
-                if (!$bog_vk_app.__migration_done) {
+                catch (e) {
+                    if (e instanceof Promise)
+                        throw e;
+                }
+                // Одноразовая миграция блоб-линков (паттерн giper_baza_link_remote).
+                if (!this._migration_done) {
                     try {
-                        $bog_vk_store.migrate_blob_links();
-                        $bog_vk_app.__migration_done = true;
+                        this.migrate_blob_links();
+                        this._migration_done = true;
                     }
                     catch (e) {
                         if (e instanceof Promise)
                             throw e;
                     }
                 }
+                // Реактивный авто-импорт.
                 try {
                     this.auto_import();
                 }
@@ -33038,20 +32378,46 @@ var $;
                 }
                 return super.auto();
             }
-            static __migration_done = false;
         }
         __decorate([
             $mol_mem
         ], $bog_vk_app.prototype, "page", null);
         __decorate([
             $mol_mem
-        ], $bog_vk_app.prototype, "synced_audios", null);
+        ], $bog_vk_app.prototype, "saved_audios", null);
         __decorate([
             $mol_mem
         ], $bog_vk_app.prototype, "archived_audios", null);
         __decorate([
             $mol_mem
         ], $bog_vk_app.prototype, "visible_audios", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_app.prototype, "save_track", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_app.prototype, "save_blob", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_app.prototype, "save_local_track", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_app.prototype, "swap_order", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_app.prototype, "archive_track", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_app.prototype, "restore_track", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_app.prototype, "delete_track", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_app.prototype, "drop_blob", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_app.prototype, "migrate_blob_links", null);
         __decorate([
             $mol_mem
         ], $bog_vk_app.prototype, "current_audio", null);
@@ -33084,10 +32450,13 @@ var $;
         ], $bog_vk_app.prototype, "nickname_label", null);
         __decorate([
             $mol_mem
+        ], $bog_vk_app.prototype, "vk_audios", null);
+        __decorate([
+            $mol_mem
         ], $bog_vk_app.prototype, "auto_import", null);
         __decorate([
             $mol_mem
-        ], $bog_vk_app, "prefetch_state", null);
+        ], $bog_vk_app.prototype, "prefetch_state", null);
         $$.$bog_vk_app = $bog_vk_app;
     })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));
@@ -33152,6 +32521,366 @@ var $;
             },
         });
     })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    /** Словарь cache_key → $bog_vk_track_baza. Вынесен отдельно, чтобы не циклить TS-инференс. */
+    class $bog_vk_tracks_dict extends $giper_baza_dict_to($bog_vk_track_baza) {
+    }
+    $.$bog_vk_tracks_dict = $bog_vk_tracks_dict;
+    /**
+     * Хранилище треков пользователя — чистая baza-схема.
+     * Вся CRUD-логика — в $bog_vk_app как instance-методы.
+     */
+    class $bog_vk_store extends $giper_baza_dict.with({
+        Tracks: $bog_vk_tracks_dict,
+    }) {
+    }
+    $.$bog_vk_store = $bog_vk_store;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    /**
+     * Чистый утилитарный класс — HLS-декодирование, демукс TS, MP4-мукс,
+     * расшифровка AES-CBC. БЕЗ записи в baza — все side-эффекты в $bog_vk_app.
+     */
+    class $bog_vk_cache extends $mol_object {
+        static cache_key(audio) {
+            return `${audio.owner_id}_${audio.id}`;
+        }
+        static adts_to_m4a(adts) {
+            const frames = [];
+            const frameSizes = [];
+            let audioObjectType = 2;
+            let sampleRateIndex = 4;
+            let channelConfig = 2;
+            let i = 0;
+            while (i < adts.length - 7) {
+                if (adts[i] !== 0xFF || (adts[i + 1] & 0xF6) !== 0xF0) {
+                    i++;
+                    continue;
+                }
+                const protAbsent = adts[i + 1] & 0x01;
+                const profile = (adts[i + 2] >> 6) & 0x03;
+                const srIdx = (adts[i + 2] >> 2) & 0x0F;
+                const chCfg = ((adts[i + 2] & 0x01) << 2) | ((adts[i + 3] >> 6) & 0x03);
+                const frameLen = ((adts[i + 3] & 0x03) << 11) | (adts[i + 4] << 3) | ((adts[i + 5] >> 5) & 0x07);
+                if (frameLen < 7 || frameLen > 8192 || i + frameLen > adts.length) {
+                    i++;
+                    continue;
+                }
+                if (i + frameLen + 1 < adts.length) {
+                    if (adts[i + frameLen] !== 0xFF || (adts[i + frameLen + 1] & 0xF6) !== 0xF0) {
+                        i++;
+                        continue;
+                    }
+                }
+                if (frames.length === 0) {
+                    audioObjectType = profile + 1;
+                    sampleRateIndex = srIdx;
+                    channelConfig = chCfg;
+                }
+                const hdrLen = protAbsent ? 7 : 9;
+                if (hdrLen >= frameLen) {
+                    i++;
+                    continue;
+                }
+                const raw = adts.slice(i + hdrLen, i + frameLen);
+                frames.push(raw);
+                frameSizes.push(raw.length);
+                i += frameLen;
+            }
+            if (frames.length === 0)
+                return adts;
+            const sampleRates = [96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350];
+            const sampleRate = sampleRates[sampleRateIndex] || 44100;
+            const totalSamples = frames.length * 1024;
+            const rawSize = frameSizes.reduce((a, b) => a + b, 0);
+            const asc0 = (audioObjectType << 3) | (sampleRateIndex >> 1);
+            const asc1 = ((sampleRateIndex & 1) << 7) | (channelConfig << 3);
+            const u32 = (v) => [(v >>> 24) & 0xFF, (v >>> 16) & 0xFF, (v >>> 8) & 0xFF, v & 0xFF];
+            const u16 = (v) => [(v >> 8) & 0xFF, v & 0xFF];
+            const str = (s) => s.split('').map(c => c.charCodeAt(0));
+            const box = (type, payload) => [...u32(8 + payload.length), ...str(type), ...payload];
+            const fbox = (type, ver, fl, payload) => [...u32(12 + payload.length), ...str(type), ver, (fl >> 16) & 0xFF, (fl >> 8) & 0xFF, fl & 0xFF, ...payload];
+            const ftyp = box('ftyp', [...str('M4A '), ...u32(0), ...str('M4A '), ...str('isom'), ...str('mp42')]);
+            const decSpecInfo = [0x05, 0x02, asc0, asc1];
+            const decConfigPayload = [0x40, 0x15, 0x00, 0x00, 0x00, ...u32(0), ...u32(0), ...decSpecInfo];
+            const decConfig = [0x04, decConfigPayload.length, ...decConfigPayload];
+            const slConfig = [0x06, 0x01, 0x02];
+            const esPayload = [...u16(1), 0x00, ...decConfig, ...slConfig];
+            const esDescr = [0x03, esPayload.length, ...esPayload];
+            const esds = fbox('esds', 0, 0, esDescr);
+            const mp4aPayload = [
+                ...Array(6).fill(0), ...u16(1),
+                ...Array(8).fill(0),
+                ...u16(channelConfig), ...u16(16),
+                ...u16(0), ...u16(0),
+                ...u16(sampleRate), ...u16(0),
+                ...esds,
+            ];
+            const mp4a = [...u32(8 + mp4aPayload.length), ...str('mp4a'), ...mp4aPayload];
+            const stsd = fbox('stsd', 0, 0, [...u32(1), ...mp4a]);
+            const stts = fbox('stts', 0, 0, [...u32(1), ...u32(frames.length), ...u32(1024)]);
+            const stsc = fbox('stsc', 0, 0, [...u32(1), ...u32(1), ...u32(frames.length), ...u32(1)]);
+            const stsz = fbox('stsz', 0, 0, [...u32(0), ...u32(frames.length), ...frameSizes.flatMap(s => u32(s))]);
+            const stco = fbox('stco', 0, 0, [...u32(1), ...u32(0)]);
+            const stbl = box('stbl', [...stsd, ...stts, ...stsc, ...stsz, ...stco]);
+            const smhd = fbox('smhd', 0, 0, [...u16(0), ...u16(0)]);
+            const urlBox = fbox('url ', 0, 1, []);
+            const dref = fbox('dref', 0, 0, [...u32(1), ...urlBox]);
+            const dinf = box('dinf', dref);
+            const minf = box('minf', [...smhd, ...dinf, ...stbl]);
+            const mdhd = fbox('mdhd', 0, 0, [...u32(0), ...u32(0), ...u32(sampleRate), ...u32(totalSamples), ...u16(0x55C4), ...u16(0)]);
+            const hdlr = fbox('hdlr', 0, 0, [...u32(0), ...str('soun'), ...u32(0), ...u32(0), ...u32(0), 0]);
+            const mdia = box('mdia', [...mdhd, ...hdlr, ...minf]);
+            const identity = [
+                0x00, 0x01, 0x00, 0x00, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0x00, 0x01, 0x00, 0x00, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0x40, 0x00, 0x00, 0x00,
+            ];
+            const tkhd = fbox('tkhd', 0, 3, [
+                ...u32(0), ...u32(0), ...u32(1), ...u32(0), ...u32(totalSamples),
+                ...u32(0), ...u32(0), ...u16(0), ...u16(0), ...u16(0x0100), ...u16(0),
+                ...identity, ...u32(0), ...u32(0),
+            ]);
+            const trak = box('trak', [...tkhd, ...mdia]);
+            const mvhd = fbox('mvhd', 0, 0, [
+                ...u32(0), ...u32(0), ...u32(sampleRate), ...u32(totalSamples),
+                ...u32(0x00010000), ...u16(0x0100), ...Array(10).fill(0),
+                ...identity, ...Array(24).fill(0), ...u32(2),
+            ]);
+            const moov = box('moov', [...mvhd, ...trak]);
+            const mdatDataOffset = ftyp.length + moov.length + 8;
+            for (let j = 0; j < moov.length - 4; j++) {
+                if (moov[j] === 0x73 && moov[j + 1] === 0x74 && moov[j + 2] === 0x63 && moov[j + 3] === 0x6F) {
+                    const p = j + 12;
+                    moov[p] = (mdatDataOffset >>> 24) & 0xFF;
+                    moov[p + 1] = (mdatDataOffset >>> 16) & 0xFF;
+                    moov[p + 2] = (mdatDataOffset >>> 8) & 0xFF;
+                    moov[p + 3] = mdatDataOffset & 0xFF;
+                    break;
+                }
+            }
+            const mdatHeader = [...u32(8 + rawSize), ...str('mdat')];
+            const total = ftyp.length + moov.length + mdatHeader.length + rawSize;
+            const out = new Uint8Array(total);
+            let pos = 0;
+            out.set(ftyp, pos);
+            pos += ftyp.length;
+            out.set(moov, pos);
+            pos += moov.length;
+            out.set(mdatHeader, pos);
+            pos += mdatHeader.length;
+            for (const frame of frames) {
+                out.set(frame, pos);
+                pos += frame.length;
+            }
+            return out;
+        }
+        static extract_audio(ts) {
+            if (ts[0] === 0xFF && (ts[1] & 0xF0) === 0xF0) {
+                return { data: ts, mime: 'audio/aac' };
+            }
+            if (ts[0] === 0xFF && (ts[1] & 0xE0) === 0xE0) {
+                return { data: ts, mime: 'audio/mpeg' };
+            }
+            if (ts[0] === 0x49 && ts[1] === 0x44 && ts[2] === 0x33) {
+                return { data: ts, mime: 'audio/mpeg' };
+            }
+            if (ts[0] === 0x47) {
+                const audio = this.demux_ts_audio(ts);
+                if (audio)
+                    return { data: audio, mime: 'audio/aac' };
+            }
+            return { data: ts, mime: 'audio/mpeg' };
+        }
+        static demux_ts_audio(ts) {
+            const pidChunks = new Map();
+            for (let pos = 0; pos + 188 <= ts.length; pos += 188) {
+                if (ts[pos] !== 0x47)
+                    continue;
+                const pusi = !!(ts[pos + 1] & 0x40);
+                const pid = ((ts[pos + 1] & 0x1F) << 8) | ts[pos + 2];
+                const afc = (ts[pos + 3] >> 4) & 0x03;
+                if (pid === 0 || pid === 0x1FFF)
+                    continue;
+                if (!(afc & 0x01))
+                    continue;
+                let off = 4;
+                if (afc & 0x02)
+                    off += 1 + ts[pos + 4];
+                if (off >= 188)
+                    continue;
+                if (!pidChunks.has(pid))
+                    pidChunks.set(pid, []);
+                pidChunks.get(pid).push({ pusi, data: ts.slice(pos + off, pos + 188) });
+            }
+            for (const [pid, chunks] of pidChunks) {
+                const first = chunks.find(c => c.pusi);
+                if (!first)
+                    continue;
+                const d = first.data;
+                if (d.length < 9)
+                    continue;
+                if (d[0] !== 0x00 || d[1] !== 0x00 || d[2] !== 0x01)
+                    continue;
+                if (d[3] < 0xC0 || d[3] > 0xDF)
+                    continue;
+                const parts = [];
+                for (const chunk of chunks) {
+                    if (chunk.pusi) {
+                        const p = chunk.data;
+                        if (p.length < 9 || p[0] !== 0x00 || p[1] !== 0x00 || p[2] !== 0x01)
+                            continue;
+                        const pesHdrLen = 9 + p[8];
+                        if (pesHdrLen < p.length) {
+                            parts.push(p.slice(pesHdrLen));
+                        }
+                    }
+                    else {
+                        parts.push(chunk.data);
+                    }
+                }
+                const total = parts.reduce((s, p) => s + p.length, 0);
+                if (total === 0)
+                    continue;
+                const out = new Uint8Array(total);
+                let off = 0;
+                for (const p of parts) {
+                    out.set(p, off);
+                    off += p.length;
+                }
+                return out;
+            }
+            return null;
+        }
+        static parse_m3u8(text, base_url) {
+            const lines = text.split('\n');
+            let key_url = '';
+            let key_iv = '';
+            const segments = [];
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('#EXT-X-KEY:')) {
+                    const uri_match = trimmed.match(/URI="([^"]+)"/);
+                    if (uri_match) {
+                        key_url = uri_match[1].startsWith('http') ? uri_match[1] : base_url + uri_match[1];
+                    }
+                    const iv_match = trimmed.match(/IV=0x([0-9a-fA-F]+)/);
+                    if (iv_match) {
+                        key_iv = iv_match[1];
+                    }
+                }
+                else if (trimmed && !trimmed.startsWith('#')) {
+                    segments.push(trimmed.startsWith('http') ? trimmed : base_url + trimmed);
+                }
+            }
+            return { segments, key_url, key_iv };
+        }
+        static async decrypt_segment(data, cryptoKey, index, iv_hex) {
+            let iv;
+            if (iv_hex) {
+                const bytes = new Uint8Array(16);
+                for (let i = 0; i < 16 && i * 2 < iv_hex.length; i++) {
+                    bytes[i] = parseInt(iv_hex.substring(i * 2, i * 2 + 2), 16);
+                }
+                iv = bytes.buffer;
+            }
+            else {
+                const bytes = new Uint8Array(16);
+                bytes[15] = index & 0xFF;
+                bytes[14] = (index >> 8) & 0xFF;
+                bytes[13] = (index >> 16) & 0xFF;
+                bytes[12] = (index >> 24) & 0xFF;
+                iv = bytes.buffer;
+            }
+            return crypto.subtle.decrypt({ name: 'AES-CBC', iv }, cryptoKey, data);
+        }
+        /**
+         * Освежает audio.url через VK audio.getById — HLS ссылки протухают ~60 мин.
+         * Возвращает рабочий URL или пустую строку если не получилось.
+         */
+        static async refresh_url(audio) {
+            try {
+                const key = `${audio.owner_id}_${audio.id}${audio.access_key ? '_' + audio.access_key : ''}`;
+                const fresh = $mol_wire_sync($bog_vk_api).refresh_audio(key);
+                return fresh?.url ?? '';
+            }
+            catch (e) {
+                console.warn('[cache] refresh_url failed:', e?.message);
+                return '';
+            }
+        }
+        /**
+         * Качает HLS, демуксит, конвертит ADTS→M4A. Возвращает байты + mime.
+         * Запись в baza — снаружи (instance-метод $bog_vk_app.save_blob).
+         */
+        static async download_hls(audio) {
+            let url = audio.url;
+            if (!url) {
+                console.warn('[cache] skip — no URL:', audio.artist, '—', audio.title);
+                return null;
+            }
+            console.log('[cache] start download:', audio.artist, '—', audio.title);
+            let m3u8_resp = await fetch(url);
+            if (m3u8_resp.status === 403 || m3u8_resp.status === 404) {
+                console.log('[cache] url expired, refreshing:', audio.artist, '—', audio.title);
+                const fresh_url = await this.refresh_url(audio);
+                if (fresh_url) {
+                    url = fresh_url;
+                    m3u8_resp = await fetch(url);
+                }
+            }
+            if (!m3u8_resp.ok)
+                throw new Error(`m3u8 fetch ${m3u8_resp.status}`);
+            const m3u8_text = await m3u8_resp.text();
+            const base_url = url.substring(0, url.lastIndexOf('/') + 1);
+            const { segments, key_url, key_iv } = this.parse_m3u8(m3u8_text, base_url);
+            if (!segments.length)
+                throw new Error('No segments in m3u8');
+            let cryptoKey = null;
+            if (key_url) {
+                const key_resp = await fetch(key_url);
+                if (!key_resp.ok)
+                    throw new Error(`Key fetch failed: ${key_resp.status}`);
+                const key_data = await key_resp.arrayBuffer();
+                cryptoKey = await crypto.subtle.importKey('raw', key_data, 'AES-CBC', false, ['decrypt']);
+            }
+            const chunks = [];
+            for (let i = 0; i < segments.length; i++) {
+                const resp = await fetch(segments[i]);
+                if (!resp.ok)
+                    throw new Error(`Segment ${i + 1}/${segments.length} failed: ${resp.status}`);
+                let data = await resp.arrayBuffer();
+                const firstByte = new Uint8Array(data)[0];
+                if (cryptoKey && firstByte !== 0x47) {
+                    data = await this.decrypt_segment(data, cryptoKey, i, key_iv);
+                }
+                chunks.push(data);
+            }
+            const total = chunks.reduce((s, c) => s + c.byteLength, 0);
+            const merged = new Uint8Array(total);
+            let offset = 0;
+            for (const chunk of chunks) {
+                merged.set(new Uint8Array(chunk), offset);
+                offset += chunk.byteLength;
+            }
+            let { data: audioData, mime } = this.extract_audio(merged);
+            if (mime === 'audio/aac') {
+                audioData = this.adts_to_m4a(audioData);
+                mime = 'audio/mp4';
+            }
+            return { buffer: audioData, mime };
+        }
+    }
+    $.$bog_vk_cache = $bog_vk_cache;
 })($ || ($ = {}));
 
 

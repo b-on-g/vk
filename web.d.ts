@@ -2833,7 +2833,7 @@ declare namespace $ {
     class $mol_fetch_response extends $mol_object {
         readonly native: Response;
         readonly request: $mol_fetch_request;
-        status(): "success" | "failed" | "unknown" | "inform" | "redirect" | "wrong";
+        status(): "success" | "unknown" | "inform" | "redirect" | "wrong" | "failed";
         code(): number;
         ok(): boolean;
         message(): string;
@@ -13888,6 +13888,299 @@ declare namespace $.$$ {
 
 declare namespace $ {
 
+	type $mol_button_minor__title_bog_vk_account_1 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_button_minor['title'] >
+	>
+	type $mol_button_minor__click_bog_vk_account_2 = $mol_type_enforce<
+		ReturnType< $bog_vk_account['download_all'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_bog_vk_account_3 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	type $mol_view__sub_bog_vk_account_4 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_view__sub_bog_vk_account_5 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_string__value_bog_vk_account_6 = $mol_type_enforce<
+		ReturnType< $bog_vk_account['nickname'] >
+		,
+		ReturnType< $mol_string['value'] >
+	>
+	type $mol_string__hint_bog_vk_account_7 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_string['hint'] >
+	>
+	type $mol_form_field__name_bog_vk_account_8 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_form_field['name'] >
+	>
+	type $mol_form_field__Content_bog_vk_account_9 = $mol_type_enforce<
+		ReturnType< $bog_vk_account['Nickname_input'] >
+		,
+		ReturnType< $mol_form_field['Content'] >
+	>
+	type $mol_view__sub_bog_vk_account_10 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_view__sub_bog_vk_account_11 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_paragraph__title_bog_vk_account_12 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_paragraph['title'] >
+	>
+	type $mol_button_minor__title_bog_vk_account_13 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_button_minor['title'] >
+	>
+	type $mol_button_minor__click_bog_vk_account_14 = $mol_type_enforce<
+		ReturnType< $bog_vk_account['copy'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_view__sub_bog_vk_account_15 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_paragraph__title_bog_vk_account_16 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_paragraph['title'] >
+	>
+	type $mol_string__hint_bog_vk_account_17 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_string['hint'] >
+	>
+	type $mol_string__value_bog_vk_account_18 = $mol_type_enforce<
+		ReturnType< $bog_vk_account['import_link'] >
+		,
+		ReturnType< $mol_string['value'] >
+	>
+	type $mol_button_minor__title_bog_vk_account_19 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_button_minor['title'] >
+	>
+	type $mol_button_minor__click_bog_vk_account_20 = $mol_type_enforce<
+		ReturnType< $bog_vk_account['apply_import'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_view__sub_bog_vk_account_21 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_paragraph__title_bog_vk_account_22 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_paragraph['title'] >
+	>
+	type $mol_button_minor__title_bog_vk_account_23 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_button_minor['title'] >
+	>
+	type $mol_button_minor__click_bog_vk_account_24 = $mol_type_enforce<
+		ReturnType< $bog_vk_account['reset_account'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	export class $bog_vk_account extends $mol_list {
+		Sync_status( ): $giper_baza_status
+		download_all( next?: any ): any
+		Download_all_icon( ): $mol_icon_download
+		Download_all( ): $mol_button_minor
+		download_all_status( ): string
+		Download_all_status( ): $mol_view
+		Sync_row( ): $mol_view
+		nickname( next?: string ): string
+		Nickname_input( ): $mol_string
+		Nickname_field( ): $mol_form_field
+		lord_short( ): string
+		Lord_text( ): $mol_view
+		Lord( ): $mol_view
+		Warning( ): $mol_paragraph
+		copy( next?: any ): any
+		Copy( ): $mol_button_minor
+		copy_status( ): string
+		Copy_status( ): $mol_view
+		Import_hint( ): $mol_paragraph
+		import_link( next?: string ): string
+		Import_input( ): $mol_string
+		apply_import( next?: any ): any
+		Import_apply( ): $mol_button_minor
+		import_status( ): string
+		Import_status( ): $mol_view
+		Reset_hint( ): $mol_paragraph
+		reset_account( next?: any ): any
+		Reset_button( ): $mol_button_minor
+		rows( ): readonly(any)[]
+	}
+	
+}
+
+//# sourceMappingURL=account.view.tree.d.ts.map
+declare namespace $.$$ {
+    class $bog_vk_account extends $.$bog_vk_account {
+        /** Профиль в home land — паттерн blitz: instance-метод, БЕЗ @$mol_mem. */
+        profile_data(): $bog_vk_account_baza;
+        /**
+         * Реактивный геттер/сеттер ника. БЕЗ @$mol_mem — baza сама реактивит val(),
+         * а @$mol_mem на методах, отдающих/трогающих pawn-инстансы, вызывает destructor → Circular.
+         */
+        nickname(next?: string): string;
+        nickname_label(): string;
+        lord_short(): string;
+        account_key(): string;
+        account_link(): string;
+        copy_status(next?: string): string;
+        copy(): void;
+        import_link(next?: string): string;
+        import_status(next?: string): string;
+        download_all_status(next?: string): string;
+        /** Триггер: запускает async-генератор ZIP из baza-блобов. */
+        download_all(): null;
+        download_all_async(): Promise<void>;
+        reset_account(): void;
+        apply_import(): void;
+    }
+}
+
+declare namespace $ {
+    const $bog_vk_account_baza_base: Omit<typeof $giper_baza_dict, "prototype"> & {
+        new (...args: any[]): $mol_type_override<$giper_baza_dict, {
+            readonly Nickname: (auto?: any) => $giper_baza_atom_text | null;
+        }>;
+        path: string;
+    } & {
+        schema: {
+            [x: string]: typeof $giper_baza_pawn;
+        } & {
+            readonly Nickname: typeof $giper_baza_atom_text;
+        };
+    };
+    /**
+     * Профиль пользователя в home land — чистая baza-схема.
+     * CRUD — в $bog_vk_account как instance-методы.
+     */
+    export class $bog_vk_account_baza extends $bog_vk_account_baza_base {
+    }
+    export {};
+}
+
+declare namespace $.$$ {
+}
+
+declare namespace $ {
+
+	type $mol_check__checked_mol_check_list_1 = $mol_type_enforce<
+		ReturnType< $mol_check_list['option_checked'] >
+		,
+		ReturnType< $mol_check['checked'] >
+	>
+	type $mol_check__label_mol_check_list_2 = $mol_type_enforce<
+		ReturnType< $mol_check_list['option_label'] >
+		,
+		ReturnType< $mol_check['label'] >
+	>
+	type $mol_check__enabled_mol_check_list_3 = $mol_type_enforce<
+		ReturnType< $mol_check_list['option_enabled'] >
+		,
+		ReturnType< $mol_check['enabled'] >
+	>
+	type $mol_check__hint_mol_check_list_4 = $mol_type_enforce<
+		ReturnType< $mol_check_list['option_hint'] >
+		,
+		ReturnType< $mol_check['hint'] >
+	>
+	type $mol_check__minimal_height_mol_check_list_5 = $mol_type_enforce<
+		number
+		,
+		ReturnType< $mol_check['minimal_height'] >
+	>
+	export class $mol_check_list extends $mol_view {
+		option_checked( id: any, next?: boolean ): boolean
+		option_title( id: any): string
+		option_label( id: any): readonly(any)[]
+		enabled( ): boolean
+		option_enabled( id: any): ReturnType< $mol_check_list['enabled'] >
+		option_hint( id: any): string
+		items( ): readonly($mol_check)[]
+		dictionary( ): Record<string, any>
+		Option( id: any): $mol_check
+		options( ): Record<string, any>
+		keys( ): readonly(string)[]
+		sub( ): ReturnType< $mol_check_list['items'] >
+	}
+	
+}
+
+//# sourceMappingURL=list.view.tree.d.ts.map
+declare namespace $.$$ {
+    /**
+     * List of checkboxes
+     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_check_list_demo
+     */
+    class $mol_check_list extends $.$mol_check_list {
+        options(): {
+            [key: string]: string;
+        };
+        dictionary(next?: Record<string, boolean>): Record<string, boolean>;
+        option_checked(id: string, next?: boolean | null): boolean;
+        keys(): readonly string[];
+        items(): $.$mol_check[];
+        option_title(key: string): string;
+    }
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
+
+	export class $mol_switch extends $mol_check_list {
+		value( next?: string ): string
+	}
+	
+}
+
+//# sourceMappingURL=switch.view.tree.d.ts.map
+declare namespace $.$$ {
+    /**
+     * Buttons which switching the state
+     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_switch_demo
+     */
+    class $mol_switch extends $.$mol_switch {
+        value(next?: string): string;
+        option_checked(key: string, next?: boolean): boolean;
+    }
+}
+
+declare namespace $ {
+
 	export class $mol_icon_music extends $mol_icon {
 		path( ): string
 	}
@@ -16225,453 +16518,6 @@ declare namespace $.$$ {
 }
 
 declare namespace $ {
-    /**
-     * Персональное хранилище треков пользователя в Giper Baza.
-     * Живёт в home land (персональные данные, синкаются между устройствами).
-     * Ключ — VK cache_key вида `${owner_id}_${id}`.
-     */
-    class $bog_vk_store extends $mol_object2 {
-        /** Home land текущего пользователя. НЕ @$mol_mem — чтобы не было circular. */
-        static land(): $giper_baza_land;
-        /** Словарь треков: cache_key → $bog_vk_track_baza. НЕ @$mol_mem. */
-        static tracks_dict(): {
-            Value: typeof $bog_vk_track_baza;
-            key(key: $giper_baza_vary_type, auto?: any): $bog_vk_track_baza;
-            keys(): readonly $giper_baza_vary_type[];
-            dive<Pawn_1 extends typeof $giper_baza_pawn>(key: $giper_baza_vary_type, Pawn: Pawn_1, auto?: any): InstanceType<Pawn_1> | null;
-            [$mol_dev_format_head](): any[];
-            items_vary(next?: readonly $giper_baza_vary_type[], tag?: keyof typeof $giper_baza_unit_sand_tag): readonly $giper_baza_vary_type[];
-            splice(next: readonly $giper_baza_vary_type[], from?: number, to?: number, tag?: keyof typeof $giper_baza_unit_sand_tag): void;
-            find(vary: $giper_baza_vary_type): $giper_baza_unit_sand | null;
-            has(vary: $giper_baza_vary_type, next?: boolean, tag?: keyof typeof $giper_baza_unit_sand_tag): boolean;
-            add(vary: $giper_baza_vary_type, tag?: keyof typeof $giper_baza_unit_sand_tag): void;
-            cut(vary: $giper_baza_vary_type): void;
-            move(from: number, to: number): void;
-            wipe(seat: number): void;
-            pawn_make<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1, vary: $giper_baza_vary_type, tag?: keyof typeof $giper_baza_unit_sand_tag): InstanceType<Pawn_1>;
-            land(): $giper_baza_land;
-            head(): $giper_baza_link;
-            land_link(): $giper_baza_link;
-            link(): $giper_baza_link;
-            toJSON(): string;
-            cast<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1): InstanceType<Pawn_1>;
-            pawns<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1 | null): readonly InstanceType<Pawn_1>[];
-            units(): $giper_baza_unit_sand[];
-            units_of(peer: $giper_baza_link | null): $giper_baza_unit_sand[];
-            meta(next?: $giper_baza_link): $giper_baza_link | null;
-            meta_of(peer: $giper_baza_link | null): $giper_baza_link | null;
-            filled(): boolean;
-            can_change(): boolean;
-            last_change(): $mol_time_moment | null;
-            authors(): $giper_baza_auth_pass[];
-            get $(): $;
-            set $(next: $);
-            destructor(): void;
-            toString(): string;
-            [Symbol.toStringTag]: string;
-            [$mol_ambient_ref]: $;
-            [Symbol.dispose](): void;
-        };
-        /** Ключ для baza из VK-аудио. */
-        static cache_key(audio: $bog_vk_api_audio): string;
-        /**
-         * Собирает треки из baza. archived=false → активные, archived=true → архивные.
-         * Сортирует по Order (asc, с fallback на Added).
-         */
-        static list_audios(archived: boolean): $bog_vk_api_audio[];
-        /** Активные (не архивные) треки. */
-        static saved_audios(): $bog_vk_api_audio[];
-        /** Архивные треки. */
-        static archived_audios(): $bog_vk_api_audio[];
-        /** Максимальный Order среди всех треков (для добавления новых). */
-        static max_order(): number;
-        /** Сохраняет/обновляет трек в baza. Идемпотентно. */
-        static save_track(audio: $bog_vk_api_audio): void;
-        /** Меняет Order двух треков местами. */
-        static swap_order(a: $bog_vk_api_audio, b: $bog_vk_api_audio): void;
-        /** Помечает трек как удалённый (мягкое удаление). */
-        static archive_track(audio: $bog_vk_api_audio): void;
-        /** RAM-кеш свежезагруженных файлов на текущей сессии — играем без ожидания синка baza. */
-        private static fresh_files;
-        /**
-         * Достаёт blob трека из Giper Baza. null если в baza нет файла.
-         * Работает и для локальных загрузок (owner_id === 0), и для VK-треков —
-         * baza используется как cross-device blob storage.
-         */
-        static local_blob(audio: $bog_vk_api_audio): Blob | null;
-        /**
-         * Сохраняет байты аудио в baza (поле File у $bog_vk_track_baza).
-         * Вызывается из cache.save_hls после успешной выкачки HLS — чтобы блоб
-         * синкался на другие устройства через Giper Baza.
-         */
-        static save_blob(audio: $bog_vk_api_audio, buffer: Uint8Array, mime: string): void;
-        /**
-         * Миграция: для каждого трека с непустым buffer'ом форсит
-         * `track.File('auto')!.remote(store)`. Старые блобы писались без этого
-         * вызова → link существовал только локально и не синкался на другие
-         * устройства. Идемпотентно — повторный вызов на уже мигрированных
-         * треках безопасен.
-         */
-        static migrate_blob_links(): number;
-        /** Удаляет blob (поле File) из baza, оставляя метаданные трека. */
-        static drop_blob(audio: $bog_vk_api_audio): void;
-        /** Парсит "Artist - Title" из имени файла. */
-        static parse_filename(name: string): {
-            artist: string;
-            title: string;
-        };
-        /**
-         * Загружает локальный аудиофайл (с телефона) в home land.
-         * Блоб кладётся в $giper_baza_file, метаданные — в $bog_vk_track_baza.
-         * Возвращает audio для воспроизведения.
-         */
-        /** Детерминированный hash по строке (FNV-1a 32 bit). */
-        static hash_str(s: string): number;
-        static save_local_track(file: File, buffer: Uint8Array): $bog_vk_api_audio | null;
-        /** Окончательно удаляет трек из baza (по ключу). */
-        static delete_track(audio: $bog_vk_api_audio): void;
-        /** Удаляет флаг Archived. */
-        static restore_track(audio: $bog_vk_api_audio): void;
-    }
-}
-
-declare namespace $ {
-    /**
-     * Тонкий фасад над Giper Baza для аудио-блобов.
-     * Раньше был отдельный IndexedDB (`vk_audio_cache`), но теперь источник один —
-     * baza, чтобы блобы автоматически синкались на другие устройства.
-     */
-    class $bog_vk_cache extends $mol_object {
-        static version(next?: number): number;
-        static cache_key(audio: $bog_vk_api_audio): string;
-        /**
-         * Тонкая обёртка над `$bog_vk_store.local_blob` — отдаёт URL для воспроизведения.
-         * Раньше тут был IndexedDB-кэш; теперь источник один — Giper Baza, чтобы блобы
-         * автоматически синкались между устройствами (не дублируем хранилище).
-         */
-        static get(audio: $bog_vk_api_audio): Promise<string | null>;
-        static is_cached(audio: $bog_vk_api_audio): boolean;
-        static drop(audio: $bog_vk_api_audio): void;
-        static adts_to_m4a(adts: Uint8Array): Uint8Array;
-        static extract_audio(ts: Uint8Array): {
-            data: Uint8Array;
-            mime: string;
-        };
-        static demux_ts_audio(ts: Uint8Array): Uint8Array | null;
-        static parse_m3u8(text: string, base_url: string): {
-            segments: string[];
-            key_url: string;
-            key_iv: string;
-        };
-        static decrypt_segment(data: ArrayBuffer, cryptoKey: CryptoKey, index: number, iv_hex: string): Promise<ArrayBuffer>;
-        /**
-         * Освежает audio.url через VK audio.getById — HLS ссылки протухают ~60 мин.
-         * Возвращает рабочий URL или пустую строку если не получилось.
-         */
-        static refresh_url(audio: $bog_vk_api_audio): Promise<string>;
-        static save_hls(audio: $bog_vk_api_audio): Promise<void>;
-    }
-}
-
-declare namespace $ {
-
-	type $mol_button_minor__title_bog_vk_account_1 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_button_minor['title'] >
-	>
-	type $mol_button_minor__click_bog_vk_account_2 = $mol_type_enforce<
-		ReturnType< $bog_vk_account['download_all'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_button_minor__sub_bog_vk_account_3 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_button_minor['sub'] >
-	>
-	type $mol_view__sub_bog_vk_account_4 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
-	>
-	type $mol_view__sub_bog_vk_account_5 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
-	>
-	type $mol_string__value_bog_vk_account_6 = $mol_type_enforce<
-		ReturnType< $bog_vk_account['nickname'] >
-		,
-		ReturnType< $mol_string['value'] >
-	>
-	type $mol_string__hint_bog_vk_account_7 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_string['hint'] >
-	>
-	type $mol_form_field__name_bog_vk_account_8 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_form_field['name'] >
-	>
-	type $mol_form_field__Content_bog_vk_account_9 = $mol_type_enforce<
-		ReturnType< $bog_vk_account['Nickname_input'] >
-		,
-		ReturnType< $mol_form_field['Content'] >
-	>
-	type $mol_view__sub_bog_vk_account_10 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
-	>
-	type $mol_view__sub_bog_vk_account_11 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
-	>
-	type $mol_paragraph__title_bog_vk_account_12 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_paragraph['title'] >
-	>
-	type $mol_button_minor__title_bog_vk_account_13 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_button_minor['title'] >
-	>
-	type $mol_button_minor__click_bog_vk_account_14 = $mol_type_enforce<
-		ReturnType< $bog_vk_account['copy'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_view__sub_bog_vk_account_15 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
-	>
-	type $mol_paragraph__title_bog_vk_account_16 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_paragraph['title'] >
-	>
-	type $mol_string__hint_bog_vk_account_17 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_string['hint'] >
-	>
-	type $mol_string__value_bog_vk_account_18 = $mol_type_enforce<
-		ReturnType< $bog_vk_account['import_link'] >
-		,
-		ReturnType< $mol_string['value'] >
-	>
-	type $mol_button_minor__title_bog_vk_account_19 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_button_minor['title'] >
-	>
-	type $mol_button_minor__click_bog_vk_account_20 = $mol_type_enforce<
-		ReturnType< $bog_vk_account['apply_import'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_view__sub_bog_vk_account_21 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
-	>
-	type $mol_paragraph__title_bog_vk_account_22 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_paragraph['title'] >
-	>
-	type $mol_button_minor__title_bog_vk_account_23 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_button_minor['title'] >
-	>
-	type $mol_button_minor__click_bog_vk_account_24 = $mol_type_enforce<
-		ReturnType< $bog_vk_account['reset_account'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	export class $bog_vk_account extends $mol_list {
-		Sync_status( ): $giper_baza_status
-		download_all( next?: any ): any
-		Download_all_icon( ): $mol_icon_download
-		Download_all( ): $mol_button_minor
-		download_all_status( ): string
-		Download_all_status( ): $mol_view
-		Sync_row( ): $mol_view
-		nickname( next?: string ): string
-		Nickname_input( ): $mol_string
-		Nickname_field( ): $mol_form_field
-		lord_short( ): string
-		Lord_text( ): $mol_view
-		Lord( ): $mol_view
-		Warning( ): $mol_paragraph
-		copy( next?: any ): any
-		Copy( ): $mol_button_minor
-		copy_status( ): string
-		Copy_status( ): $mol_view
-		Import_hint( ): $mol_paragraph
-		import_link( next?: string ): string
-		Import_input( ): $mol_string
-		apply_import( next?: any ): any
-		Import_apply( ): $mol_button_minor
-		import_status( ): string
-		Import_status( ): $mol_view
-		Reset_hint( ): $mol_paragraph
-		reset_account( next?: any ): any
-		Reset_button( ): $mol_button_minor
-		rows( ): readonly(any)[]
-	}
-	
-}
-
-//# sourceMappingURL=account.view.tree.d.ts.map
-declare namespace $.$$ {
-    class $bog_vk_account extends $.$bog_vk_account {
-        static land(): $giper_baza_land;
-        /** БЕЗ `@$mol_mem` — иначе $mol вызывает `destructor()` на pawn и ломает
-         *  реактивные подписки baza (см. MEMORY паттерн blitz: `profile_data()`).
-         *  baza сама интернит pawn по id, так что `Data(Profile)` всегда отдаёт тот же инстанс. */
-        static profile(): $bog_vk_account_baza;
-        /** Без `@$mol_mem` — getter напрямую читает Giper Baza, и любое
-         *  внешнее изменение (включая sync с другого устройства) ре-рендерит UI
-         *  через стандартную реактивность baza. */
-        nickname(next?: string): string;
-        lord_short(): string;
-        account_key(): string;
-        account_link(): string;
-        copy_status(next?: string): string;
-        copy(): void;
-        import_link(next?: string): string;
-        import_status(next?: string): string;
-        download_all_status(next?: string): string;
-        /**
-         * Собирает все треки (активные + архив) в один uncompressed ZIP и
-         * отдаёт пользователю через `<a download>`. Без npm-зависимостей —
-         * минимальный stored ZIP encoder, см. APPNOTE.TXT.
-         */
-        download_all(): void;
-        static download_all_async(): Promise<void>;
-        reset_account(): void;
-        apply_import(): void;
-    }
-}
-
-declare namespace $ {
-    const $bog_vk_account_baza_base: Omit<typeof $giper_baza_dict, "prototype"> & {
-        new (...args: any[]): $mol_type_override<$giper_baza_dict, {
-            readonly Nickname: (auto?: any) => $giper_baza_atom_text | null;
-        }>;
-        path: string;
-    } & {
-        schema: {
-            [x: string]: typeof $giper_baza_pawn;
-        } & {
-            readonly Nickname: typeof $giper_baza_atom_text;
-        };
-    };
-    /**
-     * Профиль пользователя в home land.
-     * Никнейм отображается в шапке/попапе аккаунта.
-     */
-    export class $bog_vk_account_baza extends $bog_vk_account_baza_base {
-    }
-    export {};
-}
-
-declare namespace $.$$ {
-}
-
-declare namespace $ {
-
-	type $mol_check__checked_mol_check_list_1 = $mol_type_enforce<
-		ReturnType< $mol_check_list['option_checked'] >
-		,
-		ReturnType< $mol_check['checked'] >
-	>
-	type $mol_check__label_mol_check_list_2 = $mol_type_enforce<
-		ReturnType< $mol_check_list['option_label'] >
-		,
-		ReturnType< $mol_check['label'] >
-	>
-	type $mol_check__enabled_mol_check_list_3 = $mol_type_enforce<
-		ReturnType< $mol_check_list['option_enabled'] >
-		,
-		ReturnType< $mol_check['enabled'] >
-	>
-	type $mol_check__hint_mol_check_list_4 = $mol_type_enforce<
-		ReturnType< $mol_check_list['option_hint'] >
-		,
-		ReturnType< $mol_check['hint'] >
-	>
-	type $mol_check__minimal_height_mol_check_list_5 = $mol_type_enforce<
-		number
-		,
-		ReturnType< $mol_check['minimal_height'] >
-	>
-	export class $mol_check_list extends $mol_view {
-		option_checked( id: any, next?: boolean ): boolean
-		option_title( id: any): string
-		option_label( id: any): readonly(any)[]
-		enabled( ): boolean
-		option_enabled( id: any): ReturnType< $mol_check_list['enabled'] >
-		option_hint( id: any): string
-		items( ): readonly($mol_check)[]
-		dictionary( ): Record<string, any>
-		Option( id: any): $mol_check
-		options( ): Record<string, any>
-		keys( ): readonly(string)[]
-		sub( ): ReturnType< $mol_check_list['items'] >
-	}
-	
-}
-
-//# sourceMappingURL=list.view.tree.d.ts.map
-declare namespace $.$$ {
-    /**
-     * List of checkboxes
-     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_check_list_demo
-     */
-    class $mol_check_list extends $.$mol_check_list {
-        options(): {
-            [key: string]: string;
-        };
-        dictionary(next?: Record<string, boolean>): Record<string, boolean>;
-        option_checked(id: string, next?: boolean | null): boolean;
-        keys(): readonly string[];
-        items(): $.$mol_check[];
-        option_title(key: string): string;
-    }
-}
-
-declare namespace $ {
-}
-
-declare namespace $ {
-
-	export class $mol_switch extends $mol_check_list {
-		value( next?: string ): string
-	}
-	
-}
-
-//# sourceMappingURL=switch.view.tree.d.ts.map
-declare namespace $.$$ {
-    /**
-     * Buttons which switching the state
-     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_switch_demo
-     */
-    class $mol_switch extends $.$mol_switch {
-        value(next?: string): string;
-        option_checked(key: string, next?: boolean): boolean;
-    }
-}
-
-declare namespace $ {
 
 	type $bog_vk_track__audio_bog_vk_tracks_1 = $mol_type_enforce<
 		ReturnType< $bog_vk_tracks['track_audio'] >
@@ -17165,10 +17011,43 @@ declare namespace $.$$ {
         title(): string;
         page(next?: string): string;
         archive_mode(): boolean;
-        /** Активные треки из Giper Baza home land. */
-        synced_audios(): $bog_vk_api_audio[];
+        /** $bog_vk_store в home land текущего юзера. */
+        tracks_store(): $bog_vk_store;
+        /** Словарь треков (Tracks). */
+        tracks_dict(): $bog_vk_tracks_dict;
+        cache_key(audio: $bog_vk_api_audio): string;
+        parse_filename(name: string): {
+            artist: string;
+            title: string;
+        };
+        /** Детерминированный hash (FNV-1a 32 bit). */
+        hash_str(s: string): number;
+        /** RAM-кеш свежезагруженных файлов на текущей сессии. */
+        private fresh_files;
+        /** Blob трека из baza или RAM. null если нет. */
+        local_blob(audio: $bog_vk_api_audio): Blob | null;
+        is_cached(audio: $bog_vk_api_audio): boolean;
+        /** Активные/архивные треки, отсортированные по Order (asc, fallback Added). */
+        list_audios(archived: boolean): $bog_vk_api_audio[];
+        saved_audios(): $bog_vk_api_audio[];
         archived_audios(): $bog_vk_api_audio[];
         visible_audios(): $bog_vk_api_audio[];
+        max_order(): number;
+        save_track(audio: $bog_vk_api_audio): void;
+        save_blob(audio: $bog_vk_api_audio, buffer: Uint8Array, mime: string): void;
+        save_local_track(file: File, buffer: Uint8Array): $bog_vk_api_audio | null;
+        swap_order(a: $bog_vk_api_audio, b: $bog_vk_api_audio): void;
+        archive_track(audio: $bog_vk_api_audio): void;
+        restore_track(audio: $bog_vk_api_audio): void;
+        delete_track(audio: $bog_vk_api_audio): void;
+        drop_blob(audio: $bog_vk_api_audio): void;
+        /**
+         * Миграция: для треков с непустым buffer'ом форсит .remote(store).
+         * Старые блобы писались без этого вызова → не синкались.
+         */
+        migrate_blob_links(): number;
+        /** Качает HLS и сразу пишет в baza. Используется player'ом и prefetch. */
+        save_hls(audio: $bog_vk_api_audio): Promise<void>;
         tab_options(): {
             my: string;
             archive: string;
@@ -17194,21 +17073,17 @@ declare namespace $.$$ {
         nickname_label(): string;
         Nickname_label(): any;
         /**
-         * Авто-импорт треков из VK в Giper Baza.
-         * Вызывается реактивно из auto() — `@$mol_mem` ретраит при появлении
-         * токена / готовности baza. Идемпотентно (save_track обновляет только
-         * изменившиеся поля), так что вызов на каждом тике безопасен.
-         *
-         * Фоном дёргает `prefetch_blobs` для треков без `File` в baza, чтобы сразу
-         * после синка metadata пользователь мог играть offline.
+         * Список треков из VK. @$mol_mem ретраит fetch при появлении токена.
+         * Возвращает пустой массив если не в extension / без токена.
          */
-        auto_import(): number | null;
-        static __prefetch_started: boolean;
+        vk_audios(): $bog_vk_api_audio[];
         /**
-         * Реактивный статус префетча для UI.
-         * `total` — всего треков, `done` — скачано в baza, `failed` — упало.
+         * Реактивная авторегистрация: при готовности baza + появлении треков
+         * стартует фоновый префетч. Идемпотентно через флаг.
          */
-        static prefetch_state(next?: {
+        auto_import(): number;
+        private _prefetch_started;
+        prefetch_state(next?: {
             total: number;
             done: number;
             failed: number;
@@ -17218,19 +17093,139 @@ declare namespace $.$$ {
             failed: number;
         };
         /**
-         * Скачивает HLS-блобы для треков без `File` в baza.
-         * Чистый async — без `$mol_wire_*`, чтобы гарантированно стартовало
-         * из обычного callback-контекста. Внутри для refresh URL'а дёргает
-         * `fetch_vk_direct` (тоже plain async), а не `refresh_audio` (mem_key
-         * с wire_sync — требует фибра).
+         * Фоновый префетч — реактивный wire_async fiber, ретраит при Promise.
+         * Метаданные сохраняются по одному перед каждой выкачкой блоба, чтобы
+         * baza успевала пушить sand/seal мелкими пакетами.
          */
-        static prefetch_blobs(items: $bog_vk_api_audio[]): Promise<void>;
+        prefetch_blobs(items: $bog_vk_api_audio[]): Promise<void>;
+        private _migration_done;
         auto(): any;
-        static __migration_done: boolean;
     }
 }
 
 declare namespace $.$$ {
+}
+
+declare namespace $ {
+    const $bog_vk_tracks_dict_base: {
+        new (): {
+            Value: typeof $bog_vk_track_baza;
+            key(key: $giper_baza_vary_type, auto?: any): $bog_vk_track_baza;
+            keys(): readonly $giper_baza_vary_type[];
+            dive<Pawn_1 extends typeof $giper_baza_pawn>(key: $giper_baza_vary_type, Pawn: Pawn_1, auto?: any): InstanceType<Pawn_1> | null;
+            [$mol_dev_format_head](): any[];
+            items_vary(next?: readonly $giper_baza_vary_type[], tag?: keyof typeof $giper_baza_unit_sand_tag): readonly $giper_baza_vary_type[];
+            splice(next: readonly $giper_baza_vary_type[], from?: number, to?: number, tag?: keyof typeof $giper_baza_unit_sand_tag): void;
+            find(vary: $giper_baza_vary_type): $giper_baza_unit_sand | null;
+            has(vary: $giper_baza_vary_type, next?: boolean, tag?: keyof typeof $giper_baza_unit_sand_tag): boolean;
+            add(vary: $giper_baza_vary_type, tag?: keyof typeof $giper_baza_unit_sand_tag): void;
+            cut(vary: $giper_baza_vary_type): void;
+            move(from: number, to: number): void;
+            wipe(seat: number): void;
+            pawn_make<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1, vary: $giper_baza_vary_type, tag?: keyof typeof $giper_baza_unit_sand_tag): InstanceType<Pawn_1>;
+            land(): $giper_baza_land;
+            head(): $giper_baza_link;
+            land_link(): $giper_baza_link;
+            link(): $giper_baza_link;
+            toJSON(): string;
+            cast<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1): InstanceType<Pawn_1>;
+            pawns<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1 | null): readonly InstanceType<Pawn_1>[];
+            units(): $giper_baza_unit_sand[];
+            units_of(peer: $giper_baza_link | null): $giper_baza_unit_sand[];
+            meta(next?: $giper_baza_link): $giper_baza_link | null;
+            meta_of(peer: $giper_baza_link | null): $giper_baza_link | null;
+            filled(): boolean;
+            can_change(): boolean;
+            last_change(): $mol_time_moment | null;
+            authors(): $giper_baza_auth_pass[];
+            get $(): $;
+            set $(next: $);
+            destructor(): void;
+            toString(): string;
+            [Symbol.toStringTag]: string;
+            [$mol_ambient_ref]: $;
+            [Symbol.dispose](): void;
+        };
+        toString(): any;
+        tag: keyof typeof $giper_baza_unit_sand_tag;
+        schema: Record<string, typeof $giper_baza_pawn>;
+        with<This extends typeof $giper_baza_dict, const Schema extends Record<string, {
+            tag: keyof typeof $giper_baza_unit_sand_tag;
+            new (): {};
+        }>>(this: This, schema: Schema, path?: string): Omit<This, "prototype"> & {
+            new (...args: any[]): $mol_type_override<InstanceType<This>, { readonly [Key in keyof Schema]: (auto?: any) => InstanceType<Schema[Key]> | null; }>;
+            path: string;
+        } & {
+            schema: {
+                [x: string]: typeof $giper_baza_pawn;
+            } & Schema;
+        };
+        meta: null | $giper_baza_link;
+        make<This extends typeof $mol_object>(this: This, config: Partial<InstanceType<This>>): InstanceType<This>;
+        $: $;
+        create<Instance>(this: new (init?: (instance: any) => void) => Instance, init?: (instance: $mol_type_writable<Instance>) => void): Instance;
+        toJSON(): any;
+        destructor(): void;
+        [Symbol.toPrimitive](): any;
+        [$mol_key_handle](): any;
+    };
+    /** Словарь cache_key → $bog_vk_track_baza. Вынесен отдельно, чтобы не циклить TS-инференс. */
+    export class $bog_vk_tracks_dict extends $bog_vk_tracks_dict_base {
+    }
+    const $bog_vk_store_base: Omit<typeof $giper_baza_dict, "prototype"> & {
+        new (...args: any[]): $mol_type_override<$giper_baza_dict, {
+            readonly Tracks: (auto?: any) => $bog_vk_tracks_dict | null;
+        }>;
+        path: string;
+    } & {
+        schema: {
+            [x: string]: typeof $giper_baza_pawn;
+        } & {
+            readonly Tracks: typeof $bog_vk_tracks_dict;
+        };
+    };
+    /**
+     * Хранилище треков пользователя — чистая baza-схема.
+     * Вся CRUD-логика — в $bog_vk_app как instance-методы.
+     */
+    export class $bog_vk_store extends $bog_vk_store_base {
+    }
+    export {};
+}
+
+declare namespace $ {
+    /**
+     * Чистый утилитарный класс — HLS-декодирование, демукс TS, MP4-мукс,
+     * расшифровка AES-CBC. БЕЗ записи в baza — все side-эффекты в $bog_vk_app.
+     */
+    class $bog_vk_cache extends $mol_object {
+        static cache_key(audio: $bog_vk_api_audio): string;
+        static adts_to_m4a(adts: Uint8Array): Uint8Array;
+        static extract_audio(ts: Uint8Array): {
+            data: Uint8Array;
+            mime: string;
+        };
+        static demux_ts_audio(ts: Uint8Array): Uint8Array | null;
+        static parse_m3u8(text: string, base_url: string): {
+            segments: string[];
+            key_url: string;
+            key_iv: string;
+        };
+        static decrypt_segment(data: ArrayBuffer, cryptoKey: CryptoKey, index: number, iv_hex: string): Promise<ArrayBuffer>;
+        /**
+         * Освежает audio.url через VK audio.getById — HLS ссылки протухают ~60 мин.
+         * Возвращает рабочий URL или пустую строку если не получилось.
+         */
+        static refresh_url(audio: $bog_vk_api_audio): Promise<string>;
+        /**
+         * Качает HLS, демуксит, конвертит ADTS→M4A. Возвращает байты + mime.
+         * Запись в baza — снаружи (instance-метод $bog_vk_app.save_blob).
+         */
+        static download_hls(audio: $bog_vk_api_audio): Promise<{
+            buffer: Uint8Array;
+            mime: string;
+        } | null>;
+    }
 }
 
 export = $;
