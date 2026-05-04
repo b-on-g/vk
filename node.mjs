@@ -19500,30 +19500,6 @@ var $;
 
 
 ;
-	($.$mol_icon_arrow_up) = class $mol_icon_arrow_up extends ($.$mol_icon) {
-		path(){
-			return "M13,20H11V8L5.5,13.5L4.08,12.08L12,4.16L19.92,12.08L18.5,13.5L13,8V20Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$mol_icon_arrow_down) = class $mol_icon_arrow_down extends ($.$mol_icon) {
-		path(){
-			return "M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
 	($.$mol_icon_delete) = class $mol_icon_delete extends ($.$mol_icon) {
 		path(){
 			return "M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z";
@@ -19573,7 +19549,19 @@ var $;
 
 ;
 	($.$bog_vk_track) = class $bog_vk_track extends ($.$mol_view) {
-		event_click(next){
+		event_drag_start(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		event_drag_over(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		event_drop(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		on_play_click(next){
 			if(next !== undefined) return next;
 			return null;
 		}
@@ -19587,6 +19575,12 @@ var $;
 		}
 		Cover_placeholder(){
 			const obj = new this.$.$mol_icon_music();
+			return obj;
+		}
+		Cover_box(){
+			const obj = new this.$.$mol_view();
+			(obj.event) = () => ({"click": (next) => (this.on_play_click(next))});
+			(obj.sub) = () => ([(this.Cover()), (this.Cover_placeholder())]);
 			return obj;
 		}
 		title(){
@@ -19605,11 +19599,6 @@ var $;
 			(obj.title) = () => ((this.artist()));
 			return obj;
 		}
-		Info(){
-			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([(this.Title()), (this.Artist())]);
-			return obj;
-		}
 		duration_text(){
 			return "";
 		}
@@ -19618,34 +19607,14 @@ var $;
 			(obj.title) = () => ((this.duration_text()));
 			return obj;
 		}
-		move_up(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		Move_up_icon(){
-			const obj = new this.$.$mol_icon_arrow_up();
-			return obj;
-		}
-		Move_up(){
-			const obj = new this.$.$mol_button_minor();
-			(obj.hint) = () => ("Вверх");
-			(obj.click) = (next) => ((this.move_up(next)));
-			(obj.sub) = () => ([(this.Move_up_icon())]);
-			return obj;
-		}
-		move_down(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		Move_down_icon(){
-			const obj = new this.$.$mol_icon_arrow_down();
-			return obj;
-		}
-		Move_down(){
-			const obj = new this.$.$mol_button_minor();
-			(obj.hint) = () => ("Вниз");
-			(obj.click) = (next) => ((this.move_down(next)));
-			(obj.sub) = () => ([(this.Move_down_icon())]);
+		Info(){
+			const obj = new this.$.$mol_view();
+			(obj.event) = () => ({"click": (next) => (this.on_play_click(next))});
+			(obj.sub) = () => ([
+				(this.Title()), 
+				(this.Artist()), 
+				(this.Duration())
+			]);
 			return obj;
 		}
 		download(next){
@@ -19734,26 +19703,31 @@ var $;
 		archive_mode(){
 			return false;
 		}
-		can_move_up(){
+		can_drag(){
 			return false;
 		}
-		can_move_down(){
-			return false;
+		drag_start(next){
+			if(next !== undefined) return next;
+			return null;
 		}
-		event(){
-			return {"click": (next) => (this.event_click(next))};
+		drop_here(next){
+			if(next !== undefined) return next;
+			return null;
 		}
 		attr(){
-			return {"bog_vk_track_current": (this.current())};
+			return {"bog_vk_track_current": (this.current()), "draggable": (this.can_drag())};
+		}
+		event(){
+			return {
+				"dragstart": (next) => (this.event_drag_start(next)), 
+				"dragover": (next) => (this.event_drag_over(next)), 
+				"drop": (next) => (this.event_drop(next))
+			};
 		}
 		sub(){
 			return [
-				(this.Cover()), 
-				(this.Cover_placeholder()), 
+				(this.Cover_box()), 
 				(this.Info()), 
-				(this.Duration()), 
-				(this.Move_up()), 
-				(this.Move_down()), 
 				(this.Download()), 
 				(this.Delete()), 
 				(this.Archive()), 
@@ -19762,19 +19736,17 @@ var $;
 			];
 		}
 	};
-	($mol_mem(($.$bog_vk_track.prototype), "event_click"));
+	($mol_mem(($.$bog_vk_track.prototype), "event_drag_start"));
+	($mol_mem(($.$bog_vk_track.prototype), "event_drag_over"));
+	($mol_mem(($.$bog_vk_track.prototype), "event_drop"));
+	($mol_mem(($.$bog_vk_track.prototype), "on_play_click"));
 	($mol_mem(($.$bog_vk_track.prototype), "Cover"));
 	($mol_mem(($.$bog_vk_track.prototype), "Cover_placeholder"));
+	($mol_mem(($.$bog_vk_track.prototype), "Cover_box"));
 	($mol_mem(($.$bog_vk_track.prototype), "Title"));
 	($mol_mem(($.$bog_vk_track.prototype), "Artist"));
-	($mol_mem(($.$bog_vk_track.prototype), "Info"));
 	($mol_mem(($.$bog_vk_track.prototype), "Duration"));
-	($mol_mem(($.$bog_vk_track.prototype), "move_up"));
-	($mol_mem(($.$bog_vk_track.prototype), "Move_up_icon"));
-	($mol_mem(($.$bog_vk_track.prototype), "Move_up"));
-	($mol_mem(($.$bog_vk_track.prototype), "move_down"));
-	($mol_mem(($.$bog_vk_track.prototype), "Move_down_icon"));
-	($mol_mem(($.$bog_vk_track.prototype), "Move_down"));
+	($mol_mem(($.$bog_vk_track.prototype), "Info"));
 	($mol_mem(($.$bog_vk_track.prototype), "download"));
 	($mol_mem(($.$bog_vk_track.prototype), "Download_icon"));
 	($mol_mem(($.$bog_vk_track.prototype), "Download"));
@@ -19791,6 +19763,8 @@ var $;
 	($mol_mem(($.$bog_vk_track.prototype), "Delete_forever_icon"));
 	($mol_mem(($.$bog_vk_track.prototype), "Delete_forever"));
 	($mol_mem(($.$bog_vk_track.prototype), "play"));
+	($mol_mem(($.$bog_vk_track.prototype), "drag_start"));
+	($mol_mem(($.$bog_vk_track.prototype), "drop_here"));
 
 
 ;
@@ -20833,19 +20807,11 @@ var $;
                 $bog_vk_cache.version();
                 return $mol_wire_sync($bog_vk_cache).is_cached(audio);
             }
-            Move_up() {
-                if (this.archive_mode())
-                    return null;
-                if (!this.can_move_up())
-                    return null;
-                return super.Move_up();
+            is_local() {
+                return this.audio_data()?.owner_id === 0;
             }
-            Move_down() {
-                if (this.archive_mode())
-                    return null;
-                if (!this.can_move_down())
-                    return null;
-                return super.Move_down();
+            can_drag() {
+                return !this.archive_mode();
             }
             Archive() {
                 if (this.archive_mode())
@@ -20861,9 +20827,6 @@ var $;
                 if (!this.archive_mode())
                     return null;
                 return super.Delete_forever();
-            }
-            is_local() {
-                return this.audio_data()?.owner_id === 0;
             }
             Download() {
                 if (this.archive_mode())
@@ -20883,32 +20846,34 @@ var $;
                     return null;
                 return super.Delete();
             }
-            /** Был ли клик внутри какой-то кнопки-хэндлера — чтобы не проигрывать трек. */
-            click_on_button(event, getter) {
+            on_play_click() {
+                this.play(this.audio());
+            }
+            event_drag_start(event) {
+                if (!this.can_drag()) {
+                    event.preventDefault();
+                    return;
+                }
                 try {
-                    const node = getter().dom_node();
-                    if (node.contains(event.target))
-                        return true;
+                    event.dataTransfer?.setData('text/x-bog-track', '1');
+                    if (event.dataTransfer)
+                        event.dataTransfer.effectAllowed = 'move';
                 }
                 catch { }
-                return false;
+                this.drag_start();
             }
-            event_click(event) {
-                if (this.click_on_button(event, () => this.Download()))
+            event_drag_over(event) {
+                if (!this.can_drag())
                     return;
-                if (this.click_on_button(event, () => this.Delete()))
+                event.preventDefault();
+                if (event.dataTransfer)
+                    event.dataTransfer.dropEffect = 'move';
+            }
+            event_drop(event) {
+                if (!this.can_drag())
                     return;
-                if (this.click_on_button(event, () => this.Move_up()))
-                    return;
-                if (this.click_on_button(event, () => this.Move_down()))
-                    return;
-                if (this.click_on_button(event, () => this.Archive()))
-                    return;
-                if (this.click_on_button(event, () => this.Restore()))
-                    return;
-                if (this.click_on_button(event, () => this.Delete_forever()))
-                    return;
-                this.play(this.audio());
+                event.preventDefault();
+                this.drop_here();
             }
             download() {
                 const audio = this.audio_data();
@@ -20918,7 +20883,6 @@ var $;
                 ;
                 $mol_wire_sync($bog_vk_cache).save_hls(audio);
                 this.cached(true);
-                // Синкаем трек в персональный Giper Baza home land.
                 try {
                     $bog_vk_store.save_track(audio);
                 }
@@ -20985,47 +20949,11 @@ var $;
             padding: {
                 top: '0.5rem',
                 bottom: '0.5rem',
-                left: '0.75rem',
-                right: '0.75rem',
+                left: '0.5rem',
+                right: '0.5rem',
             },
-            cursor: 'pointer',
             borderRadius: '0.5rem',
-            Download: {
-                justify: {
-                    content: 'flex-end',
-                },
-            },
-            Delete: {
-                justify: {
-                    content: 'flex-end',
-                },
-            },
-            Move_up: {
-                justify: {
-                    content: 'flex-end',
-                },
-            },
-            Move_down: {
-                justify: {
-                    content: 'flex-end',
-                },
-            },
-            Archive: {
-                justify: {
-                    content: 'flex-end',
-                },
-            },
-            Restore: {
-                justify: {
-                    content: 'flex-end',
-                },
-            },
-            Delete_forever: {
-                justify: {
-                    content: 'flex-end',
-                },
-            },
-            Cover: {
+            Cover_box: {
                 flex: {
                     shrink: 0,
                     grow: 0,
@@ -21033,16 +20961,19 @@ var $;
                 width: '3rem',
                 height: '3rem',
                 borderRadius: '4px',
+                overflow: { x: 'hidden', y: 'hidden' },
+                cursor: 'pointer',
+                justify: { content: 'center' },
+                align: { items: 'center' },
+            },
+            Cover: {
+                width: '100%',
+                height: '100%',
                 objectFit: 'cover',
             },
             Cover_placeholder: {
-                flex: {
-                    shrink: 0,
-                    grow: 0,
-                },
-                width: '3rem',
-                height: '3rem',
-                borderRadius: '4px',
+                width: '100%',
+                height: '100%',
                 background: {
                     color: $mol_theme.line,
                 },
@@ -21060,41 +20991,51 @@ var $;
                     grow: 1,
                     shrink: 1,
                 },
-                overflow: {
-                    x: 'hidden',
-                },
+                minWidth: 0,
                 gap: '0.125rem',
+                cursor: 'pointer',
             },
             Title: {
                 font: {
-                    weight: 'bold',
-                    size: '0.875rem',
+                    weight: 500,
+                    size: '0.8125rem',
                 },
-                whiteSpace: 'nowrap',
-                overflow: {
-                    x: 'hidden',
-                },
-                textOverflow: 'ellipsis',
+                whiteSpace: 'normal',
+                wordBreak: 'break-word',
             },
             Artist: {
                 font: {
-                    size: '0.8125rem',
+                    size: '0.75rem',
                 },
                 color: $mol_theme.shade,
-                whiteSpace: 'nowrap',
-                overflow: {
-                    x: 'hidden',
-                },
-                textOverflow: 'ellipsis',
+                whiteSpace: 'normal',
+                wordBreak: 'break-word',
             },
             Duration: {
-                flex: {
-                    shrink: 0,
-                },
                 font: {
-                    size: '0.8125rem',
+                    size: '0.6875rem',
                 },
                 color: $mol_theme.shade,
+            },
+            Download: {
+                flex: { shrink: 0 },
+                justify: { content: 'flex-end' },
+            },
+            Delete: {
+                flex: { shrink: 0 },
+                justify: { content: 'flex-end' },
+            },
+            Archive: {
+                flex: { shrink: 0 },
+                justify: { content: 'flex-end' },
+            },
+            Restore: {
+                flex: { shrink: 0 },
+                justify: { content: 'flex-end' },
+            },
+            Delete_forever: {
+                flex: { shrink: 0 },
+                justify: { content: 'flex-end' },
             },
             '@': {
                 bog_vk_track_current: {
@@ -21119,22 +21060,7 @@ var $;
     class $bog_vk_store extends $mol_object2 {
         /** Home land текущего пользователя. НЕ @$mol_mem — чтобы не было circular. */
         static land() {
-            const land = this.$.$giper_baza_glob.home().land();
-            // По умолчанию home land незашифрован (читаем по lord-ключу всем подряд).
-            // Включаем шифрование один раз при первом обращении — пока в land нет sand units.
-            // Для уже существующих юзеров с данными `encryptable()` вернёт false и мы тихо пропустим.
-            try {
-                if (land.encryptable() && !land.encrypted()) {
-                    land.encrypted(true);
-                    console.info('[store] home land encrypted');
-                }
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                // 'Change encryption is forbidden' — у юзера уже есть открытые данные, миграция отдельным шагом.
-            }
-            return land;
+            return this.$.$giper_baza_glob.home().land();
         }
         /** Словарь треков: cache_key → $bog_vk_track_baza. НЕ @$mol_mem. */
         static tracks_dict() {
@@ -21487,17 +21413,14 @@ var $;
 			if(next !== undefined) return next;
 			return null;
 		}
-		track_can_move_up(id){
+		track_can_drag(id){
 			return false;
 		}
-		track_can_move_down(id){
-			return false;
-		}
-		track_move_up(id, next){
+		track_drag_start(id, next){
 			if(next !== undefined) return next;
 			return null;
 		}
-		track_move_down(id, next){
+		track_drop_here(id, next){
 			if(next !== undefined) return next;
 			return null;
 		}
@@ -21519,10 +21442,9 @@ var $;
 			(obj.current) = () => ((this.track_current(id)));
 			(obj.play) = (next) => ((this.track_play(id, next)));
 			(obj.archive_mode) = () => ((this.archive_mode()));
-			(obj.can_move_up) = () => ((this.track_can_move_up(id)));
-			(obj.can_move_down) = () => ((this.track_can_move_down(id)));
-			(obj.move_up) = (next) => ((this.track_move_up(id, next)));
-			(obj.move_down) = (next) => ((this.track_move_down(id, next)));
+			(obj.can_drag) = () => ((this.track_can_drag(id)));
+			(obj.drag_start) = (next) => ((this.track_drag_start(id, next)));
+			(obj.drop_here) = (next) => ((this.track_drop_here(id, next)));
 			(obj.archive) = (next) => ((this.track_archive(id, next)));
 			(obj.restore) = (next) => ((this.track_restore(id, next)));
 			(obj.delete_forever) = (next) => ((this.track_delete(id, next)));
@@ -21544,11 +21466,7 @@ var $;
 		archive_mode(){
 			return false;
 		}
-		reorder_up(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		reorder_down(next){
+		reorder_to(next){
 			if(next !== undefined) return next;
 			return null;
 		}
@@ -21569,15 +21487,14 @@ var $;
 		}
 	};
 	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_play"));
-	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_move_up"));
-	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_move_down"));
+	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_drag_start"));
+	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_drop_here"));
 	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_archive"));
 	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_restore"));
 	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_delete"));
 	($mol_mem_key(($.$bog_vk_tracks.prototype), "Track"));
 	($mol_mem(($.$bog_vk_tracks.prototype), "play_audio"));
-	($mol_mem(($.$bog_vk_tracks.prototype), "reorder_up"));
-	($mol_mem(($.$bog_vk_tracks.prototype), "reorder_down"));
+	($mol_mem(($.$bog_vk_tracks.prototype), "reorder_to"));
 	($mol_mem(($.$bog_vk_tracks.prototype), "archive_audio"));
 	($mol_mem(($.$bog_vk_tracks.prototype), "restore_audio"));
 	($mol_mem(($.$bog_vk_tracks.prototype), "delete_audio"));
@@ -21594,6 +21511,7 @@ var $;
     var $$;
     (function ($$) {
         class $bog_vk_tracks extends $.$bog_vk_tracks {
+            _drag_index = -1;
             track_rows() {
                 return this.audios().map((_, i) => this.Track(i));
             }
@@ -21612,25 +21530,18 @@ var $;
                 if (audio)
                     this.play_audio(audio);
             }
-            track_can_move_up(index) {
-                if (this.archive_mode())
-                    return false;
-                return index > 0;
+            track_can_drag(_index) {
+                return !this.archive_mode();
             }
-            track_can_move_down(index) {
-                if (this.archive_mode())
-                    return false;
-                return index < this.audios().length - 1;
+            track_drag_start(index) {
+                this._drag_index = index;
             }
-            track_move_up(index) {
-                const audio = this.track_audio(index);
-                if (audio)
-                    this.reorder_up(audio);
-            }
-            track_move_down(index) {
-                const audio = this.track_audio(index);
-                if (audio)
-                    this.reorder_down(audio);
+            track_drop_here(index) {
+                const from = this._drag_index;
+                this._drag_index = -1;
+                if (from < 0 || from === index)
+                    return;
+                this.reorder_to({ from, to: index });
             }
             track_archive(index) {
                 const audio = this.track_audio(index);
@@ -21656,10 +21567,7 @@ var $;
         ], $bog_vk_tracks.prototype, "track_play", null);
         __decorate([
             $mol_action
-        ], $bog_vk_tracks.prototype, "track_move_up", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_tracks.prototype, "track_move_down", null);
+        ], $bog_vk_tracks.prototype, "track_drop_here", null);
         __decorate([
             $mol_action
         ], $bog_vk_tracks.prototype, "track_archive", null);
@@ -22537,14 +22445,6 @@ var $;
 			const obj = new this.$.$bog_vk_account();
 			return obj;
 		}
-		token_hint(){
-			return "";
-		}
-		Help_panel(){
-			const obj = new this.$.$mol_paragraph();
-			(obj.title) = () => ((this.token_hint()));
-			return obj;
-		}
 		Auth_link(){
 			const obj = new this.$.$mol_link();
 			(obj.uri) = () => ("https://vk.com/audios374092255");
@@ -22603,11 +22503,7 @@ var $;
 		archive_mode(){
 			return false;
 		}
-		reorder_up(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		reorder_down(next){
+		reorder_to(next){
 			if(next !== undefined) return next;
 			return null;
 		}
@@ -22629,8 +22525,7 @@ var $;
 			(obj.current_audio) = () => ((this.current_audio()));
 			(obj.play_audio) = (next) => ((this.on_play_audio(next)));
 			(obj.archive_mode) = () => ((this.archive_mode()));
-			(obj.reorder_up) = (next) => ((this.reorder_up(next)));
-			(obj.reorder_down) = (next) => ((this.reorder_down(next)));
+			(obj.reorder_to) = (next) => ((this.reorder_to(next)));
 			(obj.archive_audio) = (next) => ((this.archive_audio(next)));
 			(obj.restore_audio) = (next) => ((this.restore_audio(next)));
 			(obj.delete_audio) = (next) => ((this.delete_audio(next)));
@@ -22647,6 +22542,9 @@ var $;
 		}
 		title(){
 			return "Bog Music";
+		}
+		token_hint(){
+			return "";
 		}
 		Title(){
 			return (this.Brand());
@@ -22673,7 +22571,6 @@ var $;
 				(this.Token_panel()), 
 				(this.Settings_panel()), 
 				(this.Account()), 
-				(this.Help_panel()), 
 				(this.Auth_block()), 
 				(this.Tabs()), 
 				(this.Search_bar()), 
@@ -22721,7 +22618,6 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "Proxy_reset"));
 	($mol_mem(($.$bog_vk_app.prototype), "Settings_panel"));
 	($mol_mem(($.$bog_vk_app.prototype), "Account"));
-	($mol_mem(($.$bog_vk_app.prototype), "Help_panel"));
 	($mol_mem(($.$bog_vk_app.prototype), "Auth_link"));
 	($mol_mem(($.$bog_vk_app.prototype), "Auth_hint"));
 	($mol_mem(($.$bog_vk_app.prototype), "Auth_block"));
@@ -22731,8 +22627,7 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "Search_bar"));
 	($mol_mem(($.$bog_vk_app.prototype), "current_audio"));
 	($mol_mem(($.$bog_vk_app.prototype), "on_play_audio"));
-	($mol_mem(($.$bog_vk_app.prototype), "reorder_up"));
-	($mol_mem(($.$bog_vk_app.prototype), "reorder_down"));
+	($mol_mem(($.$bog_vk_app.prototype), "reorder_to"));
 	($mol_mem(($.$bog_vk_app.prototype), "archive_audio"));
 	($mol_mem(($.$bog_vk_app.prototype), "restore_audio"));
 	($mol_mem(($.$bog_vk_app.prototype), "delete_audio"));
@@ -28040,67 +27935,70 @@ var $;
             current_audio(next) {
                 return next ?? null;
             }
-            reorder_up(audio) {
-                if (!audio)
+            reorder_to(args) {
+                if (!args)
                     return;
+                const { from, to } = args;
                 const list = this.visible_audios();
-                const idx = list.findIndex((a) => a.id === audio.id && a.owner_id === audio.owner_id);
-                if (idx <= 0)
+                if (from === to)
                     return;
-                const prev = list[idx - 1];
-                // Для треков, которые есть в VK но не в baza — сначала сохраняем в baza, чтобы Order появился.
-                try {
-                    $bog_vk_store.save_track(audio);
-                }
-                catch (e) {
-                    if (e instanceof Promise)
-                        return;
-                }
-                try {
-                    $bog_vk_store.save_track(prev);
-                }
-                catch (e) {
-                    if (e instanceof Promise)
-                        return;
-                }
-                try {
-                    $bog_vk_store.swap_order(audio, prev);
-                }
-                catch (e) {
-                    if (e instanceof Promise)
-                        return;
-                    console.warn('[app] baza reorder failed:', e?.message);
-                }
-            }
-            reorder_down(audio) {
-                if (!audio)
+                if (from < 0 || to < 0 || from >= list.length || to >= list.length)
                     return;
-                const list = this.visible_audios();
-                const idx = list.findIndex((a) => a.id === audio.id && a.owner_id === audio.owner_id);
-                if (idx < 0 || idx >= list.length - 1)
+                const moving = list[from];
+                if (!moving)
                     return;
-                const nxt = list[idx + 1];
+                // Прогоняем серию swap'ов — каждый перестановкой сдвигает moving на одну позицию
+                // в нужную сторону. Локальный list статичен, а в baza Order меняется реально.
                 try {
-                    $bog_vk_store.save_track(audio);
+                    $bog_vk_store.save_track(moving);
                 }
                 catch (e) {
                     if (e instanceof Promise)
                         return;
                 }
-                try {
-                    $bog_vk_store.save_track(nxt);
+                if (from < to) {
+                    for (let i = from; i < to; i++) {
+                        const next = list[i + 1];
+                        if (!next)
+                            break;
+                        try {
+                            $bog_vk_store.save_track(next);
+                        }
+                        catch (e) {
+                            if (e instanceof Promise)
+                                return;
+                        }
+                        try {
+                            $bog_vk_store.swap_order(moving, next);
+                        }
+                        catch (e) {
+                            if (e instanceof Promise)
+                                return;
+                            console.warn('[app] reorder_to swap failed:', e?.message);
+                        }
+                    }
                 }
-                catch (e) {
-                    if (e instanceof Promise)
-                        return;
-                }
-                try {
-                    $bog_vk_store.swap_order(audio, nxt);
-                }
-                catch (e) {
-                    if (e instanceof Promise)
-                        return;
-                    console.warn('[app] baza reorder failed:', e?.message);
+                else {
+                    for (let i = from; i > to; i--) {
+                        const prev = list[i - 1];
+                        if (!prev)
+                            break;
+                        try {
+                            $bog_vk_store.save_track(prev);
+                        }
+                        catch (e) {
+                            if (e instanceof Promise)
+                                return;
+                        }
+                        try {
+                            $bog_vk_store.swap_order(moving, prev);
+                        }
+                        catch (e) {
+                            if (e instanceof Promise)
+                                return;
+                            console.warn('[app] reorder_to swap failed:', e?.message);
+                        }
+                    }
                 }
             }
             archive_audio(audio) {
@@ -28222,11 +28120,6 @@ var $;
                 if (!this.account_open())
                     return null;
                 return super.Account();
-            }
-            Help_panel() {
-                if (!this.help_open())
-                    return null;
-                return super.Help_panel();
             }
             /**
              * Пользовательский URL прокси (для обхода блокировок VK API).
@@ -28350,10 +28243,7 @@ var $;
         ], $bog_vk_app.prototype, "current_audio", null);
         __decorate([
             $mol_action
-        ], $bog_vk_app.prototype, "reorder_up", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_app.prototype, "reorder_down", null);
+        ], $bog_vk_app.prototype, "reorder_to", null);
         __decorate([
             $mol_action
         ], $bog_vk_app.prototype, "archive_audio", null);
@@ -28509,16 +28399,6 @@ var $;
                     left: '0.5rem',
                     right: '0.5rem',
                 },
-            },
-            Help_panel: {
-                padding: {
-                    top: '0.5rem',
-                    bottom: '0.5rem',
-                    left: '0.75rem',
-                    right: '0.75rem',
-                },
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-word',
             },
             Proxy_input: {
                 font: {

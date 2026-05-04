@@ -566,10 +566,6 @@ $mol_switch $mol_check_list
 
 $mol_icon_music $mol_icon path \M21,3V15.5A3.5,3.5 0 0,1 17.5,19A3.5,3.5 0 0,1 14,15.5A3.5,3.5 0 0,1 17.5,12C18.04,12 18.55,12.12 19,12.34V6.47L9,8.6V17.5A3.5,3.5 0 0,1 5.5,21A3.5,3.5 0 0,1 2,17.5A3.5,3.5 0 0,1 5.5,14C6.04,14 6.55,14.12 7,14.34V6L21,3Z
 
-$mol_icon_arrow_up $mol_icon path \M13,20H11V8L5.5,13.5L4.08,12.08L12,4.16L19.92,12.08L18.5,13.5L13,8V20Z
-
-$mol_icon_arrow_down $mol_icon path \M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z
-
 $mol_icon_delete $mol_icon path \M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z
 
 $mol_icon_archive $mol_icon path \M3,3H21V7H3V3M4,8H20V21H4V8M9.5,11A0.5,0.5 0 0,0 9,11.5V13H15V11.5A0.5,0.5 0 0,0 14.5,11H9.5Z
@@ -583,39 +579,37 @@ $bog_vk_track $mol_view
 	current false
 	play? null
 	archive_mode false
-	can_move_up false
-	can_move_down false
-	move_up? null
-	move_down? null
+	can_drag false
+	drag_start? null
+	drop_here? null
 	archive? null
 	restore? null
 	delete_forever? null
-	event *
-		click? <=> event_click? null
 	attr *
 		bog_vk_track_current <= current
+		draggable <= can_drag
+	event *
+		dragstart?event <=> event_drag_start?event null
+		dragover?event <=> event_drag_over?event null
+		drop?event <=> event_drop?event null
 	sub /
-		<= Cover $mol_image
-			uri <= cover \
-		<= Cover_placeholder $mol_icon_music
+		<= Cover_box $mol_view
+			event *
+				click?event <=> on_play_click? null
+			sub /
+				<= Cover $mol_image
+					uri <= cover \
+				<= Cover_placeholder $mol_icon_music
 		<= Info $mol_view
+			event *
+				click?event <=> on_play_click?
 			sub /
 				<= Title $mol_paragraph
 					title <= title \
 				<= Artist $mol_paragraph
 					title <= artist \
-		<= Duration $mol_paragraph
-			title <= duration_text \
-		<= Move_up $mol_button_minor
-			hint \Вверх
-			click? <=> move_up? null
-			sub /
-				<= Move_up_icon $mol_icon_arrow_up
-		<= Move_down $mol_button_minor
-			hint \Вниз
-			click? <=> move_down? null
-			sub /
-				<= Move_down_icon $mol_icon_arrow_down
+				<= Duration $mol_paragraph
+					title <= duration_text \
 		<= Download $mol_button_minor
 			click? <=> download? null
 			sub /
@@ -645,8 +639,7 @@ $bog_vk_tracks $mol_list
 	current_audio null
 	play_audio? null
 	archive_mode false
-	reorder_up? null
-	reorder_down? null
+	reorder_to? null
 	archive_audio? null
 	restore_audio? null
 	delete_audio? null
@@ -656,10 +649,9 @@ $bog_vk_tracks $mol_list
 			current <= track_current* false
 			play? <=> track_play*? null
 			archive_mode <= archive_mode
-			can_move_up <= track_can_move_up* false
-			can_move_down <= track_can_move_down* false
-			move_up? <=> track_move_up*? null
-			move_down? <=> track_move_down*? null
+			can_drag <= track_can_drag* false
+			drag_start? <=> track_drag_start*? null
+			drop_here? <=> track_drop_here*? null
 			archive? <=> track_archive*? null
 			restore? <=> track_restore*? null
 			delete_forever? <=> track_delete*? null
@@ -2125,6 +2117,7 @@ $bog_vk_app $mol_page
 		<= Theme $mol_theme_auto
 		<= Popup_fix $bog_popup_plugin
 	title \Bog Music
+	token_hint \
 	Title <= Brand $mol_image
 		uri \bog/vk/app/favicon.svg
 		title <= title
@@ -2180,8 +2173,6 @@ $bog_vk_app $mol_page
 					title \Сбросить на дефолтный
 					click? <=> reset_proxy? null
 		<= Account $bog_vk_account
-		<= Help_panel $mol_paragraph
-			title <= token_hint \
 		<= Auth_block $mol_view
 			sub /
 				<= Auth_link $mol_link
@@ -2204,8 +2195,7 @@ $bog_vk_app $mol_page
 			current_audio <= current_audio null
 			play_audio? <=> on_play_audio? null
 			archive_mode <= archive_mode false
-			reorder_up? <=> reorder_up? null
-			reorder_down? <=> reorder_down? null
+			reorder_to? <=> reorder_to? null
 			archive_audio? <=> archive_audio? null
 			restore_audio? <=> restore_audio? null
 			delete_audio? <=> delete_audio? null

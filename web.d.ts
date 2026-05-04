@@ -8907,24 +8907,6 @@ declare namespace $ {
 //# sourceMappingURL=music.view.tree.d.ts.map
 declare namespace $ {
 
-	export class $mol_icon_arrow_up extends $mol_icon {
-		path( ): string
-	}
-	
-}
-
-//# sourceMappingURL=up.view.tree.d.ts.map
-declare namespace $ {
-
-	export class $mol_icon_arrow_down extends $mol_icon {
-		path( ): string
-	}
-	
-}
-
-//# sourceMappingURL=down.view.tree.d.ts.map
-declare namespace $ {
-
 	export class $mol_icon_delete extends $mol_icon {
 		path( ): string
 	}
@@ -11040,68 +11022,72 @@ declare namespace $ {
 		,
 		ReturnType< $mol_image['uri'] >
 	>
-	type $mol_paragraph__title_bog_vk_track_2 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['title'] >
+	type $mol_view__event_bog_vk_track_2 = $mol_type_enforce<
+		({ 
+			click( next?: ReturnType< $bog_vk_track['on_play_click'] > ): ReturnType< $bog_vk_track['on_play_click'] >,
+		}) 
 		,
-		ReturnType< $mol_paragraph['title'] >
+		ReturnType< $mol_view['event'] >
 	>
-	type $mol_paragraph__title_bog_vk_track_3 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['artist'] >
-		,
-		ReturnType< $mol_paragraph['title'] >
-	>
-	type $mol_view__sub_bog_vk_track_4 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_track_3 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
+	type $mol_paragraph__title_bog_vk_track_4 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['title'] >
+		,
+		ReturnType< $mol_paragraph['title'] >
+	>
 	type $mol_paragraph__title_bog_vk_track_5 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['artist'] >
+		,
+		ReturnType< $mol_paragraph['title'] >
+	>
+	type $mol_paragraph__title_bog_vk_track_6 = $mol_type_enforce<
 		ReturnType< $bog_vk_track['duration_text'] >
 		,
 		ReturnType< $mol_paragraph['title'] >
 	>
-	type $mol_button_minor__hint_bog_vk_track_6 = $mol_type_enforce<
-		string
+	type $mol_view__event_bog_vk_track_7 = $mol_type_enforce<
+		({ 
+			click( next?: ReturnType< $bog_vk_track['on_play_click'] > ): ReturnType< $bog_vk_track['on_play_click'] >,
+		}) 
 		,
-		ReturnType< $mol_button_minor['hint'] >
+		ReturnType< $mol_view['event'] >
 	>
-	type $mol_button_minor__click_bog_vk_track_7 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['move_up'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_button_minor__sub_bog_vk_track_8 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_track_8 = $mol_type_enforce<
 		readonly(any)[]
 		,
-		ReturnType< $mol_button_minor['sub'] >
+		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_button_minor__hint_bog_vk_track_9 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_button_minor['hint'] >
-	>
-	type $mol_button_minor__click_bog_vk_track_10 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['move_down'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_button_minor__sub_bog_vk_track_11 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_button_minor['sub'] >
-	>
-	type $mol_button_minor__click_bog_vk_track_12 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_track_9 = $mol_type_enforce<
 		ReturnType< $bog_vk_track['download'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
-	type $mol_button_minor__sub_bog_vk_track_13 = $mol_type_enforce<
+	type $mol_button_minor__sub_bog_vk_track_10 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
-	type $mol_button_minor__click_bog_vk_track_14 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_track_11 = $mol_type_enforce<
 		ReturnType< $bog_vk_track['delete_cached'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_bog_vk_track_12 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	type $mol_button_minor__hint_bog_vk_track_13 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_button_minor['hint'] >
+	>
+	type $mol_button_minor__click_bog_vk_track_14 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['archive'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
@@ -11116,7 +11102,7 @@ declare namespace $ {
 		ReturnType< $mol_button_minor['hint'] >
 	>
 	type $mol_button_minor__click_bog_vk_track_17 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['archive'] >
+		ReturnType< $bog_vk_track['restore'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
@@ -11131,7 +11117,7 @@ declare namespace $ {
 		ReturnType< $mol_button_minor['hint'] >
 	>
 	type $mol_button_minor__click_bog_vk_track_20 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['restore'] >
+		ReturnType< $bog_vk_track['delete_forever'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
@@ -11140,39 +11126,22 @@ declare namespace $ {
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
-	type $mol_button_minor__hint_bog_vk_track_22 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_button_minor['hint'] >
-	>
-	type $mol_button_minor__click_bog_vk_track_23 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['delete_forever'] >
-		,
-		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_button_minor__sub_bog_vk_track_24 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_button_minor['sub'] >
-	>
 	export class $bog_vk_track extends $mol_view {
-		event_click( next?: any ): any
+		event_drag_start( next?: any ): any
+		event_drag_over( next?: any ): any
+		event_drop( next?: any ): any
+		on_play_click( next?: any ): any
 		cover( ): string
 		Cover( ): $mol_image
 		Cover_placeholder( ): $mol_icon_music
+		Cover_box( ): $mol_view
 		title( ): string
 		Title( ): $mol_paragraph
 		artist( ): string
 		Artist( ): $mol_paragraph
-		Info( ): $mol_view
 		duration_text( ): string
 		Duration( ): $mol_paragraph
-		move_up( next?: any ): any
-		Move_up_icon( ): $mol_icon_arrow_up
-		Move_up( ): $mol_button_minor
-		move_down( next?: any ): any
-		Move_down_icon( ): $mol_icon_arrow_down
-		Move_down( ): $mol_button_minor
+		Info( ): $mol_view
 		download( next?: any ): any
 		Download_icon( ): $mol_icon_download
 		Download( ): $mol_button_minor
@@ -11192,13 +11161,17 @@ declare namespace $ {
 		current( ): boolean
 		play( next?: any ): any
 		archive_mode( ): boolean
-		can_move_up( ): boolean
-		can_move_down( ): boolean
-		event( ): ({ 
-			click( next?: ReturnType< $bog_vk_track['event_click'] > ): ReturnType< $bog_vk_track['event_click'] >,
-		}) 
+		can_drag( ): boolean
+		drag_start( next?: any ): any
+		drop_here( next?: any ): any
 		attr( ): ({ 
 			'bog_vk_track_current': ReturnType< $bog_vk_track['current'] >,
+			'draggable': ReturnType< $bog_vk_track['can_drag'] >,
+		}) 
+		event( ): ({ 
+			dragstart( next?: ReturnType< $bog_vk_track['event_drag_start'] > ): ReturnType< $bog_vk_track['event_drag_start'] >,
+			dragover( next?: ReturnType< $bog_vk_track['event_drag_over'] > ): ReturnType< $bog_vk_track['event_drag_over'] >,
+			drop( next?: ReturnType< $bog_vk_track['event_drop'] > ): ReturnType< $bog_vk_track['event_drop'] >,
 		}) 
 		sub( ): readonly(any)[]
 	}
@@ -11216,17 +11189,17 @@ declare namespace $.$$ {
         Cover_placeholder(): any;
         duration_text(): string;
         cached(next?: boolean): boolean;
-        Move_up(): any;
-        Move_down(): any;
+        is_local(): boolean;
+        can_drag(): boolean;
         Archive(): any;
         Restore(): any;
         Delete_forever(): any;
-        is_local(): boolean;
         Download(): any;
         Delete(): any;
-        /** Был ли клик внутри какой-то кнопки-хэндлера — чтобы не проигрывать трек. */
-        private click_on_button;
-        event_click(event: Event): void;
+        on_play_click(): void;
+        event_drag_start(event: DragEvent): void;
+        event_drag_over(event: DragEvent): void;
+        event_drop(event: DragEvent): void;
         download(): void;
         delete_cached(): void;
     }
@@ -11479,37 +11452,32 @@ declare namespace $ {
 		,
 		ReturnType< $bog_vk_track['archive_mode'] >
 	>
-	type $bog_vk_track__can_move_up_bog_vk_tracks_5 = $mol_type_enforce<
-		ReturnType< $bog_vk_tracks['track_can_move_up'] >
+	type $bog_vk_track__can_drag_bog_vk_tracks_5 = $mol_type_enforce<
+		ReturnType< $bog_vk_tracks['track_can_drag'] >
 		,
-		ReturnType< $bog_vk_track['can_move_up'] >
+		ReturnType< $bog_vk_track['can_drag'] >
 	>
-	type $bog_vk_track__can_move_down_bog_vk_tracks_6 = $mol_type_enforce<
-		ReturnType< $bog_vk_tracks['track_can_move_down'] >
+	type $bog_vk_track__drag_start_bog_vk_tracks_6 = $mol_type_enforce<
+		ReturnType< $bog_vk_tracks['track_drag_start'] >
 		,
-		ReturnType< $bog_vk_track['can_move_down'] >
+		ReturnType< $bog_vk_track['drag_start'] >
 	>
-	type $bog_vk_track__move_up_bog_vk_tracks_7 = $mol_type_enforce<
-		ReturnType< $bog_vk_tracks['track_move_up'] >
+	type $bog_vk_track__drop_here_bog_vk_tracks_7 = $mol_type_enforce<
+		ReturnType< $bog_vk_tracks['track_drop_here'] >
 		,
-		ReturnType< $bog_vk_track['move_up'] >
+		ReturnType< $bog_vk_track['drop_here'] >
 	>
-	type $bog_vk_track__move_down_bog_vk_tracks_8 = $mol_type_enforce<
-		ReturnType< $bog_vk_tracks['track_move_down'] >
-		,
-		ReturnType< $bog_vk_track['move_down'] >
-	>
-	type $bog_vk_track__archive_bog_vk_tracks_9 = $mol_type_enforce<
+	type $bog_vk_track__archive_bog_vk_tracks_8 = $mol_type_enforce<
 		ReturnType< $bog_vk_tracks['track_archive'] >
 		,
 		ReturnType< $bog_vk_track['archive'] >
 	>
-	type $bog_vk_track__restore_bog_vk_tracks_10 = $mol_type_enforce<
+	type $bog_vk_track__restore_bog_vk_tracks_9 = $mol_type_enforce<
 		ReturnType< $bog_vk_tracks['track_restore'] >
 		,
 		ReturnType< $bog_vk_track['restore'] >
 	>
-	type $bog_vk_track__delete_forever_bog_vk_tracks_11 = $mol_type_enforce<
+	type $bog_vk_track__delete_forever_bog_vk_tracks_10 = $mol_type_enforce<
 		ReturnType< $bog_vk_tracks['track_delete'] >
 		,
 		ReturnType< $bog_vk_track['delete_forever'] >
@@ -11518,10 +11486,9 @@ declare namespace $ {
 		track_audio( id: any): any
 		track_current( id: any): boolean
 		track_play( id: any, next?: any ): any
-		track_can_move_up( id: any): boolean
-		track_can_move_down( id: any): boolean
-		track_move_up( id: any, next?: any ): any
-		track_move_down( id: any, next?: any ): any
+		track_can_drag( id: any): boolean
+		track_drag_start( id: any, next?: any ): any
+		track_drop_here( id: any, next?: any ): any
 		track_archive( id: any, next?: any ): any
 		track_restore( id: any, next?: any ): any
 		track_delete( id: any, next?: any ): any
@@ -11531,8 +11498,7 @@ declare namespace $ {
 		current_audio( ): any
 		play_audio( next?: any ): any
 		archive_mode( ): boolean
-		reorder_up( next?: any ): any
-		reorder_down( next?: any ): any
+		reorder_to( next?: any ): any
 		archive_audio( next?: any ): any
 		restore_audio( next?: any ): any
 		delete_audio( next?: any ): any
@@ -11544,14 +11510,14 @@ declare namespace $ {
 //# sourceMappingURL=tracks.view.tree.d.ts.map
 declare namespace $.$$ {
     class $bog_vk_tracks extends $.$bog_vk_tracks {
+        private _drag_index;
         track_rows(): $.$bog_vk_track[];
         track_audio(index: number): any;
         track_current(index: number): boolean;
         track_play(index: number): void;
-        track_can_move_up(index: number): boolean;
-        track_can_move_down(index: number): boolean;
-        track_move_up(index: number): void;
-        track_move_down(index: number): void;
+        track_can_drag(_index: number): boolean;
+        track_drag_start(index: number): void;
+        track_drop_here(index: number): void;
         track_archive(index: number): void;
         track_restore(index: number): void;
         track_delete(index: number): void;
@@ -18512,107 +18478,97 @@ declare namespace $ {
 		,
 		ReturnType< $mol_list['rows'] >
 	>
-	type $mol_paragraph__title_bog_vk_app_33 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['token_hint'] >
-		,
-		ReturnType< $mol_paragraph['title'] >
-	>
-	type $mol_link__uri_bog_vk_app_34 = $mol_type_enforce<
+	type $mol_link__uri_bog_vk_app_33 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_link['uri'] >
 	>
-	type $mol_link__target_bog_vk_app_35 = $mol_type_enforce<
+	type $mol_link__target_bog_vk_app_34 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_link['target'] >
 	>
-	type $mol_link__sub_bog_vk_app_36 = $mol_type_enforce<
+	type $mol_link__sub_bog_vk_app_35 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_link['sub'] >
 	>
-	type $mol_paragraph__title_bog_vk_app_37 = $mol_type_enforce<
+	type $mol_paragraph__title_bog_vk_app_36 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['token_hint'] >
 		,
 		ReturnType< $mol_paragraph['title'] >
 	>
-	type $mol_view__sub_bog_vk_app_38 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_app_37 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_switch__value_bog_vk_app_39 = $mol_type_enforce<
+	type $mol_switch__value_bog_vk_app_38 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['page'] >
 		,
 		ReturnType< $mol_switch['value'] >
 	>
-	type $mol_switch__options_bog_vk_app_40 = $mol_type_enforce<
+	type $mol_switch__options_bog_vk_app_39 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['tab_options'] >
 		,
 		ReturnType< $mol_switch['options'] >
 	>
-	type $mol_string__hint_bog_vk_app_41 = $mol_type_enforce<
+	type $mol_string__hint_bog_vk_app_40 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_string['hint'] >
 	>
-	type $mol_string__value_bog_vk_app_42 = $mol_type_enforce<
+	type $mol_string__value_bog_vk_app_41 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['search_query'] >
 		,
 		ReturnType< $mol_string['value'] >
 	>
-	type $bog_vk_tracks__audios_bog_vk_app_43 = $mol_type_enforce<
+	type $bog_vk_tracks__audios_bog_vk_app_42 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_tracks['audios'] >
 	>
-	type $bog_vk_tracks__current_audio_bog_vk_app_44 = $mol_type_enforce<
+	type $bog_vk_tracks__current_audio_bog_vk_app_43 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['current_audio'] >
 	>
-	type $bog_vk_tracks__play_audio_bog_vk_app_45 = $mol_type_enforce<
+	type $bog_vk_tracks__play_audio_bog_vk_app_44 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['on_play_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['play_audio'] >
 	>
-	type $bog_vk_tracks__archive_mode_bog_vk_app_46 = $mol_type_enforce<
+	type $bog_vk_tracks__archive_mode_bog_vk_app_45 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['archive_mode'] >
 		,
 		ReturnType< $bog_vk_tracks['archive_mode'] >
 	>
-	type $bog_vk_tracks__reorder_up_bog_vk_app_47 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['reorder_up'] >
+	type $bog_vk_tracks__reorder_to_bog_vk_app_46 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['reorder_to'] >
 		,
-		ReturnType< $bog_vk_tracks['reorder_up'] >
+		ReturnType< $bog_vk_tracks['reorder_to'] >
 	>
-	type $bog_vk_tracks__reorder_down_bog_vk_app_48 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['reorder_down'] >
-		,
-		ReturnType< $bog_vk_tracks['reorder_down'] >
-	>
-	type $bog_vk_tracks__archive_audio_bog_vk_app_49 = $mol_type_enforce<
+	type $bog_vk_tracks__archive_audio_bog_vk_app_47 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['archive_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['archive_audio'] >
 	>
-	type $bog_vk_tracks__restore_audio_bog_vk_app_50 = $mol_type_enforce<
+	type $bog_vk_tracks__restore_audio_bog_vk_app_48 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['restore_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['restore_audio'] >
 	>
-	type $bog_vk_tracks__delete_audio_bog_vk_app_51 = $mol_type_enforce<
+	type $bog_vk_tracks__delete_audio_bog_vk_app_49 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['delete_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['delete_audio'] >
 	>
-	type $bog_vk_player__queue_bog_vk_app_52 = $mol_type_enforce<
+	type $bog_vk_player__queue_bog_vk_app_50 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_player['queue'] >
 	>
-	type $bog_vk_player__current_audio_bog_vk_app_53 = $mol_type_enforce<
+	type $bog_vk_player__current_audio_bog_vk_app_51 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_player['current_audio'] >
@@ -18656,8 +18612,6 @@ declare namespace $ {
 		Proxy_reset( ): $mol_button_minor
 		Settings_panel( ): $mol_list
 		Account( ): $bog_vk_account
-		token_hint( ): string
-		Help_panel( ): $mol_paragraph
 		Auth_link( ): $mol_link
 		Auth_hint( ): $mol_paragraph
 		Auth_block( ): $mol_view
@@ -18674,8 +18628,7 @@ declare namespace $ {
 		current_audio( next?: any ): any
 		on_play_audio( next?: any ): any
 		archive_mode( ): boolean
-		reorder_up( next?: any ): any
-		reorder_down( next?: any ): any
+		reorder_to( next?: any ): any
 		archive_audio( next?: any ): any
 		restore_audio( next?: any ): any
 		delete_audio( next?: any ): any
@@ -18683,6 +18636,7 @@ declare namespace $ {
 		Player( ): $bog_vk_player
 		plugins( ): readonly(any)[]
 		title( ): string
+		token_hint( ): string
 		Title( ): ReturnType< $bog_vk_app['Brand'] >
 		tools( ): readonly(any)[]
 		body_scroll_top( next?: ReturnType< $bog_vk_app['scroll'] > ): ReturnType< $bog_vk_app['scroll'] >
@@ -18727,8 +18681,10 @@ declare namespace $.$$ {
         /** В архиве показываем архивные как "текущий контекст", но UI-кнопки разные. */
         archive_mode(): boolean;
         current_audio(next?: $bog_vk_api_audio | null): $bog_vk_api_audio | null;
-        reorder_up(audio: $bog_vk_api_audio | null): void;
-        reorder_down(audio: $bog_vk_api_audio | null): void;
+        reorder_to(args: {
+            from: number;
+            to: number;
+        } | null): void;
         archive_audio(audio: $bog_vk_api_audio | null): void;
         restore_audio(audio: $bog_vk_api_audio | null): void;
         delete_audio(audio: $bog_vk_api_audio | null): void;
@@ -18747,7 +18703,6 @@ declare namespace $.$$ {
         Token_panel(): any;
         Settings_panel(): any;
         Account(): any;
-        Help_panel(): any;
         /**
          * Пользовательский URL прокси (для обхода блокировок VK API).
          * Пустая строка — дефолтный прокси.
