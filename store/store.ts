@@ -231,6 +231,42 @@ namespace $ {
 			console.log('[store] blob saved to baza:', audio.title, buffer.byteLength, 'bytes,', mime)
 		}
 
+		/**
+		 * Миграция: для каждого трека с непустым buffer'ом форсит
+		 * `track.File('auto')!.remote(store)`. Старые блобы писались без этого
+		 * вызова → link существовал только локально и не синкался на другие
+		 * устройства. Идемпотентно — повторный вызов на уже мигрированных
+		 * треках безопасен.
+		 */
+		@$mol_action
+		static migrate_blob_links(): number {
+			let dict: ReturnType<typeof $bog_vk_store.tracks_dict>
+			try {
+				dict = this.tracks_dict()
+			} catch (e) {
+				if (e instanceof Promise) throw e
+				return 0
+			}
+			const keys = (dict.keys() ?? []) as string[]
+			let migrated = 0
+			for (const key of keys) {
+				const track = dict.key(key)
+				if (!track) continue
+				const file = track.File()?.remote()
+				if (!file) continue
+				const buf = file.buffer()
+				if (!buf || buf.byteLength === 0) continue
+				try {
+					track.File('auto')!.remote(file)
+					migrated++
+				} catch (e: any) {
+					if (e instanceof Promise) throw e
+				}
+			}
+			if (migrated) console.log('[store] migrated', migrated, 'blob links for sync')
+			return migrated
+		}
+
 		/** Удаляет blob (поле File) из baza, оставляя метаданные трека. */
 		@$mol_action
 		static drop_blob(audio: $bog_vk_api_audio): void {

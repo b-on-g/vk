@@ -97,12 +97,11 @@ namespace $.$$ {
 			return this.$.$giper_baza_glob.home().land()
 		}
 
-		/** Один и тот же Profile pawn-инстанс — нужен, чтобы реактивные подписки
-		 *  на `Nickname().val()` сохранялись между перерисовками view. */
-		@$mol_mem
+		/** БЕЗ `@$mol_mem` — иначе $mol вызывает `destructor()` на pawn и ломает
+		 *  реактивные подписки baza (см. MEMORY паттерн blitz: `profile_data()`).
+		 *  baza сама интернит pawn по id, так что `Data(Profile)` всегда отдаёт тот же инстанс. */
 		static profile() {
-			const Profile = $bog_vk_account_baza
-			return this.land().Data(Profile)
+			return this.land().Data($bog_vk_account_baza)
 		}
 
 		/** Без `@$mol_mem` — getter напрямую читает Giper Baza, и любое

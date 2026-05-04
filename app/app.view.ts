@@ -414,10 +414,22 @@ namespace $.$$ {
 
 		auto() {
 			try { $bog_vk_store.saved_audios() } catch {}
+			// Одноразовая миграция: дотягиваем `.remote(store)` для старых блобов,
+			// записанных до фикса. Идемпотентна, флаг гарантирует один прогон за сессию.
+			if (!$bog_vk_app.__migration_done) {
+				try {
+					$bog_vk_store.migrate_blob_links()
+					$bog_vk_app.__migration_done = true
+				} catch (e: any) {
+					if (e instanceof Promise) throw e
+				}
+			}
 			try { this.auto_import() } catch (e: any) {
 				if (e instanceof Promise) throw e
 			}
 			return super.auto()
 		}
+
+		static __migration_done = false
 	}
 }
