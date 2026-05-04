@@ -40,6 +40,8 @@ $mol_theme_auto $mol_plugin
 
 $bog_popup_plugin $mol_plugin
 
+$bog_tooltip_plugin $mol_plugin
+
 $mol_image $mol_view
 	dom_name \img
 	attr *any
@@ -162,8 +164,6 @@ $mol_button_open_native $mol_view
 		multiple <= multiple true
 	event *
 		change?next <=> picked?next null
-
-$mol_icon_download $mol_icon path \M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z
 
 $mol_paragraph $mol_view
 	line_height 24
@@ -541,6 +541,11 @@ $bog_vk_account $mol_list
 			title \Применить
 			click? <=> apply_import? null
 		<= Import_status $mol_view sub / <= import_status \
+		<= Reset_hint $mol_paragraph
+			title \Сбросить состояние и сгенерировать новый аккаунт. Текущие треки в Giper Baza останутся orphan.
+		<= Reset_button $mol_button_minor
+			title \Сбросить локальный аккаунт
+			click? <=> reset_account? null
 
 $mol_check_list $mol_view
 	dictionary *
@@ -604,10 +609,6 @@ $bog_vk_track $mol_view
 					title <= artist \
 				<= Duration $mol_paragraph
 					title <= duration_text \
-		<= Download $mol_button_minor
-			click? <=> download? null
-			sub /
-				<= Download_icon $mol_icon_download
 		<= Delete $mol_button_minor
 			click? <=> delete_cached? null
 			sub /
@@ -703,6 +704,7 @@ $bog_vk_app $mol_page
 	plugins /
 		<= Theme $mol_theme_auto
 		<= Popup_fix $bog_popup_plugin
+		<= Tooltip $bog_tooltip_plugin
 	title \Bog Music
 	token_hint \
 	Title <= Brand $mol_image
@@ -723,10 +725,6 @@ $bog_vk_app $mol_page
 			hint \Загрузить с устройства
 			accept \audio/*
 			files? <=> upload_files? /File
-		<= Download_all $mol_button_minor
-			click? <=> download_all? null
-			sub /
-				<= Download_all_icon $mol_icon_download
 		<= Version $bog_version
 			version \0.2.2
 		<= Sync_status $giper_baza_status

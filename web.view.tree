@@ -40,6 +40,8 @@ $mol_theme_auto $mol_plugin
 
 $bog_popup_plugin $mol_plugin
 
+$bog_tooltip_plugin $mol_plugin
+
 $mol_image $mol_view
 	dom_name \img
 	attr *any
@@ -162,8 +164,6 @@ $mol_button_open_native $mol_view
 		multiple <= multiple true
 	event *
 		change?next <=> picked?next null
-
-$mol_icon_download $mol_icon path \M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z
 
 $mol_paragraph $mol_view
 	line_height 24
@@ -541,6 +541,11 @@ $bog_vk_account $mol_list
 			title \Применить
 			click? <=> apply_import? null
 		<= Import_status $mol_view sub / <= import_status \
+		<= Reset_hint $mol_paragraph
+			title \Сбросить состояние и сгенерировать новый аккаунт. Текущие треки в Giper Baza останутся orphan.
+		<= Reset_button $mol_button_minor
+			title \Сбросить локальный аккаунт
+			click? <=> reset_account? null
 
 $mol_check_list $mol_view
 	dictionary *
@@ -604,10 +609,6 @@ $bog_vk_track $mol_view
 					title <= artist \
 				<= Duration $mol_paragraph
 					title <= duration_text \
-		<= Download $mol_button_minor
-			click? <=> download? null
-			sub /
-				<= Download_icon $mol_icon_download
 		<= Delete $mol_button_minor
 			click? <=> delete_cached? null
 			sub /
@@ -1383,6 +1384,8 @@ $mol_icon_source $mol_icon path \M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm
 
 $mol_icon_source_fork $mol_icon path \M6,2A3,3 0 0,1 9,5C9,6.28 8.19,7.38 7.06,7.81C7.15,8.27 7.39,8.83 8,9.63C9,10.92 11,12.83 12,14.17C13,12.83 15,10.92 16,9.63C16.61,8.83 16.85,8.27 16.94,7.81C15.81,7.38 15,6.28 15,5A3,3 0 0,1 18,2A3,3 0 0,1 21,5C21,6.32 20.14,7.45 18.95,7.85C18.87,8.37 18.64,9 18,9.83C17,11.17 15,13.08 14,14.38C13.39,15.17 13.15,15.73 13.06,16.19C14.19,16.62 15,17.72 15,19A3,3 0 0,1 12,22A3,3 0 0,1 9,19C9,17.72 9.81,16.62 10.94,16.19C10.85,15.73 10.61,15.17 10,14.38C9,13.08 7,11.17 6,9.83C5.36,9 5.13,8.37 5.05,7.85C3.86,7.45 3,6.32 3,5A3,3 0 0,1 6,2M6,4A1,1 0 0,0 5,5A1,1 0 0,0 6,6A1,1 0 0,0 7,5A1,1 0 0,0 6,4M18,4A1,1 0 0,0 17,5A1,1 0 0,0 18,6A1,1 0 0,0 19,5A1,1 0 0,0 18,4M12,18A1,1 0 0,0 11,19A1,1 0 0,0 12,20A1,1 0 0,0 13,19A1,1 0 0,0 12,18Z
 
+$mol_icon_download $mol_icon path \M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z
+
 $mol_button_download $mol_button_minor
 	blob null
 	uri \
@@ -2110,6 +2113,7 @@ $bog_vk_app $mol_page
 	plugins /
 		<= Theme $mol_theme_auto
 		<= Popup_fix $bog_popup_plugin
+		<= Tooltip $bog_tooltip_plugin
 	title \Bog Music
 	token_hint \
 	Title <= Brand $mol_image
@@ -2130,10 +2134,6 @@ $bog_vk_app $mol_page
 			hint \Загрузить с устройства
 			accept \audio/*
 			files? <=> upload_files? /File
-		<= Download_all $mol_button_minor
-			click? <=> download_all? null
-			sub /
-				<= Download_all_icon $mol_icon_download
 		<= Version $bog_version
 			version \0.2.2
 		<= Sync_status $giper_baza_status
