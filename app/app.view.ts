@@ -417,12 +417,71 @@ namespace $.$$ {
 		clear_token() {
 			this.token('')
 			this.token_expired(false)
-			this.token_popup_open(false)
+			this.panel('')
+		}
+
+		/**
+		 * Имя активной overlay-панели в body: '' (треки) | 'token' | 'settings' | 'account' | 'help'.
+		 * Только одна панель открыта одновременно — клик по чекбоксу одной автоматически
+		 * сбрасывает остальные.
+		 */
+		@$mol_mem
+		panel(next?: string): string {
+			return next ?? ''
 		}
 
 		@$mol_mem
-		show_hint(next?: boolean) {
-			return $mol_state_local.value('vk_show_hint', next) ?? true
+		token_open(next?: boolean) {
+			if (next !== undefined) this.panel(next ? 'token' : '')
+			return this.panel() === 'token'
+		}
+
+		@$mol_mem
+		settings_open(next?: boolean) {
+			if (next !== undefined) this.panel(next ? 'settings' : '')
+			return this.panel() === 'settings'
+		}
+
+		@$mol_mem
+		account_open(next?: boolean) {
+			if (next !== undefined) this.panel(next ? 'account' : '')
+			return this.panel() === 'account'
+		}
+
+		@$mol_mem
+		help_open(next?: boolean) {
+			if (next !== undefined) this.panel(next ? 'help' : '')
+			return this.panel() === 'help'
+		}
+
+		Token_panel() {
+			if (this.panel() !== 'token') return null as any
+			return super.Token_panel()
+		}
+
+		Settings_panel() {
+			if (this.panel() !== 'settings') return null as any
+			return super.Settings_panel()
+		}
+
+		Account() {
+			if (this.panel() !== 'account') return null as any
+			return super.Account()
+		}
+
+		Help_panel() {
+			if (this.panel() !== 'help') return null as any
+			return super.Help_panel()
+		}
+
+		Tabs() {
+			if (this.panel()) return null as any
+			return super.Tabs()
+		}
+
+		Tracks() {
+			if (this.panel()) return null as any
+			return super.Tracks()
 		}
 
 		/**
@@ -443,11 +502,12 @@ namespace $.$$ {
 			this.proxy_url('')
 		}
 
-		/** Никнейм для шапки — берём из home land профиля. */
+		/** Никнейм для шапки — берём прямо из home land профиля. */
 		@$mol_mem
 		nickname_label() {
 			try {
-				return this.Account().nickname() || ''
+				const land = $bog_vk_account.profile()
+				return land.Nickname()?.val() || ''
 			} catch (e) {
 				if (e instanceof Promise) throw e
 				return ''
@@ -470,7 +530,7 @@ namespace $.$$ {
 
 		Auth_block() {
 			if (this.token()) return null as any
-			if (!this.show_hint()) return null as any
+			if (this.panel()) return null as any
 			return super.Auth_block()
 		}
 

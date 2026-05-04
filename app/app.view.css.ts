@@ -80,22 +80,21 @@ namespace $.$$ {
 		},
 
 		Brand: {
-			width: '1.75rem',
-			height: '1.75rem',
+			width: '2rem',
+			height: '2rem',
 			flex: { shrink: 0, grow: 0 },
 			objectFit: 'contain',
+			alignSelf: 'center',
+			margin: { left: '0.5rem', right: '0.25rem' },
 		},
 
 		Token_panel: {
-			width: '22rem',
-			maxWidth: $mol_style_func.calc('100vw - 1rem'),
 			padding: {
 				top: '0.5rem',
 				bottom: '0.5rem',
 				left: '0.5rem',
 				right: '0.5rem',
 			},
-			boxSizing: 'border-box',
 		},
 
 		Token_input: {
@@ -105,15 +104,23 @@ namespace $.$$ {
 		},
 
 		Settings_panel: {
-			width: '24rem',
-			maxWidth: $mol_style_func.calc('100vw - 1rem'),
 			padding: {
 				top: '0.5rem',
 				bottom: '0.5rem',
 				left: '0.5rem',
 				right: '0.5rem',
 			},
-			boxSizing: 'border-box',
+		},
+
+		Help_panel: {
+			padding: {
+				top: '0.5rem',
+				bottom: '0.5rem',
+				left: '0.75rem',
+				right: '0.75rem',
+			},
+			whiteSpace: 'pre-wrap',
+			wordBreak: 'break-word',
 		},
 
 		Proxy_input: {

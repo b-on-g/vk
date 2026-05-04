@@ -7,55 +7,24 @@ $bog_vk_app $mol_page
 		uri \bog/vk/app/favicon.svg
 		title <= title
 	tools /
-		<= Token_popup $mol_pop
-			showed? <=> token_popup_open? false
-			align \bottom_left
-			Anchor <= Token_toggle $mol_check_icon
-				hint \Токен
-				Icon <= Token_icon $mol_icon_key_variant
-				checked? <=> token_popup_open? false
-			bubble_content /
-				<= Token_panel $mol_list
-					rows /
-						<= Token_input $mol_string
-							hint \Вставь токен или cURL
-							value? <=> token? \
-						<= Token_clear $mol_button_minor
-							title \Удалить токен
-							click? <=> clear_token? null
-		<= Settings_popup $mol_pop
-			showed? <=> settings_popup_open? false
-			align \bottom_left
-			Anchor <= Settings_toggle $mol_check_icon
-				hint \Настройки прокси
-				Icon <= Settings_icon $mol_icon_cog
-				checked? <=> settings_popup_open? false
-			bubble_content /
-				<= Settings_panel $mol_list
-					rows /
-						<= Proxy_hint $mol_paragraph
-							title \URL прокси для обхода блокировок
-						<= Proxy_input $mol_string
-							hint \https://my-proxy.example.com
-							value? <=> proxy_url? \
-						<= Proxy_reset $mol_button_minor
-							title \Сбросить на дефолтный
-							click? <=> reset_proxy? null
+		<= Token_toggle $mol_check_icon
+			hint \Токен
+			Icon <= Token_icon $mol_icon_key_variant
+			checked? <=> token_open? false
+		<= Settings_toggle $mol_check_icon
+			hint \Настройки прокси
+			Icon <= Settings_icon $mol_icon_cog
+			checked? <=> settings_open? false
 		<= Nickname_label $mol_view
 			sub / <= nickname_label \
-		<= Account_popup $mol_pop
-			showed? <=> account_popup_open? false
-			align \bottom_left
-			Anchor <= Account_toggle $mol_check_icon
-				hint \Аккаунт
-				Icon <= Account_icon $mol_icon_account_circle
-				checked? <=> account_popup_open? false
-			bubble_content /
-				<= Account $bog_vk_account
+		<= Account_toggle $mol_check_icon
+			hint \Аккаунт
+			Icon <= Account_icon $mol_icon_account_circle
+			checked? <=> account_open? false
 		<= Help_toggle $mol_check_icon
 			hint \Подсказка
 			Icon <= Help_icon $mol_icon_help_circle_outline
-			checked? <=> show_hint? true
+			checked? <=> help_open? false
 		<= Upload $mol_button_open
 			hint \Загрузить с устройства
 			accept \audio/*
@@ -70,6 +39,27 @@ $bog_vk_app $mol_page
 		<= Lighter $mol_lights_toggle
 	body_scroll_top? <=> scroll? 0
 	body /
+		<= Token_panel $mol_list
+			rows /
+				<= Token_input $mol_string
+					hint \Вставь токен или cURL
+					value? <=> token? \
+				<= Token_clear $mol_button_minor
+					title \Удалить токен
+					click? <=> clear_token? null
+		<= Settings_panel $mol_list
+			rows /
+				<= Proxy_hint $mol_paragraph
+					title \URL прокси для обхода блокировок
+				<= Proxy_input $mol_string
+					hint \https://my-proxy.example.com
+					value? <=> proxy_url? \
+				<= Proxy_reset $mol_button_minor
+					title \Сбросить на дефолтный
+					click? <=> reset_proxy? null
+		<= Account $bog_vk_account
+		<= Help_panel $mol_paragraph
+			title <= token_hint \
 		<= Auth_block $mol_view
 			sub /
 				<= Auth_link $mol_link
@@ -77,7 +67,7 @@ $bog_vk_app $mol_page
 					target \_blank
 					sub / \Открыть аудио
 				<= Auth_hint $mol_paragraph
-					title <= token_hint \
+					title <= token_hint
 		<= Tabs $mol_switch
 			value? <=> page? \my
 			options <= tab_options *
