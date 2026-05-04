@@ -19966,7 +19966,18 @@ var $;
 (function ($) {
     class $bog_vk_store extends $mol_object2 {
         static land() {
-            return this.$.$giper_baza_glob.home().land();
+            const land = this.$.$giper_baza_glob.home().land();
+            try {
+                if (land.encryptable() && !land.encrypted()) {
+                    land.encrypted(true);
+                    console.info('[store] home land encrypted');
+                }
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+            }
+            return land;
         }
         static tracks_dict() {
             const Tracks = $giper_baza_dict_to($bog_vk_track_baza);
