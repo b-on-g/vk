@@ -18736,11 +18736,10 @@ declare namespace $.$$ {
         upload_files(next?: File[]): File[];
         clear_token(): void;
         /**
-         * Имя активной overlay-панели в body: '' (треки) | 'token' | 'settings' | 'account' | 'help'.
-         * Только одна панель открыта одновременно — клик по чекбоксу одной автоматически
-         * сбрасывает остальные.
+         * Каждая overlay-панель — независимый булевый toggle в localStorage,
+         * как было у старого show_hint. Несколько панелей могут быть открыты
+         * одновременно, треки/таб-бар при этом не прячутся.
          */
-        panel(next?: string): string;
         token_open(next?: boolean): boolean;
         settings_open(next?: boolean): boolean;
         account_open(next?: boolean): boolean;
@@ -18749,8 +18748,6 @@ declare namespace $.$$ {
         Settings_panel(): any;
         Account(): any;
         Help_panel(): any;
-        Tabs(): any;
-        Tracks(): any;
         /**
          * Пользовательский URL прокси (для обхода блокировок VK API).
          * Пустая строка — дефолтный прокси.

@@ -35912,65 +35912,44 @@ var $;
             clear_token() {
                 this.token('');
                 this.token_expired(false);
-                this.panel('');
+                this.token_open(false);
             }
             /**
-             * Имя активной overlay-панели в body: '' (треки) | 'token' | 'settings' | 'account' | 'help'.
-             * Только одна панель открыта одновременно — клик по чекбоксу одной автоматически
-             * сбрасывает остальные.
+             * Каждая overlay-панель — независимый булевый toggle в localStorage,
+             * как было у старого show_hint. Несколько панелей могут быть открыты
+             * одновременно, треки/таб-бар при этом не прячутся.
              */
-            panel(next) {
-                return next ?? '';
-            }
             token_open(next) {
-                if (next !== undefined)
-                    this.panel(next ? 'token' : '');
-                return this.panel() === 'token';
+                return $mol_state_local.value('vk_token_open', next) ?? false;
             }
             settings_open(next) {
-                if (next !== undefined)
-                    this.panel(next ? 'settings' : '');
-                return this.panel() === 'settings';
+                return $mol_state_local.value('vk_settings_open', next) ?? false;
             }
             account_open(next) {
-                if (next !== undefined)
-                    this.panel(next ? 'account' : '');
-                return this.panel() === 'account';
+                return $mol_state_local.value('vk_account_open', next) ?? false;
             }
             help_open(next) {
-                if (next !== undefined)
-                    this.panel(next ? 'help' : '');
-                return this.panel() === 'help';
+                return $mol_state_local.value('vk_help_open', next) ?? true;
             }
             Token_panel() {
-                if (this.panel() !== 'token')
+                if (!this.token_open())
                     return null;
                 return super.Token_panel();
             }
             Settings_panel() {
-                if (this.panel() !== 'settings')
+                if (!this.settings_open())
                     return null;
                 return super.Settings_panel();
             }
             Account() {
-                if (this.panel() !== 'account')
+                if (!this.account_open())
                     return null;
                 return super.Account();
             }
             Help_panel() {
-                if (this.panel() !== 'help')
+                if (!this.help_open())
                     return null;
                 return super.Help_panel();
-            }
-            Tabs() {
-                if (this.panel())
-                    return null;
-                return super.Tabs();
-            }
-            Tracks() {
-                if (this.panel())
-                    return null;
-                return super.Tracks();
             }
             /**
              * Пользовательский URL прокси (для обхода блокировок VK API).
@@ -36017,7 +35996,7 @@ var $;
             Auth_block() {
                 if (this.token())
                     return null;
-                if (this.panel())
+                if (!this.help_open())
                     return null;
                 return super.Auth_block();
             }
@@ -36118,9 +36097,6 @@ var $;
         ], $bog_vk_app.prototype, "clear_token", null);
         __decorate([
             $mol_mem
-        ], $bog_vk_app.prototype, "panel", null);
-        __decorate([
-            $mol_mem
         ], $bog_vk_app.prototype, "token_open", null);
         __decorate([
             $mol_mem
@@ -36159,6 +36135,9 @@ var $;
             margin: {
                 left: 'auto',
                 right: 'auto',
+            },
+            Head: {
+                justifyContent: 'space-between'
             },
             Tabs: {
                 flex: {
