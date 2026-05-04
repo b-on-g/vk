@@ -8999,7 +8999,12 @@ declare namespace $ {
 declare namespace $.$$ {
     class $bog_vk_account extends $.$bog_vk_account {
         static land(): $giper_baza_land;
+        /** Один и тот же Profile pawn-инстанс — нужен, чтобы реактивные подписки
+         *  на `Nickname().val()` сохранялись между перерисовками view. */
         static profile(): $bog_vk_account_baza;
+        /** Без `@$mol_mem` — getter напрямую читает Giper Baza, и любое
+         *  внешнее изменение (включая sync с другого устройства) ре-рендерит UI
+         *  через стандартную реактивность baza. */
         nickname(next?: string): string;
         lord_short(): string;
         account_key(): string;
