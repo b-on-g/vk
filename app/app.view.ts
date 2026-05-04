@@ -332,49 +332,71 @@ namespace $.$$ {
 			}
 			const items = list?.items ?? []
 			if (!items.length) return null
-			for (const audio of items) {
-				try { $bog_vk_store.save_track(audio) } catch (e: any) {
-					if (e instanceof Promise) throw e
-					console.warn('[app] auto_import save failed:', audio.title, e?.message)
-				}
+			// Метаданные сохраняем НЕ скопом — а внутри prefetch_blobs по одному
+			// перед каждой выкачкой блоба. Так список растёт постепенно и
+			// пользователю видно, что загрузка идёт.
+			if (!$bog_vk_app.__prefetch_started) {
+				$bog_vk_app.__prefetch_started = true
+				$bog_vk_app.prefetch_blobs(items).catch(e => {
+					console.warn('[app] prefetch crashed:', e?.message ?? e)
+				})
 			}
-			// Качаем блобы тех, у кого их в baza ещё нет — последовательно, чтобы
-			// не ддосить VK CDN. Фоном, без блокировки UI.
-			try { ($mol_wire_async($bog_vk_app) as any).prefetch_blobs(items) } catch {}
 			return items.length
 		}
 
+		static __prefetch_started = false
+
 		/**
-		 * Последовательно скачивает HLS для треков, у которых в baza нет файла.
-		 * `save_hls` идемпотентен (проверяет `is_cached`), так что повторные
-		 * вызовы безопасны. Запускается из auto_import фоном.
-		 *
-		 * VK `audio.get` отдаёт треки БЕЗ url — приходится запрашивать его через
-		 * `audio.getById` для каждого трека отдельно перед скачиванием HLS.
+		 * Реактивный статус префетча для UI.
+		 * `total` — всего треков, `done` — скачано в baza, `failed` — упало.
+		 */
+		@$mol_mem
+		static prefetch_state(next?: { total: number, done: number, failed: number }) {
+			return next ?? { total: 0, done: 0, failed: 0 }
+		}
+
+		/**
+		 * Скачивает HLS-блобы для треков без `File` в baza.
+		 * Чистый async — без `$mol_wire_*`, чтобы гарантированно стартовало
+		 * из обычного callback-контекста. Внутри для refresh URL'а дёргает
+		 * `fetch_vk_direct` (тоже plain async), а не `refresh_audio` (mem_key
+		 * с wire_sync — требует фибра).
 		 */
 		static async prefetch_blobs(items: $bog_vk_api_audio[]) {
 			if (!items?.length) return
-			let downloaded = 0, failed = 0
 			console.log('[app] prefetch start:', items.length, 'tracks')
+			$bog_vk_app.prefetch_state({ total: items.length, done: 0, failed: 0 })
+			let done = 0, failed = 0
 			for (const audio of items) {
+				// Сейвим метаданные перед скачиванием блоба — трек появляется
+				// в списке сразу как доходит до него очередь.
+				try { $bog_vk_store.save_track(audio) } catch (e: any) {
+					if (!(e instanceof Promise)) console.warn('[app] save_track failed:', audio.title, e?.message)
+				}
 				try {
-					if ($bog_vk_cache.is_cached(audio)) continue
+					if ($bog_vk_cache.is_cached(audio)) { done++; continue }
 					let target = audio
 					if (!target.url) {
 						const key = `${audio.owner_id}_${audio.id}${audio.access_key ? '_' + audio.access_key : ''}`
-						const fresh = ($mol_wire_sync($bog_vk_api) as any).refresh_audio(key) as $bog_vk_api_audio | null
-						if (!fresh?.url) { failed++; continue }
+						const resp = await $bog_vk_api.fetch_vk_direct('audio.getById', { audios: key }) as $bog_vk_api_audio[]
+						const fresh = resp?.[0]
+						if (!fresh?.url) {
+							failed++
+							console.warn('[app] no fresh url:', audio.artist, '—', audio.title)
+							$bog_vk_app.prefetch_state({ total: items.length, done, failed })
+							continue
+						}
 						target = { ...audio, url: fresh.url }
 					}
 					await $bog_vk_cache.save_hls(target)
-					downloaded++
+					done++
 				} catch (e: any) {
-					if (e instanceof Promise) continue
 					failed++
-					console.warn('[app] prefetch failed:', audio.title, e?.message)
+					console.warn('[app] prefetch failed:', audio.title, e?.message ?? e)
 				}
+				$bog_vk_app.prefetch_state({ total: items.length, done, failed })
 			}
-			console.log('[app] prefetch done:', downloaded, 'downloaded,', failed, 'failed')
+			console.log('[app] prefetch done:', done, 'downloaded,', failed, 'failed')
 		}
 
 		auto() {
