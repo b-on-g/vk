@@ -95,9 +95,9 @@ $mol_icon $mol_svg_root
 		<= Path $mol_svg_path
 			geometry <= path \
 
-$mol_icon_account $mol_icon path \M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z
+$mol_icon_chart_timeline $mol_icon path \M2,2H4V20H22V22H2V2M7,10H17V13H7V10M11,15H21V18H11V15M6,4H22V8H20V6H8V8H6V4Z
 
-$mol_icon_account_circle $mol_icon path \M12,19.2C9.5,19.2 7.29,17.92 6,16C6.03,14 10,12.9 12,12.9C14,12.9 17.97,14 18,16C16.71,17.92 14.5,19.2 12,19.2M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z
+$mol_icon_chart_timeline_variant $mol_icon path \M3,14L3.5,14.07L8.07,9.5C7.89,8.85 8.06,8.11 8.59,7.59C9.37,6.8 10.63,6.8 11.41,7.59C11.94,8.11 12.11,8.85 11.93,9.5L14.5,12.07L15,12C15.18,12 15.35,12 15.5,12.07L19.07,8.5C19,8.35 19,8.18 19,8A2,2 0 0,1 21,6A2,2 0 0,1 23,8A2,2 0 0,1 21,10C20.82,10 20.65,10 20.5,9.93L16.93,13.5C17,13.65 17,13.82 17,14A2,2 0 0,1 15,16A2,2 0 0,1 13,14L13.07,13.5L10.5,10.93C10.18,11 9.82,11 9.5,10.93L4.93,15.5L5,16A2,2 0 0,1 3,18A2,2 0 0,1 1,16A2,2 0 0,1 3,14Z
 
 $mol_speck $mol_view
 	theme \$mol_theme_accent
@@ -145,6 +145,10 @@ $mol_check $mol_button_minor
 					<= title \
 
 $mol_check_icon $mol_check
+
+$mol_icon_account $mol_icon path \M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z
+
+$mol_icon_account_circle $mol_icon path \M12,19.2C9.5,19.2 7.29,17.92 6,16C6.03,14 10,12.9 12,12.9C14,12.9 17.97,14 18,16C16.71,17.92 14.5,19.2 12,19.2M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z
 
 $mol_icon_upload $mol_icon path \M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z
 
@@ -2129,6 +2133,7 @@ $bog_vk_player $mol_view
 	queue /
 	queue_index? 0
 	play_track? null
+	pick_next? null
 	sub /
 		<= Progress $mol_view
 			sub /
@@ -2177,6 +2182,10 @@ $bog_vk_app $mol_page
 	tools /
 		<= Nickname_label $mol_view
 			sub / <= nickname_label \
+		<= Wave_toggle $mol_check_icon
+			hint \Моя волна
+			Icon <= Wave_icon $mol_icon_chart_timeline_variant
+			checked? <=> wave_mode? false
 		<= Account_toggle $mol_check_icon
 			hint \Аккаунт
 			Icon <= Account_icon $mol_icon_account_circle
@@ -2212,6 +2221,7 @@ $bog_vk_app $mol_page
 		<= Player $bog_vk_player
 			queue <= visible_audios /
 			current_audio? <=> current_audio? null
+			pick_next? <=> player_pick_next? null
 
 $mol_float $mol_view
 	style *

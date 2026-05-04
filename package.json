@@ -160,8 +160,9 @@
     "$bog_popup",
     "$bog_tooltip",
     "$mol_image",
-    "$mol_icon_account_circle",
-    "$mol_icon_account",
+    "$mol_icon_chart_timeline_variant",
+    "$mol_icon_chart_timeline",
+    "$mol_icon_chart",
     "$mol_icon",
     "$mol_svg_root",
     "$mol_svg",
@@ -177,6 +178,8 @@
     "$mol_keyboard",
     "$mol_button_typed",
     "$mol_dom_event",
+    "$mol_icon_account_circle",
+    "$mol_icon_account",
     "$mol_button_open",
     "$mol_icon_upload",
     "$bog_theme_toggle",
@@ -419,7 +422,8 @@
     "$hyoo_sync_masters",
     "$mol_crypto_secret",
     "$mol_wait_rest",
-    "$mol_after_work"
+    "$mol_after_work",
+    "$bog_recsys"
   ],
   "dependencies": {
     "autoinstall": "*",

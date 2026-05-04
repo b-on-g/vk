@@ -4978,9 +4978,9 @@ var $;
 
 
 ;
-	($.$mol_icon_account) = class $mol_icon_account extends ($.$mol_icon) {
+	($.$mol_icon_chart_timeline) = class $mol_icon_chart_timeline extends ($.$mol_icon) {
 		path(){
-			return "M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z";
+			return "M2,2H4V20H22V22H2V2M7,10H17V13H7V10M11,15H21V18H11V15M6,4H22V8H20V6H8V8H6V4Z";
 		}
 	};
 
@@ -4990,9 +4990,9 @@ var $;
 
 
 ;
-	($.$mol_icon_account_circle) = class $mol_icon_account_circle extends ($.$mol_icon) {
+	($.$mol_icon_chart_timeline_variant) = class $mol_icon_chart_timeline_variant extends ($.$mol_icon) {
 		path(){
-			return "M12,19.2C9.5,19.2 7.29,17.92 6,16C6.03,14 10,12.9 12,12.9C14,12.9 17.97,14 18,16C16.71,17.92 14.5,19.2 12,19.2M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z";
+			return "M3,14L3.5,14.07L8.07,9.5C7.89,8.85 8.06,8.11 8.59,7.59C9.37,6.8 10.63,6.8 11.41,7.59C11.94,8.11 12.11,8.85 11.93,9.5L14.5,12.07L15,12C15.18,12 15.35,12 15.5,12.07L19.07,8.5C19,8.35 19,8.18 19,8A2,2 0 0,1 21,6A2,2 0 0,1 23,8A2,2 0 0,1 21,10C20.82,10 20.65,10 20.5,9.93L16.93,13.5C17,13.65 17,13.82 17,14A2,2 0 0,1 15,16A2,2 0 0,1 13,14L13.07,13.5L10.5,10.93C10.18,11 9.82,11 9.5,10.93L4.93,15.5L5,16A2,2 0 0,1 3,18A2,2 0 0,1 1,16A2,2 0 0,1 3,14Z";
 		}
 	};
 
@@ -5376,6 +5376,30 @@ var $;
 (function ($) {
     $mol_style_attach("mol/check/icon/icon.view.css", "[mol_check_icon]:where([mol_check_checked]) {\n\tcolor: var(--mol_theme_current);\n}\n");
 })($ || ($ = {}));
+
+;
+"use strict";
+
+
+;
+	($.$mol_icon_account) = class $mol_icon_account extends ($.$mol_icon) {
+		path(){
+			return "M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z";
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
+	($.$mol_icon_account_circle) = class $mol_icon_account_circle extends ($.$mol_icon) {
+		path(){
+			return "M12,19.2C9.5,19.2 7.29,17.92 6,16C6.03,14 10,12.9 12,12.9C14,12.9 17.97,14 18,16C16.71,17.92 14.5,19.2 12,19.2M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z";
+		}
+	};
+
 
 ;
 "use strict";
@@ -28679,6 +28703,12 @@ var $;
                 const key = this.account_key();
                 if (!key)
                     return '';
+                const proto = location.protocol;
+                // В расширении origin = chrome-extension://<id>/ — такая ссылка не откроется на чужом
+                // устройстве. Подменяем на публичный gh-pages хост, куда деплоится тот же билд.
+                if (proto === 'chrome-extension:' || proto === 'moz-extension:') {
+                    return 'https://b-on-g.github.io/vk/#account=' + encodeURIComponent(key);
+                }
                 const base = location.origin + location.pathname + location.search;
                 return base + '#account=' + encodeURIComponent(key);
             }
@@ -31021,6 +31051,10 @@ var $;
 			if(next !== undefined) return next;
 			return null;
 		}
+		pick_next(next){
+			if(next !== undefined) return next;
+			return null;
+		}
 		sub(){
 			return [(this.Progress()), (this.Controls())];
 		}
@@ -31051,6 +31085,7 @@ var $;
 	($mol_mem(($.$bog_vk_player.prototype), "current_audio"));
 	($mol_mem(($.$bog_vk_player.prototype), "queue_index"));
 	($mol_mem(($.$bog_vk_player.prototype), "play_track"));
+	($mol_mem(($.$bog_vk_player.prototype), "pick_next"));
 
 
 ;
@@ -31657,6 +31692,23 @@ var $;
                 }
             }
             next() {
+                // Если родитель подкинул pick_next (Моя волна) — пробуем сначала её.
+                try {
+                    const picked = this.pick_next(this.current_audio());
+                    if (picked) {
+                        const queue = this.queue();
+                        const idx = queue.findIndex((a) => a.id === picked.id && a.owner_id === picked.owner_id);
+                        if (idx >= 0)
+                            this._queue_idx = idx;
+                        this.play_track(picked);
+                        return;
+                    }
+                }
+                catch (e) {
+                    if (e instanceof Promise)
+                        throw e;
+                    console.warn('[player] pick_next failed:', e?.message);
+                }
                 const queue = this.queue();
                 if (!queue.length)
                     return;
@@ -31875,6 +31927,21 @@ var $;
 			(obj.sub) = () => ([(this.nickname_label())]);
 			return obj;
 		}
+		Wave_icon(){
+			const obj = new this.$.$mol_icon_chart_timeline_variant();
+			return obj;
+		}
+		wave_mode(next){
+			if(next !== undefined) return next;
+			return false;
+		}
+		Wave_toggle(){
+			const obj = new this.$.$mol_check_icon();
+			(obj.hint) = () => ("Моя волна");
+			(obj.Icon) = () => ((this.Wave_icon()));
+			(obj.checked) = (next) => ((this.wave_mode(next)));
+			return obj;
+		}
 		Account_icon(){
 			const obj = new this.$.$mol_icon_account_circle();
 			return obj;
@@ -31983,10 +32050,15 @@ var $;
 			(obj.delete_audio) = (next) => ((this.delete_audio(next)));
 			return obj;
 		}
+		player_pick_next(next){
+			if(next !== undefined) return next;
+			return null;
+		}
 		Player(){
 			const obj = new this.$.$bog_vk_player();
 			(obj.queue) = () => ((this.visible_audios()));
 			(obj.current_audio) = (next) => ((this.current_audio(next)));
+			(obj.pick_next) = (next) => ((this.player_pick_next(next)));
 			return obj;
 		}
 		plugins(){
@@ -32005,6 +32077,7 @@ var $;
 		tools(){
 			return [
 				(this.Nickname_label()), 
+				(this.Wave_toggle()), 
 				(this.Account_toggle()), 
 				(this.Upload()), 
 				(this.Theme_btn())
@@ -32030,6 +32103,9 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "Tooltip"));
 	($mol_mem(($.$bog_vk_app.prototype), "Brand"));
 	($mol_mem(($.$bog_vk_app.prototype), "Nickname_label"));
+	($mol_mem(($.$bog_vk_app.prototype), "Wave_icon"));
+	($mol_mem(($.$bog_vk_app.prototype), "wave_mode"));
+	($mol_mem(($.$bog_vk_app.prototype), "Wave_toggle"));
 	($mol_mem(($.$bog_vk_app.prototype), "Account_icon"));
 	($mol_mem(($.$bog_vk_app.prototype), "account_open"));
 	($mol_mem(($.$bog_vk_app.prototype), "Account_toggle"));
@@ -32049,6 +32125,7 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "restore_audio"));
 	($mol_mem(($.$bog_vk_app.prototype), "delete_audio"));
 	($mol_mem(($.$bog_vk_app.prototype), "Tracks"));
+	($mol_mem(($.$bog_vk_app.prototype), "player_pick_next"));
 	($mol_mem(($.$bog_vk_app.prototype), "Player"));
 
 
@@ -35888,6 +35965,148 @@ var $;
 
 ;
 "use strict";
+var $;
+(function ($) {
+    const reward_of = {
+        play: 0.5,
+        skip: -0.5,
+        like: 1,
+        dislike: -1,
+    };
+    class $bog_recsys extends $mol_object2 {
+        static namespace(next) {
+            return next ?? 'default';
+        }
+        static epsilon(next) {
+            return next ?? 0.15;
+        }
+        static decay(next) {
+            return next ?? 0.92;
+        }
+        static storage_key() {
+            return `bog_recsys_${this.namespace()}_rewards`;
+        }
+        static rewards(next) {
+            const stored = this.$.$mol_state_local.value(this.storage_key(), next ?? undefined);
+            return stored ?? {};
+        }
+        static recommend(pool, opts) {
+            const exclude_set = opts?.exclude
+                ? (opts.exclude instanceof Set
+                    ? opts.exclude
+                    : new Set(opts.exclude))
+                : null;
+            const filtered = exclude_set
+                ? pool.filter(item => !exclude_set.has(item.id))
+                : pool.slice();
+            if (filtered.length === 0)
+                return [];
+            const limit = Math.max(1, opts?.limit ?? 1);
+            const seed = opts?.seed ?? null;
+            const rewards = this.rewards();
+            const eps = this.epsilon();
+            const rand = this.$.Math.random;
+            const explore = rand() < eps;
+            if (explore) {
+                const out = [];
+                const remaining = filtered.slice();
+                while (out.length < limit && remaining.length > 0) {
+                    const idx = Math.floor(rand() * remaining.length);
+                    out.push(remaining.splice(idx, 1)[0]);
+                }
+                return out;
+            }
+            const scored = filtered.map(item => ({
+                item,
+                score: 0.6 * cosine(seed?.embedding, item.embedding)
+                    + 0.3 * tag_reward(item.tags, rewards)
+                    + 0.1 * rand(),
+            }));
+            scored.sort((a, b) => b.score - a.score);
+            return scored.slice(0, limit).map(s => s.item);
+        }
+        static feedback(item, signal) {
+            const tags = item.tags;
+            if (!tags || tags.length === 0)
+                return;
+            const r = reward_of[signal];
+            const decay = this.decay();
+            try {
+                const current = { ...this.rewards() };
+                for (const tag of tags) {
+                    const prev = current[tag] ?? 0;
+                    current[tag] = prev * decay + r;
+                }
+                this.$.$mol_state_local.value(this.storage_key(), current);
+                this.rewards(current);
+            }
+            catch (error) {
+                console.warn(error);
+            }
+        }
+        static reset() {
+            try {
+                this.$.$mol_state_local.value(this.storage_key(), null);
+                this.rewards({});
+            }
+            catch (error) {
+                console.warn(error);
+            }
+        }
+    }
+    __decorate([
+        $mol_mem
+    ], $bog_recsys, "namespace", null);
+    __decorate([
+        $mol_mem
+    ], $bog_recsys, "epsilon", null);
+    __decorate([
+        $mol_mem
+    ], $bog_recsys, "decay", null);
+    __decorate([
+        $mol_mem
+    ], $bog_recsys, "rewards", null);
+    __decorate([
+        $mol_action
+    ], $bog_recsys, "feedback", null);
+    __decorate([
+        $mol_action
+    ], $bog_recsys, "reset", null);
+    $.$bog_recsys = $bog_recsys;
+    function cosine(a, b) {
+        if (!a || !b)
+            return 0;
+        const len = Math.min(a.length, b.length);
+        if (len === 0)
+            return 0;
+        let dot = 0, na = 0, nb = 0;
+        for (let i = 0; i < len; ++i) {
+            const x = a[i], y = b[i];
+            dot += x * y;
+            na += x * x;
+            nb += y * y;
+        }
+        if (na === 0 || nb === 0)
+            return 0;
+        return dot / Math.sqrt(na * nb);
+    }
+    function tag_reward(tags, rewards) {
+        if (!tags || tags.length === 0)
+            return 0;
+        let sum = 0, n = 0;
+        for (const tag of tags) {
+            const r = rewards[tag];
+            if (typeof r === 'number') {
+                sum += r;
+                ++n;
+            }
+        }
+        return n === 0 ? 0 : sum / n;
+    }
+})($ || ($ = {}));
+
+;
+"use strict";
 
 
 ;
@@ -36011,8 +36230,6 @@ var $;
                 return !this.token() || this.token_invalid() || !this.online() || this.token_expired();
             }
             title() {
-                if (this.offline_mode())
-                    return 'Bog Music (offline)';
                 return 'Bog Music';
             }
             token(next) {
@@ -36315,6 +36532,15 @@ var $;
                         return;
                     console.warn('[app] baza save failed:', e?.message);
                 }
+                // Положительный сигнал в Мою волну — этот тег user слушает.
+                const item = this.recsys_item(audio);
+                if (item) {
+                    $bog_recsys.namespace('vk');
+                    try {
+                        $bog_recsys.feedback(item, 'play');
+                    }
+                    catch { }
+                }
             }
             upload_files(next) {
                 if (next?.length) {
@@ -36346,6 +36572,40 @@ var $;
              */
             account_open(next) {
                 return $mol_state_local.value('vk_account_open', next) ?? false;
+            }
+            wave_mode(next) {
+                return $mol_state_local.value('vk_wave_mode', next) ?? false;
+            }
+            /** Превращает audio в item для $bog_recsys: id + tag по исполнителю. */
+            recsys_item(audio) {
+                if (!audio)
+                    return null;
+                const tags = [];
+                if (audio.artist)
+                    tags.push('artist:' + audio.artist.toLowerCase().trim());
+                return { id: `${audio.owner_id}_${audio.id}`, tags };
+            }
+            /**
+             * Хук для Player.next(): когда включена «Моя волна», берём следующий трек
+             * через $bog_recsys по cosine + ε-greedy на per-tag rewards.
+             */
+            player_pick_next(current) {
+                if (!this.wave_mode())
+                    return null;
+                const pool = this.visible_audios();
+                if (!pool.length)
+                    return null;
+                const seed = this.recsys_item(current);
+                const exclude = current ? [`${current.owner_id}_${current.id}`] : [];
+                $bog_recsys.namespace('vk');
+                const items = pool.map((a) => this.recsys_item(a)).filter(Boolean);
+                const id_to_audio = new Map();
+                for (const a of pool)
+                    id_to_audio.set(`${a.owner_id}_${a.id}`, a);
+                const picked = $bog_recsys.recommend(items, { seed, exclude, limit: 1 })[0];
+                if (!picked)
+                    return null;
+                return id_to_audio.get(picked.id) ?? null;
             }
             Account() {
                 if (!this.account_open())
@@ -36455,6 +36715,9 @@ var $;
         ], $bog_vk_app.prototype, "account_open", null);
         __decorate([
             $mol_mem
+        ], $bog_vk_app.prototype, "wave_mode", null);
+        __decorate([
+            $mol_mem
         ], $bog_vk_app.prototype, "nickname_label", null);
         $$.$bog_vk_app = $bog_vk_app;
     })($$ = $.$$ || ($.$$ = {}));
@@ -36520,6 +36783,10 @@ var $;
                     left: '0.5rem',
                     right: '0.5rem',
                 },
+                maxWidth: '8rem',
+                overflow: { x: 'hidden', y: 'hidden' },
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
             },
             Player: {
                 position: 'sticky',

@@ -2356,22 +2356,22 @@ declare namespace $ {
 //# sourceMappingURL=icon.view.tree.d.ts.map
 declare namespace $ {
 
-	export class $mol_icon_account extends $mol_icon {
+	export class $mol_icon_chart_timeline extends $mol_icon {
 		path( ): string
 	}
 	
 }
 
-//# sourceMappingURL=account.view.tree.d.ts.map
+//# sourceMappingURL=timeline.view.tree.d.ts.map
 declare namespace $ {
 
-	export class $mol_icon_account_circle extends $mol_icon {
+	export class $mol_icon_chart_timeline_variant extends $mol_icon {
 		path( ): string
 	}
 	
 }
 
-//# sourceMappingURL=circle.view.tree.d.ts.map
+//# sourceMappingURL=variant.view.tree.d.ts.map
 declare namespace $ {
     /**
      * Z-index values for layers
@@ -2651,6 +2651,24 @@ declare namespace $ {
 }
 
 //# sourceMappingURL=icon.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_icon_account extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=account.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_icon_account_circle extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=circle.view.tree.d.ts.map
 declare namespace $ {
 
 	export class $mol_icon_upload extends $mol_icon {
@@ -10132,6 +10150,7 @@ declare namespace $ {
 		queue( ): readonly(any)[]
 		queue_index( next?: number ): number
 		play_track( next?: any ): any
+		pick_next( next?: any ): any
 		sub( ): readonly(any)[]
 	}
 	
@@ -12401,6 +12420,29 @@ declare namespace $.$$ {
 }
 
 declare namespace $ {
+    type $bog_recsys_item = {
+        readonly id: string;
+        readonly embedding?: Float32Array | readonly number[];
+        readonly tags?: readonly string[];
+    };
+    type $bog_recsys_feedback = 'play' | 'skip' | 'like' | 'dislike';
+    class $bog_recsys extends $mol_object2 {
+        static namespace(next?: string): string;
+        static epsilon(next?: number): number;
+        static decay(next?: number): number;
+        protected static storage_key(): string;
+        static rewards(next?: Record<string, number>): Record<string, number>;
+        static recommend(pool: readonly $bog_recsys_item[], opts?: {
+            seed?: $bog_recsys_item | null;
+            exclude?: ReadonlySet<string> | readonly string[];
+            limit?: number;
+        }): $bog_recsys_item[];
+        static feedback(item: $bog_recsys_item, signal: $bog_recsys_feedback): void;
+        static reset(): void;
+    }
+}
+
+declare namespace $ {
 
 	type $mol_image__uri_bog_vk_app_1 = $mol_type_enforce<
 		string
@@ -12423,104 +12465,124 @@ declare namespace $ {
 		ReturnType< $mol_check_icon['hint'] >
 	>
 	type $mol_check_icon__Icon_bog_vk_app_5 = $mol_type_enforce<
-		ReturnType< $bog_vk_app['Account_icon'] >
+		ReturnType< $bog_vk_app['Wave_icon'] >
 		,
 		ReturnType< $mol_check_icon['Icon'] >
 	>
 	type $mol_check_icon__checked_bog_vk_app_6 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['wave_mode'] >
+		,
+		ReturnType< $mol_check_icon['checked'] >
+	>
+	type $mol_check_icon__hint_bog_vk_app_7 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_check_icon['hint'] >
+	>
+	type $mol_check_icon__Icon_bog_vk_app_8 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['Account_icon'] >
+		,
+		ReturnType< $mol_check_icon['Icon'] >
+	>
+	type $mol_check_icon__checked_bog_vk_app_9 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['account_open'] >
 		,
 		ReturnType< $mol_check_icon['checked'] >
 	>
-	type $mol_button_open__hint_bog_vk_app_7 = $mol_type_enforce<
+	type $mol_button_open__hint_bog_vk_app_10 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_button_open['hint'] >
 	>
-	type $mol_button_open__accept_bog_vk_app_8 = $mol_type_enforce<
+	type $mol_button_open__accept_bog_vk_app_11 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_button_open['accept'] >
 	>
-	type $mol_button_open__files_bog_vk_app_9 = $mol_type_enforce<
+	type $mol_button_open__files_bog_vk_app_12 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['upload_files'] >
 		,
 		ReturnType< $mol_button_open['files'] >
 	>
-	type $bog_theme_toggle__theme_auto_bog_vk_app_10 = $mol_type_enforce<
+	type $bog_theme_toggle__theme_auto_bog_vk_app_13 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['Theme'] >
 		,
 		ReturnType< $bog_theme_toggle['theme_auto'] >
 	>
-	type $mol_switch__value_bog_vk_app_11 = $mol_type_enforce<
+	type $mol_switch__value_bog_vk_app_14 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['page'] >
 		,
 		ReturnType< $mol_switch['value'] >
 	>
-	type $mol_switch__options_bog_vk_app_12 = $mol_type_enforce<
+	type $mol_switch__options_bog_vk_app_15 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['tab_options'] >
 		,
 		ReturnType< $mol_switch['options'] >
 	>
-	type $mol_string__hint_bog_vk_app_13 = $mol_type_enforce<
+	type $mol_string__hint_bog_vk_app_16 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_string['hint'] >
 	>
-	type $mol_string__value_bog_vk_app_14 = $mol_type_enforce<
+	type $mol_string__value_bog_vk_app_17 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['search_query'] >
 		,
 		ReturnType< $mol_string['value'] >
 	>
-	type $bog_vk_tracks__audios_bog_vk_app_15 = $mol_type_enforce<
+	type $bog_vk_tracks__audios_bog_vk_app_18 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_tracks['audios'] >
 	>
-	type $bog_vk_tracks__current_audio_bog_vk_app_16 = $mol_type_enforce<
+	type $bog_vk_tracks__current_audio_bog_vk_app_19 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['current_audio'] >
 	>
-	type $bog_vk_tracks__play_audio_bog_vk_app_17 = $mol_type_enforce<
+	type $bog_vk_tracks__play_audio_bog_vk_app_20 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['on_play_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['play_audio'] >
 	>
-	type $bog_vk_tracks__archive_mode_bog_vk_app_18 = $mol_type_enforce<
+	type $bog_vk_tracks__archive_mode_bog_vk_app_21 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['archive_mode'] >
 		,
 		ReturnType< $bog_vk_tracks['archive_mode'] >
 	>
-	type $bog_vk_tracks__reorder_to_bog_vk_app_19 = $mol_type_enforce<
+	type $bog_vk_tracks__reorder_to_bog_vk_app_22 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['reorder_to'] >
 		,
 		ReturnType< $bog_vk_tracks['reorder_to'] >
 	>
-	type $bog_vk_tracks__archive_audio_bog_vk_app_20 = $mol_type_enforce<
+	type $bog_vk_tracks__archive_audio_bog_vk_app_23 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['archive_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['archive_audio'] >
 	>
-	type $bog_vk_tracks__restore_audio_bog_vk_app_21 = $mol_type_enforce<
+	type $bog_vk_tracks__restore_audio_bog_vk_app_24 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['restore_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['restore_audio'] >
 	>
-	type $bog_vk_tracks__delete_audio_bog_vk_app_22 = $mol_type_enforce<
+	type $bog_vk_tracks__delete_audio_bog_vk_app_25 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['delete_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['delete_audio'] >
 	>
-	type $bog_vk_player__queue_bog_vk_app_23 = $mol_type_enforce<
+	type $bog_vk_player__queue_bog_vk_app_26 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_player['queue'] >
 	>
-	type $bog_vk_player__current_audio_bog_vk_app_24 = $mol_type_enforce<
+	type $bog_vk_player__current_audio_bog_vk_app_27 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_player['current_audio'] >
+	>
+	type $bog_vk_player__pick_next_bog_vk_app_28 = $mol_type_enforce<
+		ReturnType< $bog_vk_app['player_pick_next'] >
+		,
+		ReturnType< $bog_vk_player['pick_next'] >
 	>
 	export class $bog_vk_app extends $mol_page {
 		Theme( ): $bog_theme_auto
@@ -12529,6 +12591,9 @@ declare namespace $ {
 		Brand( ): $mol_image
 		nickname_label( ): string
 		Nickname_label( ): $mol_view
+		Wave_icon( ): $mol_icon_chart_timeline_variant
+		wave_mode( next?: boolean ): boolean
+		Wave_toggle( ): $mol_check_icon
 		Account_icon( ): $mol_icon_account_circle
 		account_open( next?: boolean ): boolean
 		Account_toggle( ): $mol_check_icon
@@ -12555,6 +12620,7 @@ declare namespace $ {
 		restore_audio( next?: any ): any
 		delete_audio( next?: any ): any
 		Tracks( ): $bog_vk_tracks
+		player_pick_next( next?: any ): any
 		Player( ): $bog_vk_player
 		plugins( ): readonly(any)[]
 		title( ): string
@@ -12574,7 +12640,7 @@ declare namespace $.$$ {
         token_expired(next?: boolean): boolean;
         token_invalid(): boolean;
         offline_mode(): boolean;
-        title(): "Bog Music (offline)" | "Bog Music";
+        title(): string;
         token(next?: string): string;
         extract_token(input: string): string;
         extract_cookies(input: string): string;
@@ -12617,6 +12683,17 @@ declare namespace $.$$ {
          * одновременно, треки/таб-бар при этом не прячутся.
          */
         account_open(next?: boolean): boolean;
+        wave_mode(next?: boolean): boolean;
+        /** Превращает audio в item для $bog_recsys: id + tag по исполнителю. */
+        recsys_item(audio: $bog_vk_api_audio | null): {
+            id: string;
+            tags: string[];
+        } | null;
+        /**
+         * Хук для Player.next(): когда включена «Моя волна», берём следующий трек
+         * через $bog_recsys по cosine + ε-greedy на per-tag rewards.
+         */
+        player_pick_next(current: $bog_vk_api_audio | null): $bog_vk_api_audio | null;
         Account(): any;
         /** Динамические лейблы вкладок с количеством треков. */
         tab_options(): {
