@@ -1,55 +1,13 @@
 namespace $ {
 
 	/**
-	 * Тонкий фасад над Giper Baza для аудио-блобов.
-	 * Раньше был отдельный IndexedDB (`vk_audio_cache`), но теперь источник один —
-	 * baza, чтобы блобы автоматически синкались на другие устройства.
+	 * Чистый утилитарный класс — HLS-декодирование, демукс TS, MP4-мукс,
+	 * расшифровка AES-CBC. БЕЗ записи в baza — все side-эффекты в $bog_vk_app.
 	 */
 	export class $bog_vk_cache extends $mol_object {
 
-		@$mol_mem
-		static version(next?: number) {
-			return next ?? 0
-		}
-
 		static cache_key(audio: $bog_vk_api_audio) {
 			return `${audio.owner_id}_${audio.id}`
-		}
-
-		/**
-		 * Тонкая обёртка над `$bog_vk_store.local_blob` — отдаёт URL для воспроизведения.
-		 * Раньше тут был IndexedDB-кэш; теперь источник один — Giper Baza, чтобы блобы
-		 * автоматически синкались между устройствами (не дублируем хранилище).
-		 */
-		static async get(audio: $bog_vk_api_audio): Promise<string | null> {
-			try {
-				const blob = $bog_vk_store.local_blob(audio)
-				if (!blob) return null
-				return URL.createObjectURL(blob)
-			} catch (e: any) {
-				if (e instanceof Promise) throw e
-				console.warn(`[cache] get error: ${audio.artist} — ${audio.title}`, e?.message)
-				return null
-			}
-		}
-
-		static is_cached(audio: $bog_vk_api_audio): boolean {
-			try {
-				return $bog_vk_store.local_blob(audio) !== null
-			} catch (e: any) {
-				if (e instanceof Promise) throw e
-				return false
-			}
-		}
-
-		static drop(audio: $bog_vk_api_audio): void {
-			try {
-				$bog_vk_store.drop_blob(audio)
-				console.log(`[cache] dropped: ${audio.artist} — ${audio.title}`)
-			} catch (e: any) {
-				if (e instanceof Promise) throw e
-				console.warn(`[cache] drop error: ${audio.artist} — ${audio.title}`, e?.message)
-			}
 		}
 
 		static adts_to_m4a(adts: Uint8Array): Uint8Array {
@@ -71,14 +29,12 @@ namespace $ {
 
 				if (frameLen < 7 || frameLen > 8192 || i + frameLen > adts.length) { i++; continue }
 
-				// Verify next frame sync to filter false positives
 				if (i + frameLen + 1 < adts.length) {
 					if (adts[i + frameLen] !== 0xFF || (adts[i + frameLen + 1] & 0xF6) !== 0xF0) {
 						i++; continue
 					}
 				}
 
-				// Lock codec params from first valid frame
 				if (frames.length === 0) {
 					audioObjectType = profile + 1
 					sampleRateIndex = srIdx
@@ -100,7 +56,6 @@ namespace $ {
 			const totalSamples = frames.length * 1024
 			const rawSize = frameSizes.reduce((a, b) => a + b, 0)
 
-			// AudioSpecificConfig (2 bytes)
 			const asc0 = (audioObjectType << 3) | (sampleRateIndex >> 1)
 			const asc1 = ((sampleRateIndex & 1) << 7) | (channelConfig << 3)
 
@@ -111,10 +66,8 @@ namespace $ {
 			const fbox = (type: string, ver: number, fl: number, payload: number[]) =>
 				[...u32(12 + payload.length), ...str(type), ver, (fl >> 16) & 0xFF, (fl >> 8) & 0xFF, fl & 0xFF, ...payload]
 
-			// ftyp
 			const ftyp = box('ftyp', [...str('M4A '), ...u32(0), ...str('M4A '), ...str('isom'), ...str('mp42')])
 
-			// esds descriptor chain
 			const decSpecInfo = [0x05, 0x02, asc0, asc1]
 			const decConfigPayload = [0x40, 0x15, 0x00, 0x00, 0x00, ...u32(0), ...u32(0), ...decSpecInfo]
 			const decConfig = [0x04, decConfigPayload.length, ...decConfigPayload]
@@ -123,13 +76,12 @@ namespace $ {
 			const esDescr = [0x03, esPayload.length, ...esPayload]
 			const esds = fbox('esds', 0, 0, esDescr)
 
-			// mp4a sample entry
 			const mp4aPayload = [
-				...Array(6).fill(0), ...u16(1), // reserved + data_reference_index
-				...Array(8).fill(0), // reserved
-				...u16(channelConfig), ...u16(16), // channels, sample_size
-				...u16(0), ...u16(0), // compression_id, packet_size
-				...u16(sampleRate), ...u16(0), // samplerate 16.16 fixed
+				...Array(6).fill(0), ...u16(1),
+				...Array(8).fill(0),
+				...u16(channelConfig), ...u16(16),
+				...u16(0), ...u16(0),
+				...u16(sampleRate), ...u16(0),
 				...esds,
 			]
 			const mp4a = [...u32(8 + mp4aPayload.length), ...str('mp4a'), ...mp4aPayload]
@@ -138,7 +90,7 @@ namespace $ {
 			const stts = fbox('stts', 0, 0, [...u32(1), ...u32(frames.length), ...u32(1024)])
 			const stsc = fbox('stsc', 0, 0, [...u32(1), ...u32(1), ...u32(frames.length), ...u32(1)])
 			const stsz = fbox('stsz', 0, 0, [...u32(0), ...u32(frames.length), ...frameSizes.flatMap(s => u32(s))])
-			const stco = fbox('stco', 0, 0, [...u32(1), ...u32(0)]) // offset patched below
+			const stco = fbox('stco', 0, 0, [...u32(1), ...u32(0)])
 
 			const stbl = box('stbl', [...stsd, ...stts, ...stsc, ...stsz, ...stco])
 
@@ -171,11 +123,9 @@ namespace $ {
 			])
 			const moov = box('moov', [...mvhd, ...trak])
 
-			// Patch stco chunk_offset: mdat data starts after ftyp + moov + mdat header(8)
 			const mdatDataOffset = ftyp.length + moov.length + 8
 			for (let j = 0; j < moov.length - 4; j++) {
 				if (moov[j] === 0x73 && moov[j + 1] === 0x74 && moov[j + 2] === 0x63 && moov[j + 3] === 0x6F) {
-					// 'stco' found: type(4) + version(1) + flags(3) + entry_count(4) = 12 bytes to offset
 					const p = j + 12
 					moov[p] = (mdatDataOffset >>> 24) & 0xFF
 					moov[p + 1] = (mdatDataOffset >>> 16) & 0xFF
@@ -185,7 +135,6 @@ namespace $ {
 				}
 			}
 
-			// Assemble: ftyp + moov + mdat
 			const mdatHeader = [...u32(8 + rawSize), ...str('mdat')]
 			const total = ftyp.length + moov.length + mdatHeader.length + rawSize
 			const out = new Uint8Array(total)
@@ -197,38 +146,27 @@ namespace $ {
 				out.set(frame, pos); pos += frame.length
 			}
 
-			console.log(`[cache] muxed ${frames.length} AAC frames → ${(total / 1024).toFixed(0)} KB M4A`)
 			return out
 		}
 
 		static extract_audio(ts: Uint8Array): { data: Uint8Array, mime: string } {
-			// Already raw AAC (ADTS)
 			if (ts[0] === 0xFF && (ts[1] & 0xF0) === 0xF0) {
 				return { data: ts, mime: 'audio/aac' }
 			}
-
-			// Already MP3
 			if (ts[0] === 0xFF && (ts[1] & 0xE0) === 0xE0) {
 				return { data: ts, mime: 'audio/mpeg' }
 			}
-
-			// ID3 tag (MP3 with metadata)
 			if (ts[0] === 0x49 && ts[1] === 0x44 && ts[2] === 0x33) {
 				return { data: ts, mime: 'audio/mpeg' }
 			}
-
-			// MPEG-TS → proper demux: parse TS packets, extract PES audio payloads
 			if (ts[0] === 0x47) {
 				const audio = this.demux_ts_audio(ts)
 				if (audio) return { data: audio, mime: 'audio/aac' }
 			}
-
-			// Fallback: return as-is
 			return { data: ts, mime: 'audio/mpeg' }
 		}
 
 		static demux_ts_audio(ts: Uint8Array): Uint8Array | null {
-			// Phase 1: parse TS packets, group payloads by PID
 			const pidChunks = new Map<number, { pusi: boolean, data: Uint8Array }[]>()
 
 			for (let pos = 0; pos + 188 <= ts.length; pos += 188) {
@@ -238,27 +176,25 @@ namespace $ {
 				const pid = ((ts[pos + 1] & 0x1F) << 8) | ts[pos + 2]
 				const afc = (ts[pos + 3] >> 4) & 0x03
 
-				if (pid === 0 || pid === 0x1FFF) continue // skip PAT / null
-				if (!(afc & 0x01)) continue // no payload
+				if (pid === 0 || pid === 0x1FFF) continue
+				if (!(afc & 0x01)) continue
 
 				let off = 4
-				if (afc & 0x02) off += 1 + ts[pos + 4] // adaptation field
+				if (afc & 0x02) off += 1 + ts[pos + 4]
 				if (off >= 188) continue
 
 				if (!pidChunks.has(pid)) pidChunks.set(pid, [])
 				pidChunks.get(pid)!.push({ pusi, data: ts.slice(pos + off, pos + 188) })
 			}
 
-			// Phase 2: find audio PID (PES stream_id 0xC0..0xDF)
 			for (const [pid, chunks] of pidChunks) {
 				const first = chunks.find(c => c.pusi)
 				if (!first) continue
 				const d = first.data
 				if (d.length < 9) continue
 				if (d[0] !== 0x00 || d[1] !== 0x00 || d[2] !== 0x01) continue
-				if (d[3] < 0xC0 || d[3] > 0xDF) continue // not audio
+				if (d[3] < 0xC0 || d[3] > 0xDF) continue
 
-				// Phase 3: reassemble PES payloads, strip PES headers → raw ADTS
 				const parts: Uint8Array[] = []
 				for (const chunk of chunks) {
 					if (chunk.pusi) {
@@ -278,7 +214,6 @@ namespace $ {
 				const out = new Uint8Array(total)
 				let off = 0
 				for (const p of parts) { out.set(p, off); off += p.length }
-				console.log(`[cache] demuxed TS: PID ${pid}, ${total} bytes raw ADTS`)
 				return out
 			}
 
@@ -345,90 +280,70 @@ namespace $ {
 			}
 		}
 
-		static async save_hls(audio: $bog_vk_api_audio): Promise<void> {
+		/**
+		 * Качает HLS, демуксит, конвертит ADTS→M4A. Возвращает байты + mime.
+		 * Запись в baza — снаружи (instance-метод $bog_vk_app.save_blob).
+		 */
+		static async download_hls(audio: $bog_vk_api_audio): Promise<{ buffer: Uint8Array, mime: string } | null> {
 			let url = audio.url
 			if (!url) {
 				console.warn('[cache] skip — no URL:', audio.artist, '—', audio.title)
-				return
+				return null
 			}
 
-			try {
-				if (this.is_cached(audio)) {
-					console.log('[cache] already in baza:', audio.artist, '—', audio.title)
-					return
+			console.log('[cache] start download:', audio.artist, '—', audio.title)
+
+			let m3u8_resp = await fetch(url)
+			if (m3u8_resp.status === 403 || m3u8_resp.status === 404) {
+				console.log('[cache] url expired, refreshing:', audio.artist, '—', audio.title)
+				const fresh_url = await this.refresh_url(audio)
+				if (fresh_url) {
+					url = fresh_url
+					m3u8_resp = await fetch(url)
 				}
-
-				console.log('[cache] start download:', audio.artist, '—', audio.title)
-
-				let m3u8_resp = await fetch(url)
-				// Если url протух — пробуем обновить через audio.getById.
-				if (m3u8_resp.status === 403 || m3u8_resp.status === 404) {
-					console.log('[cache] url expired, refreshing:', audio.artist, '—', audio.title)
-					const fresh_url = await this.refresh_url(audio)
-					if (fresh_url) {
-						url = fresh_url
-						m3u8_resp = await fetch(url)
-					}
-				}
-				if (!m3u8_resp.ok) throw new Error(`m3u8 fetch ${m3u8_resp.status}`)
-				const m3u8_text = await m3u8_resp.text()
-
-				const base_url = url.substring(0, url.lastIndexOf('/') + 1)
-				// (url мог быть подменён на fresh_url выше — base пересчитывается от него)
-				const { segments, key_url, key_iv } = this.parse_m3u8(m3u8_text, base_url)
-
-				if (!segments.length) throw new Error('No segments in m3u8')
-
-				let cryptoKey: CryptoKey | null = null
-				if (key_url) {
-					console.log(`[cache] encrypted HLS, fetching key from:`, key_url)
-					const key_resp = await fetch(key_url)
-					if (!key_resp.ok) throw new Error(`Key fetch failed: ${key_resp.status}`)
-					const key_data = await key_resp.arrayBuffer()
-					console.log(`[cache] key size: ${key_data.byteLength} bytes, hex: ${Array.from(new Uint8Array(key_data)).map(b => b.toString(16).padStart(2, '0')).join('')}`)
-					if (key_data.byteLength !== 16) {
-						console.warn(`[cache] unexpected key size ${key_data.byteLength}, expected 16`)
-					}
-					cryptoKey = await crypto.subtle.importKey('raw', key_data, 'AES-CBC', false, ['decrypt'])
-					console.log(`[cache] key imported, IV: ${key_iv || '(sequence number)'}`)
-				}
-
-				console.log(`[cache] ${segments.length} segments to download${cryptoKey ? ' (encrypted)' : ''}`)
-
-				const chunks: ArrayBuffer[] = []
-				for (let i = 0; i < segments.length; i++) {
-					const resp = await fetch(segments[i])
-					if (!resp.ok) throw new Error(`Segment ${i + 1}/${segments.length} failed: ${resp.status}`)
-					let data = await resp.arrayBuffer()
-					const firstByte = new Uint8Array(data)[0]
-					if (cryptoKey && firstByte !== 0x47) {
-						data = await this.decrypt_segment(data, cryptoKey, i, key_iv)
-					}
-					chunks.push(data)
-				}
-
-				const total = chunks.reduce((s, c) => s + c.byteLength, 0)
-				const merged = new Uint8Array(total)
-				let offset = 0
-				for (const chunk of chunks) {
-					merged.set(new Uint8Array(chunk), offset)
-					offset += chunk.byteLength
-				}
-
-				let { data: audioData, mime } = this.extract_audio(merged)
-				if (mime === 'audio/aac') {
-					audioData = this.adts_to_m4a(audioData)
-					mime = 'audio/mp4'
-				}
-				const sizeMB = (audioData.byteLength / 1024 / 1024).toFixed(1)
-				console.log(`[cache] format: ${mime}, extracted ${sizeMB} MB from ${(total / 1024 / 1024).toFixed(1)} MB raw`)
-
-				$bog_vk_store.save_blob(audio, audioData, mime)
-				console.log(`[cache] saved to baza: ${audio.artist} — ${audio.title} (${sizeMB} MB)`)
-				this.version(this.version() + 1)
-			} catch (e: any) {
-				console.warn(`[cache] FAILED: ${audio.artist} — ${audio.title}:`, e?.message || e?.name || String(e), e)
 			}
+			if (!m3u8_resp.ok) throw new Error(`m3u8 fetch ${m3u8_resp.status}`)
+			const m3u8_text = await m3u8_resp.text()
+
+			const base_url = url.substring(0, url.lastIndexOf('/') + 1)
+			const { segments, key_url, key_iv } = this.parse_m3u8(m3u8_text, base_url)
+
+			if (!segments.length) throw new Error('No segments in m3u8')
+
+			let cryptoKey: CryptoKey | null = null
+			if (key_url) {
+				const key_resp = await fetch(key_url)
+				if (!key_resp.ok) throw new Error(`Key fetch failed: ${key_resp.status}`)
+				const key_data = await key_resp.arrayBuffer()
+				cryptoKey = await crypto.subtle.importKey('raw', key_data, 'AES-CBC', false, ['decrypt'])
+			}
+
+			const chunks: ArrayBuffer[] = []
+			for (let i = 0; i < segments.length; i++) {
+				const resp = await fetch(segments[i])
+				if (!resp.ok) throw new Error(`Segment ${i + 1}/${segments.length} failed: ${resp.status}`)
+				let data = await resp.arrayBuffer()
+				const firstByte = new Uint8Array(data)[0]
+				if (cryptoKey && firstByte !== 0x47) {
+					data = await this.decrypt_segment(data, cryptoKey, i, key_iv)
+				}
+				chunks.push(data)
+			}
+
+			const total = chunks.reduce((s, c) => s + c.byteLength, 0)
+			const merged = new Uint8Array(total)
+			let offset = 0
+			for (const chunk of chunks) {
+				merged.set(new Uint8Array(chunk), offset)
+				offset += chunk.byteLength
+			}
+
+			let { data: audioData, mime } = this.extract_audio(merged)
+			if (mime === 'audio/aac') {
+				audioData = this.adts_to_m4a(audioData)
+				mime = 'audio/mp4'
+			}
+			return { buffer: audioData, mime }
 		}
 	}
 }

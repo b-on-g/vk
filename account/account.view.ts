@@ -1,6 +1,5 @@
 namespace $.$$ {
 
-	// CRC-32 IEEE polynomial 0xEDB88320, table-driven.
 	const CRC_TABLE = (() => {
 		const t = new Uint32Array(256)
 		for (let n = 0; n < 256; n++) {
@@ -40,75 +39,71 @@ namespace $.$$ {
 		let p = 0
 
 		for (const e of entries) {
-			dv.setUint32(p, 0x04034b50, true); p += 4 // local file header sig
-			dv.setUint16(p, 20, true); p += 2          // version needed
-			dv.setUint16(p, 0, true); p += 2           // flags
-			dv.setUint16(p, 0, true); p += 2           // method (store)
-			dv.setUint16(p, 0, true); p += 2           // mtime
-			dv.setUint16(p, 0, true); p += 2           // mdate
-			dv.setUint32(p, e.crc, true); p += 4       // crc
-			dv.setUint32(p, e.data.length, true); p += 4 // compressed size
-			dv.setUint32(p, e.data.length, true); p += 4 // uncompressed size
-			dv.setUint16(p, e.name_bytes.length, true); p += 2 // name len
-			dv.setUint16(p, 0, true); p += 2           // extra len
+			dv.setUint32(p, 0x04034b50, true); p += 4
+			dv.setUint16(p, 20, true); p += 2
+			dv.setUint16(p, 0, true); p += 2
+			dv.setUint16(p, 0, true); p += 2
+			dv.setUint16(p, 0, true); p += 2
+			dv.setUint16(p, 0, true); p += 2
+			dv.setUint32(p, e.crc, true); p += 4
+			dv.setUint32(p, e.data.length, true); p += 4
+			dv.setUint32(p, e.data.length, true); p += 4
+			dv.setUint16(p, e.name_bytes.length, true); p += 2
+			dv.setUint16(p, 0, true); p += 2
 			buf.set(e.name_bytes, p); p += e.name_bytes.length
 			buf.set(e.data, p); p += e.data.length
 		}
 
 		const cd_offset = p
 		for (const e of entries) {
-			dv.setUint32(p, 0x02014b50, true); p += 4 // central dir entry sig
-			dv.setUint16(p, 20, true); p += 2          // version made by
-			dv.setUint16(p, 20, true); p += 2          // version needed
-			dv.setUint16(p, 0, true); p += 2           // flags
-			dv.setUint16(p, 0, true); p += 2           // method
-			dv.setUint16(p, 0, true); p += 2           // mtime
-			dv.setUint16(p, 0, true); p += 2           // mdate
+			dv.setUint32(p, 0x02014b50, true); p += 4
+			dv.setUint16(p, 20, true); p += 2
+			dv.setUint16(p, 20, true); p += 2
+			dv.setUint16(p, 0, true); p += 2
+			dv.setUint16(p, 0, true); p += 2
+			dv.setUint16(p, 0, true); p += 2
+			dv.setUint16(p, 0, true); p += 2
 			dv.setUint32(p, e.crc, true); p += 4
 			dv.setUint32(p, e.data.length, true); p += 4
 			dv.setUint32(p, e.data.length, true); p += 4
 			dv.setUint16(p, e.name_bytes.length, true); p += 2
-			dv.setUint16(p, 0, true); p += 2           // extra len
-			dv.setUint16(p, 0, true); p += 2           // comment len
-			dv.setUint16(p, 0, true); p += 2           // disk #
-			dv.setUint16(p, 0, true); p += 2           // internal attr
-			dv.setUint32(p, 0, true); p += 4           // external attr
-			dv.setUint32(p, e.offset, true); p += 4    // local header offset
+			dv.setUint16(p, 0, true); p += 2
+			dv.setUint16(p, 0, true); p += 2
+			dv.setUint16(p, 0, true); p += 2
+			dv.setUint16(p, 0, true); p += 2
+			dv.setUint32(p, 0, true); p += 4
+			dv.setUint32(p, e.offset, true); p += 4
 			buf.set(e.name_bytes, p); p += e.name_bytes.length
 		}
 
 		const cd_size = p - cd_offset
 
-		dv.setUint32(p, 0x06054b50, true); p += 4 // EOCD sig
-		dv.setUint16(p, 0, true); p += 2          // disk #
-		dv.setUint16(p, 0, true); p += 2          // disk with cd
+		dv.setUint32(p, 0x06054b50, true); p += 4
+		dv.setUint16(p, 0, true); p += 2
+		dv.setUint16(p, 0, true); p += 2
 		dv.setUint16(p, entries.length, true); p += 2
 		dv.setUint16(p, entries.length, true); p += 2
 		dv.setUint32(p, cd_size, true); p += 4
 		dv.setUint32(p, cd_offset, true); p += 4
-		dv.setUint16(p, 0, true); p += 2          // comment len
+		dv.setUint16(p, 0, true); p += 2
 
 		return buf
 	}
 
 	export class $bog_vk_account extends $.$bog_vk_account {
 
-		static land() {
-			return this.$.$giper_baza_glob.home().land()
+		/** Профиль в home land — паттерн blitz: instance-метод, БЕЗ @$mol_mem. */
+		profile_data() {
+			const home = this.$.$giper_baza_glob.home()
+			return home.land().Data($bog_vk_account_baza)
 		}
 
-		/** БЕЗ `@$mol_mem` — иначе $mol вызывает `destructor()` на pawn и ломает
-		 *  реактивные подписки baza (см. MEMORY паттерн blitz: `profile_data()`).
-		 *  baza сама интернит pawn по id, так что `Data(Profile)` всегда отдаёт тот же инстанс. */
-		static profile() {
-			return this.land().Data($bog_vk_account_baza)
-		}
-
-		/** Без `@$mol_mem` — getter напрямую читает Giper Baza, и любое
-		 *  внешнее изменение (включая sync с другого устройства) ре-рендерит UI
-		 *  через стандартную реактивность baza. */
+		/**
+		 * Реактивный геттер/сеттер ника. БЕЗ @$mol_mem — baza сама реактивит val(),
+		 * а @$mol_mem на методах, отдающих/трогающих pawn-инстансы, вызывает destructor → Circular.
+		 */
 		nickname(next?: string) {
-			const profile = $bog_vk_account.profile()
+			const profile = this.profile_data()
 			if (next !== undefined) {
 				profile.Nickname('auto')!.val(next)
 				return next
@@ -117,9 +112,19 @@ namespace $.$$ {
 		}
 
 		@$mol_mem
+		nickname_label() {
+			try {
+				return this.nickname()
+			} catch (e) {
+				if (e instanceof Promise) throw e
+				return ''
+			}
+		}
+
+		@$mol_mem
 		lord_short() {
 			try {
-				const auth = $giper_baza_auth.current()
+				const auth = this.$.$giper_baza_auth.current()
 				if (!auth) return '—'
 				return auth.pass().lord().str.slice(0, 8) + '…'
 			} catch (e) {
@@ -129,15 +134,13 @@ namespace $.$$ {
 		}
 
 		account_key() {
-			return String($mol_state_local.value('$giper_baza_auth') ?? '')
+			return String(this.$.$mol_state_local.value('$giper_baza_auth') ?? '')
 		}
 
 		account_link() {
 			const key = this.account_key()
 			if (!key) return ''
 			const proto = location.protocol
-			// В расширении origin = chrome-extension://<id>/ — такая ссылка не откроется на чужом
-			// устройстве. Подменяем на публичный gh-pages хост, куда деплоится тот же билд.
 			if (proto === 'chrome-extension:' || proto === 'moz-extension:') {
 				return 'https://b-on-g.github.io/vk/#account=' + encodeURIComponent(key)
 			}
@@ -181,23 +184,13 @@ namespace $.$$ {
 			return next ?? ''
 		}
 
-		/**
-		 * Собирает все треки (активные + архив) в один uncompressed ZIP и
-		 * отдаёт пользователю через `<a download>`. Без npm-зависимостей —
-		 * минимальный stored ZIP encoder, см. APPNOTE.TXT.
-		 */
-		@$mol_action
+		/** Триггер: запускает async-генератор ZIP из baza-блобов. */
 		download_all() {
-			$mol_wire_async($bog_vk_account).download_all_async()
+			$mol_wire_async(this).download_all_async()
+			return null
 		}
 
-		static async download_all_async() {
-			const set_status = (s: string) => {
-				try {
-					const inst = ($bog_vk_account as any).bound?.() ?? null
-					if (inst?.download_all_status) inst.download_all_status(s)
-				} catch {}
-			}
+		async download_all_async() {
 			const safe = (s: string) => (s || '').replace(/[\\/:*?"<>|]/g, '_').slice(0, 80).trim() || 'track'
 			const ext_of = (mime: string) => {
 				if (!mime) return 'aac'
@@ -210,12 +203,13 @@ namespace $.$$ {
 				return 'bin'
 			}
 
+			const app = $bog_vk_app.Root(0)
 			const tracks = [
-				...$bog_vk_store.saved_audios(),
-				...$bog_vk_store.archived_audios(),
+				...app.saved_audios(),
+				...app.archived_audios(),
 			]
 			if (!tracks.length) {
-				set_status('Нечего скачивать')
+				this.download_all_status('Нечего скачивать')
 				return
 			}
 
@@ -223,11 +217,11 @@ namespace $.$$ {
 			let i = 0
 			for (const audio of tracks) {
 				++i
-				set_status(`Сборка ${i}/${tracks.length}…`)
+				this.download_all_status(`Сборка ${i}/${tracks.length}…`)
 				let blob: Blob | null = null
 				let mime = 'audio/aac'
 				try {
-					blob = $bog_vk_store.local_blob(audio)
+					blob = app.local_blob(audio)
 					mime = blob?.type || 'audio/mpeg'
 				} catch (e: any) {
 					console.warn('[account] zip skip:', audio.title, e?.message)
@@ -239,11 +233,11 @@ namespace $.$$ {
 			}
 
 			if (!entries.length) {
-				set_status('Нет доступных аудио')
+				this.download_all_status('Нет доступных аудио')
 				return
 			}
 
-			set_status(`Упаковка ${entries.length}…`)
+			this.download_all_status(`Упаковка ${entries.length}…`)
 			const zip = build_zip(entries)
 			const url = URL.createObjectURL(new Blob([zip.buffer.slice(zip.byteOffset, zip.byteOffset + zip.byteLength) as ArrayBuffer], { type: 'application/zip' }))
 			const a = document.createElement('a')
@@ -253,7 +247,7 @@ namespace $.$$ {
 			a.click()
 			a.remove()
 			setTimeout(() => URL.revokeObjectURL(url), 60_000)
-			set_status(`Готово, ${entries.length} файлов`)
+			this.download_all_status(`Готово, ${entries.length} файлов`)
 		}
 
 		@$mol_action
@@ -287,8 +281,8 @@ namespace $.$$ {
 				this.import_status('Ключ слишком короткий')
 				return
 			}
-			const current = $mol_state_local.value('$giper_baza_auth')
-			if (current !== key) $mol_state_local.value('$giper_baza_auth', key)
+			const current = this.$.$mol_state_local.value('$giper_baza_auth')
+			if (current !== key) this.$.$mol_state_local.value('$giper_baza_auth', key)
 			this.import_status(current === key ? 'Перезапуск…' : 'Применено, перезагрузка…')
 			location.reload()
 		}

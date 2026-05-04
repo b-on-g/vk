@@ -38,8 +38,12 @@ namespace $.$$ {
 			const audio = this.audio_data()
 			if (!audio) return false
 			if (next !== undefined) return next
-			$bog_vk_cache.version()
-			return ($mol_wire_sync($bog_vk_cache) as any).is_cached(audio) as boolean
+			try {
+				return $bog_vk_app.Root(0).is_cached(audio)
+			} catch (e: any) {
+				if (e instanceof Promise) throw e
+				return false
+			}
 		}
 
 		is_local() {
@@ -103,9 +107,8 @@ namespace $.$$ {
 		delete_cached() {
 			const audio = this.audio_data()
 			if (!audio) return
-			;($mol_wire_sync($bog_vk_cache) as any).drop(audio)
+			$bog_vk_app.Root(0).drop_blob(audio)
 			this.cached(false)
-			$bog_vk_cache.version($bog_vk_cache.version() + 1)
 		}
 	}
 }

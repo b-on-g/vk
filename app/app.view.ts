@@ -7,13 +7,6 @@ namespace $.$$ {
 	 * резолвятся в chrome-extension://. Любой такой URL → `new WebSocket(...)` →
 	 * SyntaxError. Чистим default-список и подкладываем публичный baza-master.
 	 */
-	/**
-	 * В chrome-extension/moz-extension контексте `location.origin` имеет схему
-	 * `chrome-extension://`, и yard.web.ts пушит его в masters_default. Кроме того,
-	 * peer-ы из Seed().peers() могут принести относительные URL, которые в extension
-	 * резолвятся в chrome-extension://. Любой такой URL → `new WebSocket(...)` →
-	 * SyntaxError. Чистим default-список и подкладываем публичный baza-master.
-	 */
 	;(function fix_yard_masters_in_extension() {
 		try {
 			if (typeof location === 'undefined') return
@@ -45,12 +38,6 @@ namespace $.$$ {
 
 	/**
 	 * Мост `chrome.storage.local.vk_token` → `localStorage.vk_token`.
-	 * `content.js` пишет VK-токен в `chrome.storage.local` (изолированный
-	 * world content script-а), а $bog_vk_api.token() читает из `localStorage`
-	 * через $mol_state_local. Без моста popup никогда не видит токен.
-	 *
-	 * Подписка onChanged держит синхронизацию live: пользователь зашёл на
-	 * vk.com с открытым popup → токен подхватился без перезапуска.
 	 */
 	;(function bridge_vk_token_from_chrome_storage() {
 		try {
@@ -122,14 +109,118 @@ namespace $.$$ {
 			return this.page() === 'archive'
 		}
 
-		/** Активные треки из Giper Baza home land. */
-		@$mol_mem
-		synced_audios(): $bog_vk_api_audio[] {
+		// =========================================================================
+		// Giper Baza store — паттерн blitz: instance-методы view'а, БЕЗ @$mol_mem
+		// (memory: @$mol_mem на pawn-методах → destructor → Circular subscription)
+		// =========================================================================
+
+		/** $bog_vk_store в home land текущего юзера. */
+		tracks_store(): $bog_vk_store {
+			const home = this.$.$giper_baza_glob.home()
+			return home.land().Data($bog_vk_store)
+		}
+
+		/** Словарь треков (Tracks). */
+		tracks_dict() {
+			return this.tracks_store().Tracks(null)!
+		}
+
+		// ---------- утилиты, не трогающие baza ----------
+
+		cache_key(audio: $bog_vk_api_audio): string {
+			return `${audio.owner_id}_${audio.id}`
+		}
+
+		parse_filename(name: string): { artist: string, title: string } {
+			const base = name.replace(/\.[^.]+$/, '').trim()
+			const m = base.match(/^(.+?)\s*[-–—]\s*(.+)$/)
+			if (m) return { artist: m[1].trim(), title: m[2].trim() }
+			return { artist: '', title: base }
+		}
+
+		/** Детерминированный hash (FNV-1a 32 bit). */
+		hash_str(s: string): number {
+			let h = 2166136261
+			for (let i = 0; i < s.length; i++) {
+				h ^= s.charCodeAt(i)
+				h = Math.imul(h, 16777619)
+			}
+			return h >>> 0
+		}
+
+		// ---------- чтение из baza ----------
+
+		/** RAM-кеш свежезагруженных файлов на текущей сессии. */
+		private fresh_files = new Map<string, File>()
+
+		/** Blob трека из baza или RAM. null если нет. */
+		local_blob(audio: $bog_vk_api_audio): Blob | null {
+			const key = this.cache_key(audio)
+			const fresh = this.fresh_files.get(key)
+			if (fresh) return fresh
+			const dict = this.tracks_dict()
+			const track = dict.key(key)
+			if (!track) return null
+			const file = track.File()?.remote()
+			if (!file) return null
+			const buf = file.buffer()
+			if (!buf || buf.byteLength === 0) return null
+			const type = file.type() || 'audio/mpeg'
+			return new Blob([buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer], { type })
+		}
+
+		is_cached(audio: $bog_vk_api_audio): boolean {
 			try {
-				return $bog_vk_store.saved_audios()
+				return this.local_blob(audio) !== null
 			} catch (e: any) {
 				if (e instanceof Promise) throw e
-				console.warn('[app] baza read failed:', e?.message)
+				return false
+			}
+		}
+
+		/** Активные/архивные треки, отсортированные по Order (asc, fallback Added). */
+		list_audios(archived: boolean): $bog_vk_api_audio[] {
+			const dict = this.tracks_dict()
+			const keys = (dict.keys() ?? []) as string[]
+			type Row = { audio: $bog_vk_api_audio, order: number, added: number }
+			const rows: Row[] = []
+			for (const key of keys) {
+				const track = dict.key(key)
+				if (!track) continue
+				const is_arch = track.Archived()?.val() === true
+				if (is_arch !== archived) continue
+				const vk_id = track.Vk_id()?.val() ?? String(key)
+				const parts = vk_id.split('_')
+				const owner_id = Number(parts[0])
+				const id = Number(parts[1])
+				if (!Number.isFinite(owner_id) || !Number.isFinite(id)) continue
+				const added = Number(track.Added()?.val() ?? 0)
+				const order_val = track.Order()?.val()
+				const order = order_val == null ? added : Number(order_val)
+				rows.push({
+					audio: {
+						id,
+						owner_id,
+						artist: track.Artist()?.val() ?? '',
+						title: track.Title()?.val() ?? '',
+						duration: track.Duration()?.val() ?? 0,
+						url: track.Url()?.val() ?? '',
+					},
+					order,
+					added,
+				})
+			}
+			rows.sort((a, b) => a.order !== b.order ? a.order - b.order : b.added - a.added)
+			return rows.map(r => r.audio)
+		}
+
+		@$mol_mem
+		saved_audios(): $bog_vk_api_audio[] {
+			try {
+				return this.list_audios(false)
+			} catch (e: any) {
+				if (e instanceof Promise) throw e
+				console.warn('[app] saved_audios read failed:', e?.message)
 				return []
 			}
 		}
@@ -137,21 +228,201 @@ namespace $.$$ {
 		@$mol_mem
 		archived_audios(): $bog_vk_api_audio[] {
 			try {
-				return $bog_vk_store.archived_audios()
+				return this.list_audios(true)
 			} catch (e: any) {
 				if (e instanceof Promise) throw e
-				console.warn('[app] baza read failed:', e?.message)
+				console.warn('[app] archived_audios read failed:', e?.message)
 				return []
 			}
 		}
 
 		@$mol_mem
 		visible_audios() {
-			return this.archive_mode() ? this.archived_audios() : this.synced_audios()
+			return this.archive_mode() ? this.archived_audios() : this.saved_audios()
 		}
 
+		// ---------- запись в baza (паттерн blitz: @$mol_action instance) ----------
+
+		max_order(): number {
+			const dict = this.tracks_dict()
+			const keys = (dict.keys() ?? []) as string[]
+			let max = 0
+			for (const key of keys) {
+				const track = dict.key(key)
+				if (!track) continue
+				const o = Number(track.Order()?.val() ?? 0)
+				if (o > max) max = o
+				const a = Number(track.Added()?.val() ?? 0)
+				if (a > max) max = a
+			}
+			return max
+		}
+
+		@$mol_action
+		save_track(audio: $bog_vk_api_audio): void {
+			if (!audio) return
+			const dict = this.tracks_dict()
+			const key = this.cache_key(audio)
+			const track = dict.key(key, 'auto')
+			if (!track) return
+			if (track.Vk_id()?.val() !== key) track.Vk_id('auto')!.val(key)
+			const title = audio.title ?? ''
+			if (track.Title()?.val() !== title) track.Title('auto')!.val(title)
+			const artist = audio.artist ?? ''
+			if (track.Artist()?.val() !== artist) track.Artist('auto')!.val(artist)
+			const dur = Number(audio.duration ?? 0)
+			if (track.Duration()?.val() !== dur) track.Duration('auto')!.val(dur)
+			if (audio.url && track.Url()?.val() !== audio.url) track.Url('auto')!.val(audio.url)
+			if (track.Added()?.val() == null) track.Added('auto')!.val(Date.now())
+			if (track.Order()?.val() == null) track.Order('auto')!.val(this.max_order() + 1)
+		}
+
+		@$mol_action
+		save_blob(audio: $bog_vk_api_audio, buffer: Uint8Array, mime: string): void {
+			if (!audio) return
+			const dict = this.tracks_dict()
+			const key = this.cache_key(audio)
+			const track = dict.key(key, 'auto')
+			if (!track) return
+			const store = track.File('auto')!.ensure(null)
+			if (!store) return
+			store.buffer(buffer as Uint8Array<ArrayBuffer>)
+			store.type(mime || 'audio/mpeg')
+			// Без .remote(store) link существует только локально — в pack для пуша не попадает.
+			track.File('auto')!.remote(store)
+		}
+
+		@$mol_action
+		save_local_track(file: File, buffer: Uint8Array): $bog_vk_api_audio | null {
+			const { artist, title } = this.parse_filename(file.name)
+			const id = this.hash_str(`${file.name}|${file.size}|${file.lastModified}`)
+			const audio: $bog_vk_api_audio = {
+				id,
+				owner_id: 0,
+				artist,
+				title,
+				duration: 0,
+				url: '',
+			}
+			const dict = this.tracks_dict()
+			const key = this.cache_key(audio)
+			const track = dict.key(key, 'auto')
+			if (!track) return null
+			track.Vk_id('auto')!.val(key)
+			track.Title('auto')!.val(title)
+			track.Artist('auto')!.val(artist)
+			if (track.Added()?.val() == null) track.Added('auto')!.val(Date.now())
+			if (track.Order()?.val() == null) track.Order('auto')!.val(this.max_order() + 1)
+			track.Archived('auto')!.val(false)
+			const store = track.File('auto')!.ensure(null)
+			if (store) {
+				store.buffer(buffer as Uint8Array<ArrayBuffer>)
+				store.type(file.type || 'audio/mpeg')
+				if (file.name) store.name(file.name)
+				track.File('auto')!.remote(store)
+			}
+			this.fresh_files.set(key, file)
+			return audio
+		}
+
+		@$mol_action
+		swap_order(a: $bog_vk_api_audio, b: $bog_vk_api_audio): void {
+			if (!a || !b) return
+			const dict = this.tracks_dict()
+			const ta = dict.key(this.cache_key(a), 'auto')
+			const tb = dict.key(this.cache_key(b), 'auto')
+			if (!ta || !tb) return
+			const oa_raw = ta.Order()?.val()
+			const ob_raw = tb.Order()?.val()
+			const aa = Number(ta.Added()?.val() ?? 0)
+			const ab = Number(tb.Added()?.val() ?? 0)
+			const oa = oa_raw == null ? aa : Number(oa_raw)
+			const ob = ob_raw == null ? ab : Number(ob_raw)
+			const next_a = ob === oa ? oa + 1 : ob
+			const next_b = ob === oa ? oa : oa
+			ta.Order('auto')!.val(next_a)
+			tb.Order('auto')!.val(next_b)
+		}
+
+		@$mol_action
+		archive_track(audio: $bog_vk_api_audio): void {
+			if (!audio) return
+			const dict = this.tracks_dict()
+			const track = dict.key(this.cache_key(audio))
+			if (!track) return
+			track.Archived('auto')!.val(true)
+		}
+
+		@$mol_action
+		restore_track(audio: $bog_vk_api_audio): void {
+			if (!audio) return
+			const dict = this.tracks_dict()
+			const track = dict.key(this.cache_key(audio))
+			if (!track) return
+			track.Archived('auto')!.val(false)
+		}
+
+		@$mol_action
+		delete_track(audio: $bog_vk_api_audio): void {
+			if (!audio) return
+			const dict = this.tracks_dict()
+			dict.cut(this.cache_key(audio))
+		}
+
+		@$mol_action
+		drop_blob(audio: $bog_vk_api_audio): void {
+			if (!audio) return
+			const dict = this.tracks_dict()
+			const track = dict.key(this.cache_key(audio))
+			if (!track) return
+			track.File('auto')!.val(null)
+			this.fresh_files.delete(this.cache_key(audio))
+		}
+
+		/**
+		 * Миграция: для треков с непустым buffer'ом форсит .remote(store).
+		 * Старые блобы писались без этого вызова → не синкались.
+		 */
+		@$mol_action
+		migrate_blob_links(): number {
+			const dict = this.tracks_dict()
+			const keys = (dict.keys() ?? []) as string[]
+			let migrated = 0
+			for (const key of keys) {
+				const track = dict.key(key)
+				if (!track) continue
+				const file = track.File()?.remote()
+				if (!file) continue
+				const buf = file.buffer()
+				if (!buf || buf.byteLength === 0) continue
+				try {
+					track.File('auto')!.remote(file)
+					migrated++
+				} catch (e: any) {
+					if (e instanceof Promise) throw e
+				}
+			}
+			if (migrated) console.log('[app] migrated', migrated, 'blob links for sync')
+			return migrated
+		}
+
+		/** Качает HLS и сразу пишет в baza. Используется player'ом и prefetch. */
+		async save_hls(audio: $bog_vk_api_audio): Promise<void> {
+			try {
+				if (this.is_cached(audio)) return
+				const result = await $bog_vk_cache.download_hls(audio)
+				if (!result) return
+				this.save_blob(audio, result.buffer, result.mime)
+			} catch (e: any) {
+				if (e instanceof Promise) throw e
+				console.warn(`[app] save_hls failed: ${audio.artist} — ${audio.title}:`, e?.message ?? e)
+			}
+		}
+
+		// ---------- UI ----------
+
 		tab_options() {
-			const my = this.synced_audios().length
+			const my = this.saved_audios().length
 			const arch = this.archived_audios().length
 			return {
 				my: my ? `Моя музыка ${my}` : 'Моя музыка',
@@ -173,26 +444,20 @@ namespace $.$$ {
 			if (from < 0 || to < 0 || from >= list.length || to >= list.length) return
 			const moving = list[from]
 			if (!moving) return
-			try { $bog_vk_store.save_track(moving) } catch (e: any) { if (e instanceof Promise) return }
+			this.save_track(moving)
 			if (from < to) {
 				for (let i = from; i < to; i++) {
 					const next = list[i + 1]
 					if (!next) break
-					try { $bog_vk_store.save_track(next) } catch (e: any) { if (e instanceof Promise) return }
-					try { $bog_vk_store.swap_order(moving, next) } catch (e: any) {
-						if (e instanceof Promise) return
-						console.warn('[app] reorder_to swap failed:', e?.message)
-					}
+					this.save_track(next)
+					this.swap_order(moving, next)
 				}
 			} else {
 				for (let i = from; i > to; i--) {
 					const prev = list[i - 1]
 					if (!prev) break
-					try { $bog_vk_store.save_track(prev) } catch (e: any) { if (e instanceof Promise) return }
-					try { $bog_vk_store.swap_order(moving, prev) } catch (e: any) {
-						if (e instanceof Promise) return
-						console.warn('[app] reorder_to swap failed:', e?.message)
-					}
+					this.save_track(prev)
+					this.swap_order(moving, prev)
 				}
 			}
 		}
@@ -200,29 +465,20 @@ namespace $.$$ {
 		@$mol_action
 		archive_audio(audio: $bog_vk_api_audio | null) {
 			if (!audio) return
-			try { $bog_vk_store.save_track(audio) } catch (e: any) { if (e instanceof Promise) return }
-			try { $bog_vk_store.archive_track(audio) } catch (e: any) {
-				if (e instanceof Promise) return
-				console.warn('[app] baza archive failed:', e?.message)
-			}
+			this.save_track(audio)
+			this.archive_track(audio)
 		}
 
 		@$mol_action
 		restore_audio(audio: $bog_vk_api_audio | null) {
 			if (!audio) return
-			try { $bog_vk_store.restore_track(audio) } catch (e: any) {
-				if (e instanceof Promise) return
-				console.warn('[app] baza restore failed:', e?.message)
-			}
+			this.restore_track(audio)
 		}
 
 		@$mol_action
 		delete_audio(audio: $bog_vk_api_audio | null) {
 			if (!audio) return
-			try { $bog_vk_store.delete_track(audio) } catch (e: any) {
-				if (e instanceof Promise) return
-				console.warn('[app] baza delete failed:', e?.message)
-			}
+			this.delete_track(audio)
 		}
 
 		@$mol_action
@@ -234,10 +490,7 @@ namespace $.$$ {
 			this.Player().queue_index(idx >= 0 ? idx : 0)
 			this.Player().play_track(audio)
 
-			try { $bog_vk_store.save_track(audio) } catch (e: any) {
-				if (e instanceof Promise) return
-				console.warn('[app] baza save failed:', e?.message)
-			}
+			this.save_track(audio)
 
 			const item = this.recsys_item(audio)
 			if (item) {
@@ -252,7 +505,7 @@ namespace $.$$ {
 				for (const file of next) {
 					try {
 						const buffer = new Uint8Array(($mol_wire_sync(file) as any).arrayBuffer())
-						$bog_vk_store.save_local_track(file, buffer)
+						this.save_local_track(file, buffer)
 					} catch (e: any) {
 						if (e instanceof Promise) throw e
 						console.warn('[app] upload failed:', file.name, e?.message)
@@ -302,8 +555,8 @@ namespace $.$$ {
 		@$mol_mem
 		nickname_label() {
 			try {
-				const land = $bog_vk_account.profile()
-				return land.Nickname()?.val() || ''
+				const profile = this.$.$giper_baza_glob.home().land().Data($bog_vk_account_baza)
+				return profile.Nickname()?.val() || ''
 			} catch (e) {
 				if (e instanceof Promise) throw e
 				return ''
@@ -315,74 +568,69 @@ namespace $.$$ {
 			return super.Nickname_label()
 		}
 
+		// =========================================================================
+		// Реактивный авто-импорт VK-треков + фоновый префетч блобов.
+		// =========================================================================
+
 		/**
-		 * Авто-импорт треков из VK в Giper Baza.
-		 * Вызывается реактивно из auto() — `@$mol_mem` ретраит при появлении
-		 * токена / готовности baza. Идемпотентно (save_track обновляет только
-		 * изменившиеся поля), так что вызов на каждом тике безопасен.
-		 *
-		 * Фоном дёргает `prefetch_blobs` для треков без `File` в baza, чтобы сразу
-		 * после синка metadata пользователь мог играть offline.
+		 * Список треков из VK. @$mol_mem ретраит fetch при появлении токена.
+		 * Возвращает пустой массив если не в extension / без токена.
 		 */
 		@$mol_mem
-		auto_import() {
-			if (!$bog_vk_api.in_extension()) return null
+		vk_audios(): $bog_vk_api_audio[] {
+			if (!$bog_vk_api.in_extension()) return []
 			const token = $bog_vk_api.token()
-			if (!token) return null
-			let list: $bog_vk_api_audio_list
+			if (!token) return []
 			try {
-				list = $bog_vk_api.my_audios()
+				const list = $bog_vk_api.my_audios()
+				return list?.items ?? []
 			} catch (e: any) {
 				if (e instanceof Promise) throw e
-				console.warn('[app] auto_import fetch failed:', e?.message)
-				return null
+				console.warn('[app] vk_audios fetch failed:', e?.message)
+				return []
 			}
-			const items = list?.items ?? []
-			if (!items.length) return null
-			// Метаданные сохраняем НЕ скопом — а внутри prefetch_blobs по одному
-			// перед каждой выкачкой блоба. Так список растёт постепенно и
-			// пользователю видно, что загрузка идёт.
-			if (!$bog_vk_app.__prefetch_started) {
-				$bog_vk_app.__prefetch_started = true
-				$bog_vk_app.prefetch_blobs(items).catch(e => {
-					console.warn('[app] prefetch crashed:', e?.message ?? e)
-				})
+		}
+
+		/**
+		 * Реактивная авторегистрация: при готовности baza + появлении треков
+		 * стартует фоновый префетч. Идемпотентно через флаг.
+		 */
+		@$mol_mem
+		auto_import(): number {
+			const items = this.vk_audios()
+			if (!items.length) return 0
+			// прогрев dict — кидает Promise если baza ещё грузится, @$mol_mem ретраит.
+			this.tracks_dict()
+			if (!this._prefetch_started) {
+				this._prefetch_started = true
+				$mol_wire_async(this).prefetch_blobs(items)
 			}
 			return items.length
 		}
 
-		static __prefetch_started = false
+		private _prefetch_started = false
 
-		/**
-		 * Реактивный статус префетча для UI.
-		 * `total` — всего треков, `done` — скачано в baza, `failed` — упало.
-		 */
 		@$mol_mem
-		static prefetch_state(next?: { total: number, done: number, failed: number }) {
+		prefetch_state(next?: { total: number, done: number, failed: number }) {
 			return next ?? { total: 0, done: 0, failed: 0 }
 		}
 
 		/**
-		 * Скачивает HLS-блобы для треков без `File` в baza.
-		 * Чистый async — без `$mol_wire_*`, чтобы гарантированно стартовало
-		 * из обычного callback-контекста. Внутри для refresh URL'а дёргает
-		 * `fetch_vk_direct` (тоже plain async), а не `refresh_audio` (mem_key
-		 * с wire_sync — требует фибра).
+		 * Фоновый префетч — реактивный wire_async fiber, ретраит при Promise.
+		 * Метаданные сохраняются по одному перед каждой выкачкой блоба, чтобы
+		 * baza успевала пушить sand/seal мелкими пакетами.
 		 */
-		static async prefetch_blobs(items: $bog_vk_api_audio[]) {
+		async prefetch_blobs(items: $bog_vk_api_audio[]) {
 			if (!items?.length) return
 			console.log('[app] prefetch start:', items.length, 'tracks')
-			$bog_vk_app.prefetch_state({ total: items.length, done: 0, failed: 0 })
+			this.prefetch_state({ total: items.length, done: 0, failed: 0 })
 			let done = 0, failed = 0
 			for (let i = 0; i < items.length; i++) {
 				const audio = items[i]
 				try {
-					// Метаданные сейвим в отдельном тике перед скачиванием — даём baza
-					// запушить sand/seal на сервер мелкими пакетами, а не одним
-					// гигантским pack из 300+ юнитов.
-					$bog_vk_store.save_track(audio)
+					this.save_track(audio)
 					await new Promise(r => setTimeout(r, 50))
-					if ($bog_vk_cache.is_cached(audio)) { done++; continue }
+					if (this.is_cached(audio)) { done++; continue }
 					let target = audio
 					if (!target.url) {
 						const key = `${audio.owner_id}_${audio.id}${audio.access_key ? '_' + audio.access_key : ''}`
@@ -391,12 +639,12 @@ namespace $.$$ {
 						if (!fresh?.url) {
 							failed++
 							console.warn('[app] no fresh url:', audio.artist, '—', audio.title)
-							$bog_vk_app.prefetch_state({ total: items.length, done, failed })
+							this.prefetch_state({ total: items.length, done, failed })
 							continue
 						}
 						target = { ...audio, url: fresh.url }
 					}
-					await $bog_vk_cache.save_hls(target)
+					await this.save_hls(target)
 					done++
 				} catch (e: any) {
 					if (e instanceof Promise) {
@@ -407,29 +655,32 @@ namespace $.$$ {
 					failed++
 					console.warn('[app] prefetch failed:', audio.artist, '—', audio.title, '|', e?.message ?? String(e))
 				}
-				$bog_vk_app.prefetch_state({ total: items.length, done, failed })
+				this.prefetch_state({ total: items.length, done, failed })
 			}
 			console.log('[app] prefetch done:', done, 'downloaded,', failed, 'failed')
 		}
 
+		private _migration_done = false
+
 		auto() {
-			try { $bog_vk_store.saved_audios() } catch {}
-			// Одноразовая миграция: дотягиваем `.remote(store)` для старых блобов,
-			// записанных до фикса. Идемпотентна, флаг гарантирует один прогон за сессию.
-			if (!$bog_vk_app.__migration_done) {
+			// Прогрев чтения из baza — кидает Promise при загрузке, ретраится здесь.
+			try { this.saved_audios() } catch (e: any) {
+				if (e instanceof Promise) throw e
+			}
+			// Одноразовая миграция блоб-линков (паттерн giper_baza_link_remote).
+			if (!this._migration_done) {
 				try {
-					$bog_vk_store.migrate_blob_links()
-					$bog_vk_app.__migration_done = true
+					this.migrate_blob_links()
+					this._migration_done = true
 				} catch (e: any) {
 					if (e instanceof Promise) throw e
 				}
 			}
+			// Реактивный авто-импорт.
 			try { this.auto_import() } catch (e: any) {
 				if (e instanceof Promise) throw e
 			}
 			return super.auto()
 		}
-
-		static __migration_done = false
 	}
 }

@@ -13,7 +13,7 @@ namespace $.$$ {
 					const finished = this.current_audio()
 					this.next()
 					if (finished && navigator.onLine) {
-						$bog_vk_cache.save_hls(finished).catch(() => {})
+						$bog_vk_app.Root(0).save_hls(finished).catch(() => {})
 					}
 				} catch (e) {
 					console.warn('[player] ended handler error:', e)
@@ -153,9 +153,10 @@ namespace $.$$ {
 					this._last_blob_url = ''
 				}
 
+				const app = $bog_vk_app.Root(0)
+
 				// 0. Blob из Giper Baza — единый источник для offline (локальные + VK).
-				// $mol_wire_async внутри обычной async-функции реально ждёт ball_load.
-				const blob = await ($mol_wire_async($bog_vk_store) as any).local_blob(audio) as Blob | null
+				const blob = await ($mol_wire_async(app) as any).local_blob(audio) as Blob | null
 				if (blob) {
 					const url = URL.createObjectURL(blob)
 					this._last_blob_url = url
@@ -169,7 +170,7 @@ namespace $.$$ {
 					el.src = audio.url
 					try {
 						await this.safe_play(el)
-						$bog_vk_cache.save_hls(audio).catch(() => {})
+						app.save_hls(audio).catch(() => {})
 						return
 					} catch {
 						// Direct play failed — download first
@@ -178,8 +179,8 @@ namespace $.$$ {
 
 				// 2. Forced download → save blob to baza → play from baza.
 				if (audio.url) {
-					await $bog_vk_cache.save_hls(audio)
-					const blob2 = $bog_vk_store.local_blob(audio)
+					await app.save_hls(audio)
+					const blob2 = app.local_blob(audio)
 					if (blob2) {
 						const url = URL.createObjectURL(blob2)
 						this._last_blob_url = url
