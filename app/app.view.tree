@@ -58,8 +58,6 @@ $bog_vk_app $mol_page
 					title \Сбросить на дефолтный
 					click? <=> reset_proxy? null
 		<= Account $bog_vk_account
-		<= Help_panel $mol_paragraph
-			title <= token_hint \
 		<= Auth_block $mol_view
 			sub /
 				<= Auth_link $mol_link
