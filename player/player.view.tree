@@ -3,6 +3,7 @@ $bog_vk_player $mol_view
 	queue /
 	queue_index? 0
 	play_track? null
+	pick_next? null
 	sub /
 		<= Progress $mol_view
 			sub /

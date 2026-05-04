@@ -56,6 +56,10 @@ namespace $.$$ {
 				left: '0.5rem',
 				right: '0.5rem',
 			},
+			maxWidth: '8rem',
+			overflow: { x: 'hidden', y: 'hidden' },
+			textOverflow: 'ellipsis',
+			whiteSpace: 'nowrap',
 		},
 
 		Player: {

@@ -44,6 +44,12 @@ namespace $.$$ {
 		account_link() {
 			const key = this.account_key()
 			if (!key) return ''
+			const proto = location.protocol
+			// В расширении origin = chrome-extension://<id>/ — такая ссылка не откроется на чужом
+			// устройстве. Подменяем на публичный gh-pages хост, куда деплоится тот же билд.
+			if (proto === 'chrome-extension:' || proto === 'moz-extension:') {
+				return 'https://b-on-g.github.io/vk/#account=' + encodeURIComponent(key)
+			}
 			const base = location.origin + location.pathname + location.search
 			return base + '#account=' + encodeURIComponent(key)
 		}

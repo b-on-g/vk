@@ -132,7 +132,6 @@ namespace $.$$ {
 		}
 
 		title() {
-			if (this.offline_mode()) return 'Bog Music (offline)'
 			return 'Bog Music'
 		}
 
@@ -391,6 +390,13 @@ namespace $.$$ {
 				if (e instanceof Promise) return
 				console.warn('[app] baza save failed:', e?.message)
 			}
+
+			// Положительный сигнал в Мою волну — этот тег user слушает.
+			const item = this.recsys_item(audio)
+			if (item) {
+				$bog_recsys.namespace('vk')
+				try { $bog_recsys.feedback(item, 'play') } catch {}
+			}
 		}
 
 		@$mol_mem
@@ -425,6 +431,38 @@ namespace $.$$ {
 		@$mol_mem
 		account_open(next?: boolean) {
 			return $mol_state_local.value('vk_account_open', next) ?? false
+		}
+
+		@$mol_mem
+		wave_mode(next?: boolean) {
+			return $mol_state_local.value('vk_wave_mode', next) ?? false
+		}
+
+		/** Превращает audio в item для $bog_recsys: id + tag по исполнителю. */
+		recsys_item(audio: $bog_vk_api_audio | null) {
+			if (!audio) return null
+			const tags: string[] = []
+			if (audio.artist) tags.push('artist:' + audio.artist.toLowerCase().trim())
+			return { id: `${audio.owner_id}_${audio.id}`, tags }
+		}
+
+		/**
+		 * Хук для Player.next(): когда включена «Моя волна», берём следующий трек
+		 * через $bog_recsys по cosine + ε-greedy на per-tag rewards.
+		 */
+		player_pick_next(current: $bog_vk_api_audio | null): $bog_vk_api_audio | null {
+			if (!this.wave_mode()) return null
+			const pool = this.visible_audios()
+			if (!pool.length) return null
+			const seed = this.recsys_item(current)
+			const exclude = current ? [`${current.owner_id}_${current.id}`] : []
+			$bog_recsys.namespace('vk')
+			const items = pool.map((a: $bog_vk_api_audio) => this.recsys_item(a)).filter(Boolean) as { id: string, tags: string[] }[]
+			const id_to_audio = new Map<string, $bog_vk_api_audio>()
+			for (const a of pool as $bog_vk_api_audio[]) id_to_audio.set(`${a.owner_id}_${a.id}`, a)
+			const picked = $bog_recsys.recommend(items, { seed, exclude, limit: 1 })[0]
+			if (!picked) return null
+			return id_to_audio.get(picked.id) ?? null
 		}
 
 		Account() {

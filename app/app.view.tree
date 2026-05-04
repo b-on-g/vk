@@ -10,6 +10,10 @@ $bog_vk_app $mol_page
 	tools /
 		<= Nickname_label $mol_view
 			sub / <= nickname_label \
+		<= Wave_toggle $mol_check_icon
+			hint \Моя волна
+			Icon <= Wave_icon $mol_icon_chart_timeline_variant
+			checked? <=> wave_mode? false
 		<= Account_toggle $mol_check_icon
 			hint \Аккаунт
 			Icon <= Account_icon $mol_icon_account_circle
@@ -45,3 +49,4 @@ $bog_vk_app $mol_page
 		<= Player $bog_vk_player
 			queue <= visible_audios /
 			current_audio? <=> current_audio? null
+			pick_next? <=> player_pick_next? null

@@ -244,6 +244,20 @@ namespace $.$$ {
 		}
 
 		next() {
+			// Если родитель подкинул pick_next (Моя волна) — пробуем сначала её.
+			try {
+				const picked = this.pick_next(this.current_audio()) as $bog_vk_api_audio | null
+				if (picked) {
+					const queue = this.queue()
+					const idx = queue.findIndex((a: $bog_vk_api_audio) => a.id === picked.id && a.owner_id === picked.owner_id)
+					if (idx >= 0) this._queue_idx = idx
+					this.play_track(picked)
+					return
+				}
+			} catch (e: any) {
+				if (e instanceof Promise) throw e
+				console.warn('[player] pick_next failed:', e?.message)
+			}
 			const queue = this.queue()
 			if (!queue.length) return
 			const next_idx = this._queue_idx + 1 < queue.length ? this._queue_idx + 1 : 0
