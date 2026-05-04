@@ -225,6 +225,9 @@ namespace $ {
 			if (!store) return
 			store.buffer(buffer as Uint8Array<ArrayBuffer>)
 			store.type(mime || 'audio/mpeg')
+			// Финализируем link → store. Без этого File-поле не синкается на другие устройства
+			// (паттерн из blitz: всегда `.remote(store)` после `.ensure(null)`).
+			track.File('auto')!.remote(store)
 			console.log('[store] blob saved to baza:', audio.title, buffer.byteLength, 'bytes,', mime)
 		}
 
@@ -308,6 +311,8 @@ namespace $ {
 				store.buffer(buffer as Uint8Array<ArrayBuffer>)
 				store.type(file.type || 'audio/mpeg')
 				if (file.name) store.name(file.name)
+				// Финализируем link → store, иначе file не пушится в sync на другие устройства.
+				track.File('auto')!.remote(store)
 				console.log('[store] file written, type:', store.type(), 'chunks:', store.chunks().length)
 			} else {
 				console.warn('[store] File ensure returned null')
