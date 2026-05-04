@@ -20900,6 +20900,9 @@ var $;
                 return;
             store.buffer(buffer);
             store.type(mime || 'audio/mpeg');
+            // Финализируем link → store. Без этого File-поле не синкается на другие устройства
+            // (паттерн из blitz: всегда `.remote(store)` после `.ensure(null)`).
+            track.File('auto').remote(store);
             console.log('[store] blob saved to baza:', audio.title, buffer.byteLength, 'bytes,', mime);
         }
         /** Удаляет blob (поле File) из baza, оставляя метаданные трека. */
@@ -20987,6 +20990,8 @@ var $;
                 store.type(file.type || 'audio/mpeg');
                 if (file.name)
                     store.name(file.name);
+                // Финализируем link → store, иначе file не пушится в sync на другие устройства.
+                track.File('auto').remote(store);
                 console.log('[store] file written, type:', store.type(), 'chunks:', store.chunks().length);
             }
             else {
@@ -23351,16 +23356,19 @@ var $;
          * SyntaxError. Чистим default-список и подкладываем публичный baza-master.
          */
         /**
-         * Принудительно вешаем `https://baza.giper.dev/` как единственный master:
-         * - в chrome-extension `location.origin` = `chrome-extension://` (невалидный WS)
-         * - на gh-pages `location.origin` = `https://b-on-g.github.io/` (нет WS-сервера → 1006)
-         * - peer-URL'ы из Seed().peers() могут быть относительными → резолв в любую из вышеперечисленных схем
-         * Любой из этих сценариев приводил к `wss://...` → ошибке. Хардкод одного известного мастера решает все три.
+         * В chrome-extension/moz-extension контексте `location.origin` имеет схему
+         * `chrome-extension://`, и yard.web.ts пушит его в masters_default. Кроме того,
+         * peer-ы из Seed().peers() могут принести относительные URL, которые в extension
+         * резолвятся в chrome-extension://. Любой такой URL → `new WebSocket(...)` →
+         * SyntaxError. Чистим default-список и подкладываем публичный baza-master.
          */
         ;
-        (function fix_yard_masters() {
+        (function fix_yard_masters_in_extension() {
             try {
                 if (typeof location === 'undefined')
+                    return;
+                const proto = location.protocol;
+                if (proto !== 'chrome-extension:' && proto !== 'moz-extension:')
                     return;
                 const yard = $giper_baza_yard;
                 const list = yard.masters_default;
@@ -23371,10 +23379,12 @@ var $;
                 if (!list.includes('https://baza.giper.dev/'))
                     list.push('https://baza.giper.dev/');
                 if (!yard.__bog_vk_masters_patched) {
+                    const orig = yard.masters.bind(yard);
                     Object.defineProperty(yard, 'masters', {
                         configurable: true,
                         value: function () {
-                            return ['https://baza.giper.dev/'];
+                            const all = orig();
+                            return all.filter(url => /^(http|https|ws|wss):/.test(url));
                         },
                     });
                     yard.__bog_vk_masters_patched = true;
