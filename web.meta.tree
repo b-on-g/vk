@@ -63,6 +63,28 @@
 	pack web git \https://github.com/giper-dev/web.git
 \/giper/baza/glob
 	deploy \giper/baza/glob/glob.baza
+\/giper/baza/app
+	deploy \/giper/baza/logo/logo.svg
+	deploy \/giper/baza/logo/logo-512.png
+	deploy \/giper/baza/logo/bg.webp
+	deploy \/giper/baza/diagram/crus-reg.png
+	deploy \/giper/baza/diagram/crus-list.png
+	deploy \/giper/baza/diagram/crus-dict.png
+	deploy \/giper/baza/diagram/crus-tree.png
+	deploy \/giper/baza/diagram/crus-text.png
+	deploy \/giper/baza/diagram/crus-dom.png
+	deploy \/giper/baza/diagram/crus-json.png
+	deploy \/giper/baza/diagram/crus-sync.png
+	deploy \/giper/baza/diagram/crus-pack.png
+	deploy \/giper/baza/diagram/crus-units.png
+	deploy \/giper/baza/diagram/crus-units-pass.png
+	deploy \/giper/baza/diagram/crus-units-gift.png
+	deploy \/giper/baza/diagram/crus-units-sand.png
+	deploy \/giper/baza/diagram/crus-files.png
+	deploy \/giper/baza/diagram/crus-network.png
+	deploy \/giper/baza/diagram/crus-jepsen.png
+	deploy \/giper/baza/docker/deploy.sh
+	deploy \/giper/baza/docker/autopull_and_restart.sh
 \/hyoo
 	pack about git \https://github.com/hyoo-ru/about.hyoo.ru.git
 	pack artist git \https://github.com/hyoo-ru/artist.hyoo.ru.git
@@ -130,28 +152,6 @@
 	pack intern git \https://github.com/hyoo-ru/intern.hyoo.ru.git
 \/giper/baza/file
 	include \/mol/offline/install
-\/giper/baza/app
-	deploy \/giper/baza/logo/logo.svg
-	deploy \/giper/baza/logo/logo-512.png
-	deploy \/giper/baza/logo/bg.webp
-	deploy \/giper/baza/diagram/crus-reg.png
-	deploy \/giper/baza/diagram/crus-list.png
-	deploy \/giper/baza/diagram/crus-dict.png
-	deploy \/giper/baza/diagram/crus-tree.png
-	deploy \/giper/baza/diagram/crus-text.png
-	deploy \/giper/baza/diagram/crus-dom.png
-	deploy \/giper/baza/diagram/crus-json.png
-	deploy \/giper/baza/diagram/crus-sync.png
-	deploy \/giper/baza/diagram/crus-pack.png
-	deploy \/giper/baza/diagram/crus-units.png
-	deploy \/giper/baza/diagram/crus-units-pass.png
-	deploy \/giper/baza/diagram/crus-units-gift.png
-	deploy \/giper/baza/diagram/crus-units-sand.png
-	deploy \/giper/baza/diagram/crus-files.png
-	deploy \/giper/baza/diagram/crus-network.png
-	deploy \/giper/baza/diagram/crus-jepsen.png
-	deploy \/giper/baza/docker/deploy.sh
-	deploy \/giper/baza/docker/autopull_and_restart.sh
 \/hyoo/sync
 	- build $hyoo_sync_revision \git rev-parse --short HEAD
 	build $hyoo_sync_revision \echo echo

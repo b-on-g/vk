@@ -1,4 +1,5 @@
 {
+	"$bog_theme_picker_Search_hint": "Just start typing",
 	"$hyoo_meta_safe_Export_link_title": "This link contains your encrypted prvate keys. Save it to a secure place on another physical device. Using this link you can restore your private keys by enterig same password.",
 	"$hyoo_meta_safe_Expot_bid_text": "Your private access keys are stored in the browser. In order not to lose them or transfer to another device, it is recommended to come up with a strong password for exporting them.",
 	"$hyoo_meta_safe_Iport_descr_text": "To import a private key, you must enter the password from it.\n**If the current key is not saved, it will be lost forever.**",
@@ -10,7 +11,6 @@
 	"$mol_form_form_invalid": "Form is not valid",
 	"$mol_form_message_done": "Saved",
 	"$mol_form_submit_title": "Save",
-	"$mol_lights_toggle_hint": "Toggle lights",
 	"$mol_search_Clear_hint": "Clear",
 	"$mol_search_hint": "Search...",
 	"$mol_select_filter_hint": "Filter..",

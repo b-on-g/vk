@@ -3981,193 +3981,104 @@ var $;
 })($ || ($ = {}));
 
 ;
-	($.$mol_theme_auto) = class $mol_theme_auto extends ($.$mol_plugin) {
-		dark(){
-			return "$mol_theme_dark";
+"use strict";
+var $;
+(function ($) {
+    /**
+     * Theme css variables
+     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_textarea_demo
+     */
+    $.$bog_theme = $mol_style_prop('mol_theme', [
+        'back',
+        'background',
+        'hover',
+        'card',
+        'current',
+        'special',
+        'text',
+        'control',
+        'shade',
+        'line',
+        'focus',
+        'field',
+        'image',
+        'spirit',
+    ]);
+    /**
+     * Available theme names.
+     * Add new theme to theme.css and add its name here.
+     */
+    $.$bog_theme_names = [
+        '$mol_theme_giper_smash_dark',
+        '$mol_theme_giper_smash_light',
+        '$mol_theme_light',
+        '$mol_theme_dark',
+        '$mol_theme_monefro_light',
+        '$mol_theme_monefro_dark',
+        '$mol_theme_homerent_light',
+        '$mol_theme_homerent_dark',
+        '$mol_theme_upwork',
+        '$mol_theme_ainews_light',
+        '$mol_theme_ainews_dark',
+        '$mol_theme_calm_dark',
+        '$mol_theme_calm_light',
+    ];
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_style_attach("bog/theme/theme.css", ":root {\n\t--mol_theme_hue: 645deg;\n\t--mol_theme_hue_spread: 90deg;\n\t--mol_theme_background: var(--mol_theme_back);\n\n\t/* Bog theme semantic aliases */\n\t--mol_theme_primary_hue: var(--mol_theme_hue);\n\t--mol_theme_secondary_hue: calc(var(--mol_theme_hue) + var(--mol_theme_hue_spread));\n\t--mol_theme_tertiary_hue: calc(var(--mol_theme_hue) - var(--mol_theme_hue_spread));\n\t--mol_theme_accent_hue: calc(var(--mol_theme_hue) + 180deg);\n}\n\n:where([mol_theme]) {\n\tcolor: var(--mol_theme_text);\n\tfill: var(--mol_theme_text);\n\tbackground-color: var(--mol_theme_back);\n}\n\n:root,\n[mol_theme='$mol_theme_dark'],\n:where([mol_theme='$mol_theme_dark']) [mol_theme] {\n\t--mol_theme_luma: -1;\n\t--mol_theme_image: invert(1) hue-rotate(180deg);\n\t--mol_theme_spirit: hsl(0deg, 0%, 0%, 0.75);\n\n\t--bog_theme_back: hsl(var(--bog_theme_hue), 8%, 12%);\n\t--bog_theme_card: hsl(var(--bog_theme_hue), 15%, 18%, 0.25);\n\t--bog_theme_field: hsl(var(--bog_theme_hue), 12%, 10%, 0.25);\n\t--bog_theme_hover: hsl(var(--bog_theme_hue), 0%, 50%, 0.1);\n\n\t--bog_theme_text: hsl(var(--bog_theme_hue), 8%, 85%);\n\t--bog_theme_shade: hsl(var(--bog_theme_hue), 12%, 65%, 1);\n\t--bog_theme_line: hsl(var(--bog_theme_hue), 8%, 50%, 0.25);\n\t--bog_theme_focus: hsl(calc(var(--bog_theme_hue) + 180deg), 60%, 65%);\n\n\t--bog_theme_control: hsl(var(--bog_theme_hue), 25%, 70%);\n\t--bog_theme_current: hsl(calc(var(--bog_theme_hue) - var(--bog_theme_hue_spread)), 25%, 70%);\n\t--bog_theme_special: hsl(calc(var(--bog_theme_hue) + var(--bog_theme_hue_spread)), 25%, 70%);\n}\n@supports (color: oklch(0% 0 0deg)) {\n\t:root,\n\t[mol_theme='$mol_theme_dark'],\n\t:where([mol_theme='$mol_theme_dark']) [mol_theme] {\n\t\t--bog_theme_back: oklch(12% 0.02 var(--bog_theme_hue));\n\t\t--bog_theme_card: oklch(18% 0.03 var(--bog_theme_hue) / 0.25);\n\t\t--bog_theme_field: oklch(10% 0.015 var(--bog_theme_hue) / 0.25);\n\t\t--bog_theme_hover: oklch(70% 0 var(--bog_theme_hue) / 0.1);\n\n\t\t--bog_theme_text: oklch(85% 0.025 var(--bog_theme_hue));\n\t\t--bog_theme_shade: oklch(65% 0.035 var(--bog_theme_hue));\n\t\t--bog_theme_line: oklch(50% 0.025 var(--bog_theme_hue) / 0.25);\n\t\t--bog_theme_focus: oklch(75% 0.15 calc(var(--bog_theme_hue) + 180deg));\n\n\t\t--bog_theme_control: oklch(70% 0.06 var(--bog_theme_hue));\n\t\t--bog_theme_current: oklch(70% 0.08 calc(var(--bog_theme_hue) - var(--bog_theme_hue_spread)));\n\t\t--bog_theme_special: oklch(70% 0.08 calc(var(--bog_theme_hue) + var(--bog_theme_hue_spread)));\n\t}\n}\n\n[mol_theme='$mol_theme_light'],\n:where([mol_theme='$mol_theme_light']) [mol_theme] {\n\t--mol_theme_luma: 1;\n\t--mol_theme_image: none;\n\t--mol_theme_spirit: hsl(0deg, 0%, 100%, 0.75);\n\n\t--mol_theme_back: hsl(var(--mol_theme_hue), 0%, 100%);\n\t--mol_theme_card: hsl(var(--mol_theme_hue), 50%, 100%, 0.5);\n\t--mol_theme_field: hsl(var(--mol_theme_hue), 50%, 100%, 0.75);\n\t--mol_theme_hover: hsl(var(--mol_theme_hue), 0%, 50%, 0.1);\n\n\t--mol_theme_text: hsl(var(--mol_theme_hue), 0%, 0%);\n\t--mol_theme_shade: hsl(var(--mol_theme_hue), 0%, 40%, 1);\n\t--mol_theme_line: hsl(var(--mol_theme_hue), 0%, 50%, 0.25);\n\t--mol_theme_focus: hsl(calc(var(--mol_theme_hue) + 180deg), 100%, 40%);\n\n\t--mol_theme_control: hsl(var(--mol_theme_hue), 80%, 30%);\n\t--mol_theme_current: hsl(calc(var(--mol_theme_hue) - var(--mol_theme_hue_spread)), 80%, 30%);\n\t--mol_theme_special: hsl(calc(var(--mol_theme_hue) + var(--mol_theme_hue_spread)), 80%, 30%);\n}\n@supports (color: oklch(0% 0 0deg)) {\n\t[mol_theme='$mol_theme_light'],\n\t:where([mol_theme='$mol_theme_light']) [mol_theme] {\n\t\t--mol_theme_back: oklch(100% 0 var(--mol_theme_hue));\n\t\t--mol_theme_card: oklch(99% 0.01 var(--mol_theme_hue) / 0.5);\n\t\t--mol_theme_field: oklch(100% 0 var(--mol_theme_hue) / 0.5);\n\t\t--mol_theme_hover: oklch(70% 0 var(--mol_theme_hue) / 0.1);\n\n\t\t--mol_theme_text: oklch(20% 0 var(--mol_theme_hue));\n\t\t--mol_theme_shade: oklch(60% 0 var(--mol_theme_hue));\n\t\t--mol_theme_line: oklch(50% 0 var(--mol_theme_hue) / 0.25);\n\t\t--mol_theme_focus: oklch(60% 0.2 calc(var(--mol_theme_hue) + 180deg));\n\n\t\t--mol_theme_control: oklch(40% 0.15 var(--mol_theme_hue));\n\t\t--mol_theme_current: oklch(50% 0.2 calc(var(--mol_theme_hue) - var(--mol_theme_hue_spread)));\n\t\t--mol_theme_special: oklch(50% 0.2 calc(var(--mol_theme_hue) + var(--mol_theme_hue_spread)));\n\t}\n}\n\n:where(:root, [mol_theme='$mol_theme_dark']) [mol_theme='$mol_theme_base'] {\n\t--mol_theme_back: oklch(25% 0.075 var(--mol_theme_hue));\n\t--mol_theme_card: oklch(35% 0.1 var(--mol_theme_hue) / 0.25);\n}\n:where([mol_theme='$mol_theme_light']) [mol_theme='$mol_theme_base'] {\n\t--mol_theme_back: oklch(85% 0.075 var(--mol_theme_hue));\n\t--mol_theme_card: oklch(98% 0.03 var(--mol_theme_hue) / 0.25);\n}\n\n:where(:root, [mol_theme='$mol_theme_dark']) [mol_theme='$mol_theme_current'] {\n\t--mol_theme_back: oklch(25% 0.05 calc(var(--mol_theme_hue) - var(--mol_theme_hue_spread)));\n\t--mol_theme_card: oklch(35% 0.1 calc(var(--mol_theme_hue) - var(--mol_theme_hue_spread)) / 0.25);\n}\n:where([mol_theme='$mol_theme_light']) [mol_theme='$mol_theme_current'] {\n\t--mol_theme_back: oklch(85% 0.05 calc(var(--mol_theme_hue) - var(--mol_theme_hue_spread)));\n\t--mol_theme_card: oklch(98% 0.03 calc(var(--mol_theme_hue) - var(--mol_theme_hue_spread)) / 0.25);\n}\n\n:where(:root, [mol_theme='$mol_theme_dark']) [mol_theme='$mol_theme_special'] {\n\t--mol_theme_back: oklch(25% 0.05 calc(var(--mol_theme_hue) + var(--mol_theme_hue_spread)));\n\t--mol_theme_card: oklch(35% 0.1 calc(var(--mol_theme_hue) + var(--mol_theme_hue_spread)) / 0.25);\n}\n:where([mol_theme='$mol_theme_light']) [mol_theme='$mol_theme_special'] {\n\t--mol_theme_back: oklch(85% 0.05 calc(var(--mol_theme_hue) + var(--mol_theme_hue_spread)));\n\t--mol_theme_card: oklch(98% 0.03 calc(var(--mol_theme_hue) + var(--mol_theme_hue_spread)) / 0.25);\n}\n\n:where(:root, [mol_theme='$mol_theme_dark']) [mol_theme='$mol_theme_accent'] {\n\t--mol_theme_back: oklch(35% 0.1 calc(var(--mol_theme_hue) + 180deg));\n\t--mol_theme_card: oklch(45% 0.15 calc(var(--mol_theme_hue) + 180deg) / 0.25);\n}\n:where([mol_theme='$mol_theme_light']) [mol_theme='$mol_theme_accent'] {\n\t--mol_theme_back: oklch(83% 0.1 calc(var(--mol_theme_hue) + 180deg));\n\t--mol_theme_card: oklch(98% 0.03 calc(var(--mol_theme_hue) + 180deg) / 0.25);\n}\n\n/* Upwork theme - based on Upwork brand colors */\n[mol_theme='$mol_theme_upwork'],\n:where([mol_theme='$mol_theme_upwork']) [mol_theme] {\n\t--mol_theme_luma: 1;\n\t--mol_theme_image: none;\n\t--mol_theme_spirit: rgba(255, 255, 255, 0.75);\n\n\t/* Upwork brand colors: #73bb44 (primary green), #4fab4a (medium green), #385925 (dark green), #b5deb1 (light green) */\n\t--mol_theme_back: #ffffff;\n\t--mol_theme_card: #f9fcf7;\n\t--mol_theme_field: #ffffff;\n\t--mol_theme_hover: rgba(115, 187, 68, 0.1);\n\n\t--mol_theme_text: #4c4444;\n\t--mol_theme_shade: #6e6d7a;\n\t--mol_theme_line: rgba(115, 187, 68, 0.25);\n\t--mol_theme_focus: #73bb44;\n\n\t--mol_theme_control: #73bb44;\n\t--mol_theme_current: #4fab4a;\n\t--mol_theme_special: #385925;\n}\n\n/* Ainews dark theme - based on Ainews brand palette */\n[mol_theme='$mol_theme_ainews_dark'],\n:where([mol_theme='$mol_theme_ainews_dark']) [mol_theme] {\n\t--mol_theme_luma: -1;\n\t--mol_theme_image: invert(1) hue-rotate(180deg);\n\n\t/* ВАЖНО: mol_* — именно их читает демка */\n\t--mol_theme_back: #3e3e3e; /* paper dark */\n\t--mol_theme_card: #4a4a4a40; /* paper-2 dark 25% */\n\t--mol_theme_field: #4c4c4c40; /* chip dark 25% */\n\t--mol_theme_hover: #5a5a5a1a; /* edge dark 10% */\n\n\t--mol_theme_text: #bcbcbc; /* ink dark */\n\t--mol_theme_shade: #909090; /* ink-muted dark */\n\t--mol_theme_line: #5a5a5a40; /* edge dark 25% */\n\t--mol_theme_focus: #a8bcff; /* accent dark */\n\n\t--mol_theme_control: #a8bcff; /* accent dark */\n\t--mol_theme_current: #c7b18c; /* accent-2 dark */\n\t--mol_theme_special: #d4bf9d; /* accent-2 lighter */\n}\n\n@supports (color: oklch(0% 0 0deg)) {\n\t[mol_theme='$mol_theme_ainews_dark'],\n\t:where([mol_theme='$mol_theme_ainews_dark']) [mol_theme] {\n\t\t--mol_theme_back: #3e3e3e;\n\t\t--mol_theme_card: #4a4a4a40;\n\t\t--mol_theme_field: #4c4c4c40;\n\t\t--mol_theme_hover: #5a5a5a1a;\n\n\t\t--mol_theme_text: #bcbcbc;\n\t\t--mol_theme_shade: #909090;\n\t\t--mol_theme_line: #5a5a5a40;\n\t\t--mol_theme_focus: #a8bcff;\n\n\t\t--mol_theme_control: #a8bcff;\n\t\t--mol_theme_current: #c7b18c;\n\t\t--mol_theme_special: #d4bf9d;\n\t}\n}\n\n/* Ainews light theme */\n[mol_theme='$mol_theme_ainews_light'],\n:where([mol_theme='$mol_theme_ainews_light']) [mol_theme] {\n\t--mol_theme_luma: 1;\n\t--mol_theme_image: none;\n\t--mol_theme_spirit: #fbf8f1bf; /* 75% */\n\n\t--mol_theme_back: #f7f3e9; /* paper */\n\t--mol_theme_card: #fbf8f180; /* paper-2 50% */\n\t--mol_theme_field: #efe8d8bf; /* chip 75% */\n\t--mol_theme_hover: #ded7c81a; /* edge 10% */\n\n\t--mol_theme_text: #22211f; /* ink */\n\t--mol_theme_shade: #6e6a62; /* ink-muted */\n\t--mol_theme_line: #ded7c840; /* edge 25% */\n\t--mol_theme_focus: #3b5aad; /* accent */\n\n\t--mol_theme_control: #3b5aad; /* accent */\n\t--mol_theme_current: #92734b; /* accent-2 */\n\t--mol_theme_special: #c7b18c; /* accent-2 lighter */\n}\n\n@supports (color: oklch(0% 0 0deg)) {\n\t[mol_theme='$mol_theme_ainews_light'],\n\t:where([mol_theme='$mol_theme_ainews_light']) [mol_theme] {\n\t\t--mol_theme_back: #f7f3e9;\n\t\t--mol_theme_card: #fbf8f180;\n\t\t--mol_theme_field: #efe8d8bf;\n\t\t--mol_theme_hover: #ded7c81a;\n\n\t\t--mol_theme_text: #22211f;\n\t\t--mol_theme_shade: #6e6a62;\n\t\t--mol_theme_line: #ded7c840;\n\t\t--mol_theme_focus: #3b5aad;\n\n\t\t--mol_theme_control: #3b5aad;\n\t\t--mol_theme_current: #92734b;\n\t\t--mol_theme_special: #c7b18c;\n\t}\n}\n\n/* HomeRent dark theme */\n[mol_theme='$mol_theme_homerent_dark'],\n:where([mol_theme='$mol_theme_homerent_dark']) [mol_theme] {\n\t--mol_theme_luma: -1;\n\t--mol_theme_image: invert(1) hue-rotate(180deg);\n\t--mol_theme_spirit: rgba(0, 0, 0, 0.6);\n\n\t--mol_theme_back: #2f2f2f;\n\t--mol_theme_background: #f5f5f5;\n\t--mol_theme_card: #3a3a3a;\n\t--mol_theme_field: #3a3a3a;\n\t--mol_theme_hover: rgba(255, 255, 255, 0.06);\n\n\t--mol_theme_text: #f5f5f5;\n\t--mol_theme_shade: #c7c7c7;\n\t--mol_theme_line: #ffffff26;\n\t--mol_theme_focus: #8fc32b;\n\n\t--mol_theme_control: #dbe05b;\n\t--mol_theme_current: #8fc32b;\n\t--mol_theme_special: #8fc32b;\n}\n\n@supports (color: oklch(0% 0 0deg)) {\n\t[mol_theme='$mol_theme_homerent_dark'],\n\t:where([mol_theme='$mol_theme_homerent_dark']) [mol_theme] {\n\t\t--mol_theme_back: #2f2f2f;\n\t\t--mol_theme_background: #f5f5f5;\n\t\t--mol_theme_card: #3a3a3a;\n\t\t--mol_theme_field: #3a3a3a;\n\t\t--mol_theme_hover: rgba(255, 255, 255, 0.06);\n\n\t\t--mol_theme_text: #f5f5f5;\n\t\t--mol_theme_shade: #c7c7c7;\n\t\t--mol_theme_line: #ffffff26;\n\t\t--mol_theme_focus: #8fc32b;\n\n\t\t--mol_theme_control: #dbe05b;\n\t\t--mol_theme_current: #8fc32b;\n\t\t--mol_theme_special: #8fc32b;\n\t}\n}\n\n/* HomeRent light theme */\n[mol_theme='$mol_theme_homerent_light'],\n:where([mol_theme='$mol_theme_homerent_light']) [mol_theme] {\n\t--mol_theme_luma: 1;\n\t--mol_theme_image: none;\n\t--mol_theme_spirit: rgba(245, 245, 245, 0.75);\n\n\t--mol_theme_back: #ffffff;\n\t--mol_theme_background: #f5f5f5;\n\t--mol_theme_card: #ffffff;\n\t--mol_theme_field: #ffffff;\n\t--mol_theme_hover: #8fc32b1a;\n\n\t--mol_theme_text: #4c4c4c;\n\t--mol_theme_shade: #707070;\n\t--mol_theme_line: #4c4c4c26;\n\t--mol_theme_focus: #8fc32b;\n\n\t--mol_theme_control: #dbe05b;\n\t--mol_theme_current: #8fc32b;\n\t--mol_theme_special: #8fc32b;\n}\n\n@supports (color: oklch(0% 0 0deg)) {\n\t[mol_theme='$mol_theme_homerent_light'],\n\t:where([mol_theme='$mol_theme_homerent_light']) [mol_theme] {\n\t\t--mol_theme_back: #ffffff;\n\t\t--mol_theme_background: #f5f5f5;\n\t\t--mol_theme_card: #ffffff;\n\t\t--mol_theme_field: #ffffff;\n\t\t--mol_theme_hover: #8fc32b1a;\n\n\t\t--mol_theme_text: #4c4c4c;\n\t\t--mol_theme_shade: #707070;\n\t\t--mol_theme_line: #4c4c4c26;\n\t\t--mol_theme_focus: #8fc32b;\n\n\t\t--mol_theme_control: #dbe05b;\n\t\t--mol_theme_current: #8fc32b;\n\t\t--mol_theme_special: #8fc32b;\n\t}\n}\n\n/* Giper Smash dark theme - original game palette */\n[mol_theme='$mol_theme_giper_smash_dark'],\n:where([mol_theme='$mol_theme_giper_smash_dark']) [mol_theme] {\n\t--mol_theme_luma: -1;\n\t--mol_theme_image: invert(1) hue-rotate(180deg);\n\t--mol_theme_spirit: rgba(0, 0, 0, 0.85);\n\n\t--mol_theme_back: #1a1a2e;\n\t--mol_theme_card: #2d2d44;\n\t--mol_theme_field: #16213e;\n\t--mol_theme_hover: rgba(118, 75, 162, 0.15);\n\n\t--mol_theme_text: #ffffff;\n\t--mol_theme_shade: #b0b0cc;\n\t--mol_theme_line: rgba(255, 255, 255, 0.12);\n\t--mol_theme_focus: #f5b041;\n\n\t--mol_theme_control: #44a08d;\n\t--mol_theme_current: #0088cc;\n\t--mol_theme_special: #764ba2;\n}\n\n/* Giper Smash light theme - bright game palette */\n[mol_theme='$mol_theme_giper_smash_light'],\n:where([mol_theme='$mol_theme_giper_smash_light']) [mol_theme] {\n\t--mol_theme_luma: 1;\n\t--mol_theme_image: none;\n\t--mol_theme_spirit: rgba(255, 255, 255, 0.85);\n\n\t--mol_theme_back: #f0eef5;\n\t--mol_theme_card: #ffffff;\n\t--mol_theme_field: #e8e5f0;\n\t--mol_theme_hover: rgba(118, 75, 162, 0.08);\n\n\t--mol_theme_text: #1a1a2e;\n\t--mol_theme_shade: #5c5c7a;\n\t--mol_theme_line: rgba(26, 26, 46, 0.12);\n\t--mol_theme_focus: #d4941a;\n\n\t--mol_theme_control: #2e8b73;\n\t--mol_theme_current: #0077b3;\n\t--mol_theme_special: #6a3d99;\n}\n\n/* Monefro dark theme - inspired by Monefy */\n[mol_theme='$mol_theme_monefro_dark'],\n:where([mol_theme='$mol_theme_monefro_dark']) [mol_theme] {\n\t--mol_theme_luma: -1;\n\t--mol_theme_image: invert(1) hue-rotate(180deg);\n\t--mol_theme_spirit: rgba(0, 0, 0, 0.6);\n\n\t--mol_theme_back: #24201c;\n\t--mol_theme_card: #2c2722;\n\t--mol_theme_field: #29241f;\n\t--mol_theme_hover: rgba(255, 255, 255, 0.04);\n\n\t--mol_theme_text: #f0e7dc;\n\t--mol_theme_shade: #b5a99c;\n\t--mol_theme_line: rgba(255, 255, 255, 0.12);\n\t--mol_theme_focus: #56c78a;\n\n\t--mol_theme_control: #56c78a;\n\t--mol_theme_current: #f2776e;\n\t--mol_theme_special: #f6b04a;\n}\n\n@supports (color: oklch(0% 0 0deg)) {\n\t[mol_theme='$mol_theme_monefro_dark'],\n\t:where([mol_theme='$mol_theme_monefro_dark']) [mol_theme] {\n\t\t--mol_theme_back: #24201c;\n\t\t--mol_theme_card: #2c2722;\n\t\t--mol_theme_field: #29241f;\n\t\t--mol_theme_hover: rgba(255, 255, 255, 0.04);\n\n\t\t--mol_theme_text: #f0e7dc;\n\t\t--mol_theme_shade: #b5a99c;\n\t\t--mol_theme_line: rgba(255, 255, 255, 0.12);\n\t\t--mol_theme_focus: #56c78a;\n\n\t\t--mol_theme_control: #56c78a;\n\t\t--mol_theme_current: #f2776e;\n\t\t--mol_theme_special: #f6b04a;\n\t}\n}\n\n/* Monefro light theme - inspired by Monefy */\n[mol_theme='$mol_theme_monefro_light'],\n:where([mol_theme='$mol_theme_monefro_light']) [mol_theme] {\n\t--mol_theme_luma: 1;\n\t--mol_theme_image: none;\n\t--mol_theme_spirit: rgba(255, 255, 255, 0.75);\n\n\t--mol_theme_back: #f6f2ea;\n\t--mol_theme_card: #ffffff;\n\t--mol_theme_field: #fff8ef;\n\t--mol_theme_hover: rgba(0, 0, 0, 0.04);\n\n\t--mol_theme_text: #3f3b36;\n\t--mol_theme_shade: #8b8278;\n\t--mol_theme_line: rgba(64, 55, 46, 0.15);\n\t--mol_theme_focus: #2f9a6a;\n\n\t--mol_theme_control: #2f9a6a;\n\t--mol_theme_current: #e85b54;\n\t--mol_theme_special: #f3a43b;\n}\n\n@supports (color: oklch(0% 0 0deg)) {\n\t[mol_theme='$mol_theme_monefro_light'],\n\t:where([mol_theme='$mol_theme_monefro_light']) [mol_theme] {\n\t\t--mol_theme_back: #f6f2ea;\n\t\t--mol_theme_card: #ffffff;\n\t\t--mol_theme_field: #fff8ef;\n\t\t--mol_theme_hover: rgba(0, 0, 0, 0.04);\n\n\t\t--mol_theme_text: #3f3b36;\n\t\t--mol_theme_shade: #8b8278;\n\t\t--mol_theme_line: rgba(64, 55, 46, 0.15);\n\t\t--mol_theme_focus: #2f9a6a;\n\n\t\t--mol_theme_control: #2f9a6a;\n\t\t--mol_theme_current: #e85b54;\n\t\t--mol_theme_special: #f3a43b;\n\t}\n}\n\n/* ═══════════════════════════════════════════════════════════════\n   Calm theme — universal working theme (draft for review)\n   Base hue: 230° (blue-gray), spread: 90°\n   Style: quiet, professional, no noise\n   ═══════════════════════════════════════════════════════════════ */\n\n/* Calm dark theme */\n[mol_theme='$mol_theme_calm_dark'],\n:where([mol_theme='$mol_theme_calm_dark']) [mol_theme] {\n\t--mol_theme_luma: -1;\n\t--mol_theme_image: invert(1) hue-rotate(180deg);\n\t--mol_theme_spirit: #000000bf;\n\t--mol_theme_hue: 230deg;\n\t--mol_theme_hue_spread: 90deg;\n\n\t--mol_theme_back: #0d1117;\n\t--mol_theme_card: #161b2240;\n\t--mol_theme_field: #0a0e1440;\n\t--mol_theme_hover: #ffffff0c;\n\n\t--mol_theme_text: #e6edf3;\n\t--mol_theme_shade: #8b949e;\n\t--mol_theme_line: #30363d;\n\t--mol_theme_focus: #d29922;\n\n\t--mol_theme_control: #2f81f7;\n\t--mol_theme_current: #3fb950;\n\t--mol_theme_special: #a371f7;\n}\n\n/* Calm light theme */\n[mol_theme='$mol_theme_calm_light'],\n:where([mol_theme='$mol_theme_calm_light']) [mol_theme] {\n\t--mol_theme_luma: 1;\n\t--mol_theme_image: none;\n\t--mol_theme_spirit: #f7f8fabf;\n\t--mol_theme_hue: 230deg;\n\t--mol_theme_hue_spread: 90deg;\n\n\t--mol_theme_back: #f7f8fa;\n\t--mol_theme_card: #ffffff80;\n\t--mol_theme_field: #e8eaf0bf;\n\t--mol_theme_hover: #0000000a;\n\n\t--mol_theme_text: #1a1c23;\n\t--mol_theme_shade: #656a80;\n\t--mol_theme_line: #3a3e5026;\n\t--mol_theme_focus: #b87518;\n\n\t--mol_theme_control: #3560b8;\n\t--mol_theme_current: #28856e;\n\t--mol_theme_special: #8a4aad;\n}\n\n/* Calm dark sub-themes */\n:where([mol_theme='$mol_theme_calm_dark']) [mol_theme='$mol_theme_base'] {\n\t--mol_theme_back: #1a2840;\n\t--mol_theme_card: #243450;\n}\n:where([mol_theme='$mol_theme_calm_dark']) [mol_theme='$mol_theme_current'] {\n\t--mol_theme_back: #143028;\n\t--mol_theme_card: #1c3e3450;\n}\n:where([mol_theme='$mol_theme_calm_dark']) [mol_theme='$mol_theme_special'] {\n\t--mol_theme_back: #2a1c48;\n\t--mol_theme_card: #3a2a5c50;\n}\n:where([mol_theme='$mol_theme_calm_dark']) [mol_theme='$mol_theme_accent'] {\n\t--mol_theme_back: #3a1c2a;\n\t--mol_theme_card: #4c283a50;\n}\n\n:where([mol_theme='$mol_theme_calm_light']) [mol_theme='$mol_theme_base'] {\n\t--mol_theme_back: oklch(85% 0.075 var(--mol_theme_hue));\n\t--mol_theme_card: oklch(98% 0.03 var(--mol_theme_hue) / 0.25);\n}\n:where([mol_theme='$mol_theme_calm_light']) [mol_theme='$mol_theme_current'] {\n\t--mol_theme_back: oklch(85% 0.05 calc(var(--mol_theme_hue) - var(--mol_theme_hue_spread)));\n\t--mol_theme_card: oklch(98% 0.03 calc(var(--mol_theme_hue) - var(--mol_theme_hue_spread)) / 0.25);\n}\n:where([mol_theme='$mol_theme_calm_light']) [mol_theme='$mol_theme_special'] {\n\t--mol_theme_back: oklch(85% 0.05 calc(var(--mol_theme_hue) + var(--mol_theme_hue_spread)));\n\t--mol_theme_card: oklch(98% 0.03 calc(var(--mol_theme_hue) + var(--mol_theme_hue_spread)) / 0.25);\n}\n:where([mol_theme='$mol_theme_calm_light']) [mol_theme='$mol_theme_accent'] {\n\t--mol_theme_back: oklch(83% 0.1 calc(var(--mol_theme_hue) + 180deg));\n\t--mol_theme_card: oklch(98% 0.03 calc(var(--mol_theme_hue) + 180deg) / 0.25);\n}\n");
+})($ || ($ = {}));
+
+;
+	($.$bog_theme_auto) = class $bog_theme_auto extends ($.$mol_plugin) {
+		themes_default(){
+			return [];
 		}
 		theme(){
-			return (this.dark());
+			return "";
 		}
-		light(){
+		themes(){
+			return (this.themes_default());
+		}
+		theme_light(){
 			return "$mol_theme_light";
+		}
+		theme_dark(){
+			return "$mol_theme_dark";
+		}
+		mode(next){
+			if(next !== undefined) return next;
+			return "system";
+		}
+		mode_next(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		theme_next(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		theme_prev(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		theme_set(next){
+			if(next !== undefined) return next;
+			return null;
 		}
 		attr(){
 			return {"mol_theme": (this.theme())};
 		}
 	};
+	($mol_mem(($.$bog_theme_auto.prototype), "mode"));
+	($mol_mem(($.$bog_theme_auto.prototype), "mode_next"));
+	($mol_mem(($.$bog_theme_auto.prototype), "theme_next"));
+	($mol_mem(($.$bog_theme_auto.prototype), "theme_prev"));
+	($mol_mem(($.$bog_theme_auto.prototype), "theme_set"));
 
-
-;
-"use strict";
-
-;
-"use strict";
-var $;
-(function ($) {
-    /**
-     * Decorates method to fiber to ensure it is executed only once inside other fiber from [mol_wire](../wire/README.md)
-     * @see https://mol.hyoo.ru/#!section=docs/=1fcpsq_1wh0h2
-     */
-    $.$mol_action = $mol_wire_method;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /** State of arguments like `#foo=bar/xxx` or `?foo=bar&xxx` */
-    class $mol_state_arg extends $mol_object {
-        prefix;
-        static href(next) {
-            if (next === undefined) {
-                next = $mol_dom.location.href;
-            }
-            else if (!/^about:srcdoc/.test(next)) {
-                new $mol_after_frame(() => {
-                    const next = this.href();
-                    const prev = $mol_dom.location.href;
-                    if (next === prev)
-                        return;
-                    const history = $mol_dom.history;
-                    history.replaceState(history.state, $mol_dom.document.title, next);
-                });
-            }
-            if ($mol_dom.parent && ($mol_dom.parent !== $mol_dom.self)) {
-                $mol_dom.parent.postMessage(['hashchange', next], '*');
-            }
-            return next;
-        }
-        static href_normal() {
-            return this.link({});
-        }
-        static href_absolute() {
-            return new URL(this.href(), $mol_dom.location.href).toString();
-        }
-        static dict(next) {
-            var href = this.href(next && this.make_link(next)).split(/#!?/)[1] || '';
-            var chunks = href.split(this.separator);
-            var params = {};
-            chunks.forEach(chunk => {
-                if (!chunk)
-                    return;
-                var vals = chunk.split('=').map(decodeURIComponent);
-                params[vals.shift()] = vals.join('=');
-            });
-            return params;
-        }
-        static dict_cut(except) {
-            const dict = this.dict();
-            const cut = {};
-            for (const key in dict) {
-                if (except.indexOf(key) >= 0)
-                    break;
-                cut[key] = dict[key];
-            }
-            return cut;
-        }
-        static value(key, next) {
-            const nextDict = (next === void 0) ? void 0 : { ...this.dict(), [key]: next };
-            const next2 = this.dict(nextDict)[key];
-            return (next2 == null) ? null : next2;
-        }
-        static link(next) {
-            return this.make_link({
-                ...this.dict_cut(Object.keys(next)),
-                ...next,
-            });
-        }
-        static prolog = '!';
-        static separator = '/';
-        static make_link(next) {
-            const chunks = [];
-            for (let key in next) {
-                if (null == next[key])
-                    continue;
-                const val = next[key];
-                chunks.push([key].concat(val ? [val] : []).map(this.encode).join('='));
-            }
-            return new URL('#' + this.prolog + chunks.join(this.separator), this.href_absolute()).toString();
-        }
-        static commit() {
-            $mol_dom.history.pushState($mol_dom.history.state, $mol_dom.document.title, this.href());
-        }
-        static go(next) {
-            $mol_dom.location.href = this.link(next);
-        }
-        static encode(str) {
-            return encodeURIComponent(str).replace(/\(/g, '%28').replace(/\)/g, '%29');
-        }
-        constructor(prefix = '') {
-            super();
-            this.prefix = prefix;
-        }
-        value(key, next) {
-            return this.constructor.value(this.prefix + key, next);
-        }
-        sub(postfix) {
-            return new this.constructor(this.prefix + postfix + '.');
-        }
-        link(next) {
-            var prefix = this.prefix;
-            var dict = {};
-            for (var key in next) {
-                dict[prefix + key] = next[key];
-            }
-            return this.constructor.link(dict);
-        }
-    }
-    __decorate([
-        $mol_mem
-    ], $mol_state_arg, "href", null);
-    __decorate([
-        $mol_mem
-    ], $mol_state_arg, "href_normal", null);
-    __decorate([
-        $mol_mem
-    ], $mol_state_arg, "href_absolute", null);
-    __decorate([
-        $mol_mem
-    ], $mol_state_arg, "dict", null);
-    __decorate([
-        $mol_mem_key
-    ], $mol_state_arg, "dict_cut", null);
-    __decorate([
-        $mol_mem_key
-    ], $mol_state_arg, "value", null);
-    __decorate([
-        $mol_mem_key
-    ], $mol_state_arg, "make_link", null);
-    __decorate([
-        $mol_action
-    ], $mol_state_arg, "commit", null);
-    __decorate([
-        $mol_action
-    ], $mol_state_arg, "go", null);
-    $.$mol_state_arg = $mol_state_arg;
-    function $mol_state_arg_change() {
-        $mol_state_arg.href($mol_dom.location.href);
-    }
-    self.addEventListener('hashchange', $mol_state_arg_change);
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    class $mol_media extends $mol_object2 {
-        static match(query, next) {
-            if (next !== undefined)
-                return next;
-            const res = this.$.$mol_dom_context.matchMedia?.(query) ?? {};
-            res.onchange = () => this.match(query, res.matches);
-            return res.matches;
-        }
-    }
-    __decorate([
-        $mol_mem_key
-    ], $mol_media, "match", null);
-    $.$mol_media = $mol_media;
-})($ || ($ = {}));
 
 ;
 "use strict";
@@ -4384,6 +4295,178 @@ var $;
 "use strict";
 var $;
 (function ($) {
+    /**
+     * Decorates method to fiber to ensure it is executed only once inside other fiber from [mol_wire](../wire/README.md)
+     * @see https://mol.hyoo.ru/#!section=docs/=1fcpsq_1wh0h2
+     */
+    $.$mol_action = $mol_wire_method;
+})($ || ($ = {}));
+
+;
+"use strict";
+
+;
+"use strict";
+var $;
+(function ($) {
+    /** State of arguments like `#foo=bar/xxx` or `?foo=bar&xxx` */
+    class $mol_state_arg extends $mol_object {
+        prefix;
+        static href(next) {
+            if (next === undefined) {
+                next = $mol_dom.location.href;
+            }
+            else if (!/^about:srcdoc/.test(next)) {
+                new $mol_after_frame(() => {
+                    const next = this.href();
+                    const prev = $mol_dom.location.href;
+                    if (next === prev)
+                        return;
+                    const history = $mol_dom.history;
+                    history.replaceState(history.state, $mol_dom.document.title, next);
+                });
+            }
+            if ($mol_dom.parent && ($mol_dom.parent !== $mol_dom.self)) {
+                $mol_dom.parent.postMessage(['hashchange', next], '*');
+            }
+            return next;
+        }
+        static href_normal() {
+            return this.link({});
+        }
+        static href_absolute() {
+            return new URL(this.href(), $mol_dom.location.href).toString();
+        }
+        static dict(next) {
+            var href = this.href(next && this.make_link(next)).split(/#!?/)[1] || '';
+            var chunks = href.split(this.separator);
+            var params = {};
+            chunks.forEach(chunk => {
+                if (!chunk)
+                    return;
+                var vals = chunk.split('=').map(decodeURIComponent);
+                params[vals.shift()] = vals.join('=');
+            });
+            return params;
+        }
+        static dict_cut(except) {
+            const dict = this.dict();
+            const cut = {};
+            for (const key in dict) {
+                if (except.indexOf(key) >= 0)
+                    break;
+                cut[key] = dict[key];
+            }
+            return cut;
+        }
+        static value(key, next) {
+            const nextDict = (next === void 0) ? void 0 : { ...this.dict(), [key]: next };
+            const next2 = this.dict(nextDict)[key];
+            return (next2 == null) ? null : next2;
+        }
+        static link(next) {
+            return this.make_link({
+                ...this.dict_cut(Object.keys(next)),
+                ...next,
+            });
+        }
+        static prolog = '!';
+        static separator = '/';
+        static make_link(next) {
+            const chunks = [];
+            for (let key in next) {
+                if (null == next[key])
+                    continue;
+                const val = next[key];
+                chunks.push([key].concat(val ? [val] : []).map(this.encode).join('='));
+            }
+            return new URL('#' + this.prolog + chunks.join(this.separator), this.href_absolute()).toString();
+        }
+        static commit() {
+            $mol_dom.history.pushState($mol_dom.history.state, $mol_dom.document.title, this.href());
+        }
+        static go(next) {
+            $mol_dom.location.href = this.link(next);
+        }
+        static encode(str) {
+            return encodeURIComponent(str).replace(/\(/g, '%28').replace(/\)/g, '%29');
+        }
+        constructor(prefix = '') {
+            super();
+            this.prefix = prefix;
+        }
+        value(key, next) {
+            return this.constructor.value(this.prefix + key, next);
+        }
+        sub(postfix) {
+            return new this.constructor(this.prefix + postfix + '.');
+        }
+        link(next) {
+            var prefix = this.prefix;
+            var dict = {};
+            for (var key in next) {
+                dict[prefix + key] = next[key];
+            }
+            return this.constructor.link(dict);
+        }
+    }
+    __decorate([
+        $mol_mem
+    ], $mol_state_arg, "href", null);
+    __decorate([
+        $mol_mem
+    ], $mol_state_arg, "href_normal", null);
+    __decorate([
+        $mol_mem
+    ], $mol_state_arg, "href_absolute", null);
+    __decorate([
+        $mol_mem
+    ], $mol_state_arg, "dict", null);
+    __decorate([
+        $mol_mem_key
+    ], $mol_state_arg, "dict_cut", null);
+    __decorate([
+        $mol_mem_key
+    ], $mol_state_arg, "value", null);
+    __decorate([
+        $mol_mem_key
+    ], $mol_state_arg, "make_link", null);
+    __decorate([
+        $mol_action
+    ], $mol_state_arg, "commit", null);
+    __decorate([
+        $mol_action
+    ], $mol_state_arg, "go", null);
+    $.$mol_state_arg = $mol_state_arg;
+    function $mol_state_arg_change() {
+        $mol_state_arg.href($mol_dom.location.href);
+    }
+    self.addEventListener('hashchange', $mol_state_arg_change);
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    class $mol_media extends $mol_object2 {
+        static match(query, next) {
+            if (next !== undefined)
+                return next;
+            const res = this.$.$mol_dom_context.matchMedia?.(query) ?? {};
+            res.onchange = () => this.match(query, res.matches);
+            return res.matches;
+        }
+    }
+    __decorate([
+        $mol_mem_key
+    ], $mol_media, "match", null);
+    $.$mol_media = $mol_media;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
     function parse(theme) {
         if (theme === 'true')
             return true;
@@ -4424,16 +4507,101 @@ var $;
 (function ($) {
     var $$;
     (function ($$) {
-        /**
-         * The [plugin](../../plugin/readme.md) which defines theme based on [mol_lights](../../lights/readme.md).
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_lights_demo
-         */
-        class $mol_theme_auto extends $.$mol_theme_auto {
+        class $bog_theme_auto extends $.$bog_theme_auto {
+            themes_default() {
+                return this.$.$bog_theme_names;
+            }
+            /** Stores current mode in localStorage. Defaults to 'system'. */
+            mode(next) {
+                return this.$.$mol_state_local.value(`${this}.mode()`, next) ?? 'system';
+            }
+            /** Cycles: system → light → dark → system (skips 'custom') */
+            mode_next() {
+                const cycle = ['system', 'light', 'dark'];
+                const i = cycle.indexOf(this.mode());
+                this.mode(cycle[i === -1 ? 0 : (i + 1) % cycle.length]);
+            }
+            theme_index(next) {
+                const stored = this.$.$mol_state_local.value(`${this}.theme_index()`, next);
+                if (stored === null && next === undefined) {
+                    return this.system_theme_index();
+                }
+                return stored ?? 0;
+            }
+            system_theme_index() {
+                const themes = this.themes();
+                const prefersLight = this.$.$mol_lights();
+                const preferredTheme = prefersLight ? this.theme_light() : this.theme_dark();
+                const index = themes.indexOf(preferredTheme);
+                return index !== -1 ? index : 0;
+            }
             theme() {
-                return this.$.$mol_lights() ? this.light() : this.dark();
+                const mode = this.mode();
+                if (mode === 'light')
+                    return this.theme_light();
+                if (mode === 'dark')
+                    return this.theme_dark();
+                if (mode === 'custom') {
+                    const themes = this.themes();
+                    const index = this.theme_index();
+                    if (themes.length === 0)
+                        return this.theme_light();
+                    return themes[index % themes.length];
+                }
+                // system — follow browser preference
+                return this.$.$mol_lights() ? this.theme_light() : this.theme_dark();
+            }
+            theme_next() {
+                this.mode_next();
+            }
+            theme_prev() {
+                const cycle = ['system', 'light', 'dark'];
+                const i = cycle.indexOf(this.mode());
+                this.mode(cycle[i <= 0 ? cycle.length - 1 : i - 1]);
+            }
+            /** Called by picker. Sets mode to light/dark or custom for themed palettes. */
+            theme_set(index) {
+                const themes = this.themes();
+                if (themes.length === 0)
+                    return;
+                const theme = themes[index % themes.length];
+                if (theme === this.theme_light()) {
+                    this.mode('light');
+                }
+                else if (theme === this.theme_dark()) {
+                    this.mode('dark');
+                }
+                else {
+                    this.mode('custom');
+                    this.theme_index(index % themes.length);
+                }
             }
         }
-        $$.$mol_theme_auto = $mol_theme_auto;
+        __decorate([
+            $mol_mem
+        ], $bog_theme_auto.prototype, "mode", null);
+        __decorate([
+            $mol_action
+        ], $bog_theme_auto.prototype, "mode_next", null);
+        __decorate([
+            $mol_mem
+        ], $bog_theme_auto.prototype, "theme_index", null);
+        __decorate([
+            $mol_mem
+        ], $bog_theme_auto.prototype, "system_theme_index", null);
+        __decorate([
+            $mol_mem
+        ], $bog_theme_auto.prototype, "theme", null);
+        __decorate([
+            $mol_action
+        ], $bog_theme_auto.prototype, "theme_next", null);
+        __decorate([
+            $mol_action
+        ], $bog_theme_auto.prototype, "theme_prev", null);
+        __decorate([
+            $mol_action
+        ], $bog_theme_auto.prototype, "theme_set", null);
+        $$.$bog_theme_auto = $bog_theme_auto;
     })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));
 
@@ -5209,42 +5377,6 @@ var $;
 
 
 ;
-	($.$mol_icon_help) = class $mol_icon_help extends ($.$mol_icon) {
-		path(){
-			return "M10,19H13V22H10V19M12,2C17.35,2.22 19.68,7.62 16.5,11.67C15.67,12.67 14.33,13.33 13.67,14.17C13,15 13,16 13,17H10C10,15.33 10,13.92 10.67,12.92C11.33,11.92 12.67,11.33 13.5,10.67C15.92,8.43 15.32,5.26 12,5A3,3 0 0,0 9,8H6A6,6 0 0,1 12,2Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$mol_icon_help_circle) = class $mol_icon_help_circle extends ($.$mol_icon) {
-		path(){
-			return "M15.07,11.25L14.17,12.17C13.45,12.89 13,13.5 13,15H11V14.5C11,13.39 11.45,12.39 12.17,11.67L13.41,10.41C13.78,10.05 14,9.55 14,9C14,7.89 13.1,7 12,7A2,2 0 0,0 10,9H8A4,4 0 0,1 12,5A4,4 0 0,1 16,9C16,9.88 15.64,10.67 15.07,11.25M13,19H11V17H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$mol_icon_help_circle_outline) = class $mol_icon_help_circle_outline extends ($.$mol_icon) {
-		path(){
-			return "M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
 	($.$mol_icon_upload) = class $mol_icon_upload extends ($.$mol_icon) {
 		path(){
 			return "M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z";
@@ -5371,116 +5503,6 @@ var $;
 var $;
 (function ($) {
     $mol_style_attach("mol/button/open/open.view.css", "[mol_button_open_native] {\n\tposition: absolute;\n\tleft: 0;\n\ttop: -100%;\n\twidth: 100%;\n\theight: 200%;\n\tcursor: pointer;\n\topacity: 0;\n}\n");
-})($ || ($ = {}));
-
-;
-	($.$mol_paragraph) = class $mol_paragraph extends ($.$mol_view) {
-		line_height(){
-			return 24;
-		}
-		letter_width(){
-			return 7;
-		}
-		width_limit(){
-			return +Infinity;
-		}
-		row_width(){
-			return 0;
-		}
-		sub(){
-			return [(this.title())];
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        class $mol_paragraph extends $.$mol_paragraph {
-            maximal_width() {
-                let width = 0;
-                const letter = this.letter_width();
-                for (const kid of this.sub()) {
-                    if (!kid)
-                        continue;
-                    if (kid instanceof $mol_view) {
-                        width += kid.maximal_width();
-                    }
-                    else if (typeof kid !== 'object') {
-                        width += String(kid).length * letter;
-                    }
-                }
-                return width;
-            }
-            width_limit() {
-                return this.$.$mol_window.size().width;
-            }
-            minimal_width() {
-                return this.letter_width();
-            }
-            row_width() {
-                return Math.max(Math.min(this.width_limit(), this.maximal_width()), this.letter_width());
-            }
-            minimal_height() {
-                return Math.max(1, Math.ceil(this.maximal_width() / this.row_width())) * this.line_height();
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_paragraph.prototype, "maximal_width", null);
-        __decorate([
-            $mol_mem
-        ], $mol_paragraph.prototype, "row_width", null);
-        __decorate([
-            $mol_mem
-        ], $mol_paragraph.prototype, "minimal_height", null);
-        $$.$mol_paragraph = $mol_paragraph;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/paragraph/paragraph.view.css", ":where([mol_paragraph]) {\n\tmargin: 0;\n\tmax-width: 100%;\n}\n");
-})($ || ($ = {}));
-
-;
-	($.$bog_version) = class $bog_version extends ($.$mol_paragraph) {
-		version(){
-			return "0.0.0";
-		}
-		title(){
-			return (this.version());
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        $mol_style_define($bog_version, {
-            font: {
-                size: '0.75rem',
-            },
-            color: $mol_theme.shade,
-            opacity: 0.6,
-        });
-    })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));
 
 ;
@@ -5848,45 +5870,188 @@ var $;
 })($ || ($ = {}));
 
 ;
-	($.$mol_pick) = class $mol_pick extends ($.$mol_pop) {
+	($.$mol_hotkey) = class $mol_hotkey extends ($.$mol_plugin) {
 		keydown(next){
 			if(next !== undefined) return next;
 			return null;
 		}
-		trigger_enabled(){
-			return true;
+		event(){
+			return {...(super.event()), "keydown": (next) => (this.keydown(next))};
 		}
-		clicks(next){
-			if(next !== undefined) return next;
+		key(){
+			return {};
+		}
+		mod_ctrl(){
+			return false;
+		}
+		mod_alt(){
+			return false;
+		}
+		mod_shift(){
+			return false;
+		}
+	};
+	($mol_mem(($.$mol_hotkey.prototype), "keydown"));
+
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        /**
+         * Plugin which adds handlers for keyboard keys.
+         * @see [mol_keyboard_code](../keyboard/code/code.ts)
+         */
+        class $mol_hotkey extends $.$mol_hotkey {
+            key() {
+                return super.key();
+            }
+            keydown(event) {
+                if (!event)
+                    return;
+                if (event.defaultPrevented)
+                    return;
+                let name = $mol_keyboard_code[event.keyCode];
+                if (this.mod_ctrl() !== (event.ctrlKey || event.metaKey))
+                    return;
+                if (this.mod_alt() !== event.altKey)
+                    return;
+                if (this.mod_shift() !== event.shiftKey)
+                    return;
+                const handle = this.key()[name];
+                if (handle)
+                    handle(event);
+            }
+        }
+        $$.$mol_hotkey = $mol_hotkey;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+	($.$mol_string) = class $mol_string extends ($.$mol_view) {
+		selection_watcher(){
 			return null;
 		}
-		trigger_content(){
-			return [(this.title())];
+		error_report(){
+			return null;
+		}
+		disabled(){
+			return false;
+		}
+		value(next){
+			if(next !== undefined) return next;
+			return "";
+		}
+		value_changed(next){
+			return (this.value(next));
 		}
 		hint(){
 			return "";
 		}
-		Trigger(){
-			const obj = new this.$.$mol_check();
-			(obj.minimal_width) = () => (40);
-			(obj.minimal_height) = () => (40);
-			(obj.enabled) = () => ((this.trigger_enabled()));
-			(obj.checked) = (next) => ((this.showed(next)));
-			(obj.clicks) = (next) => ((this.clicks(next)));
-			(obj.sub) = () => ((this.trigger_content()));
-			(obj.hint) = () => ((this.hint()));
+		hint_visible(){
+			return (this.hint());
+		}
+		spellcheck(){
+			return true;
+		}
+		autocomplete_native(){
+			return "";
+		}
+		selection_end(){
+			return 0;
+		}
+		selection_start(){
+			return 0;
+		}
+		keyboard(){
+			return "text";
+		}
+		enter(){
+			return "go";
+		}
+		length_max(){
+			return +Infinity;
+		}
+		type(next){
+			if(next !== undefined) return next;
+			return "text";
+		}
+		event_change(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		submit_with_ctrl(){
+			return false;
+		}
+		submit(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Submit(){
+			const obj = new this.$.$mol_hotkey();
+			(obj.mod_ctrl) = () => ((this.submit_with_ctrl()));
+			(obj.key) = () => ({"enter": (next) => (this.submit(next))});
 			return obj;
+		}
+		dom_name(){
+			return "input";
+		}
+		enabled(){
+			return true;
+		}
+		minimal_height(){
+			return 40;
+		}
+		autocomplete(){
+			return false;
+		}
+		selection(next){
+			if(next !== undefined) return next;
+			return [0, 0];
+		}
+		auto(){
+			return [(this.selection_watcher()), (this.error_report())];
+		}
+		field(){
+			return {
+				...(super.field()), 
+				"disabled": (this.disabled()), 
+				"value": (this.value_changed()), 
+				"placeholder": (this.hint_visible()), 
+				"spellcheck": (this.spellcheck()), 
+				"autocomplete": (this.autocomplete_native()), 
+				"selectionEnd": (this.selection_end()), 
+				"selectionStart": (this.selection_start()), 
+				"inputMode": (this.keyboard()), 
+				"enterkeyhint": (this.enter())
+			};
+		}
+		attr(){
+			return {
+				...(super.attr()), 
+				"maxlength": (this.length_max()), 
+				"type": (this.type())
+			};
 		}
 		event(){
-			return {...(super.event()), "keydown": (next) => (this.keydown(next))};
+			return {...(super.event()), "input": (next) => (this.event_change(next))};
 		}
-		Anchor(){
-			return (this.Trigger());
+		plugins(){
+			return [(this.Submit())];
 		}
 	};
-	($mol_mem(($.$mol_pick.prototype), "keydown"));
-	($mol_mem(($.$mol_pick.prototype), "clicks"));
-	($mol_mem(($.$mol_pick.prototype), "Trigger"));
+	($mol_mem(($.$mol_string.prototype), "value"));
+	($mol_mem(($.$mol_string.prototype), "type"));
+	($mol_mem(($.$mol_string.prototype), "event_change"));
+	($mol_mem(($.$mol_string.prototype), "submit"));
+	($mol_mem(($.$mol_string.prototype), "Submit"));
+	($mol_mem(($.$mol_string.prototype), "selection"));
 
 
 ;
@@ -5900,424 +6065,99 @@ var $;
     var $$;
     (function ($$) {
         /**
-         * Pop-up display and hide by mouse click, also hide by unfocus.
-         * Based on [mol_pop](https://mol.hyoo.ru/#!section=demos/demo=mol_pop_demo) component.
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_pick_demo
+         * An input field for entering single line text.
+         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_string_demo
          */
-        class $mol_pick extends $.$mol_pick {
-            keydown(event) {
-                if (!this.trigger_enabled())
+        class $mol_string extends $.$mol_string {
+            event_change(next) {
+                if (!next)
                     return;
-                if (event.defaultPrevented)
+                const el = this.dom_node();
+                const from = el.selectionStart;
+                const to = el.selectionEnd;
+                try {
+                    el.value = this.value_changed(el.value);
+                }
+                catch (error) {
+                    const el = this.dom_node();
+                    if (error instanceof Error) {
+                        el.setCustomValidity(error.message);
+                        el.reportValidity();
+                    }
+                    $mol_fail_hidden(error);
+                }
+                if (to === null)
                     return;
-                if (event.keyCode === $mol_keyboard_code.escape) {
-                    if (!this.showed())
-                        return;
-                    event.preventDefault();
-                    this.showed(false);
+                el.selectionEnd = to;
+                el.selectionStart = from;
+                this.selection_change(next);
+            }
+            error_report() {
+                try {
+                    if (this.focused())
+                        this.value();
                 }
-            }
-        }
-        $$.$mol_pick = $mol_pick;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/pick/pick.view.css", "[mol_pick_trigger] {\n\talign-items: center;\n\tflex-grow: 1;\n}\n");
-})($ || ($ = {}));
-
-;
-	($.$mol_dimmer) = class $mol_dimmer extends ($.$mol_paragraph) {
-		parts(){
-			return [];
-		}
-		string(id){
-			return "";
-		}
-		haystack(){
-			return "";
-		}
-		needle(){
-			return "";
-		}
-		sub(){
-			return (this.parts());
-		}
-		Low(id){
-			const obj = new this.$.$mol_paragraph();
-			(obj.sub) = () => ([(this.string(id))]);
-			return obj;
-		}
-		High(id){
-			const obj = new this.$.$mol_paragraph();
-			(obj.sub) = () => ([(this.string(id))]);
-			return obj;
-		}
-	};
-	($mol_mem_key(($.$mol_dimmer.prototype), "Low"));
-	($mol_mem_key(($.$mol_dimmer.prototype), "High"));
-
-
-;
-"use strict";
-
-;
-"use strict";
-
-;
-"use strict";
-
-;
-"use strict";
-
-;
-"use strict";
-var $;
-(function ($) {
-    let x = /x/[Symbol.matchAll];
-    /** Type safe reguar expression builder */
-    class $mol_regexp extends RegExp {
-        groups;
-        /** Prefer to use $mol_regexp.from */
-        constructor(source, flags = 'gsu', groups = []) {
-            super(source, flags);
-            this.groups = groups;
-        }
-        *[Symbol.matchAll](str) {
-            const index = this.lastIndex;
-            this.lastIndex = 0;
-            try {
-                while (this.lastIndex < str.length) {
-                    const found = this.exec(str);
-                    if (!found)
-                        break;
-                    yield found;
-                }
-            }
-            finally {
-                this.lastIndex = index;
-            }
-        }
-        /** Parses input and returns found capture groups or null */
-        [Symbol.match](str) {
-            const res = [...this[Symbol.matchAll](str)].filter(r => r.groups).map(r => r[0]);
-            if (!res.length)
-                return null;
-            return res;
-        }
-        /** Splits string by regexp edges */
-        [Symbol.split](str) {
-            const res = [];
-            let token_last = null;
-            for (let token of this[Symbol.matchAll](str)) {
-                if (token.groups && (token_last ? token_last.groups : true))
-                    res.push('');
-                res.push(token[0]);
-                token_last = token;
-            }
-            if (!res.length)
-                res.push('');
-            return res;
-        }
-        test(str) {
-            return Boolean(str.match(this));
-        }
-        exec(str) {
-            const from = this.lastIndex;
-            if (from >= str.length)
-                return null;
-            const res = super.exec(str);
-            if (res === null) {
-                this.lastIndex = str.length;
-                if (!str)
-                    return null;
-                return Object.assign([str.slice(from)], {
-                    index: from,
-                    input: str,
-                });
-            }
-            if (from === this.lastIndex) {
-                $mol_fail(new Error('Captured empty substring'));
-            }
-            const groups = {};
-            const skipped = str.slice(from, this.lastIndex - res[0].length);
-            if (skipped) {
-                this.lastIndex = this.lastIndex - res[0].length;
-                return Object.assign([skipped], {
-                    index: from,
-                    input: res.input,
-                });
-            }
-            for (let i = 0; i < this.groups.length; ++i) {
-                const group = this.groups[i];
-                groups[group] = groups[group] || res[i + 1] || '';
-            }
-            return Object.assign(res, { groups });
-        }
-        generate(params) {
-            return null;
-        }
-        get native() {
-            return new RegExp(this.source, this.flags);
-        }
-        /** Makes regexp that greedy repeats this pattern with delimiter */
-        static separated(chunk, sep) {
-            return $mol_regexp.from([
-                $mol_regexp.repeat_greedy([[chunk], sep], 0),
-                chunk,
-            ]);
-        }
-        /** Makes regexp that non-greedy repeats this pattern from min to max count */
-        static repeat(source, min = 0, max = Number.POSITIVE_INFINITY) {
-            const regexp = $mol_regexp.from(source);
-            const upper = Number.isFinite(max) ? max : '';
-            const str = `(?:${regexp.source}){${min},${upper}}?`;
-            const regexp2 = new $mol_regexp(str, regexp.flags, regexp.groups);
-            regexp2.generate = params => {
-                const res = regexp.generate(params);
-                if (res)
-                    return res;
-                if (min > 0)
-                    return res;
-                return '';
-            };
-            return regexp2;
-        }
-        /** Makes regexp that greedy repeats this pattern from min to max count */
-        static repeat_greedy(source, min = 0, max = Number.POSITIVE_INFINITY) {
-            const regexp = $mol_regexp.from(source);
-            const upper = Number.isFinite(max) ? max : '';
-            const str = `(?:${regexp.source}){${min},${upper}}`;
-            const regexp2 = new $mol_regexp(str, regexp.flags, regexp.groups);
-            regexp2.generate = params => {
-                const res = regexp.generate(params);
-                if (res)
-                    return res;
-                if (min > 0)
-                    return res;
-                return '';
-            };
-            return regexp2;
-        }
-        /** Makes regexp that match any of options */
-        static vary(sources, flags = 'gsu') {
-            const groups = [];
-            const chunks = sources.map(source => {
-                const regexp = $mol_regexp.from(source);
-                groups.push(...regexp.groups);
-                return regexp.source;
-            });
-            return new $mol_regexp(`(?:${chunks.join('|')})`, flags, groups);
-        }
-        /** Makes regexp that allow absent of this pattern */
-        static optional(source) {
-            return $mol_regexp.repeat_greedy(source, 0, 1);
-        }
-        /** Makes regexp that look ahead for pattern */
-        static force_after(source) {
-            const regexp = $mol_regexp.from(source);
-            return new $mol_regexp(`(?=${regexp.source})`, regexp.flags, regexp.groups);
-        }
-        /** Makes regexp that look ahead for pattern */
-        static forbid_after(source) {
-            const regexp = $mol_regexp.from(source);
-            return new $mol_regexp(`(?!${regexp.source})`, regexp.flags, regexp.groups);
-        }
-        /** Converts some js values to regexp */
-        static from(source, { ignoreCase, multiline } = {
-            ignoreCase: false,
-            multiline: false,
-        }) {
-            let flags = 'gsu';
-            if (multiline)
-                flags += 'm';
-            if (ignoreCase)
-                flags += 'i';
-            if (typeof source === 'number') {
-                const src = `\\u{${source.toString(16)}}`;
-                const regexp = new $mol_regexp(src, flags);
-                regexp.generate = () => src;
-                return regexp;
-            }
-            if (typeof source === 'string') {
-                const src = source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                const regexp = new $mol_regexp(src, flags);
-                regexp.generate = () => source;
-                return regexp;
-            }
-            else if (source instanceof $mol_regexp) {
-                const regexp = new $mol_regexp(source.source, flags, source.groups);
-                regexp.generate = params => source.generate(params);
-                return regexp;
-            }
-            if (source instanceof RegExp) {
-                const test = new RegExp('|' + source.source);
-                const groups = Array.from({ length: test.exec('').length - 1 }, (_, i) => String(i + 1));
-                const regexp = new $mol_regexp(source.source, source.flags, groups);
-                regexp.generate = () => '';
-                return regexp;
-            }
-            if (Array.isArray(source)) {
-                const patterns = source.map(src => Array.isArray(src)
-                    ? $mol_regexp.optional(src)
-                    : $mol_regexp.from(src));
-                const chunks = patterns.map(pattern => pattern.source);
-                const groups = [];
-                let index = 0;
-                for (const pattern of patterns) {
-                    for (let group of pattern.groups) {
-                        if (Number(group) >= 0) {
-                            groups.push(String(index++));
-                        }
-                        else {
-                            groups.push(group);
-                        }
+                catch (error) {
+                    const el = this.dom_node();
+                    if (error instanceof Error) {
+                        el.setCustomValidity(error.message);
+                        el.reportValidity();
                     }
                 }
-                const regexp = new $mol_regexp(chunks.join(''), flags, groups);
-                regexp.generate = params => {
-                    let res = '';
-                    for (const pattern of patterns) {
-                        let sub = pattern.generate(params);
-                        if (sub === null)
-                            return '';
-                        res += sub;
-                    }
-                    return res;
-                };
-                return regexp;
             }
-            else {
-                const groups = [];
-                const chunks = Object.keys(source).map(name => {
-                    groups.push(name);
-                    const regexp = $mol_regexp.from(source[name]);
-                    groups.push(...regexp.groups);
-                    return `(${regexp.source})`;
-                });
-                const regexp = new $mol_regexp(`(?:${chunks.join('|')})`, flags, groups);
-                const validator = new RegExp('^' + regexp.source + '$', flags);
-                regexp.generate = (params) => {
-                    for (let option in source) {
-                        if (option in params) {
-                            if (typeof params[option] === 'boolean') {
-                                if (!params[option])
-                                    continue;
-                            }
-                            else {
-                                const str = String(params[option]);
-                                if (str.match(validator))
-                                    return str;
-                                $mol_fail(new Error(`Wrong param: ${option}=${str}`));
-                            }
-                        }
-                        else {
-                            if (typeof source[option] !== 'object')
-                                continue;
-                        }
-                        const res = $mol_regexp.from(source[option]).generate(params);
-                        if (res)
-                            return res;
-                    }
-                    return null;
-                };
-                return regexp;
+            hint_visible() {
+                return (this.enabled() ? this.hint() : '') || ' ';
             }
-        }
-        /** Makes regexp which includes only unicode category */
-        static unicode_only(...category) {
-            return new $mol_regexp(`\\p{${category.join('=')}}`);
-        }
-        /** Makes regexp which excludes unicode category */
-        static unicode_except(...category) {
-            return new $mol_regexp(`\\P{${category.join('=')}}`);
-        }
-        static char_range(from, to) {
-            return new $mol_regexp(`${$mol_regexp.from(from).source}-${$mol_regexp.from(to).source}`);
-        }
-        static char_only(...allowed) {
-            const regexp = allowed.map(f => $mol_regexp.from(f).source).join('');
-            return new $mol_regexp(`[${regexp}]`);
-        }
-        static char_except(...forbidden) {
-            const regexp = forbidden.map(f => $mol_regexp.from(f).source).join('');
-            return new $mol_regexp(`[^${regexp}]`);
-        }
-        static decimal_only = $mol_regexp.from(/\d/gsu);
-        static decimal_except = $mol_regexp.from(/\D/gsu);
-        static latin_only = $mol_regexp.from(/\w/gsu);
-        static latin_except = $mol_regexp.from(/\W/gsu);
-        static space_only = $mol_regexp.from(/\s/gsu);
-        static space_except = $mol_regexp.from(/\S/gsu);
-        static word_break_only = $mol_regexp.from(/\b/gsu);
-        static word_break_except = $mol_regexp.from(/\B/gsu);
-        static tab = $mol_regexp.from(/\t/gsu);
-        static slash_back = $mol_regexp.from(/\\/gsu);
-        static nul = $mol_regexp.from(/\0/gsu);
-        static char_any = $mol_regexp.from(/./gsu);
-        static begin = $mol_regexp.from(/^/gsu);
-        static end = $mol_regexp.from(/$/gsu);
-        static or = $mol_regexp.from(/|/gsu);
-        static line_end = $mol_regexp.from({
-            win_end: [['\r'], '\n'],
-            mac_end: '\r',
-        });
-    }
-    $.$mol_regexp = $mol_regexp;
-})($ || ($ = {}));
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        /**
-         * Output text with dimmed mismatched substrings.
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_dimmer_demo
-         */
-        class $mol_dimmer extends $.$mol_dimmer {
-            parts() {
-                const needle = this.needle();
-                if (needle.length < 2)
-                    return [this.haystack()];
-                let chunks = [];
-                let strings = this.strings();
-                for (let index = 0; index < strings.length; index++) {
-                    if (strings[index] === '')
-                        continue;
-                    chunks.push((index % 2) ? this.High(index) : this.Low(index));
+            disabled() {
+                return !this.enabled();
+            }
+            autocomplete_native() {
+                return this.autocomplete() ? 'on' : 'off';
+            }
+            selection_watcher() {
+                return new $mol_dom_listener(this.$.$mol_dom_context.document, 'selectionchange', $mol_wire_async(event => this.selection_change(event)));
+            }
+            selection_change(event) {
+                const el = this.dom_node();
+                if (el !== this.$.$mol_dom_context.document.activeElement)
+                    return;
+                const [from, to] = this.selection([
+                    el.selectionStart,
+                    el.selectionEnd,
+                ]);
+                el.selectionEnd = to;
+                el.selectionStart = from;
+                if (to !== from && el.selectionEnd === el.selectionStart) {
+                    el.selectionEnd = to;
                 }
-                return chunks;
             }
-            strings() {
-                const options = this.needle().split(/\s+/g).filter(Boolean);
-                if (!options.length)
-                    return [this.haystack()];
-                const variants = { ...options };
-                const regexp = $mol_regexp.from({ needle: variants }, { ignoreCase: true });
-                return this.haystack().split(regexp);
+            selection_start() {
+                const el = this.dom_node();
+                if (!this.focused())
+                    return undefined;
+                if (el.selectionStart == null)
+                    return undefined;
+                return this.selection()[0];
             }
-            string(index) {
-                return this.strings()[index];
-            }
-            *view_find(check, path = []) {
-                if (check(this, this.haystack())) {
-                    yield [...path, this];
-                }
+            selection_end() {
+                const el = this.dom_node();
+                if (!this.focused())
+                    return undefined;
+                if (el.selectionEnd == null)
+                    return undefined;
+                return this.selection()[1];
             }
         }
         __decorate([
+            $mol_action
+        ], $mol_string.prototype, "event_change", null);
+        __decorate([
             $mol_mem
-        ], $mol_dimmer.prototype, "strings", null);
-        $$.$mol_dimmer = $mol_dimmer;
+        ], $mol_string.prototype, "error_report", null);
+        __decorate([
+            $mol_mem
+        ], $mol_string.prototype, "selection_watcher", null);
+        $$.$mol_string = $mol_string;
     })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));
 
@@ -6325,7 +6165,7 @@ var $;
 "use strict";
 var $;
 (function ($) {
-    $mol_style_attach("mol/dimmer/dimmer.view.css", "[mol_dimmer] {\n\tdisplay: block;\n\tmax-width: 100%;\n}\n\n[mol_dimmer_low] {\n\tdisplay: inline;\n\topacity: 0.8;\n}\n\n[mol_dimmer_high] {\n\tdisplay: inline;\n\tcolor: var(--mol_theme_focus);\n\ttext-shadow: 0 0;\n}\n");
+    $mol_style_attach("mol/string/string.view.css", "[mol_string] {\n\tbox-sizing: border-box;\n\toutline-offset: 0;\n\tborder: none;\n\tborder-radius: var(--mol_gap_round);\n\twhite-space: pre-line;\n\toverflow: hidden;\n\ttext-overflow: ellipsis;\n\tpadding: var(--mol_gap_text);\n\ttext-align: left;\n\tposition: relative;\n\tfont: inherit;\n\tflex: 1 1 auto;\n\tbackground: transparent;\n\tmin-width: 0;\n\tcolor: inherit;\n\tbackground: var(--mol_theme_field);\n}\n\n[mol_string]:disabled:not(:placeholder-shown) {\n\tbackground-color: transparent;\n\tcolor: var(--mol_theme_text);\n}\n\n[mol_string]:where(:not(:disabled)) {\n\tbox-shadow: inset 0 0 0 1px var(--mol_theme_line);\n}\n\n[mol_string]:where(:not(:disabled)):hover {\n\tbox-shadow: inset 0 0 0 2px var(--mol_theme_line);\n\tz-index: var(--mol_layer_hover);\n}\n\n[mol_string]:focus {\n\toutline: none;\n\tz-index: var(--mol_layer_focus);\n\tcolor: var(--mol_theme_text);\n\tbox-shadow: inset 0 0 0 1px var(--mol_theme_focus);\n}\n\n[mol_string]::placeholder {\n\tcolor: var(--mol_theme_shade);\n}\n\n[mol_string]::-ms-clear {\n\tdisplay: none;\n}\n");
 })($ || ($ = {}));
 
 ;
@@ -7458,181 +7298,6 @@ var $;
 })($ || ($ = {}));
 
 ;
-	($.$mol_nav) = class $mol_nav extends ($.$mol_plugin) {
-		event_key(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		cycle(next){
-			if(next !== undefined) return next;
-			return false;
-		}
-		mod_ctrl(){
-			return false;
-		}
-		mod_shift(){
-			return false;
-		}
-		mod_alt(){
-			return false;
-		}
-		keys_x(next){
-			if(next !== undefined) return next;
-			return [];
-		}
-		keys_y(next){
-			if(next !== undefined) return next;
-			return [];
-		}
-		current_x(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		current_y(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		event_up(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		event_down(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		event_left(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		event_right(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		event(){
-			return {...(super.event()), "keydown": (next) => (this.event_key(next))};
-		}
-	};
-	($mol_mem(($.$mol_nav.prototype), "event_key"));
-	($mol_mem(($.$mol_nav.prototype), "cycle"));
-	($mol_mem(($.$mol_nav.prototype), "keys_x"));
-	($mol_mem(($.$mol_nav.prototype), "keys_y"));
-	($mol_mem(($.$mol_nav.prototype), "current_x"));
-	($mol_mem(($.$mol_nav.prototype), "current_y"));
-	($mol_mem(($.$mol_nav.prototype), "event_up"));
-	($mol_mem(($.$mol_nav.prototype), "event_down"));
-	($mol_mem(($.$mol_nav.prototype), "event_left"));
-	($mol_mem(($.$mol_nav.prototype), "event_right"));
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        /**
-         * Plugin which can navigate in list of items
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_nav_demo
-         */
-        class $mol_nav extends $.$mol_nav {
-            event_key(event) {
-                if (!event)
-                    return event;
-                if (event.defaultPrevented)
-                    return;
-                if (this.mod_ctrl() && !event.ctrlKey)
-                    return;
-                if (this.mod_shift() && !event.shiftKey)
-                    return;
-                if (this.mod_alt() && !event.altKey)
-                    return;
-                switch (event.keyCode) {
-                    case $mol_keyboard_code.up: return this.event_up(event);
-                    case $mol_keyboard_code.down: return this.event_down(event);
-                    case $mol_keyboard_code.left: return this.event_left(event);
-                    case $mol_keyboard_code.right: return this.event_right(event);
-                    case $mol_keyboard_code.pageUp: return this.event_up(event);
-                    case $mol_keyboard_code.pageDown: return this.event_down(event);
-                }
-            }
-            event_up(event) {
-                if (!event)
-                    return event;
-                const keys = this.keys_y();
-                if (keys.length < 1)
-                    return;
-                const index_y = this.index_y();
-                const index_old = index_y === null ? 0 : index_y;
-                const index_new = (index_old + keys.length - 1) % keys.length;
-                event.preventDefault();
-                if (index_old === 0 && !this.cycle())
-                    return;
-                this.current_y(this.keys_y()[index_new]);
-            }
-            event_down(event) {
-                if (!event)
-                    return event;
-                const keys = this.keys_y();
-                if (keys.length < 1)
-                    return;
-                const index_y = this.index_y();
-                const index_old = index_y === null ? keys.length - 1 : index_y;
-                const index_new = (index_old + 1) % keys.length;
-                event.preventDefault();
-                if (index_new === 0 && !this.cycle())
-                    return;
-                this.current_y(this.keys_y()[index_new]);
-            }
-            event_left(event) {
-                if (!event)
-                    return event;
-                const keys = this.keys_x();
-                if (keys.length < 1)
-                    return;
-                const index_x = this.index_x();
-                const index_old = index_x === null ? 0 : index_x;
-                const index_new = (index_old + keys.length - 1) % keys.length;
-                event.preventDefault();
-                if (index_old === 0 && !this.cycle())
-                    return;
-                this.current_x(this.keys_x()[index_new]);
-            }
-            event_right(event) {
-                if (!event)
-                    return event;
-                const keys = this.keys_x();
-                if (keys.length < 1)
-                    return;
-                const index_x = this.index_x();
-                const index_old = index_x === null ? keys.length - 1 : index_x;
-                const index_new = (index_old + 1) % keys.length;
-                event.preventDefault();
-                if (index_new === 0 && !this.cycle())
-                    return;
-                this.current_x(this.keys_x()[index_new]);
-            }
-            index_y() {
-                let index = this.keys_y().indexOf(this.current_y());
-                if (index < 0)
-                    return null;
-                return index;
-            }
-            index_x() {
-                let index = this.keys_x().indexOf(this.current_x());
-                if (index < 0)
-                    return null;
-                return index;
-            }
-        }
-        $$.$mol_nav = $mol_nav;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
 	($.$mol_list) = class $mol_list extends ($.$mol_view) {
 		gap_before(){
 			return 0;
@@ -7899,188 +7564,1253 @@ var $;
 })($ || ($ = {}));
 
 ;
-	($.$mol_hotkey) = class $mol_hotkey extends ($.$mol_plugin) {
+	($.$bog_theme_picker_row) = class $bog_theme_picker_row extends ($.$mol_button_minor) {
+		focused_str(){
+			return "";
+		}
+		hover(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		theme_name(){
+			return "";
+		}
+		title(){
+			return (this.theme_name());
+		}
+		attr(){
+			return {...(super.attr()), "bog_theme_picker_row_focused": (this.focused_str())};
+		}
+		event(){
+			return {...(super.event()), "pointerenter": (next) => (this.hover(next))};
+		}
+	};
+	($mol_mem(($.$bog_theme_picker_row.prototype), "hover"));
+
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        class $bog_theme_picker_row extends $.$bog_theme_picker_row {
+            focused_str() {
+                return this.focused() ? 'true' : '';
+            }
+        }
+        $$.$bog_theme_picker_row = $bog_theme_picker_row;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        $mol_style_define($bog_theme_picker_row, {
+            '@': {
+                bog_theme_picker_row_focused: {
+                    true: {
+                        background: {
+                            color: $mol_theme.hover,
+                        },
+                        boxShadow: `inset 0 0 0 1px #000, inset 0 0 0 2px #fff`,
+                    },
+                },
+            },
+        });
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+	($.$bog_theme_picker) = class $bog_theme_picker extends ($.$mol_scroll) {
+		theme_name(id){
+			return "";
+		}
+		theme_focused(id){
+			return false;
+		}
+		theme_select(id, next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		theme_hover(id, next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Search(){
+			const obj = new this.$.$mol_string();
+			(obj.value) = (next) => ((this.query(next)));
+			(obj.hint) = () => ((this.$.$mol_locale.text("$bog_theme_picker_Search_hint")));
+			return obj;
+		}
+		theme_rows(){
+			return [];
+		}
+		Theme_list(){
+			const obj = new this.$.$mol_list();
+			(obj.rows) = () => ((this.theme_rows()));
+			return obj;
+		}
+		Content(){
+			const obj = new this.$.$mol_list();
+			(obj.rows) = () => ([(this.Search()), (this.Theme_list())]);
+			return obj;
+		}
+		key_down(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		theme_auto(){
+			const obj = new this.$.$bog_theme_auto();
+			return obj;
+		}
+		close(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		query(next){
+			if(next !== undefined) return next;
+			return "";
+		}
+		focused_index(next){
+			if(next !== undefined) return next;
+			return -1;
+		}
+		Theme_row(id){
+			const obj = new this.$.$bog_theme_picker_row();
+			(obj.theme_name) = () => ((this.theme_name(id)));
+			(obj.focused) = () => ((this.theme_focused(id)));
+			(obj.click) = (next) => ((this.theme_select(id, next)));
+			(obj.hover) = (next) => ((this.theme_hover(id, next)));
+			return obj;
+		}
+		sub(){
+			return [(this.Content())];
+		}
+		event(){
+			return {...(super.event()), "keydown": (next) => (this.key_down(next))};
+		}
+	};
+	($mol_mem_key(($.$bog_theme_picker.prototype), "theme_select"));
+	($mol_mem_key(($.$bog_theme_picker.prototype), "theme_hover"));
+	($mol_mem(($.$bog_theme_picker.prototype), "Search"));
+	($mol_mem(($.$bog_theme_picker.prototype), "Theme_list"));
+	($mol_mem(($.$bog_theme_picker.prototype), "Content"));
+	($mol_mem(($.$bog_theme_picker.prototype), "key_down"));
+	($mol_mem(($.$bog_theme_picker.prototype), "theme_auto"));
+	($mol_mem(($.$bog_theme_picker.prototype), "close"));
+	($mol_mem(($.$bog_theme_picker.prototype), "query"));
+	($mol_mem(($.$bog_theme_picker.prototype), "focused_index"));
+	($mol_mem_key(($.$bog_theme_picker.prototype), "Theme_row"));
+
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        /**
+         * Theme picker popup with search and list
+         */
+        class $bog_theme_picker extends $.$bog_theme_picker {
+            theme_rows() {
+                const themes = this.filtered_themes();
+                return themes.map((_, index) => this.Theme_row(index));
+            }
+            filtered_themes() {
+                const query = this.query().toLowerCase().trim();
+                const themes = this.$.$bog_theme_names;
+                const filtered = query ? themes.filter(name => name.toLowerCase().includes(query)) : [...themes];
+                // Reset focused index when filter changes
+                const current = this.focused_index();
+                if (current >= filtered.length) {
+                    this.focused_index(-1);
+                }
+                return filtered;
+            }
+            theme_name(index) {
+                return this.filtered_themes()[index] || '';
+            }
+            theme_focused(index) {
+                return this.focused_index() === index;
+            }
+            theme_select(index, event) {
+                if (!event)
+                    return null;
+                const themes = this.filtered_themes();
+                const theme_name = themes[index];
+                const global_index = this.$.$bog_theme_names.indexOf(theme_name);
+                if (global_index !== -1) {
+                    this.theme_auto().theme_set(global_index);
+                }
+                // Close popup
+                this.close();
+                return null;
+            }
+            theme_hover(index, event) {
+                if (!event)
+                    return null;
+                // Update focused index on hover (this will apply preview via theme_focused)
+                this.focused_index(index);
+                const themes = this.filtered_themes();
+                const theme_name = themes[index];
+                const global_index = this.$.$bog_theme_names.indexOf(theme_name);
+                if (global_index !== -1) {
+                    this.theme_auto().theme_set(global_index);
+                }
+                return null;
+            }
+            key_down(event) {
+                if (!event)
+                    return null;
+                const themes = this.filtered_themes();
+                let current = this.focused_index();
+                switch (event.key) {
+                    case 'ArrowDown':
+                        event.preventDefault();
+                        event.stopPropagation();
+                        // If focus is on search (-1), start from first item
+                        if (current === -1) {
+                            current = 0;
+                        }
+                        else {
+                            current = current < themes.length - 1 ? current + 1 : 0;
+                        }
+                        this.focused_index(current);
+                        this.preview_theme(current);
+                        break;
+                    case 'ArrowUp':
+                        event.preventDefault();
+                        event.stopPropagation();
+                        // If focus is on search (-1), start from last item
+                        if (current === -1) {
+                            current = themes.length - 1;
+                        }
+                        else {
+                            current = current > 0 ? current - 1 : themes.length - 1;
+                        }
+                        this.focused_index(current);
+                        this.preview_theme(current);
+                        break;
+                    case 'Enter':
+                        event.preventDefault();
+                        if (current >= 0 && current < themes.length) {
+                            this.select_theme(current);
+                        }
+                        break;
+                    case 'Escape':
+                        event.preventDefault();
+                        this.close();
+                        break;
+                }
+                return null;
+            }
+            select_theme(index) {
+                const themes = this.filtered_themes();
+                const theme_name = themes[index];
+                const global_index = this.$.$bog_theme_names.indexOf(theme_name);
+                if (global_index !== -1) {
+                    this.theme_auto().theme_set(global_index);
+                }
+                // Close popup
+                this.close();
+            }
+            preview_theme(index) {
+                const themes = this.filtered_themes();
+                const theme_name = themes[index];
+                const global_index = this.$.$bog_theme_names.indexOf(theme_name);
+                if (global_index !== -1) {
+                    this.theme_auto().theme_set(global_index);
+                }
+            }
+        }
+        __decorate([
+            $mol_mem
+        ], $bog_theme_picker.prototype, "theme_rows", null);
+        __decorate([
+            $mol_mem
+        ], $bog_theme_picker.prototype, "filtered_themes", null);
+        __decorate([
+            $mol_action
+        ], $bog_theme_picker.prototype, "select_theme", null);
+        __decorate([
+            $mol_action
+        ], $bog_theme_picker.prototype, "preview_theme", null);
+        $$.$bog_theme_picker = $bog_theme_picker;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        $mol_style_define($bog_theme_picker, {
+            background: {
+                color: $mol_theme.back,
+            },
+            borderRadius: '8px',
+            overflow: 'hidden',
+            opacity: 1,
+            Search: {
+                borderRadius: '8px',
+            },
+        });
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+	($.$mol_icon_white_balance_sunny) = class $mol_icon_white_balance_sunny extends ($.$mol_icon) {
+		path(){
+			return "M3.55 19.09L4.96 20.5L6.76 18.71L5.34 17.29M12 6C8.69 6 6 8.69 6 12S8.69 18 12 18 18 15.31 18 12C18 8.68 15.31 6 12 6M20 13H23V11H20M17.24 18.71L19.04 20.5L20.45 19.09L18.66 17.29M20.45 5L19.04 3.6L17.24 5.39L18.66 6.81M13 1H11V4H13M6.76 5.39L4.96 3.6L3.55 5L5.34 6.81L6.76 5.39M1 13H4V11H1M13 20H11V23H13";
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
+	($.$mol_icon_weather_night) = class $mol_icon_weather_night extends ($.$mol_icon) {
+		path(){
+			return "M17.75,4.09L15.22,6.03L16.13,9.09L13.5,7.28L10.87,9.09L11.78,6.03L9.25,4.09L12.44,4L13.5,1L14.56,4L17.75,4.09M21.25,11L19.61,12.25L20.2,14.23L18.5,13.06L16.8,14.23L17.39,12.25L15.75,11L17.81,10.95L18.5,9L19.19,10.95L21.25,11M18.97,15.95C19.8,15.87 20.69,17.05 20.16,17.8C19.84,18.25 19.5,18.67 19.08,19.07C15.17,23 8.84,23 4.94,19.07C1.03,15.17 1.03,8.83 4.94,4.93C5.34,4.53 5.76,4.17 6.21,3.85C6.96,3.32 8.14,4.21 8.06,5.04C7.79,7.9 8.75,10.87 10.95,13.06C13.14,15.26 16.1,16.22 18.97,15.95M17.33,17.97C14.5,17.81 11.7,16.64 9.53,14.5C7.36,12.31 6.2,9.5 6.04,6.68C3.23,9.82 3.34,14.64 6.35,17.66C9.37,20.67 14.19,20.78 17.33,17.97Z";
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
+	($.$mol_icon_monitor) = class $mol_icon_monitor extends ($.$mol_icon) {
+		path(){
+			return "M21,16H3V4H21M21,2H3C1.89,2 1,2.89 1,4V16A2,2 0 0,0 3,18H10V20H8V22H16V20H14V18H21A2,2 0 0,0 23,16V4C23,2.89 22.1,2 21,2Z";
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
+	($.$bog_theme_toggle) = class $bog_theme_toggle extends ($.$mol_pop) {
+		Icon(){
+			const obj = new this.$.$mol_view();
+			return obj;
+		}
+		anchor_hint(){
+			return "Переключить тему";
+		}
+		clicked(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		press_start(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		press_move(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		press_end(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		press_cancel(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		press_lost(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		backdrop_click(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Backdrop(){
+			const obj = new this.$.$mol_view();
+			(obj.event) = () => ({"click": (next) => (this.backdrop_click(next))});
+			return obj;
+		}
+		picker_close(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Picker(){
+			const obj = new this.$.$bog_theme_picker();
+			(obj.theme_auto) = () => ((this.theme_auto()));
+			(obj.close) = (next) => ((this.picker_close(next)));
+			return obj;
+		}
+		theme_auto(){
+			const obj = new this.$.$bog_theme_auto();
+			return obj;
+		}
+		showed(next){
+			if(next !== undefined) return next;
+			return false;
+		}
+		align(){
+			return "bottom_right";
+		}
+		Anchor(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.sub) = () => ([(this.Icon())]);
+			(obj.hint) = () => ((this.anchor_hint()));
+			(obj.click) = (next) => ((this.clicked(next)));
+			(obj.event) = () => ({
+				...(this.$.$mol_button_minor.prototype.event.call(obj)), 
+				"pointerdown": (next) => (this.press_start(next)), 
+				"pointermove": (next) => (this.press_move(next)), 
+				"pointerup": (next) => (this.press_end(next)), 
+				"pointercancel": (next) => (this.press_cancel(next)), 
+				"lostpointercapture": (next) => (this.press_lost(next))
+			});
+			return obj;
+		}
+		Icon_light(){
+			const obj = new this.$.$mol_icon_white_balance_sunny();
+			return obj;
+		}
+		Icon_dark(){
+			const obj = new this.$.$mol_icon_weather_night();
+			return obj;
+		}
+		Icon_system(){
+			const obj = new this.$.$mol_icon_monitor();
+			return obj;
+		}
+		bubble_content(){
+			return [(this.Backdrop()), (this.Picker())];
+		}
+	};
+	($mol_mem(($.$bog_theme_toggle.prototype), "Icon"));
+	($mol_mem(($.$bog_theme_toggle.prototype), "clicked"));
+	($mol_mem(($.$bog_theme_toggle.prototype), "press_start"));
+	($mol_mem(($.$bog_theme_toggle.prototype), "press_move"));
+	($mol_mem(($.$bog_theme_toggle.prototype), "press_end"));
+	($mol_mem(($.$bog_theme_toggle.prototype), "press_cancel"));
+	($mol_mem(($.$bog_theme_toggle.prototype), "press_lost"));
+	($mol_mem(($.$bog_theme_toggle.prototype), "backdrop_click"));
+	($mol_mem(($.$bog_theme_toggle.prototype), "Backdrop"));
+	($mol_mem(($.$bog_theme_toggle.prototype), "picker_close"));
+	($mol_mem(($.$bog_theme_toggle.prototype), "Picker"));
+	($mol_mem(($.$bog_theme_toggle.prototype), "theme_auto"));
+	($mol_mem(($.$bog_theme_toggle.prototype), "showed"));
+	($mol_mem(($.$bog_theme_toggle.prototype), "Anchor"));
+	($mol_mem(($.$bog_theme_toggle.prototype), "Icon_light"));
+	($mol_mem(($.$bog_theme_toggle.prototype), "Icon_dark"));
+	($mol_mem(($.$bog_theme_toggle.prototype), "Icon_system"));
+
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        class $bog_theme_toggle extends $.$bog_theme_toggle {
+            long_press_delay = 300;
+            move_threshold = 8;
+            press_timer = null;
+            press_start_x = 0;
+            press_start_y = 0;
+            is_long_press = false;
+            Icon() {
+                const mode = this.theme_auto().mode();
+                if (mode === 'light')
+                    return this.Icon_light();
+                if (mode === 'dark')
+                    return this.Icon_dark();
+                if (mode === 'custom') {
+                    const theme = this.theme_auto().theme();
+                    return theme.includes('light') ? this.Icon_light() : this.Icon_dark();
+                }
+                return this.Icon_system();
+            }
+            anchor_hint() {
+                const mode = this.theme_auto().mode();
+                if (mode === 'light')
+                    return 'Светлая тема';
+                if (mode === 'dark')
+                    return 'Тёмная тема';
+                if (mode === 'custom')
+                    return 'Пользовательская тема';
+                return 'Как в системе';
+            }
+            clicked(event) {
+                if (!event)
+                    return null;
+                if (this.is_long_press) {
+                    this.is_long_press = false;
+                    return null;
+                }
+                this.theme_auto().mode_next();
+                return null;
+            }
+            press_start(event) {
+                if (!event)
+                    return null;
+                this.clear_press_timer();
+                this.press_start_x = event.clientX;
+                this.press_start_y = event.clientY;
+                this.is_long_press = false;
+                this.press_timer = setTimeout(() => {
+                    this.is_long_press = true;
+                    this.on_long_press();
+                }, this.long_press_delay);
+                return null;
+            }
+            press_move(event) {
+                if (!event || !this.press_timer)
+                    return null;
+                const dx = Math.abs(event.clientX - this.press_start_x);
+                const dy = Math.abs(event.clientY - this.press_start_y);
+                if (dx > this.move_threshold || dy > this.move_threshold) {
+                    this.clear_press_timer();
+                }
+                return null;
+            }
+            press_end(event) {
+                if (!event)
+                    return null;
+                this.clear_press_timer();
+                return null;
+            }
+            press_cancel(event) {
+                if (!event)
+                    return null;
+                this.clear_press_timer();
+                return null;
+            }
+            press_lost(event) {
+                if (!event)
+                    return null;
+                this.clear_press_timer();
+                return null;
+            }
+            clear_press_timer() {
+                if (this.press_timer) {
+                    clearTimeout(this.press_timer);
+                    this.press_timer = null;
+                }
+            }
+            on_long_press() {
+                this.showed(true);
+                setTimeout(() => {
+                    try {
+                        const search = this.Picker().Search();
+                        search.focused(true);
+                    }
+                    catch (e) {
+                        // Ignore focus errors
+                    }
+                }, 100);
+            }
+            picker_close() {
+                this.showed(false);
+            }
+            backdrop_click(event) {
+                if (!event)
+                    return null;
+                this.showed(false);
+                return null;
+            }
+        }
+        $$.$bog_theme_toggle = $bog_theme_toggle;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        $mol_style_define($bog_theme_toggle, {
+            Bubble: {
+                position: 'fixed !important',
+                left: '0 !important',
+                top: '0 !important',
+                transform: 'none !important',
+                width: '100vw !important',
+                height: '100vh !important',
+                maxWidth: 'none !important',
+                maxHeight: 'none !important',
+                padding: '0 !important',
+                boxShadow: 'none',
+                background: 'transparent !important',
+            },
+            Backdrop: {
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                zIndex: 1,
+                opacity: 0,
+            },
+            Picker: {
+                position: 'fixed',
+                left: '50%',
+                top: '15vh',
+                transform: 'translateX(-50%)',
+                maxWidth: '400px',
+                width: '90vw',
+                maxHeight: '70vh',
+                zIndex: 2,
+            },
+        });
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+	($.$mol_pick) = class $mol_pick extends ($.$mol_pop) {
 		keydown(next){
 			if(next !== undefined) return next;
 			return null;
 		}
+		trigger_enabled(){
+			return true;
+		}
+		clicks(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		trigger_content(){
+			return [(this.title())];
+		}
+		hint(){
+			return "";
+		}
+		Trigger(){
+			const obj = new this.$.$mol_check();
+			(obj.minimal_width) = () => (40);
+			(obj.minimal_height) = () => (40);
+			(obj.enabled) = () => ((this.trigger_enabled()));
+			(obj.checked) = (next) => ((this.showed(next)));
+			(obj.clicks) = (next) => ((this.clicks(next)));
+			(obj.sub) = () => ((this.trigger_content()));
+			(obj.hint) = () => ((this.hint()));
+			return obj;
+		}
 		event(){
 			return {...(super.event()), "keydown": (next) => (this.keydown(next))};
 		}
-		key(){
-			return {};
+		Anchor(){
+			return (this.Trigger());
 		}
-		mod_ctrl(){
+	};
+	($mol_mem(($.$mol_pick.prototype), "keydown"));
+	($mol_mem(($.$mol_pick.prototype), "clicks"));
+	($mol_mem(($.$mol_pick.prototype), "Trigger"));
+
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        /**
+         * Pop-up display and hide by mouse click, also hide by unfocus.
+         * Based on [mol_pop](https://mol.hyoo.ru/#!section=demos/demo=mol_pop_demo) component.
+         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_pick_demo
+         */
+        class $mol_pick extends $.$mol_pick {
+            keydown(event) {
+                if (!this.trigger_enabled())
+                    return;
+                if (event.defaultPrevented)
+                    return;
+                if (event.keyCode === $mol_keyboard_code.escape) {
+                    if (!this.showed())
+                        return;
+                    event.preventDefault();
+                    this.showed(false);
+                }
+            }
+        }
+        $$.$mol_pick = $mol_pick;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_style_attach("mol/pick/pick.view.css", "[mol_pick_trigger] {\n\talign-items: center;\n\tflex-grow: 1;\n}\n");
+})($ || ($ = {}));
+
+;
+	($.$mol_paragraph) = class $mol_paragraph extends ($.$mol_view) {
+		line_height(){
+			return 24;
+		}
+		letter_width(){
+			return 7;
+		}
+		width_limit(){
+			return +Infinity;
+		}
+		row_width(){
+			return 0;
+		}
+		sub(){
+			return [(this.title())];
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        class $mol_paragraph extends $.$mol_paragraph {
+            maximal_width() {
+                let width = 0;
+                const letter = this.letter_width();
+                for (const kid of this.sub()) {
+                    if (!kid)
+                        continue;
+                    if (kid instanceof $mol_view) {
+                        width += kid.maximal_width();
+                    }
+                    else if (typeof kid !== 'object') {
+                        width += String(kid).length * letter;
+                    }
+                }
+                return width;
+            }
+            width_limit() {
+                return this.$.$mol_window.size().width;
+            }
+            minimal_width() {
+                return this.letter_width();
+            }
+            row_width() {
+                return Math.max(Math.min(this.width_limit(), this.maximal_width()), this.letter_width());
+            }
+            minimal_height() {
+                return Math.max(1, Math.ceil(this.maximal_width() / this.row_width())) * this.line_height();
+            }
+        }
+        __decorate([
+            $mol_mem
+        ], $mol_paragraph.prototype, "maximal_width", null);
+        __decorate([
+            $mol_mem
+        ], $mol_paragraph.prototype, "row_width", null);
+        __decorate([
+            $mol_mem
+        ], $mol_paragraph.prototype, "minimal_height", null);
+        $$.$mol_paragraph = $mol_paragraph;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_style_attach("mol/paragraph/paragraph.view.css", ":where([mol_paragraph]) {\n\tmargin: 0;\n\tmax-width: 100%;\n}\n");
+})($ || ($ = {}));
+
+;
+	($.$mol_dimmer) = class $mol_dimmer extends ($.$mol_paragraph) {
+		parts(){
+			return [];
+		}
+		string(id){
+			return "";
+		}
+		haystack(){
+			return "";
+		}
+		needle(){
+			return "";
+		}
+		sub(){
+			return (this.parts());
+		}
+		Low(id){
+			const obj = new this.$.$mol_paragraph();
+			(obj.sub) = () => ([(this.string(id))]);
+			return obj;
+		}
+		High(id){
+			const obj = new this.$.$mol_paragraph();
+			(obj.sub) = () => ([(this.string(id))]);
+			return obj;
+		}
+	};
+	($mol_mem_key(($.$mol_dimmer.prototype), "Low"));
+	($mol_mem_key(($.$mol_dimmer.prototype), "High"));
+
+
+;
+"use strict";
+
+;
+"use strict";
+
+;
+"use strict";
+
+;
+"use strict";
+
+;
+"use strict";
+var $;
+(function ($) {
+    let x = /x/[Symbol.matchAll];
+    /** Type safe reguar expression builder */
+    class $mol_regexp extends RegExp {
+        groups;
+        /** Prefer to use $mol_regexp.from */
+        constructor(source, flags = 'gsu', groups = []) {
+            super(source, flags);
+            this.groups = groups;
+        }
+        *[Symbol.matchAll](str) {
+            const index = this.lastIndex;
+            this.lastIndex = 0;
+            try {
+                while (this.lastIndex < str.length) {
+                    const found = this.exec(str);
+                    if (!found)
+                        break;
+                    yield found;
+                }
+            }
+            finally {
+                this.lastIndex = index;
+            }
+        }
+        /** Parses input and returns found capture groups or null */
+        [Symbol.match](str) {
+            const res = [...this[Symbol.matchAll](str)].filter(r => r.groups).map(r => r[0]);
+            if (!res.length)
+                return null;
+            return res;
+        }
+        /** Splits string by regexp edges */
+        [Symbol.split](str) {
+            const res = [];
+            let token_last = null;
+            for (let token of this[Symbol.matchAll](str)) {
+                if (token.groups && (token_last ? token_last.groups : true))
+                    res.push('');
+                res.push(token[0]);
+                token_last = token;
+            }
+            if (!res.length)
+                res.push('');
+            return res;
+        }
+        test(str) {
+            return Boolean(str.match(this));
+        }
+        exec(str) {
+            const from = this.lastIndex;
+            if (from >= str.length)
+                return null;
+            const res = super.exec(str);
+            if (res === null) {
+                this.lastIndex = str.length;
+                if (!str)
+                    return null;
+                return Object.assign([str.slice(from)], {
+                    index: from,
+                    input: str,
+                });
+            }
+            if (from === this.lastIndex) {
+                $mol_fail(new Error('Captured empty substring'));
+            }
+            const groups = {};
+            const skipped = str.slice(from, this.lastIndex - res[0].length);
+            if (skipped) {
+                this.lastIndex = this.lastIndex - res[0].length;
+                return Object.assign([skipped], {
+                    index: from,
+                    input: res.input,
+                });
+            }
+            for (let i = 0; i < this.groups.length; ++i) {
+                const group = this.groups[i];
+                groups[group] = groups[group] || res[i + 1] || '';
+            }
+            return Object.assign(res, { groups });
+        }
+        generate(params) {
+            return null;
+        }
+        get native() {
+            return new RegExp(this.source, this.flags);
+        }
+        /** Makes regexp that greedy repeats this pattern with delimiter */
+        static separated(chunk, sep) {
+            return $mol_regexp.from([
+                $mol_regexp.repeat_greedy([[chunk], sep], 0),
+                chunk,
+            ]);
+        }
+        /** Makes regexp that non-greedy repeats this pattern from min to max count */
+        static repeat(source, min = 0, max = Number.POSITIVE_INFINITY) {
+            const regexp = $mol_regexp.from(source);
+            const upper = Number.isFinite(max) ? max : '';
+            const str = `(?:${regexp.source}){${min},${upper}}?`;
+            const regexp2 = new $mol_regexp(str, regexp.flags, regexp.groups);
+            regexp2.generate = params => {
+                const res = regexp.generate(params);
+                if (res)
+                    return res;
+                if (min > 0)
+                    return res;
+                return '';
+            };
+            return regexp2;
+        }
+        /** Makes regexp that greedy repeats this pattern from min to max count */
+        static repeat_greedy(source, min = 0, max = Number.POSITIVE_INFINITY) {
+            const regexp = $mol_regexp.from(source);
+            const upper = Number.isFinite(max) ? max : '';
+            const str = `(?:${regexp.source}){${min},${upper}}`;
+            const regexp2 = new $mol_regexp(str, regexp.flags, regexp.groups);
+            regexp2.generate = params => {
+                const res = regexp.generate(params);
+                if (res)
+                    return res;
+                if (min > 0)
+                    return res;
+                return '';
+            };
+            return regexp2;
+        }
+        /** Makes regexp that match any of options */
+        static vary(sources, flags = 'gsu') {
+            const groups = [];
+            const chunks = sources.map(source => {
+                const regexp = $mol_regexp.from(source);
+                groups.push(...regexp.groups);
+                return regexp.source;
+            });
+            return new $mol_regexp(`(?:${chunks.join('|')})`, flags, groups);
+        }
+        /** Makes regexp that allow absent of this pattern */
+        static optional(source) {
+            return $mol_regexp.repeat_greedy(source, 0, 1);
+        }
+        /** Makes regexp that look ahead for pattern */
+        static force_after(source) {
+            const regexp = $mol_regexp.from(source);
+            return new $mol_regexp(`(?=${regexp.source})`, regexp.flags, regexp.groups);
+        }
+        /** Makes regexp that look ahead for pattern */
+        static forbid_after(source) {
+            const regexp = $mol_regexp.from(source);
+            return new $mol_regexp(`(?!${regexp.source})`, regexp.flags, regexp.groups);
+        }
+        /** Converts some js values to regexp */
+        static from(source, { ignoreCase, multiline } = {
+            ignoreCase: false,
+            multiline: false,
+        }) {
+            let flags = 'gsu';
+            if (multiline)
+                flags += 'm';
+            if (ignoreCase)
+                flags += 'i';
+            if (typeof source === 'number') {
+                const src = `\\u{${source.toString(16)}}`;
+                const regexp = new $mol_regexp(src, flags);
+                regexp.generate = () => src;
+                return regexp;
+            }
+            if (typeof source === 'string') {
+                const src = source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regexp = new $mol_regexp(src, flags);
+                regexp.generate = () => source;
+                return regexp;
+            }
+            else if (source instanceof $mol_regexp) {
+                const regexp = new $mol_regexp(source.source, flags, source.groups);
+                regexp.generate = params => source.generate(params);
+                return regexp;
+            }
+            if (source instanceof RegExp) {
+                const test = new RegExp('|' + source.source);
+                const groups = Array.from({ length: test.exec('').length - 1 }, (_, i) => String(i + 1));
+                const regexp = new $mol_regexp(source.source, source.flags, groups);
+                regexp.generate = () => '';
+                return regexp;
+            }
+            if (Array.isArray(source)) {
+                const patterns = source.map(src => Array.isArray(src)
+                    ? $mol_regexp.optional(src)
+                    : $mol_regexp.from(src));
+                const chunks = patterns.map(pattern => pattern.source);
+                const groups = [];
+                let index = 0;
+                for (const pattern of patterns) {
+                    for (let group of pattern.groups) {
+                        if (Number(group) >= 0) {
+                            groups.push(String(index++));
+                        }
+                        else {
+                            groups.push(group);
+                        }
+                    }
+                }
+                const regexp = new $mol_regexp(chunks.join(''), flags, groups);
+                regexp.generate = params => {
+                    let res = '';
+                    for (const pattern of patterns) {
+                        let sub = pattern.generate(params);
+                        if (sub === null)
+                            return '';
+                        res += sub;
+                    }
+                    return res;
+                };
+                return regexp;
+            }
+            else {
+                const groups = [];
+                const chunks = Object.keys(source).map(name => {
+                    groups.push(name);
+                    const regexp = $mol_regexp.from(source[name]);
+                    groups.push(...regexp.groups);
+                    return `(${regexp.source})`;
+                });
+                const regexp = new $mol_regexp(`(?:${chunks.join('|')})`, flags, groups);
+                const validator = new RegExp('^' + regexp.source + '$', flags);
+                regexp.generate = (params) => {
+                    for (let option in source) {
+                        if (option in params) {
+                            if (typeof params[option] === 'boolean') {
+                                if (!params[option])
+                                    continue;
+                            }
+                            else {
+                                const str = String(params[option]);
+                                if (str.match(validator))
+                                    return str;
+                                $mol_fail(new Error(`Wrong param: ${option}=${str}`));
+                            }
+                        }
+                        else {
+                            if (typeof source[option] !== 'object')
+                                continue;
+                        }
+                        const res = $mol_regexp.from(source[option]).generate(params);
+                        if (res)
+                            return res;
+                    }
+                    return null;
+                };
+                return regexp;
+            }
+        }
+        /** Makes regexp which includes only unicode category */
+        static unicode_only(...category) {
+            return new $mol_regexp(`\\p{${category.join('=')}}`);
+        }
+        /** Makes regexp which excludes unicode category */
+        static unicode_except(...category) {
+            return new $mol_regexp(`\\P{${category.join('=')}}`);
+        }
+        static char_range(from, to) {
+            return new $mol_regexp(`${$mol_regexp.from(from).source}-${$mol_regexp.from(to).source}`);
+        }
+        static char_only(...allowed) {
+            const regexp = allowed.map(f => $mol_regexp.from(f).source).join('');
+            return new $mol_regexp(`[${regexp}]`);
+        }
+        static char_except(...forbidden) {
+            const regexp = forbidden.map(f => $mol_regexp.from(f).source).join('');
+            return new $mol_regexp(`[^${regexp}]`);
+        }
+        static decimal_only = $mol_regexp.from(/\d/gsu);
+        static decimal_except = $mol_regexp.from(/\D/gsu);
+        static latin_only = $mol_regexp.from(/\w/gsu);
+        static latin_except = $mol_regexp.from(/\W/gsu);
+        static space_only = $mol_regexp.from(/\s/gsu);
+        static space_except = $mol_regexp.from(/\S/gsu);
+        static word_break_only = $mol_regexp.from(/\b/gsu);
+        static word_break_except = $mol_regexp.from(/\B/gsu);
+        static tab = $mol_regexp.from(/\t/gsu);
+        static slash_back = $mol_regexp.from(/\\/gsu);
+        static nul = $mol_regexp.from(/\0/gsu);
+        static char_any = $mol_regexp.from(/./gsu);
+        static begin = $mol_regexp.from(/^/gsu);
+        static end = $mol_regexp.from(/$/gsu);
+        static or = $mol_regexp.from(/|/gsu);
+        static line_end = $mol_regexp.from({
+            win_end: [['\r'], '\n'],
+            mac_end: '\r',
+        });
+    }
+    $.$mol_regexp = $mol_regexp;
+})($ || ($ = {}));
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        /**
+         * Output text with dimmed mismatched substrings.
+         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_dimmer_demo
+         */
+        class $mol_dimmer extends $.$mol_dimmer {
+            parts() {
+                const needle = this.needle();
+                if (needle.length < 2)
+                    return [this.haystack()];
+                let chunks = [];
+                let strings = this.strings();
+                for (let index = 0; index < strings.length; index++) {
+                    if (strings[index] === '')
+                        continue;
+                    chunks.push((index % 2) ? this.High(index) : this.Low(index));
+                }
+                return chunks;
+            }
+            strings() {
+                const options = this.needle().split(/\s+/g).filter(Boolean);
+                if (!options.length)
+                    return [this.haystack()];
+                const variants = { ...options };
+                const regexp = $mol_regexp.from({ needle: variants }, { ignoreCase: true });
+                return this.haystack().split(regexp);
+            }
+            string(index) {
+                return this.strings()[index];
+            }
+            *view_find(check, path = []) {
+                if (check(this, this.haystack())) {
+                    yield [...path, this];
+                }
+            }
+        }
+        __decorate([
+            $mol_mem
+        ], $mol_dimmer.prototype, "strings", null);
+        $$.$mol_dimmer = $mol_dimmer;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_style_attach("mol/dimmer/dimmer.view.css", "[mol_dimmer] {\n\tdisplay: block;\n\tmax-width: 100%;\n}\n\n[mol_dimmer_low] {\n\tdisplay: inline;\n\topacity: 0.8;\n}\n\n[mol_dimmer_high] {\n\tdisplay: inline;\n\tcolor: var(--mol_theme_focus);\n\ttext-shadow: 0 0;\n}\n");
+})($ || ($ = {}));
+
+;
+	($.$mol_nav) = class $mol_nav extends ($.$mol_plugin) {
+		event_key(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		cycle(next){
+			if(next !== undefined) return next;
 			return false;
 		}
-		mod_alt(){
+		mod_ctrl(){
 			return false;
 		}
 		mod_shift(){
 			return false;
 		}
-	};
-	($mol_mem(($.$mol_hotkey.prototype), "keydown"));
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        /**
-         * Plugin which adds handlers for keyboard keys.
-         * @see [mol_keyboard_code](../keyboard/code/code.ts)
-         */
-        class $mol_hotkey extends $.$mol_hotkey {
-            key() {
-                return super.key();
-            }
-            keydown(event) {
-                if (!event)
-                    return;
-                if (event.defaultPrevented)
-                    return;
-                let name = $mol_keyboard_code[event.keyCode];
-                if (this.mod_ctrl() !== (event.ctrlKey || event.metaKey))
-                    return;
-                if (this.mod_alt() !== event.altKey)
-                    return;
-                if (this.mod_shift() !== event.shiftKey)
-                    return;
-                const handle = this.key()[name];
-                if (handle)
-                    handle(event);
-            }
-        }
-        $$.$mol_hotkey = $mol_hotkey;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-	($.$mol_string) = class $mol_string extends ($.$mol_view) {
-		selection_watcher(){
-			return null;
-		}
-		error_report(){
-			return null;
-		}
-		disabled(){
+		mod_alt(){
 			return false;
 		}
-		value(next){
+		keys_x(next){
 			if(next !== undefined) return next;
-			return "";
+			return [];
 		}
-		value_changed(next){
-			return (this.value(next));
-		}
-		hint(){
-			return "";
-		}
-		hint_visible(){
-			return (this.hint());
-		}
-		spellcheck(){
-			return true;
-		}
-		autocomplete_native(){
-			return "";
-		}
-		selection_end(){
-			return 0;
-		}
-		selection_start(){
-			return 0;
-		}
-		keyboard(){
-			return "text";
-		}
-		enter(){
-			return "go";
-		}
-		length_max(){
-			return +Infinity;
-		}
-		type(next){
+		keys_y(next){
 			if(next !== undefined) return next;
-			return "text";
+			return [];
 		}
-		event_change(next){
+		current_x(next){
 			if(next !== undefined) return next;
 			return null;
 		}
-		submit_with_ctrl(){
-			return false;
-		}
-		submit(next){
+		current_y(next){
 			if(next !== undefined) return next;
 			return null;
 		}
-		Submit(){
-			const obj = new this.$.$mol_hotkey();
-			(obj.mod_ctrl) = () => ((this.submit_with_ctrl()));
-			(obj.key) = () => ({"enter": (next) => (this.submit(next))});
-			return obj;
-		}
-		dom_name(){
-			return "input";
-		}
-		enabled(){
-			return true;
-		}
-		minimal_height(){
-			return 40;
-		}
-		autocomplete(){
-			return false;
-		}
-		selection(next){
+		event_up(next){
 			if(next !== undefined) return next;
-			return [0, 0];
+			return null;
 		}
-		auto(){
-			return [(this.selection_watcher()), (this.error_report())];
+		event_down(next){
+			if(next !== undefined) return next;
+			return null;
 		}
-		field(){
-			return {
-				...(super.field()), 
-				"disabled": (this.disabled()), 
-				"value": (this.value_changed()), 
-				"placeholder": (this.hint_visible()), 
-				"spellcheck": (this.spellcheck()), 
-				"autocomplete": (this.autocomplete_native()), 
-				"selectionEnd": (this.selection_end()), 
-				"selectionStart": (this.selection_start()), 
-				"inputMode": (this.keyboard()), 
-				"enterkeyhint": (this.enter())
-			};
+		event_left(next){
+			if(next !== undefined) return next;
+			return null;
 		}
-		attr(){
-			return {
-				...(super.attr()), 
-				"maxlength": (this.length_max()), 
-				"type": (this.type())
-			};
+		event_right(next){
+			if(next !== undefined) return next;
+			return null;
 		}
 		event(){
-			return {...(super.event()), "input": (next) => (this.event_change(next))};
-		}
-		plugins(){
-			return [(this.Submit())];
+			return {...(super.event()), "keydown": (next) => (this.event_key(next))};
 		}
 	};
-	($mol_mem(($.$mol_string.prototype), "value"));
-	($mol_mem(($.$mol_string.prototype), "type"));
-	($mol_mem(($.$mol_string.prototype), "event_change"));
-	($mol_mem(($.$mol_string.prototype), "submit"));
-	($mol_mem(($.$mol_string.prototype), "Submit"));
-	($mol_mem(($.$mol_string.prototype), "selection"));
+	($mol_mem(($.$mol_nav.prototype), "event_key"));
+	($mol_mem(($.$mol_nav.prototype), "cycle"));
+	($mol_mem(($.$mol_nav.prototype), "keys_x"));
+	($mol_mem(($.$mol_nav.prototype), "keys_y"));
+	($mol_mem(($.$mol_nav.prototype), "current_x"));
+	($mol_mem(($.$mol_nav.prototype), "current_y"));
+	($mol_mem(($.$mol_nav.prototype), "event_up"));
+	($mol_mem(($.$mol_nav.prototype), "event_down"));
+	($mol_mem(($.$mol_nav.prototype), "event_left"));
+	($mol_mem(($.$mol_nav.prototype), "event_right"));
 
 
 ;
@@ -8094,107 +8824,101 @@ var $;
     var $$;
     (function ($$) {
         /**
-         * An input field for entering single line text.
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_string_demo
+         * Plugin which can navigate in list of items
+         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_nav_demo
          */
-        class $mol_string extends $.$mol_string {
-            event_change(next) {
-                if (!next)
+        class $mol_nav extends $.$mol_nav {
+            event_key(event) {
+                if (!event)
+                    return event;
+                if (event.defaultPrevented)
                     return;
-                const el = this.dom_node();
-                const from = el.selectionStart;
-                const to = el.selectionEnd;
-                try {
-                    el.value = this.value_changed(el.value);
-                }
-                catch (error) {
-                    const el = this.dom_node();
-                    if (error instanceof Error) {
-                        el.setCustomValidity(error.message);
-                        el.reportValidity();
-                    }
-                    $mol_fail_hidden(error);
-                }
-                if (to === null)
+                if (this.mod_ctrl() && !event.ctrlKey)
                     return;
-                el.selectionEnd = to;
-                el.selectionStart = from;
-                this.selection_change(next);
-            }
-            error_report() {
-                try {
-                    if (this.focused())
-                        this.value();
-                }
-                catch (error) {
-                    const el = this.dom_node();
-                    if (error instanceof Error) {
-                        el.setCustomValidity(error.message);
-                        el.reportValidity();
-                    }
-                }
-            }
-            hint_visible() {
-                return (this.enabled() ? this.hint() : '') || ' ';
-            }
-            disabled() {
-                return !this.enabled();
-            }
-            autocomplete_native() {
-                return this.autocomplete() ? 'on' : 'off';
-            }
-            selection_watcher() {
-                return new $mol_dom_listener(this.$.$mol_dom_context.document, 'selectionchange', $mol_wire_async(event => this.selection_change(event)));
-            }
-            selection_change(event) {
-                const el = this.dom_node();
-                if (el !== this.$.$mol_dom_context.document.activeElement)
+                if (this.mod_shift() && !event.shiftKey)
                     return;
-                const [from, to] = this.selection([
-                    el.selectionStart,
-                    el.selectionEnd,
-                ]);
-                el.selectionEnd = to;
-                el.selectionStart = from;
-                if (to !== from && el.selectionEnd === el.selectionStart) {
-                    el.selectionEnd = to;
+                if (this.mod_alt() && !event.altKey)
+                    return;
+                switch (event.keyCode) {
+                    case $mol_keyboard_code.up: return this.event_up(event);
+                    case $mol_keyboard_code.down: return this.event_down(event);
+                    case $mol_keyboard_code.left: return this.event_left(event);
+                    case $mol_keyboard_code.right: return this.event_right(event);
+                    case $mol_keyboard_code.pageUp: return this.event_up(event);
+                    case $mol_keyboard_code.pageDown: return this.event_down(event);
                 }
             }
-            selection_start() {
-                const el = this.dom_node();
-                if (!this.focused())
-                    return undefined;
-                if (el.selectionStart == null)
-                    return undefined;
-                return this.selection()[0];
+            event_up(event) {
+                if (!event)
+                    return event;
+                const keys = this.keys_y();
+                if (keys.length < 1)
+                    return;
+                const index_y = this.index_y();
+                const index_old = index_y === null ? 0 : index_y;
+                const index_new = (index_old + keys.length - 1) % keys.length;
+                event.preventDefault();
+                if (index_old === 0 && !this.cycle())
+                    return;
+                this.current_y(this.keys_y()[index_new]);
             }
-            selection_end() {
-                const el = this.dom_node();
-                if (!this.focused())
-                    return undefined;
-                if (el.selectionEnd == null)
-                    return undefined;
-                return this.selection()[1];
+            event_down(event) {
+                if (!event)
+                    return event;
+                const keys = this.keys_y();
+                if (keys.length < 1)
+                    return;
+                const index_y = this.index_y();
+                const index_old = index_y === null ? keys.length - 1 : index_y;
+                const index_new = (index_old + 1) % keys.length;
+                event.preventDefault();
+                if (index_new === 0 && !this.cycle())
+                    return;
+                this.current_y(this.keys_y()[index_new]);
+            }
+            event_left(event) {
+                if (!event)
+                    return event;
+                const keys = this.keys_x();
+                if (keys.length < 1)
+                    return;
+                const index_x = this.index_x();
+                const index_old = index_x === null ? 0 : index_x;
+                const index_new = (index_old + keys.length - 1) % keys.length;
+                event.preventDefault();
+                if (index_old === 0 && !this.cycle())
+                    return;
+                this.current_x(this.keys_x()[index_new]);
+            }
+            event_right(event) {
+                if (!event)
+                    return event;
+                const keys = this.keys_x();
+                if (keys.length < 1)
+                    return;
+                const index_x = this.index_x();
+                const index_old = index_x === null ? keys.length - 1 : index_x;
+                const index_new = (index_old + 1) % keys.length;
+                event.preventDefault();
+                if (index_new === 0 && !this.cycle())
+                    return;
+                this.current_x(this.keys_x()[index_new]);
+            }
+            index_y() {
+                let index = this.keys_y().indexOf(this.current_y());
+                if (index < 0)
+                    return null;
+                return index;
+            }
+            index_x() {
+                let index = this.keys_x().indexOf(this.current_x());
+                if (index < 0)
+                    return null;
+                return index;
             }
         }
-        __decorate([
-            $mol_action
-        ], $mol_string.prototype, "event_change", null);
-        __decorate([
-            $mol_mem
-        ], $mol_string.prototype, "error_report", null);
-        __decorate([
-            $mol_mem
-        ], $mol_string.prototype, "selection_watcher", null);
-        $$.$mol_string = $mol_string;
+        $$.$mol_nav = $mol_nav;
     })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/string/string.view.css", "[mol_string] {\n\tbox-sizing: border-box;\n\toutline-offset: 0;\n\tborder: none;\n\tborder-radius: var(--mol_gap_round);\n\twhite-space: pre-line;\n\toverflow: hidden;\n\ttext-overflow: ellipsis;\n\tpadding: var(--mol_gap_text);\n\ttext-align: left;\n\tposition: relative;\n\tfont: inherit;\n\tflex: 1 1 auto;\n\tbackground: transparent;\n\tmin-width: 0;\n\tcolor: inherit;\n\tbackground: var(--mol_theme_field);\n}\n\n[mol_string]:disabled:not(:placeholder-shown) {\n\tbackground-color: transparent;\n\tcolor: var(--mol_theme_text);\n}\n\n[mol_string]:where(:not(:disabled)) {\n\tbox-shadow: inset 0 0 0 1px var(--mol_theme_line);\n}\n\n[mol_string]:where(:not(:disabled)):hover {\n\tbox-shadow: inset 0 0 0 2px var(--mol_theme_line);\n\tz-index: var(--mol_layer_hover);\n}\n\n[mol_string]:focus {\n\toutline: none;\n\tz-index: var(--mol_layer_focus);\n\tcolor: var(--mol_theme_text);\n\tbox-shadow: inset 0 0 0 1px var(--mol_theme_focus);\n}\n\n[mol_string]::placeholder {\n\tcolor: var(--mol_theme_shade);\n}\n\n[mol_string]::-ms-clear {\n\tdisplay: none;\n}\n");
 })($ || ($ = {}));
 
 ;
@@ -17813,65 +18537,6 @@ var $;
 })($ || ($ = {}));
 
 ;
-	($.$mol_icon_brightness_4) = class $mol_icon_brightness_4 extends ($.$mol_icon) {
-		path(){
-			return "M12,18C11.11,18 10.26,17.8 9.5,17.45C11.56,16.5 13,14.42 13,12C13,9.58 11.56,7.5 9.5,6.55C10.26,6.2 11.11,6 12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31L23.31,12L20,8.69Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$mol_lights_toggle) = class $mol_lights_toggle extends ($.$mol_check_icon) {
-		Lights_icon(){
-			const obj = new this.$.$mol_icon_brightness_4();
-			return obj;
-		}
-		lights(next){
-			if(next !== undefined) return next;
-			return false;
-		}
-		Icon(){
-			return (this.Lights_icon());
-		}
-		hint(){
-			return (this.$.$mol_locale.text("$mol_lights_toggle_hint"));
-		}
-		checked(next){
-			return (this.lights(next));
-		}
-	};
-	($mol_mem(($.$mol_lights_toggle.prototype), "Lights_icon"));
-	($mol_mem(($.$mol_lights_toggle.prototype), "lights"));
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        /**
-         * Toggle for Switcher between light/dark themes (usually for `mol_theme_auto` plugin).
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_lights_demo
-         */
-        class $mol_lights_toggle extends $.$mol_lights_toggle {
-            lights(next) {
-                return this.$.$mol_lights(next);
-            }
-        }
-        $$.$mol_lights_toggle = $mol_lights_toggle;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
 	($.$mol_labeler) = class $mol_labeler extends ($.$mol_list) {
 		label(){
 			return [(this.title())];
@@ -17969,3772 +18634,6 @@ var $;
 var $;
 (function ($) {
     $mol_style_attach("mol/form/field/field.view.css", "[mol_form_field] {\n\talign-items: stretch;\n}\n\n[mol_form_field_bid] {\n\tcolor: var(--mol_theme_focus);\n\tdisplay: inline-block;\n\ttext-shadow: 0 0;\n}\n\n[mol_form_field_content] {\n\tborder-radius: var(--mol_gap_round);\n}\n");
-})($ || ($ = {}));
-
-;
-	($.$mol_button_major) = class $mol_button_major extends ($.$mol_button_minor) {
-		theme(){
-			return "$mol_theme_base";
-		}
-	};
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/button/major/major.view.css", "[mol_button_major] {\n\tbackground-color: var(--mol_theme_back);\n\tcolor: var(--mol_theme_text);\n}\n");
-})($ || ($ = {}));
-
-;
-"use strict";
-
-
-;
-	($.$mol_status) = class $mol_status extends ($.$mol_view) {
-		message(){
-			return "";
-		}
-		status(){
-			return (this.title());
-		}
-		minimal_height(){
-			return 24;
-		}
-		minimal_width(){
-			return 0;
-		}
-		sub(){
-			return [(this.message())];
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        class $mol_status extends $.$mol_status {
-            message() {
-                try {
-                    return this.status() ?? null;
-                }
-                catch (error) {
-                    if (error instanceof Promise)
-                        $mol_fail_hidden(error);
-                    $mol_fail_log(error);
-                    return error.message;
-                }
-            }
-        }
-        $$.$mol_status = $mol_status;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/status/status.view.css", "[mol_status] {\n\tpadding: var(--mol_gap_text);\n\tborder-radius: var(--mol_gap_round);\n\tdisplay: block;\n\tflex-shrink: 1;\n\tword-wrap: break-word;\n}\n\n[mol_status]:not([mol_view_error=\"Promise\"]) {\n\tcolor: var(--mol_theme_focus);\n}\n\n[mol_status]:not([mol_view_error=\"Promise\"]):empty {\n\tdisplay: none;\n}\n");
-})($ || ($ = {}));
-
-;
-	($.$mol_row) = class $mol_row extends ($.$mol_view) {};
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/row/row.view.css", "[mol_row] {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: flex-start;\n\talign-content: flex-start;\n\tjustify-content: flex-start;\n\tpadding: var(--mol_gap_block);\n\tgap: var(--mol_gap_block);\n\tflex: 0 0 auto;\n\tbox-sizing: border-box;\n\tmax-width: 100%;\n}\n\n[mol_row] > * {\n\tmax-width: 100%;\n}\n");
-})($ || ($ = {}));
-
-;
-"use strict";
-
-
-;
-	($.$mol_form) = class $mol_form extends ($.$mol_list) {
-		keydown(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		form_invalid(){
-			return (this.$.$mol_locale.text("$mol_form_form_invalid"));
-		}
-		form_fields(){
-			return [];
-		}
-		body(){
-			return (this.form_fields());
-		}
-		Body(){
-			const obj = new this.$.$mol_list();
-			(obj.sub) = () => ((this.body()));
-			return obj;
-		}
-		submit_title(){
-			return (this.$.$mol_locale.text("$mol_form_submit_title"));
-		}
-		submit_hint(){
-			return "";
-		}
-		submit_activate(next){
-			return (this.Submit().activate(next));
-		}
-		submit(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		Submit(){
-			const obj = new this.$.$mol_button_major();
-			(obj.title) = () => ((this.submit_title()));
-			(obj.hint) = () => ((this.submit_hint()));
-			(obj.click) = (next) => ((this.submit(next)));
-			return obj;
-		}
-		result(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		Result(){
-			const obj = new this.$.$mol_status();
-			(obj.message) = () => ((this.result()));
-			return obj;
-		}
-		buttons(){
-			return [(this.Submit()), (this.Result())];
-		}
-		foot(){
-			return (this.buttons());
-		}
-		Foot(){
-			const obj = new this.$.$mol_row();
-			(obj.sub) = () => ((this.foot()));
-			return obj;
-		}
-		submit_allowed(){
-			return true;
-		}
-		submit_blocked(){
-			return false;
-		}
-		event(){
-			return {...(super.event()), "keydown": (next) => (this.keydown(next))};
-		}
-		save(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		message_done(){
-			return (this.$.$mol_locale.text("$mol_form_message_done"));
-		}
-		errors(){
-			return {"Form invalid": (this.form_invalid())};
-		}
-		rows(){
-			return [(this.Body()), (this.Foot())];
-		}
-	};
-	($mol_mem(($.$mol_form.prototype), "keydown"));
-	($mol_mem(($.$mol_form.prototype), "Body"));
-	($mol_mem(($.$mol_form.prototype), "submit"));
-	($mol_mem(($.$mol_form.prototype), "Submit"));
-	($mol_mem(($.$mol_form.prototype), "result"));
-	($mol_mem(($.$mol_form.prototype), "Result"));
-	($mol_mem(($.$mol_form.prototype), "Foot"));
-	($mol_mem(($.$mol_form.prototype), "save"));
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/form/form.view.css", "[mol_form] {\r\n\tgap: var(--mol_gap_block);\r\n}\r\n\r\n[mol_form_body] {\r\n\tgap: var(--mol_gap_block);\r\n}");
-})($ || ($ = {}));
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        /**
-         * Form, that contains form fields and action buttons.
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_form_demo
-         */
-        class $mol_form extends $.$mol_form {
-            form_fields() {
-                return [...this.view_find(view => view instanceof $mol_form_field)]
-                    .map(path => path[path.length - 1]);
-            }
-            submit_allowed() {
-                return this.form_fields().every(field => !field.bid());
-            }
-            submit_blocked() {
-                return !this.submit_allowed();
-            }
-            keydown(next) {
-                if (next.ctrlKey && next.keyCode === $mol_keyboard_code.enter && !this.submit_blocked())
-                    this.submit(next);
-            }
-            result(next) {
-                if (next instanceof Error)
-                    next = this.errors()[next.message] || next.message || this.form_invalid();
-                return next ?? '';
-            }
-            buttons() {
-                return [
-                    this.Submit(),
-                    ...this.result() ? [this.Result()] : [],
-                ];
-            }
-            submit(next) {
-                try {
-                    if (!this.submit_allowed()) {
-                        throw new Error('Form invalid');
-                    }
-                    this.save(next);
-                }
-                catch (e) {
-                    if ($mol_promise_like(e))
-                        $mol_fail_hidden(e);
-                    $mol_fail_log(e);
-                    this.result(e);
-                    return false;
-                }
-                this.result(this.message_done());
-                return true;
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_form.prototype, "form_fields", null);
-        __decorate([
-            $mol_mem
-        ], $mol_form.prototype, "submit_allowed", null);
-        __decorate([
-            $mol_mem
-        ], $mol_form.prototype, "result", null);
-        __decorate([
-            $mol_mem
-        ], $mol_form.prototype, "buttons", null);
-        __decorate([
-            $mol_action
-        ], $mol_form.prototype, "submit", null);
-        $$.$mol_form = $mol_form;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-	($.$bog_vk_account) = class $bog_vk_account extends ($.$mol_list) {
-		nickname(next){
-			if(next !== undefined) return next;
-			return "";
-		}
-		Nickname_input(){
-			const obj = new this.$.$mol_string();
-			(obj.value) = (next) => ((this.nickname(next)));
-			(obj.hint) = () => ("Как тебя зовут?");
-			return obj;
-		}
-		Nickname_field(){
-			const obj = new this.$.$mol_form_field();
-			(obj.name) = () => ("Имя");
-			(obj.Content) = () => ((this.Nickname_input()));
-			return obj;
-		}
-		lord_short(){
-			return "";
-		}
-		Lord_text(){
-			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([(this.lord_short())]);
-			return obj;
-		}
-		Lord(){
-			const obj = new this.$.$mol_view();
-			(obj.sub) = () => (["ЛК:", (this.Lord_text())]);
-			return obj;
-		}
-		Warning(){
-			const obj = new this.$.$mol_paragraph();
-			(obj.title) = () => ("Ссылка ниже — СЕКРЕТ. Не делись ей публично.");
-			return obj;
-		}
-		copy(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		Copy(){
-			const obj = new this.$.$mol_button_minor();
-			(obj.title) = () => ("Скопировать ссылку для переноса");
-			(obj.click) = (next) => ((this.copy(next)));
-			return obj;
-		}
-		copy_status(){
-			return "";
-		}
-		Copy_status(){
-			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([(this.copy_status())]);
-			return obj;
-		}
-		Import_hint(){
-			const obj = new this.$.$mol_paragraph();
-			(obj.title) = () => ("Перенести с другого устройства — вставь ссылку:");
-			return obj;
-		}
-		import_link(next){
-			if(next !== undefined) return next;
-			return "";
-		}
-		Import_input(){
-			const obj = new this.$.$mol_string();
-			(obj.hint) = () => ("https://.../vk/#account=...");
-			(obj.value) = (next) => ((this.import_link(next)));
-			return obj;
-		}
-		apply_import(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		Import_apply(){
-			const obj = new this.$.$mol_button_minor();
-			(obj.title) = () => ("Применить");
-			(obj.click) = (next) => ((this.apply_import(next)));
-			return obj;
-		}
-		import_status(){
-			return "";
-		}
-		Import_status(){
-			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([(this.import_status())]);
-			return obj;
-		}
-		Reset_hint(){
-			const obj = new this.$.$mol_paragraph();
-			(obj.title) = () => ("Сбросить состояние и сгенерировать новый аккаунт. Текущие треки в Giper Baza останутся orphan.");
-			return obj;
-		}
-		reset_account(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		Reset_button(){
-			const obj = new this.$.$mol_button_minor();
-			(obj.title) = () => ("Сбросить локальный аккаунт");
-			(obj.click) = (next) => ((this.reset_account(next)));
-			return obj;
-		}
-		rows(){
-			return [
-				(this.Nickname_field()), 
-				(this.Lord()), 
-				(this.Warning()), 
-				(this.Copy()), 
-				(this.Copy_status()), 
-				(this.Import_hint()), 
-				(this.Import_input()), 
-				(this.Import_apply()), 
-				(this.Import_status()), 
-				(this.Reset_hint()), 
-				(this.Reset_button())
-			];
-		}
-	};
-	($mol_mem(($.$bog_vk_account.prototype), "nickname"));
-	($mol_mem(($.$bog_vk_account.prototype), "Nickname_input"));
-	($mol_mem(($.$bog_vk_account.prototype), "Nickname_field"));
-	($mol_mem(($.$bog_vk_account.prototype), "Lord_text"));
-	($mol_mem(($.$bog_vk_account.prototype), "Lord"));
-	($mol_mem(($.$bog_vk_account.prototype), "Warning"));
-	($mol_mem(($.$bog_vk_account.prototype), "copy"));
-	($mol_mem(($.$bog_vk_account.prototype), "Copy"));
-	($mol_mem(($.$bog_vk_account.prototype), "Copy_status"));
-	($mol_mem(($.$bog_vk_account.prototype), "Import_hint"));
-	($mol_mem(($.$bog_vk_account.prototype), "import_link"));
-	($mol_mem(($.$bog_vk_account.prototype), "Import_input"));
-	($mol_mem(($.$bog_vk_account.prototype), "apply_import"));
-	($mol_mem(($.$bog_vk_account.prototype), "Import_apply"));
-	($mol_mem(($.$bog_vk_account.prototype), "Import_status"));
-	($mol_mem(($.$bog_vk_account.prototype), "Reset_hint"));
-	($mol_mem(($.$bog_vk_account.prototype), "reset_account"));
-	($mol_mem(($.$bog_vk_account.prototype), "Reset_button"));
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        class $bog_vk_account extends $.$bog_vk_account {
-            static land() {
-                return this.$.$giper_baza_glob.home().land();
-            }
-            static profile() {
-                const Profile = $bog_vk_account_baza;
-                return this.land().Data(Profile);
-            }
-            nickname(next) {
-                const profile = $bog_vk_account.profile();
-                if (next !== undefined) {
-                    profile.Nickname('auto').val(next);
-                    return next;
-                }
-                return profile.Nickname()?.val() ?? '';
-            }
-            lord_short() {
-                try {
-                    const auth = $giper_baza_auth.current();
-                    if (!auth)
-                        return '—';
-                    return auth.pass().lord().str.slice(0, 8) + '…';
-                }
-                catch (e) {
-                    if (e instanceof Promise)
-                        throw e;
-                    return '—';
-                }
-            }
-            account_key() {
-                return String($mol_state_local.value('$giper_baza_auth') ?? '');
-            }
-            account_link() {
-                const key = this.account_key();
-                if (!key)
-                    return '';
-                const base = location.origin + location.pathname + location.search;
-                return base + '#account=' + encodeURIComponent(key);
-            }
-            copy_status(next) {
-                return next ?? '';
-            }
-            copy() {
-                const link = this.account_link();
-                if (!link) {
-                    this.copy_status('Ключ не найден');
-                    return;
-                }
-                try {
-                    navigator.clipboard.writeText(link);
-                    this.copy_status('Скопировано. Не делись публично!');
-                }
-                catch (e) {
-                    console.warn('[account] clipboard failed:', e?.message);
-                    this.copy_status('Не удалось — скопируй из адресной строки: ' + link);
-                }
-            }
-            import_link(next) {
-                return next ?? '';
-            }
-            import_status(next) {
-                return next ?? '';
-            }
-            reset_account() {
-                if (typeof window === 'undefined')
-                    return;
-                try {
-                    const ext = globalThis.chrome;
-                    if (ext?.storage?.local?.clear)
-                        ext.storage.local.clear();
-                }
-                catch { }
-                try {
-                    window.localStorage.clear();
-                }
-                catch { }
-                try {
-                    const idb = globalThis.indexedDB;
-                    if (idb?.deleteDatabase) {
-                        idb.deleteDatabase('$giper_baza_mine');
-                        idb.deleteDatabase('vk_audio_cache');
-                    }
-                }
-                catch { }
-                setTimeout(() => location.reload(), 100);
-            }
-            apply_import() {
-                const raw = this.import_link().trim();
-                if (!raw) {
-                    this.import_status('Вставь ссылку с #account=…');
-                    return;
-                }
-                const match = raw.match(/[#&]account=([^&\s]+)/);
-                const key = match ? decodeURIComponent(match[1]) : raw;
-                if (key.length < 172) {
-                    this.import_status('Ключ слишком короткий');
-                    return;
-                }
-                const current = $mol_state_local.value('$giper_baza_auth');
-                if (current !== key)
-                    $mol_state_local.value('$giper_baza_auth', key);
-                this.import_status(current === key ? 'Перезапуск…' : 'Применено, перезагрузка…');
-                location.reload();
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $bog_vk_account.prototype, "nickname", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_account.prototype, "lord_short", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_account.prototype, "copy_status", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_account.prototype, "copy", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_account.prototype, "import_link", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_account.prototype, "import_status", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_account.prototype, "reset_account", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_account.prototype, "apply_import", null);
-        $$.$bog_vk_account = $bog_vk_account;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /**
-     * Профиль пользователя в home land.
-     * Никнейм отображается в шапке/попапе аккаунта.
-     */
-    class $bog_vk_account_baza extends $giper_baza_dict.with({
-        Nickname: $giper_baza_atom_text,
-    }) {
-    }
-    $.$bog_vk_account_baza = $bog_vk_account_baza;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        $mol_style_define($bog_vk_account, {
-            width: '100%',
-            maxWidth: $mol_style_func.calc('100vw - 1rem'),
-            boxSizing: 'border-box',
-            padding: {
-                top: '0.5rem',
-                bottom: '0.5rem',
-                left: '0.5rem',
-                right: '0.5rem',
-            },
-            gap: '0.25rem',
-            Lord: {
-                font: {
-                    family: 'monospace',
-                    size: '0.875rem',
-                },
-                padding: {
-                    top: '0.25rem',
-                    bottom: '0.25rem',
-                },
-                gap: '0.5rem',
-            },
-            Warning: {
-                font: { size: '0.8125rem' },
-                color: '#d33',
-            },
-            Copy_status: {
-                font: { size: '0.8125rem' },
-                color: $mol_theme.shade,
-                minHeight: '1rem',
-            },
-            Import_status: {
-                font: { size: '0.8125rem' },
-                color: $mol_theme.shade,
-                minHeight: '1rem',
-            },
-            Import_hint: {
-                font: { size: '0.8125rem' },
-                color: $mol_theme.shade,
-            },
-        });
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-	($.$mol_check_list) = class $mol_check_list extends ($.$mol_view) {
-		option_checked(id, next){
-			if(next !== undefined) return next;
-			return false;
-		}
-		option_title(id){
-			return "";
-		}
-		option_label(id){
-			return [(this.option_title(id))];
-		}
-		enabled(){
-			return true;
-		}
-		option_enabled(id){
-			return (this.enabled());
-		}
-		option_hint(id){
-			return "";
-		}
-		items(){
-			return [];
-		}
-		dictionary(){
-			return {};
-		}
-		Option(id){
-			const obj = new this.$.$mol_check();
-			(obj.checked) = (next) => ((this.option_checked(id, next)));
-			(obj.label) = () => ((this.option_label(id)));
-			(obj.enabled) = () => ((this.option_enabled(id)));
-			(obj.hint) = () => ((this.option_hint(id)));
-			(obj.minimal_height) = () => (24);
-			return obj;
-		}
-		options(){
-			return {};
-		}
-		keys(){
-			return [];
-		}
-		sub(){
-			return (this.items());
-		}
-	};
-	($mol_mem_key(($.$mol_check_list.prototype), "option_checked"));
-	($mol_mem_key(($.$mol_check_list.prototype), "Option"));
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        /**
-         * List of checkboxes
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_check_list_demo
-         */
-        class $mol_check_list extends $.$mol_check_list {
-            options() {
-                return {};
-            }
-            dictionary(next) {
-                return next ?? {};
-            }
-            option_checked(id, next) {
-                const prev = this.dictionary();
-                if (next === undefined)
-                    return prev[id] ?? null;
-                const next_rec = { ...prev, [id]: next };
-                if (next === null)
-                    delete next_rec[id];
-                return this.dictionary(next_rec)[id] ?? null;
-            }
-            keys() {
-                return Object.keys(this.options());
-            }
-            items() {
-                return this.keys().map(key => this.Option(key));
-            }
-            option_title(key) {
-                return this.options()[key] || key;
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $mol_check_list.prototype, "keys", null);
-        __decorate([
-            $mol_mem
-        ], $mol_check_list.prototype, "items", null);
-        $$.$mol_check_list = $mol_check_list;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $mol_style_attach("mol/check/list/list.view.css", "[mol_check_list] {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tflex: 1 1 auto;\n\tborder-radius: var(--mol_gap_round);\n\tgap: 1px;\n}\n\n[mol_check_list_option] {\n\tflex: 0 1 auto;\n}\n\n[mol_check_list_option]:where([mol_check_checked=\"true\"]) {\n\ttext-shadow: 0 0;\n\tcolor: var(--mol_theme_current);\n}\n\n[mol_check_list_option]:where([mol_check_checked=\"true\"][disabled]) {\n\tcolor: var(--mol_theme_text);\n}\n");
-})($ || ($ = {}));
-
-;
-	($.$mol_switch) = class $mol_switch extends ($.$mol_check_list) {
-		value(next){
-			if(next !== undefined) return next;
-			return "";
-		}
-	};
-	($mol_mem(($.$mol_switch.prototype), "value"));
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    class $mol_state_session extends $mol_object {
-        static 'native()';
-        static native() {
-            if (this['native()'])
-                return this['native()'];
-            check: try {
-                const native = $mol_dom_context.sessionStorage;
-                if (!native)
-                    break check;
-                native.setItem('', '');
-                native.removeItem('');
-                return this['native()'] = native;
-            }
-            catch (error) {
-                console.warn(error);
-            }
-            return this['native()'] = {
-                getItem(key) {
-                    return this[':' + key];
-                },
-                setItem(key, value) {
-                    this[':' + key] = value;
-                },
-                removeItem(key) {
-                    this[':' + key] = void 0;
-                }
-            };
-        }
-        static value(key, next) {
-            if (next === void 0)
-                return JSON.parse(this.native().getItem(key) || 'null');
-            if (next === null)
-                this.native().removeItem(key);
-            else
-                this.native().setItem(key, JSON.stringify(next));
-            return next;
-        }
-        prefix() { return ''; }
-        value(key, next) {
-            return $mol_state_session.value(this.prefix() + '.' + key, next);
-        }
-    }
-    __decorate([
-        $mol_mem_key
-    ], $mol_state_session, "value", null);
-    $.$mol_state_session = $mol_state_session;
-})($ || ($ = {}));
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        /**
-         * Buttons which switching the state
-         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_switch_demo
-         */
-        class $mol_switch extends $.$mol_switch {
-            value(next) {
-                return $mol_state_session.value(`${this}.value()`, next) ?? '';
-            }
-            option_checked(key, next) {
-                if (next === undefined)
-                    return this.value() == key;
-                this.value(next ? key : '');
-                return next;
-            }
-        }
-        $$.$mol_switch = $mol_switch;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-	($.$mol_icon_music) = class $mol_icon_music extends ($.$mol_icon) {
-		path(){
-			return "M21,3V15.5A3.5,3.5 0 0,1 17.5,19A3.5,3.5 0 0,1 14,15.5A3.5,3.5 0 0,1 17.5,12C18.04,12 18.55,12.12 19,12.34V6.47L9,8.6V17.5A3.5,3.5 0 0,1 5.5,21A3.5,3.5 0 0,1 2,17.5A3.5,3.5 0 0,1 5.5,14C6.04,14 6.55,14.12 7,14.34V6L21,3Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$mol_icon_delete) = class $mol_icon_delete extends ($.$mol_icon) {
-		path(){
-			return "M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$mol_icon_archive) = class $mol_icon_archive extends ($.$mol_icon) {
-		path(){
-			return "M3,3H21V7H3V3M4,8H20V21H4V8M9.5,11A0.5,0.5 0 0,0 9,11.5V13H15V11.5A0.5,0.5 0 0,0 14.5,11H9.5Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$mol_icon_restore) = class $mol_icon_restore extends ($.$mol_icon) {
-		path(){
-			return "M13,3A9,9 0 0,0 4,12H1L4.89,15.89L4.96,16.03L9,12H6A7,7 0 0,1 13,5A7,7 0 0,1 20,12A7,7 0 0,1 13,19C11.07,19 9.32,18.21 8.06,16.94L6.64,18.36C8.27,20 10.5,21 13,21A9,9 0 0,0 22,12A9,9 0 0,0 13,3Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$mol_icon_delete_forever) = class $mol_icon_delete_forever extends ($.$mol_icon) {
-		path(){
-			return "M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8.46,11.88L9.87,10.47L12,12.59L14.12,10.47L15.53,11.88L13.41,14L15.53,16.12L14.12,17.53L12,15.41L9.88,17.53L8.47,16.12L10.59,14L8.46,11.88M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$bog_vk_track) = class $bog_vk_track extends ($.$mol_view) {
-		event_drag_start(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		event_drag_over(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		event_drop(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		on_play_click(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		cover(){
-			return "";
-		}
-		Cover(){
-			const obj = new this.$.$mol_image();
-			(obj.uri) = () => ((this.cover()));
-			return obj;
-		}
-		Cover_placeholder(){
-			const obj = new this.$.$mol_icon_music();
-			return obj;
-		}
-		Cover_box(){
-			const obj = new this.$.$mol_view();
-			(obj.event) = () => ({"click": (next) => (this.on_play_click(next))});
-			(obj.sub) = () => ([(this.Cover()), (this.Cover_placeholder())]);
-			return obj;
-		}
-		title(){
-			return "";
-		}
-		Title(){
-			const obj = new this.$.$mol_paragraph();
-			(obj.title) = () => ((this.title()));
-			return obj;
-		}
-		artist(){
-			return "";
-		}
-		Artist(){
-			const obj = new this.$.$mol_paragraph();
-			(obj.title) = () => ((this.artist()));
-			return obj;
-		}
-		duration_text(){
-			return "";
-		}
-		Duration(){
-			const obj = new this.$.$mol_paragraph();
-			(obj.title) = () => ((this.duration_text()));
-			return obj;
-		}
-		Info(){
-			const obj = new this.$.$mol_view();
-			(obj.event) = () => ({"click": (next) => (this.on_play_click(next))});
-			(obj.sub) = () => ([
-				(this.Title()), 
-				(this.Artist()), 
-				(this.Duration())
-			]);
-			return obj;
-		}
-		delete_cached(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		Delete_icon(){
-			const obj = new this.$.$mol_icon_delete();
-			return obj;
-		}
-		Delete(){
-			const obj = new this.$.$mol_button_minor();
-			(obj.click) = (next) => ((this.delete_cached(next)));
-			(obj.sub) = () => ([(this.Delete_icon())]);
-			return obj;
-		}
-		archive(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		Archive_icon(){
-			const obj = new this.$.$mol_icon_archive();
-			return obj;
-		}
-		Archive(){
-			const obj = new this.$.$mol_button_minor();
-			(obj.hint) = () => ("В архив");
-			(obj.click) = (next) => ((this.archive(next)));
-			(obj.sub) = () => ([(this.Archive_icon())]);
-			return obj;
-		}
-		restore(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		Restore_icon(){
-			const obj = new this.$.$mol_icon_restore();
-			return obj;
-		}
-		Restore(){
-			const obj = new this.$.$mol_button_minor();
-			(obj.hint) = () => ("Восстановить");
-			(obj.click) = (next) => ((this.restore(next)));
-			(obj.sub) = () => ([(this.Restore_icon())]);
-			return obj;
-		}
-		delete_forever(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		Delete_forever_icon(){
-			const obj = new this.$.$mol_icon_delete_forever();
-			return obj;
-		}
-		Delete_forever(){
-			const obj = new this.$.$mol_button_minor();
-			(obj.hint) = () => ("Удалить навсегда");
-			(obj.click) = (next) => ((this.delete_forever(next)));
-			(obj.sub) = () => ([(this.Delete_forever_icon())]);
-			return obj;
-		}
-		audio(){
-			return null;
-		}
-		current(){
-			return false;
-		}
-		play(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		archive_mode(){
-			return false;
-		}
-		can_drag(){
-			return false;
-		}
-		drag_start(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		drop_here(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		attr(){
-			return {"bog_vk_track_current": (this.current()), "draggable": (this.can_drag())};
-		}
-		event(){
-			return {
-				"dragstart": (next) => (this.event_drag_start(next)), 
-				"dragover": (next) => (this.event_drag_over(next)), 
-				"drop": (next) => (this.event_drop(next))
-			};
-		}
-		sub(){
-			return [
-				(this.Cover_box()), 
-				(this.Info()), 
-				(this.Delete()), 
-				(this.Archive()), 
-				(this.Restore()), 
-				(this.Delete_forever())
-			];
-		}
-	};
-	($mol_mem(($.$bog_vk_track.prototype), "event_drag_start"));
-	($mol_mem(($.$bog_vk_track.prototype), "event_drag_over"));
-	($mol_mem(($.$bog_vk_track.prototype), "event_drop"));
-	($mol_mem(($.$bog_vk_track.prototype), "on_play_click"));
-	($mol_mem(($.$bog_vk_track.prototype), "Cover"));
-	($mol_mem(($.$bog_vk_track.prototype), "Cover_placeholder"));
-	($mol_mem(($.$bog_vk_track.prototype), "Cover_box"));
-	($mol_mem(($.$bog_vk_track.prototype), "Title"));
-	($mol_mem(($.$bog_vk_track.prototype), "Artist"));
-	($mol_mem(($.$bog_vk_track.prototype), "Duration"));
-	($mol_mem(($.$bog_vk_track.prototype), "Info"));
-	($mol_mem(($.$bog_vk_track.prototype), "delete_cached"));
-	($mol_mem(($.$bog_vk_track.prototype), "Delete_icon"));
-	($mol_mem(($.$bog_vk_track.prototype), "Delete"));
-	($mol_mem(($.$bog_vk_track.prototype), "archive"));
-	($mol_mem(($.$bog_vk_track.prototype), "Archive_icon"));
-	($mol_mem(($.$bog_vk_track.prototype), "Archive"));
-	($mol_mem(($.$bog_vk_track.prototype), "restore"));
-	($mol_mem(($.$bog_vk_track.prototype), "Restore_icon"));
-	($mol_mem(($.$bog_vk_track.prototype), "Restore"));
-	($mol_mem(($.$bog_vk_track.prototype), "delete_forever"));
-	($mol_mem(($.$bog_vk_track.prototype), "Delete_forever_icon"));
-	($mol_mem(($.$bog_vk_track.prototype), "Delete_forever"));
-	($mol_mem(($.$bog_vk_track.prototype), "play"));
-	($mol_mem(($.$bog_vk_track.prototype), "drag_start"));
-	($mol_mem(($.$bog_vk_track.prototype), "drop_here"));
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    class $bog_vk_api extends $mol_object {
-        static default_proxy_url = 'https://bog-vk-audio.cmyser-fast-i.workers.dev';
-        static token(next) {
-            return $mol_state_local.value('vk_token', next) ?? '';
-        }
-        static cookies(next) {
-            return $mol_state_local.value('vk_cookies', next) ?? '';
-        }
-        /**
-         * Конфигурируемый URL прокси. Пустое значение — дефолт.
-         * Позволяет обходить блокировки VK API через свой / альтернативный хост.
-         */
-        static proxy_url(next) {
-            const custom = $mol_state_local.value('vk_proxy_url', next) ?? '';
-            return custom || this.default_proxy_url;
-        }
-        /**
-         * Запущены ли мы как Chrome/Firefox extension popup?
-         * В этом контексте host_permissions снимают CORS, и VK API можно дёргать
-         * напрямую без прокси-воркера.
-         */
-        static in_extension() {
-            try {
-                const proto = location.protocol;
-                return proto === 'chrome-extension:' || proto === 'moz-extension:';
-            }
-            catch {
-                return false;
-            }
-        }
-        /** Прямой вызов VK API из popup (использует host_permissions расширения). */
-        static async fetch_vk_direct(method, params) {
-            const token = this.token();
-            if (!token)
-                throw new Error('Token is not set');
-            const body = new URLSearchParams({
-                ...Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
-                access_token: token,
-                v: '5.275',
-                client_id: '6287487',
-            });
-            // credentials: 'include' прицепляет cookies vk.com (если user залогинен) —
-            // нужно для приватных треков с непустым audio.url.
-            const resp = await fetch(`https://api.vk.com/method/${method}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: body.toString(),
-                credentials: 'include',
-            });
-            const data = await resp.json();
-            if (data?.error) {
-                const msg = data.error.error_msg ?? 'VK API error';
-                const code = data.error.error_code ?? '?';
-                console.error(`[vk-api] error ${code}: ${msg}`);
-                throw new Error(`[${code}] ${msg}`);
-            }
-            return data.response;
-        }
-        static async fetch_proxy(endpoint, body) {
-            const base = this.proxy_url().replace(/\/$/, '');
-            const resp = await fetch(`${base}${endpoint}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
-            });
-            const data = await resp.json();
-            if (!resp.ok) {
-                const code = data.code ?? '?';
-                const msg = data.error ?? 'Proxy error';
-                console.error(`[vk-api] error ${code}: ${msg}`);
-                throw new Error(`[${code}] ${msg}`);
-            }
-            return data;
-        }
-        static my_audios() {
-            const token = this.token();
-            if (!token)
-                throw new Error('Token is not set');
-            if (this.in_extension()) {
-                return $mol_wire_sync(this).fetch_vk_direct('audio.get', { count: 200 });
-            }
-            return $mol_wire_sync(this).fetch_proxy('/audios', { token, cookies: this.cookies(), count: 200 });
-        }
-        static search_audios(query) {
-            const token = this.token();
-            if (!token)
-                throw new Error('Token is not set');
-            if (this.in_extension()) {
-                return $mol_wire_sync(this).fetch_vk_direct('audio.search', { q: query, count: 100, sort: 2 });
-            }
-            return $mol_wire_sync(this).fetch_proxy('/search', { token, cookies: this.cookies(), query, count: 100 });
-        }
-        /**
-         * Обновляет URL трека (HLS-ссылки от VK живут ~60 минут).
-         * Используется перед save_hls для треков, у которых url протух.
-         */
-        static refresh_audio(audio_key) {
-            const token = this.token();
-            if (!token)
-                throw new Error('Token is not set');
-            if (this.in_extension()) {
-                const resp = $mol_wire_sync(this).fetch_vk_direct('audio.getById', { audios: audio_key });
-                return resp?.[0] ?? null;
-            }
-            const resp = $mol_wire_sync(this).fetch_proxy('/getById', { token, cookies: this.cookies(), audios: audio_key });
-            return resp?.[0] ?? null;
-        }
-    }
-    __decorate([
-        $mol_mem
-    ], $bog_vk_api, "token", null);
-    __decorate([
-        $mol_mem
-    ], $bog_vk_api, "cookies", null);
-    __decorate([
-        $mol_mem
-    ], $bog_vk_api, "proxy_url", null);
-    __decorate([
-        $mol_mem
-    ], $bog_vk_api, "my_audios", null);
-    __decorate([
-        $mol_mem_key
-    ], $bog_vk_api, "search_audios", null);
-    __decorate([
-        $mol_mem_key
-    ], $bog_vk_api, "refresh_audio", null);
-    $.$bog_vk_api = $bog_vk_api;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    class $bog_vk_cache extends $mol_object {
-        static version(next) {
-            return next ?? 0;
-        }
-        static db() {
-            return $mol_wire_sync(this).db_async();
-        }
-        static async db_async() {
-            return $$.$mol_db('vk_audio_cache', mig => mig.store_make('tracks'), mig => mig.store_make('meta'));
-        }
-        static cache_key(audio) {
-            return `${audio.owner_id}_${audio.id}`;
-        }
-        static async get(audio) {
-            const key = this.cache_key(audio);
-            try {
-                const db = await this.db_async();
-                const blob = await db.read('tracks').tracks.get(key);
-                db.destructor();
-                if (blob) {
-                    // Delete broken cache entries (empty or too small)
-                    if (blob.size < 1000) {
-                        console.warn(`[cache] broken entry (${blob.size} bytes), deleting: ${audio.artist} — ${audio.title}`);
-                        const db2 = await this.db_async();
-                        const tx = db2.change('tracks', 'meta');
-                        await tx.stores.tracks.drop(key);
-                        await tx.stores.meta.drop(key);
-                        db2.destructor();
-                        return null;
-                    }
-                    // Re-mux old audio/aac entries to audio/mp4
-                    if (blob.type === 'audio/aac') {
-                        console.log(`[cache] migrating ${audio.artist} — ${audio.title} from aac to m4a...`);
-                        const adts = new Uint8Array(await blob.arrayBuffer());
-                        const m4a = this.adts_to_m4a(adts);
-                        const newBlob = new Blob([m4a.buffer], { type: 'audio/mp4' });
-                        const db2 = await this.db_async();
-                        const tx = db2.change('tracks');
-                        await tx.stores.tracks.put(newBlob, key);
-                        db2.destructor();
-                        return URL.createObjectURL(newBlob);
-                    }
-                    console.log(`[cache] hit: ${audio.artist} — ${audio.title} (${(blob.size / 1024 / 1024).toFixed(1)} MB)`);
-                    return URL.createObjectURL(blob);
-                }
-                console.warn(`[cache] miss: ${audio.artist} — ${audio.title} (key: ${key})`);
-                return null;
-            }
-            catch (e) {
-                console.warn(`[cache] get error: ${key}`, e?.message);
-                return null;
-            }
-        }
-        static async is_cached(audio) {
-            const key = this.cache_key(audio);
-            try {
-                const db = await this.db_async();
-                const count = await db.read('tracks').tracks.count(key);
-                db.destructor();
-                return count > 0;
-            }
-            catch {
-                return false;
-            }
-        }
-        static async drop(audio) {
-            const key = this.cache_key(audio);
-            const db = await this.db_async();
-            const tx = db.change('tracks', 'meta');
-            await tx.stores.tracks.drop(key);
-            await tx.stores.meta.drop(key);
-            db.destructor();
-            console.log(`[cache] dropped: ${audio.artist} — ${audio.title}`);
-        }
-        static async all_cached() {
-            try {
-                const db = await this.db_async();
-                const all = await db.read('meta').meta.select();
-                db.destructor();
-                return all.reverse();
-            }
-            catch {
-                return [];
-            }
-        }
-        static adts_to_m4a(adts) {
-            const frames = [];
-            const frameSizes = [];
-            let audioObjectType = 2;
-            let sampleRateIndex = 4;
-            let channelConfig = 2;
-            let i = 0;
-            while (i < adts.length - 7) {
-                if (adts[i] !== 0xFF || (adts[i + 1] & 0xF6) !== 0xF0) {
-                    i++;
-                    continue;
-                }
-                const protAbsent = adts[i + 1] & 0x01;
-                const profile = (adts[i + 2] >> 6) & 0x03;
-                const srIdx = (adts[i + 2] >> 2) & 0x0F;
-                const chCfg = ((adts[i + 2] & 0x01) << 2) | ((adts[i + 3] >> 6) & 0x03);
-                const frameLen = ((adts[i + 3] & 0x03) << 11) | (adts[i + 4] << 3) | ((adts[i + 5] >> 5) & 0x07);
-                if (frameLen < 7 || frameLen > 8192 || i + frameLen > adts.length) {
-                    i++;
-                    continue;
-                }
-                // Verify next frame sync to filter false positives
-                if (i + frameLen + 1 < adts.length) {
-                    if (adts[i + frameLen] !== 0xFF || (adts[i + frameLen + 1] & 0xF6) !== 0xF0) {
-                        i++;
-                        continue;
-                    }
-                }
-                // Lock codec params from first valid frame
-                if (frames.length === 0) {
-                    audioObjectType = profile + 1;
-                    sampleRateIndex = srIdx;
-                    channelConfig = chCfg;
-                }
-                const hdrLen = protAbsent ? 7 : 9;
-                if (hdrLen >= frameLen) {
-                    i++;
-                    continue;
-                }
-                const raw = adts.slice(i + hdrLen, i + frameLen);
-                frames.push(raw);
-                frameSizes.push(raw.length);
-                i += frameLen;
-            }
-            if (frames.length === 0)
-                return adts;
-            const sampleRates = [96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350];
-            const sampleRate = sampleRates[sampleRateIndex] || 44100;
-            const totalSamples = frames.length * 1024;
-            const rawSize = frameSizes.reduce((a, b) => a + b, 0);
-            // AudioSpecificConfig (2 bytes)
-            const asc0 = (audioObjectType << 3) | (sampleRateIndex >> 1);
-            const asc1 = ((sampleRateIndex & 1) << 7) | (channelConfig << 3);
-            const u32 = (v) => [(v >>> 24) & 0xFF, (v >>> 16) & 0xFF, (v >>> 8) & 0xFF, v & 0xFF];
-            const u16 = (v) => [(v >> 8) & 0xFF, v & 0xFF];
-            const str = (s) => s.split('').map(c => c.charCodeAt(0));
-            const box = (type, payload) => [...u32(8 + payload.length), ...str(type), ...payload];
-            const fbox = (type, ver, fl, payload) => [...u32(12 + payload.length), ...str(type), ver, (fl >> 16) & 0xFF, (fl >> 8) & 0xFF, fl & 0xFF, ...payload];
-            // ftyp
-            const ftyp = box('ftyp', [...str('M4A '), ...u32(0), ...str('M4A '), ...str('isom'), ...str('mp42')]);
-            // esds descriptor chain
-            const decSpecInfo = [0x05, 0x02, asc0, asc1];
-            const decConfigPayload = [0x40, 0x15, 0x00, 0x00, 0x00, ...u32(0), ...u32(0), ...decSpecInfo];
-            const decConfig = [0x04, decConfigPayload.length, ...decConfigPayload];
-            const slConfig = [0x06, 0x01, 0x02];
-            const esPayload = [...u16(1), 0x00, ...decConfig, ...slConfig];
-            const esDescr = [0x03, esPayload.length, ...esPayload];
-            const esds = fbox('esds', 0, 0, esDescr);
-            // mp4a sample entry
-            const mp4aPayload = [
-                ...Array(6).fill(0), ...u16(1), // reserved + data_reference_index
-                ...Array(8).fill(0), // reserved
-                ...u16(channelConfig), ...u16(16), // channels, sample_size
-                ...u16(0), ...u16(0), // compression_id, packet_size
-                ...u16(sampleRate), ...u16(0), // samplerate 16.16 fixed
-                ...esds,
-            ];
-            const mp4a = [...u32(8 + mp4aPayload.length), ...str('mp4a'), ...mp4aPayload];
-            const stsd = fbox('stsd', 0, 0, [...u32(1), ...mp4a]);
-            const stts = fbox('stts', 0, 0, [...u32(1), ...u32(frames.length), ...u32(1024)]);
-            const stsc = fbox('stsc', 0, 0, [...u32(1), ...u32(1), ...u32(frames.length), ...u32(1)]);
-            const stsz = fbox('stsz', 0, 0, [...u32(0), ...u32(frames.length), ...frameSizes.flatMap(s => u32(s))]);
-            const stco = fbox('stco', 0, 0, [...u32(1), ...u32(0)]); // offset patched below
-            const stbl = box('stbl', [...stsd, ...stts, ...stsc, ...stsz, ...stco]);
-            const smhd = fbox('smhd', 0, 0, [...u16(0), ...u16(0)]);
-            const urlBox = fbox('url ', 0, 1, []);
-            const dref = fbox('dref', 0, 0, [...u32(1), ...urlBox]);
-            const dinf = box('dinf', dref);
-            const minf = box('minf', [...smhd, ...dinf, ...stbl]);
-            const mdhd = fbox('mdhd', 0, 0, [...u32(0), ...u32(0), ...u32(sampleRate), ...u32(totalSamples), ...u16(0x55C4), ...u16(0)]);
-            const hdlr = fbox('hdlr', 0, 0, [...u32(0), ...str('soun'), ...u32(0), ...u32(0), ...u32(0), 0]);
-            const mdia = box('mdia', [...mdhd, ...hdlr, ...minf]);
-            const identity = [
-                0x00, 0x01, 0x00, 0x00, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0x00, 0x01, 0x00, 0x00, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0x40, 0x00, 0x00, 0x00,
-            ];
-            const tkhd = fbox('tkhd', 0, 3, [
-                ...u32(0), ...u32(0), ...u32(1), ...u32(0), ...u32(totalSamples),
-                ...u32(0), ...u32(0), ...u16(0), ...u16(0), ...u16(0x0100), ...u16(0),
-                ...identity, ...u32(0), ...u32(0),
-            ]);
-            const trak = box('trak', [...tkhd, ...mdia]);
-            const mvhd = fbox('mvhd', 0, 0, [
-                ...u32(0), ...u32(0), ...u32(sampleRate), ...u32(totalSamples),
-                ...u32(0x00010000), ...u16(0x0100), ...Array(10).fill(0),
-                ...identity, ...Array(24).fill(0), ...u32(2),
-            ]);
-            const moov = box('moov', [...mvhd, ...trak]);
-            // Patch stco chunk_offset: mdat data starts after ftyp + moov + mdat header(8)
-            const mdatDataOffset = ftyp.length + moov.length + 8;
-            for (let j = 0; j < moov.length - 4; j++) {
-                if (moov[j] === 0x73 && moov[j + 1] === 0x74 && moov[j + 2] === 0x63 && moov[j + 3] === 0x6F) {
-                    // 'stco' found: type(4) + version(1) + flags(3) + entry_count(4) = 12 bytes to offset
-                    const p = j + 12;
-                    moov[p] = (mdatDataOffset >>> 24) & 0xFF;
-                    moov[p + 1] = (mdatDataOffset >>> 16) & 0xFF;
-                    moov[p + 2] = (mdatDataOffset >>> 8) & 0xFF;
-                    moov[p + 3] = mdatDataOffset & 0xFF;
-                    break;
-                }
-            }
-            // Assemble: ftyp + moov + mdat
-            const mdatHeader = [...u32(8 + rawSize), ...str('mdat')];
-            const total = ftyp.length + moov.length + mdatHeader.length + rawSize;
-            const out = new Uint8Array(total);
-            let pos = 0;
-            out.set(ftyp, pos);
-            pos += ftyp.length;
-            out.set(moov, pos);
-            pos += moov.length;
-            out.set(mdatHeader, pos);
-            pos += mdatHeader.length;
-            for (const frame of frames) {
-                out.set(frame, pos);
-                pos += frame.length;
-            }
-            console.log(`[cache] muxed ${frames.length} AAC frames → ${(total / 1024).toFixed(0)} KB M4A`);
-            return out;
-        }
-        static extract_audio(ts) {
-            // Already raw AAC (ADTS)
-            if (ts[0] === 0xFF && (ts[1] & 0xF0) === 0xF0) {
-                return { data: ts, mime: 'audio/aac' };
-            }
-            // Already MP3
-            if (ts[0] === 0xFF && (ts[1] & 0xE0) === 0xE0) {
-                return { data: ts, mime: 'audio/mpeg' };
-            }
-            // ID3 tag (MP3 with metadata)
-            if (ts[0] === 0x49 && ts[1] === 0x44 && ts[2] === 0x33) {
-                return { data: ts, mime: 'audio/mpeg' };
-            }
-            // MPEG-TS → proper demux: parse TS packets, extract PES audio payloads
-            if (ts[0] === 0x47) {
-                const audio = this.demux_ts_audio(ts);
-                if (audio)
-                    return { data: audio, mime: 'audio/aac' };
-            }
-            // Fallback: return as-is
-            return { data: ts, mime: 'audio/mpeg' };
-        }
-        static demux_ts_audio(ts) {
-            // Phase 1: parse TS packets, group payloads by PID
-            const pidChunks = new Map();
-            for (let pos = 0; pos + 188 <= ts.length; pos += 188) {
-                if (ts[pos] !== 0x47)
-                    continue;
-                const pusi = !!(ts[pos + 1] & 0x40);
-                const pid = ((ts[pos + 1] & 0x1F) << 8) | ts[pos + 2];
-                const afc = (ts[pos + 3] >> 4) & 0x03;
-                if (pid === 0 || pid === 0x1FFF)
-                    continue; // skip PAT / null
-                if (!(afc & 0x01))
-                    continue; // no payload
-                let off = 4;
-                if (afc & 0x02)
-                    off += 1 + ts[pos + 4]; // adaptation field
-                if (off >= 188)
-                    continue;
-                if (!pidChunks.has(pid))
-                    pidChunks.set(pid, []);
-                pidChunks.get(pid).push({ pusi, data: ts.slice(pos + off, pos + 188) });
-            }
-            // Phase 2: find audio PID (PES stream_id 0xC0..0xDF)
-            for (const [pid, chunks] of pidChunks) {
-                const first = chunks.find(c => c.pusi);
-                if (!first)
-                    continue;
-                const d = first.data;
-                if (d.length < 9)
-                    continue;
-                if (d[0] !== 0x00 || d[1] !== 0x00 || d[2] !== 0x01)
-                    continue;
-                if (d[3] < 0xC0 || d[3] > 0xDF)
-                    continue; // not audio
-                // Phase 3: reassemble PES payloads, strip PES headers → raw ADTS
-                const parts = [];
-                for (const chunk of chunks) {
-                    if (chunk.pusi) {
-                        const p = chunk.data;
-                        if (p.length < 9 || p[0] !== 0x00 || p[1] !== 0x00 || p[2] !== 0x01)
-                            continue;
-                        const pesHdrLen = 9 + p[8];
-                        if (pesHdrLen < p.length) {
-                            parts.push(p.slice(pesHdrLen));
-                        }
-                    }
-                    else {
-                        parts.push(chunk.data);
-                    }
-                }
-                const total = parts.reduce((s, p) => s + p.length, 0);
-                if (total === 0)
-                    continue;
-                const out = new Uint8Array(total);
-                let off = 0;
-                for (const p of parts) {
-                    out.set(p, off);
-                    off += p.length;
-                }
-                console.log(`[cache] demuxed TS: PID ${pid}, ${total} bytes raw ADTS`);
-                return out;
-            }
-            return null;
-        }
-        static parse_m3u8(text, base_url) {
-            const lines = text.split('\n');
-            let key_url = '';
-            let key_iv = '';
-            const segments = [];
-            for (const line of lines) {
-                const trimmed = line.trim();
-                if (trimmed.startsWith('#EXT-X-KEY:')) {
-                    const uri_match = trimmed.match(/URI="([^"]+)"/);
-                    if (uri_match) {
-                        key_url = uri_match[1].startsWith('http') ? uri_match[1] : base_url + uri_match[1];
-                    }
-                    const iv_match = trimmed.match(/IV=0x([0-9a-fA-F]+)/);
-                    if (iv_match) {
-                        key_iv = iv_match[1];
-                    }
-                }
-                else if (trimmed && !trimmed.startsWith('#')) {
-                    segments.push(trimmed.startsWith('http') ? trimmed : base_url + trimmed);
-                }
-            }
-            return { segments, key_url, key_iv };
-        }
-        static async decrypt_segment(data, cryptoKey, index, iv_hex) {
-            let iv;
-            if (iv_hex) {
-                const bytes = new Uint8Array(16);
-                for (let i = 0; i < 16 && i * 2 < iv_hex.length; i++) {
-                    bytes[i] = parseInt(iv_hex.substring(i * 2, i * 2 + 2), 16);
-                }
-                iv = bytes.buffer;
-            }
-            else {
-                const bytes = new Uint8Array(16);
-                bytes[15] = index & 0xFF;
-                bytes[14] = (index >> 8) & 0xFF;
-                bytes[13] = (index >> 16) & 0xFF;
-                bytes[12] = (index >> 24) & 0xFF;
-                iv = bytes.buffer;
-            }
-            return crypto.subtle.decrypt({ name: 'AES-CBC', iv }, cryptoKey, data);
-        }
-        /**
-         * Освежает audio.url через VK audio.getById — HLS ссылки протухают ~60 мин.
-         * Возвращает рабочий URL или пустую строку если не получилось.
-         */
-        static async refresh_url(audio) {
-            try {
-                const key = `${audio.owner_id}_${audio.id}${audio.access_key ? '_' + audio.access_key : ''}`;
-                const fresh = $mol_wire_sync($bog_vk_api).refresh_audio(key);
-                return fresh?.url ?? '';
-            }
-            catch (e) {
-                console.warn('[cache] refresh_url failed:', e?.message);
-                return '';
-            }
-        }
-        static async save_hls(audio) {
-            let url = audio.url;
-            if (!url) {
-                console.warn('[cache] skip — no URL:', audio.artist, '—', audio.title);
-                return;
-            }
-            const cache_id = this.cache_key(audio);
-            try {
-                const db_check = await this.db_async();
-                const existing = await db_check.read('tracks').tracks.count(cache_id);
-                db_check.destructor();
-                if (existing > 0) {
-                    console.log('[cache] already cached:', audio.artist, '—', audio.title);
-                    return;
-                }
-                console.log('[cache] start download:', audio.artist, '—', audio.title);
-                let m3u8_resp = await fetch(url);
-                // Если url протух — пробуем обновить через audio.getById.
-                if (m3u8_resp.status === 403 || m3u8_resp.status === 404) {
-                    console.log('[cache] url expired, refreshing:', audio.artist, '—', audio.title);
-                    const fresh_url = await this.refresh_url(audio);
-                    if (fresh_url) {
-                        url = fresh_url;
-                        m3u8_resp = await fetch(url);
-                    }
-                }
-                if (!m3u8_resp.ok)
-                    throw new Error(`m3u8 fetch ${m3u8_resp.status}`);
-                const m3u8_text = await m3u8_resp.text();
-                const base_url = url.substring(0, url.lastIndexOf('/') + 1);
-                // (url мог быть подменён на fresh_url выше — base пересчитывается от него)
-                const { segments, key_url, key_iv } = this.parse_m3u8(m3u8_text, base_url);
-                if (!segments.length)
-                    throw new Error('No segments in m3u8');
-                let cryptoKey = null;
-                if (key_url) {
-                    console.log(`[cache] encrypted HLS, fetching key from:`, key_url);
-                    const key_resp = await fetch(key_url);
-                    if (!key_resp.ok)
-                        throw new Error(`Key fetch failed: ${key_resp.status}`);
-                    const key_data = await key_resp.arrayBuffer();
-                    console.log(`[cache] key size: ${key_data.byteLength} bytes, hex: ${Array.from(new Uint8Array(key_data)).map(b => b.toString(16).padStart(2, '0')).join('')}`);
-                    if (key_data.byteLength !== 16) {
-                        console.warn(`[cache] unexpected key size ${key_data.byteLength}, expected 16`);
-                    }
-                    cryptoKey = await crypto.subtle.importKey('raw', key_data, 'AES-CBC', false, ['decrypt']);
-                    console.log(`[cache] key imported, IV: ${key_iv || '(sequence number)'}`);
-                }
-                console.log(`[cache] ${segments.length} segments to download${cryptoKey ? ' (encrypted)' : ''}`);
-                const chunks = [];
-                for (let i = 0; i < segments.length; i++) {
-                    const resp = await fetch(segments[i]);
-                    if (!resp.ok)
-                        throw new Error(`Segment ${i + 1}/${segments.length} failed: ${resp.status}`);
-                    let data = await resp.arrayBuffer();
-                    const firstByte = new Uint8Array(data)[0];
-                    if (cryptoKey && firstByte !== 0x47) {
-                        data = await this.decrypt_segment(data, cryptoKey, i, key_iv);
-                    }
-                    chunks.push(data);
-                }
-                const total = chunks.reduce((s, c) => s + c.byteLength, 0);
-                const merged = new Uint8Array(total);
-                let offset = 0;
-                for (const chunk of chunks) {
-                    merged.set(new Uint8Array(chunk), offset);
-                    offset += chunk.byteLength;
-                }
-                let { data: audioData, mime } = this.extract_audio(merged);
-                if (mime === 'audio/aac') {
-                    audioData = this.adts_to_m4a(audioData);
-                    mime = 'audio/mp4';
-                }
-                const blob = new Blob([audioData.buffer], { type: mime });
-                const sizeMB = (audioData.byteLength / 1024 / 1024).toFixed(1);
-                console.log(`[cache] format: ${mime}, extracted ${sizeMB} MB from ${(total / 1024 / 1024).toFixed(1)} MB raw`);
-                const db = await this.db_async();
-                const tx = db.change('tracks', 'meta');
-                await tx.stores.tracks.put(blob, cache_id);
-                await tx.stores.meta.put({ ...audio, url: '' }, cache_id);
-                db.destructor();
-                console.log(`[cache] saved: ${audio.artist} — ${audio.title} (${sizeMB} MB)`);
-            }
-            catch (e) {
-                console.warn(`[cache] FAILED: ${audio.artist} — ${audio.title}:`, e?.message || e?.name || String(e), e);
-            }
-        }
-    }
-    __decorate([
-        $mol_mem
-    ], $bog_vk_cache, "version", null);
-    $.$bog_vk_cache = $bog_vk_cache;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    $.$mol_blob = ($node.buffer?.Blob ?? $mol_dom_context.Blob);
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    class $giper_baza_file extends $giper_baza_dict.with({
-        /** File name */
-        Name: $giper_baza_atom_text,
-        /** File Content-Type */
-        Type: $giper_baza_atom_text,
-        /** File content in chunks - list of binaries */
-        Chunks: $giper_baza_list_bin,
-    }) {
-        /** Persistent URI to file content */
-        uri() {
-            return `?BAZA:file=${this.link()};name=${this.name()}`;
-        }
-        /** File name */
-        name(next) {
-            const ext = {
-                'text/plain': 'txt',
-                'application/json': 'json',
-            }[this.type()] ?? 'bin';
-            return this.Name(next)?.val(next) ?? `${this.link()}.${ext}`;
-        }
-        /** Mime type */
-        type(next) {
-            return this.Type(next)?.val(next) ?? 'application/octet-stream';
-        }
-        /** Blob, File etc. */
-        blob(next) {
-            if (!next)
-                return new $mol_blob(this.chunks(), { type: this.type() });
-            const buffer = new Uint8Array($mol_wire_sync(next).arrayBuffer());
-            this.buffer(buffer);
-            this.type(next.type);
-            if (next instanceof $mol_dom_context.File)
-                this.name(next.name);
-            return next;
-        }
-        /** Solid byte buffer. */
-        buffer(next) {
-            if (next) {
-                const chunks = [];
-                for (let offset = 0; offset < next.byteLength;) {
-                    chunks.push(next.slice(offset, offset += 2 ** 15)); // split by 32 KB
-                }
-                this.chunks(chunks);
-                return next;
-            }
-            else {
-                const chunks = this.chunks();
-                const size = chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0);
-                const res = new Uint8Array(size);
-                let offset = 0;
-                for (const chunk of chunks) {
-                    res.set(chunk, offset);
-                    offset += chunk.byteLength;
-                }
-                return res;
-            }
-        }
-        chunks(next) {
-            return (this.Chunks(next)?.items(next)?.filter($mol_guard_defined) ?? []);
-        }
-        str(next, type = 'text/plain') {
-            if (next === undefined)
-                return $mol_charset_decode(this.buffer());
-            this.buffer($mol_charset_encode(next));
-            this.type(type);
-            return next;
-        }
-        json(next, type = 'application/json') {
-            if (next === undefined)
-                return JSON.parse(this.str());
-            this.str(JSON.stringify(next), type);
-            return next;
-        }
-    }
-    $.$giper_baza_file = $giper_baza_file;
-})($ || ($ = {}));
-
-;
-"use strict";
-// namespace $ {
-// 	$mol_report_bugsnag = '18acf016ed2a2a4cc4445daa9dd2dd3c'
-// }
-
-;
-"use strict";
-var $;
-(function ($) {
-    /**
-     * Checks for some of given runtype or throws error.
-     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_data_variant_demo
-     */
-    function $mol_data_variant(...sub) {
-        return $mol_data_setup((val) => {
-            const errors = [];
-            for (const type of sub) {
-                let hidden = $.$mol_fail_hidden;
-                try {
-                    $.$mol_fail = $.$mol_fail_hidden;
-                    return type(val);
-                }
-                catch (error) {
-                    $.$mol_fail = hidden;
-                    if (error instanceof $mol_data_error) {
-                        errors.push(error);
-                    }
-                    else {
-                        return $mol_fail_hidden(error);
-                    }
-                }
-            }
-            return $mol_fail(new $mol_data_error(`${val} is not any of variants`, {}, ...errors));
-        }, sub);
-    }
-    $.$mol_data_variant = $mol_data_variant;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /**
-     * Checks for string and returns string type.
-     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_data_string_demo
-     */
-    $.$mol_data_string = (val) => {
-        if (typeof val === 'string')
-            return val;
-        return $mol_fail(new $mol_data_error(`${val} is not a string`));
-    };
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /**
-     * Checks for undefined or passing given runtype.
-     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_data_optional_demo
-     */
-    function $mol_data_optional(sub, fallback) {
-        return $mol_data_setup((val) => {
-            if (val === undefined) {
-                return fallback?.();
-            }
-            return sub(val);
-        }, { sub, fallback });
-    }
-    $.$mol_data_optional = $mol_data_optional;
-})($ || ($ = {}));
-
-;
-"use strict";
-
-;
-"use strict";
-var $;
-(function ($) {
-    /**
-     * Checks for record of given fields with by its runtypes and returns expected type.
-     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_data_record_demo
-     */
-    function $mol_data_record(sub) {
-        return $mol_data_setup((val) => {
-            let res = {};
-            for (const field in sub) {
-                try {
-                    res[field] =
-                        sub[field](val[field]);
-                }
-                catch (error) {
-                    if (error instanceof Promise)
-                        return $mol_fail_hidden(error);
-                    error.message = `[${JSON.stringify(field)}] ${error.message}`;
-                    return $mol_fail(error);
-                }
-            }
-            return res;
-        }, sub);
-    }
-    $.$mol_data_record = $mol_data_record;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /**
-     * Checks for array of given runtype and returns expected type.
-     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_data_array_demo
-     */
-    function $mol_data_array(sub) {
-        return $mol_data_setup((val) => {
-            if (!Array.isArray(val))
-                return $mol_fail(new $mol_data_error(`${val} is not an array`));
-            return val.map((item, index) => {
-                try {
-                    return sub(item);
-                }
-                catch (error) {
-                    if (error instanceof Promise)
-                        return $mol_fail_hidden(error);
-                    error.message = `[${index}] ${error.message}`;
-                    return $mol_fail(error);
-                }
-            });
-        }, sub);
-    }
-    $.$mol_data_array = $mol_data_array;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /**
-     * Checks for boolean and returns boolean type.
-     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_data_boolean_demo
-     */
-    $.$mol_data_boolean = (val) => {
-        if (typeof val === 'boolean')
-            return val;
-        return $mol_fail(new $mol_data_error(`${val} is not a boolean`));
-    };
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /** Creates lexer by dictionary of lexems. Lexem that started first wins. Then lexem that declared earlier wins. Use regexp capture to take parts of token. */
-    class $mol_syntax2 {
-        lexems;
-        constructor(lexems) {
-            this.lexems = lexems;
-            for (let name in lexems) {
-                this.rules.push({
-                    name: name,
-                    regExp: lexems[name],
-                    size: RegExp('^$|' + lexems[name].source).exec('').length - 1,
-                });
-            }
-            const parts = '(' + this.rules.map(rule => rule.regExp.source).join(')|(') + ')';
-            this.regexp = RegExp(`([\\s\\S]*?)(?:(${parts})|$(?![^]))`, 'gmu');
-        }
-        rules = [];
-        regexp;
-        tokenize(text, handle) {
-            let end = 0;
-            lexing: while (end < text.length) {
-                const start = end;
-                this.regexp.lastIndex = start;
-                var found = this.regexp.exec(text);
-                end = this.regexp.lastIndex;
-                if (start === end)
-                    throw new Error('Empty token');
-                var prefix = found[1];
-                if (prefix)
-                    handle('', prefix, [prefix], start);
-                var suffix = found[2];
-                if (!suffix)
-                    continue;
-                let offset = 4;
-                for (let rule of this.rules) {
-                    if (found[offset - 1]) {
-                        handle(rule.name, suffix, found.slice(offset, offset + rule.size), start + prefix.length);
-                        continue lexing;
-                    }
-                    offset += rule.size + 1;
-                }
-                $mol_fail(new Error('$mol_syntax2 is broken'));
-            }
-        }
-        parse(text, handlers) {
-            this.tokenize(text, (name, ...args) => handlers[name](...args));
-        }
-    }
-    $.$mol_syntax2 = $mol_syntax2;
-})($ || ($ = {}));
-
-;
-"use strict";
-
-;
-"use strict";
-var $;
-(function ($) {
-    const syntax = new $mol_syntax2({
-        'filter': /!?=/,
-        'range_separator': /@/,
-        'fetch_open': /\(/,
-        'fetch_separator': /[:;&\/?#]/,
-        'fetch_close': /\)/,
-    });
-    function $hyoo_harp_from_string(uri) {
-        let parent = {};
-        let prev = null;
-        let stack = [parent];
-        let range = null;
-        let values = null;
-        function fail_at(offset) {
-            const uri_marked = uri.substring(0, offset) + '\u035C' + uri.substring(offset);
-            $mol_fail(new Error(`Unexpected token at ${offset} of "${uri_marked}"`));
-        }
-        syntax.parse(uri, {
-            '': (text, chunks, offset) => {
-                if (values) {
-                    text = decodeURIComponent(text);
-                    range = (range && range.length > 1)
-                        ? [range[0], range[1] + text]
-                        : [(range?.[0] ?? '') + text];
-                }
-                else {
-                    let [, order, name] = /^([+-]?)(.*)$/.exec(text);
-                    prev = parent[decodeURIComponent(name)] = {};
-                    if (order)
-                        prev['+'] = order === '+';
-                    stack.push(parent);
-                }
-            },
-            'filter': (filter, chinks, offset) => {
-                if (values) {
-                    if (range) {
-                        if (filter === '!=')
-                            range.push(range.pop() + '!');
-                        values.push(range);
-                        range = null;
-                    }
-                    else {
-                        range = [filter];
-                    }
-                }
-                else if (prev) {
-                    values = prev[filter] = [];
-                }
-                else {
-                    values = [];
-                    parent[''] = values;
-                }
-            },
-            'range_separator': (found, chunks, offset) => {
-                if (!values)
-                    fail_at(offset);
-                range = [range?.[0] ?? '', ''];
-            },
-            'fetch_open': (found, chunks, offset) => {
-                if (range) {
-                    range[range.length - 1] += found;
-                }
-                else {
-                    if (!prev)
-                        fail_at(offset);
-                    parent = prev;
-                    values = null;
-                    prev = null;
-                }
-            },
-            'fetch_separator': (found, chunks, offset) => {
-                if (range) {
-                    values.push(range);
-                    range = null;
-                }
-                parent = stack.pop();
-                values = null;
-                prev = null;
-            },
-            'fetch_close': (found) => {
-                if (range) {
-                    range[range.length - 1] += found;
-                }
-                else {
-                    parent = stack.pop();
-                    values = null;
-                    prev = null;
-                }
-            },
-        });
-        if (range)
-            values.push(range);
-        return stack[0];
-    }
-    $.$hyoo_harp_from_string = $hyoo_harp_from_string;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    function $hyoo_harp_to_string(query) {
-        return Object.entries(query).map(([field, harp]) => {
-            if (field === '+')
-                return '';
-            if (field === '=')
-                return '';
-            if (field === '!=')
-                return '';
-            if (!harp)
-                return '';
-            const harp2 = harp;
-            const order = harp2['+'] === true ? '+' : harp2['+'] === false ? '-' : '';
-            const filter = harp2['='] ? '=' : harp2['!='] ? '!=' : '';
-            const name = encodeURIComponent(field);
-            let values = (harp2['='] || harp2['!='] || []).map(([min, max]) => {
-                if (max === undefined || min === max)
-                    return encodeURIComponent(String(min)) + '=';
-                min = (min === undefined) ? '' : encodeURIComponent(String(min));
-                max = (max === undefined) ? '' : encodeURIComponent(String(max));
-                return `${min}@${max}=`;
-            }).join('');
-            let fetch = $hyoo_harp_to_string(harp);
-            if (fetch)
-                fetch = `(${fetch})`;
-            return `${order}${name}${filter}${values}${fetch}`;
-        }).filter(Boolean).join(';');
-    }
-    $.$hyoo_harp_to_string = $hyoo_harp_to_string;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    const Int = $mol_data_pipe($mol_data_variant($mol_data_string, $mol_data_integer), Number);
-    function $hyoo_harp_scheme(sub, value = $mol_data_integer) {
-        const inner = $mol_data_optional($mol_data_record(sub));
-        const values = $mol_data_optional($mol_data_array($mol_data_array(value)));
-        const val = $mol_data_record({
-            ...sub,
-            '+': $mol_data_optional($mol_data_boolean),
-            '=': values,
-            '!=': values,
-            '_num': $mol_data_optional($mol_data_record({
-                '=': $mol_data_array($mol_data_array(Int))
-            })),
-            '_len': inner,
-            '_max': inner,
-            '_min': inner,
-            '_sum': inner,
-        });
-        return Object.assign(val, {
-            parse(str) {
-                return val($hyoo_harp_from_string(str));
-            },
-            build(query) {
-                return $hyoo_harp_to_string(query);
-            },
-        });
-    }
-    $.$hyoo_harp_scheme = $hyoo_harp_scheme;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    function $mol_offline() { }
-    $.$mol_offline = $mol_offline;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    const blacklist = new Set([
-        '//cse.google.com/adsense/search/async-ads.js'
-    ]);
-    /** Installs service worker proxy, which caches all requests and respond from cache on http errors. */
-    function $mol_offline_web() {
-        if (typeof window === 'undefined') {
-            self.addEventListener('install', (event) => {
-                ;
-                self.skipWaiting();
-            });
-            self.addEventListener('activate', (event) => {
-                // caches.delete( '$mol_offline' )
-                ;
-                self.clients.claim();
-                $$.$mol_log3_done({
-                    place: '$mol_offline',
-                    message: 'Activated',
-                });
-            });
-            self.addEventListener('fetch', (event) => {
-                const request = event.request;
-                // console.log( 'FETCH', request.mode, request.cache, request.url )
-                if (blacklist.has(request.url.replace(/^https?:/, ''))) {
-                    return event.respondWith(new Response(null, {
-                        status: 418,
-                        statusText: 'Blocked'
-                    }));
-                }
-                if (request.method !== 'GET')
-                    return;
-                if (!/^https?:/.test(request.url))
-                    return;
-                if (/\?/.test(request.url))
-                    return;
-                if (request.cache === 'no-store')
-                    return;
-                const fetch_data = () => fetch(new Request(request, { credentials: 'omit' })).then(response => {
-                    if (response.status !== 200)
-                        return response;
-                    event.waitUntil(caches.open('$mol_offline').then(cache => cache.put(request, response)));
-                    return response.clone();
-                });
-                const enrich = (response) => {
-                    // console.log( 'ENRICH', response.status, response.url )
-                    if (!response.status)
-                        return response;
-                    const headers = new Headers(response.headers);
-                    headers.set("$mol_offline", "");
-                    headers.set("Origin-Agent-Cluster", "?1"); // prevent thread sharing
-                    // headers.set( "Cross-Origin-Embedder-Policy", "credentialless" )
-                    // headers.set( "Cross-Origin-Resource-Policy", "cross-origin" )
-                    // headers.set( "Cross-Origin-Opener-Policy", "same-origin" )
-                    return new Response(response.body, {
-                        status: response.status,
-                        statusText: response.statusText,
-                        headers,
-                    });
-                };
-                const fresh = request.cache === 'force-cache' ? null : fetch_data();
-                if (fresh)
-                    event.waitUntil(fresh.then(enrich));
-                event.respondWith(caches.match(request).then(cached => request.cache === 'no-cache' || request.cache === 'reload'
-                    ? (cached
-                        ? fresh
-                            .then(actual => {
-                            if (actual.status === cached.status)
-                                return actual;
-                            throw new Error(`${actual.status}${actual.statusText ? ` ${actual.statusText}` : ''}`, { cause: actual });
-                        })
-                            .catch((err) => {
-                            const cloned = cached.clone();
-                            const message = `${err.cause instanceof Response ? '' : '500 '}${err.message} $mol_offline fallback to cache`;
-                            cloned.headers.set('$mol_offline_remote_status', message);
-                            return cloned;
-                        })
-                        : fresh)
-                    : (cached || fresh || fetch_data())).then(enrich));
-            });
-            self.addEventListener('beforeinstallprompt', (event) => event.prompt());
-        }
-        else if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
-            console.warn('HTTPS or localhost is required for service workers.');
-        }
-        else if (!navigator.serviceWorker) {
-            console.warn('Service Worker is not supported.');
-        }
-        else {
-            $mol_dom.addEventListener('DOMContentLoaded', () => {
-                navigator.serviceWorker.register('web.js').then(reg => {
-                    reg.addEventListener('updatefound', () => {
-                        $$.$mol_log3_rise({
-                            place: '$mol_offline',
-                            message: 'Outdated',
-                        });
-                        const worker = reg.installing;
-                        worker.addEventListener('statechange', () => {
-                            if (worker.state !== 'activated')
-                                return;
-                            window.location.reload();
-                        });
-                    });
-                });
-            });
-        }
-    }
-    $.$mol_offline_web = $mol_offline_web;
-    $.$mol_offline = $mol_offline_web;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    try {
-        $mol_offline();
-    }
-    catch (error) {
-        console.error(error);
-    }
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    if (typeof window === 'undefined') {
-        const Query = $hyoo_harp_scheme({
-            BAZA: $hyoo_harp_scheme({}),
-            file: $hyoo_harp_scheme({}, $mol_data_string),
-            // name: $mol_data_optional( $hyoo_harp_scheme( {}, $mol_data_string ) ),
-        });
-        self.addEventListener('fetch', (event) => {
-            const url = new URL(event.request.url);
-            try {
-                var query = Query.parse(url.search);
-            }
-            catch {
-                return;
-            }
-            const id = query.file['=']?.[0][0];
-            if (!id)
-                return;
-            const link = new $giper_baza_link(id);
-            const file = $.$giper_baza_glob.Pawn(link, $giper_baza_file);
-            return event.respondWith($mol_wire_async(file).blob().then(blob => {
-                return new Response(blob, {
-                    status: file.filled() ? 200 : 404,
-                    statusText: file.filled() ? 'OK' : 'Not Filled',
-                    headers: {
-                        'Content-Type': file.type(),
-                        'X-Powered-By': '$giper_baza_file',
-                    },
-                });
-            }));
-        });
-    }
-})($ || ($ = {}));
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        class $bog_vk_track extends $.$bog_vk_track {
-            audio_data() {
-                return this.audio();
-            }
-            title() {
-                return this.audio_data()?.title ?? '';
-            }
-            artist() {
-                return this.audio_data()?.artist ?? '';
-            }
-            cover() {
-                return this.audio_data()?.album?.thumb?.photo_300 ?? '';
-            }
-            Cover() {
-                if (!this.cover())
-                    return null;
-                return super.Cover();
-            }
-            Cover_placeholder() {
-                if (this.cover())
-                    return null;
-                return super.Cover_placeholder();
-            }
-            duration_text() {
-                const d = this.audio_data()?.duration ?? 0;
-                const min = Math.floor(d / 60);
-                const sec = d % 60;
-                return `${min}:${sec.toString().padStart(2, '0')}`;
-            }
-            cached(next) {
-                const audio = this.audio_data();
-                if (!audio)
-                    return false;
-                if (next !== undefined)
-                    return next;
-                $bog_vk_cache.version();
-                return $mol_wire_sync($bog_vk_cache).is_cached(audio);
-            }
-            is_local() {
-                return this.audio_data()?.owner_id === 0;
-            }
-            can_drag() {
-                return !this.archive_mode();
-            }
-            Archive() {
-                if (this.archive_mode())
-                    return null;
-                return super.Archive();
-            }
-            Restore() {
-                if (!this.archive_mode())
-                    return null;
-                return super.Restore();
-            }
-            Delete_forever() {
-                if (!this.archive_mode())
-                    return null;
-                return super.Delete_forever();
-            }
-            Delete() {
-                if (!this.archive_mode())
-                    return null;
-                if (this.is_local())
-                    return null;
-                if (!this.cached())
-                    return null;
-                return super.Delete();
-            }
-            on_play_click() {
-                this.play(this.audio());
-            }
-            event_drag_start(event) {
-                if (!this.can_drag()) {
-                    event.preventDefault();
-                    return;
-                }
-                try {
-                    event.dataTransfer?.setData('text/x-bog-track', '1');
-                    if (event.dataTransfer)
-                        event.dataTransfer.effectAllowed = 'move';
-                }
-                catch { }
-                this.drag_start();
-            }
-            event_drag_over(event) {
-                if (!this.can_drag())
-                    return;
-                event.preventDefault();
-                if (event.dataTransfer)
-                    event.dataTransfer.dropEffect = 'move';
-            }
-            event_drop(event) {
-                if (!this.can_drag())
-                    return;
-                event.preventDefault();
-                this.drop_here();
-            }
-            delete_cached() {
-                const audio = this.audio_data();
-                if (!audio)
-                    return;
-                $mol_wire_sync($bog_vk_cache).drop(audio);
-                this.cached(false);
-                $bog_vk_cache.version($bog_vk_cache.version() + 1);
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $bog_vk_track.prototype, "cached", null);
-        $$.$bog_vk_track = $bog_vk_track;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    /**
-     * Персональная запись трека в home land пользователя.
-     * Синкается между устройствами через Giper Baza.
-     * Ключ в $giper_baza_dict_to — VK cache_key (`${owner_id}_${id}`).
-     */
-    class $bog_vk_track_baza extends $giper_baza_dict.with({
-        Vk_id: $giper_baza_atom_text,
-        Title: $giper_baza_atom_text,
-        Artist: $giper_baza_atom_text,
-        Duration: $giper_baza_atom_real,
-        Url: $giper_baza_atom_text,
-        Added: $giper_baza_atom_real,
-        Order: $giper_baza_atom_real,
-        Archived: $giper_baza_atom_bool,
-        File: $giper_baza_atom_link_to(() => $giper_baza_file),
-    }) {
-    }
-    $.$bog_vk_track_baza = $bog_vk_track_baza;
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        $mol_style_define($bog_vk_track, {
-            flex: {
-                direction: 'row',
-            },
-            align: {
-                items: 'center',
-            },
-            gap: $mol_gap.text,
-            padding: {
-                top: '0.5rem',
-                bottom: '0.5rem',
-                left: '0.5rem',
-                right: '0.5rem',
-            },
-            borderRadius: '0.5rem',
-            Cover_box: {
-                flex: {
-                    shrink: 0,
-                    grow: 0,
-                },
-                width: '3rem',
-                height: '3rem',
-                borderRadius: '4px',
-                overflow: { x: 'hidden', y: 'hidden' },
-                cursor: 'pointer',
-                justify: { content: 'center' },
-                align: { items: 'center' },
-            },
-            Cover: {
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-            },
-            Cover_placeholder: {
-                width: '100%',
-                height: '100%',
-                background: {
-                    color: $mol_theme.line,
-                },
-                color: $mol_theme.shade,
-                justify: {
-                    content: 'center',
-                },
-                align: {
-                    items: 'center',
-                },
-            },
-            Info: {
-                flex: {
-                    direction: 'column',
-                    grow: 1,
-                    shrink: 1,
-                },
-                minWidth: 0,
-                gap: '0.125rem',
-                cursor: 'pointer',
-            },
-            Title: {
-                font: {
-                    weight: 500,
-                    size: '0.8125rem',
-                },
-                whiteSpace: 'normal',
-                wordBreak: 'break-word',
-            },
-            Artist: {
-                font: {
-                    size: '0.75rem',
-                },
-                color: $mol_theme.shade,
-                whiteSpace: 'normal',
-                wordBreak: 'break-word',
-            },
-            Duration: {
-                font: {
-                    size: '0.6875rem',
-                },
-                color: $mol_theme.shade,
-            },
-            Delete: {
-                flex: { shrink: 0 },
-                justify: { content: 'flex-end' },
-            },
-            Archive: {
-                flex: { shrink: 0 },
-                justify: { content: 'flex-end' },
-            },
-            Restore: {
-                flex: { shrink: 0 },
-                justify: { content: 'flex-end' },
-            },
-            Delete_forever: {
-                flex: { shrink: 0 },
-                justify: { content: 'flex-end' },
-            },
-            '@': {
-                bog_vk_track_current: {
-                    true: {
-                        color: $mol_theme.focus,
-                    },
-                },
-            },
-        });
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-	($.$bog_vk_tracks) = class $bog_vk_tracks extends ($.$mol_list) {
-		track_audio(id){
-			return null;
-		}
-		track_current(id){
-			return false;
-		}
-		track_play(id, next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		track_can_drag(id){
-			return false;
-		}
-		track_drag_start(id, next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		track_drop_here(id, next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		track_archive(id, next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		track_restore(id, next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		track_delete(id, next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		Track(id){
-			const obj = new this.$.$bog_vk_track();
-			(obj.audio) = () => ((this.track_audio(id)));
-			(obj.current) = () => ((this.track_current(id)));
-			(obj.play) = (next) => ((this.track_play(id, next)));
-			(obj.archive_mode) = () => ((this.archive_mode()));
-			(obj.can_drag) = () => ((this.track_can_drag(id)));
-			(obj.drag_start) = (next) => ((this.track_drag_start(id, next)));
-			(obj.drop_here) = (next) => ((this.track_drop_here(id, next)));
-			(obj.archive) = (next) => ((this.track_archive(id, next)));
-			(obj.restore) = (next) => ((this.track_restore(id, next)));
-			(obj.delete_forever) = (next) => ((this.track_delete(id, next)));
-			return obj;
-		}
-		track_rows(){
-			return [(this.Track("0"))];
-		}
-		audios(){
-			return [];
-		}
-		current_audio(){
-			return null;
-		}
-		play_audio(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		archive_mode(){
-			return false;
-		}
-		reorder_to(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		archive_audio(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		restore_audio(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		delete_audio(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		rows(){
-			return (this.track_rows());
-		}
-	};
-	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_play"));
-	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_drag_start"));
-	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_drop_here"));
-	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_archive"));
-	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_restore"));
-	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_delete"));
-	($mol_mem_key(($.$bog_vk_tracks.prototype), "Track"));
-	($mol_mem(($.$bog_vk_tracks.prototype), "play_audio"));
-	($mol_mem(($.$bog_vk_tracks.prototype), "reorder_to"));
-	($mol_mem(($.$bog_vk_tracks.prototype), "archive_audio"));
-	($mol_mem(($.$bog_vk_tracks.prototype), "restore_audio"));
-	($mol_mem(($.$bog_vk_tracks.prototype), "delete_audio"));
-
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        class $bog_vk_tracks extends $.$bog_vk_tracks {
-            _drag_index = -1;
-            track_rows() {
-                return this.audios().map((_, i) => this.Track(i));
-            }
-            track_audio(index) {
-                return this.audios()[index] ?? null;
-            }
-            track_current(index) {
-                const audio = this.track_audio(index);
-                const current = this.current_audio();
-                if (!audio || !current)
-                    return false;
-                return audio.id === current.id && audio.owner_id === current.owner_id;
-            }
-            track_play(index) {
-                const audio = this.track_audio(index);
-                if (audio)
-                    this.play_audio(audio);
-            }
-            track_can_drag(_index) {
-                return !this.archive_mode();
-            }
-            track_drag_start(index) {
-                this._drag_index = index;
-            }
-            track_drop_here(index) {
-                const from = this._drag_index;
-                this._drag_index = -1;
-                if (from < 0 || from === index)
-                    return;
-                this.reorder_to({ from, to: index });
-            }
-            track_archive(index) {
-                const audio = this.track_audio(index);
-                if (audio)
-                    this.archive_audio(audio);
-            }
-            track_restore(index) {
-                const audio = this.track_audio(index);
-                if (audio)
-                    this.restore_audio(audio);
-            }
-            track_delete(index) {
-                const audio = this.track_audio(index);
-                if (audio)
-                    this.delete_audio(audio);
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $bog_vk_tracks.prototype, "track_rows", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_tracks.prototype, "track_play", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_tracks.prototype, "track_drop_here", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_tracks.prototype, "track_archive", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_tracks.prototype, "track_restore", null);
-        __decorate([
-            $mol_action
-        ], $bog_vk_tracks.prototype, "track_delete", null);
-        $$.$bog_vk_tracks = $bog_vk_tracks;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-	($.$mol_icon_skip_previous) = class $mol_icon_skip_previous extends ($.$mol_icon) {
-		path(){
-			return "M6,18V6H8V18H6M9.5,12L18,6V18L9.5,12Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$mol_icon_play) = class $mol_icon_play extends ($.$mol_icon) {
-		path(){
-			return "M8,5.14V19.14L19,12.14L8,5.14Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$mol_icon_pause) = class $mol_icon_pause extends ($.$mol_icon) {
-		path(){
-			return "M14,19H18V5H14M6,19H10V5H6V19Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$mol_icon_skip_next) = class $mol_icon_skip_next extends ($.$mol_icon) {
-		path(){
-			return "M16,18H18V6H16M6,18L14.5,12L6,6V18Z";
-		}
-	};
-
-
-;
-"use strict";
-
-
-;
-	($.$bog_vk_player) = class $bog_vk_player extends ($.$mol_view) {
-		Progress_bar(){
-			const obj = new this.$.$mol_view();
-			return obj;
-		}
-		Progress(){
-			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([(this.Progress_bar())]);
-			return obj;
-		}
-		cover(){
-			return "";
-		}
-		Cover(){
-			const obj = new this.$.$mol_image();
-			(obj.uri) = () => ((this.cover()));
-			return obj;
-		}
-		Cover_placeholder(){
-			const obj = new this.$.$mol_icon_music();
-			return obj;
-		}
-		title(){
-			return "";
-		}
-		Title(){
-			const obj = new this.$.$mol_paragraph();
-			(obj.title) = () => ((this.title()));
-			return obj;
-		}
-		artist(){
-			return "";
-		}
-		Artist(){
-			const obj = new this.$.$mol_paragraph();
-			(obj.title) = () => ((this.artist()));
-			return obj;
-		}
-		Track_info(){
-			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([(this.Title()), (this.Artist())]);
-			return obj;
-		}
-		Left(){
-			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([
-				(this.Cover()), 
-				(this.Cover_placeholder()), 
-				(this.Track_info())
-			]);
-			return obj;
-		}
-		prev(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		Prev_icon(){
-			const obj = new this.$.$mol_icon_skip_previous();
-			return obj;
-		}
-		Prev(){
-			const obj = new this.$.$mol_button_minor();
-			(obj.click) = (next) => ((this.prev(next)));
-			(obj.sub) = () => ([(this.Prev_icon())]);
-			return obj;
-		}
-		toggle(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		Play_icon(){
-			const obj = new this.$.$mol_icon_play();
-			return obj;
-		}
-		Play(){
-			const obj = new this.$.$mol_button_minor();
-			(obj.click) = (next) => ((this.toggle(next)));
-			(obj.sub) = () => ([(this.Play_icon())]);
-			return obj;
-		}
-		Pause_icon(){
-			const obj = new this.$.$mol_icon_pause();
-			return obj;
-		}
-		Pause(){
-			const obj = new this.$.$mol_button_minor();
-			(obj.click) = (next) => ((this.toggle(next)));
-			(obj.sub) = () => ([(this.Pause_icon())]);
-			return obj;
-		}
-		next(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		Next_icon(){
-			const obj = new this.$.$mol_icon_skip_next();
-			return obj;
-		}
-		Next(){
-			const obj = new this.$.$mol_button_minor();
-			(obj.click) = (next) => ((this.next(next)));
-			(obj.sub) = () => ([(this.Next_icon())]);
-			return obj;
-		}
-		Center(){
-			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([
-				(this.Prev()), 
-				(this.Play()), 
-				(this.Pause()), 
-				(this.Next())
-			]);
-			return obj;
-		}
-		time_text(){
-			return "";
-		}
-		Time(){
-			const obj = new this.$.$mol_paragraph();
-			(obj.title) = () => ((this.time_text()));
-			return obj;
-		}
-		Right(){
-			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([(this.Time())]);
-			return obj;
-		}
-		Controls(){
-			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([
-				(this.Left()), 
-				(this.Center()), 
-				(this.Right())
-			]);
-			return obj;
-		}
-		current_audio(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		queue(){
-			return [];
-		}
-		queue_index(next){
-			if(next !== undefined) return next;
-			return 0;
-		}
-		play_track(next){
-			if(next !== undefined) return next;
-			return null;
-		}
-		sub(){
-			return [(this.Progress()), (this.Controls())];
-		}
-	};
-	($mol_mem(($.$bog_vk_player.prototype), "Progress_bar"));
-	($mol_mem(($.$bog_vk_player.prototype), "Progress"));
-	($mol_mem(($.$bog_vk_player.prototype), "Cover"));
-	($mol_mem(($.$bog_vk_player.prototype), "Cover_placeholder"));
-	($mol_mem(($.$bog_vk_player.prototype), "Title"));
-	($mol_mem(($.$bog_vk_player.prototype), "Artist"));
-	($mol_mem(($.$bog_vk_player.prototype), "Track_info"));
-	($mol_mem(($.$bog_vk_player.prototype), "Left"));
-	($mol_mem(($.$bog_vk_player.prototype), "prev"));
-	($mol_mem(($.$bog_vk_player.prototype), "Prev_icon"));
-	($mol_mem(($.$bog_vk_player.prototype), "Prev"));
-	($mol_mem(($.$bog_vk_player.prototype), "toggle"));
-	($mol_mem(($.$bog_vk_player.prototype), "Play_icon"));
-	($mol_mem(($.$bog_vk_player.prototype), "Play"));
-	($mol_mem(($.$bog_vk_player.prototype), "Pause_icon"));
-	($mol_mem(($.$bog_vk_player.prototype), "Pause"));
-	($mol_mem(($.$bog_vk_player.prototype), "next"));
-	($mol_mem(($.$bog_vk_player.prototype), "Next_icon"));
-	($mol_mem(($.$bog_vk_player.prototype), "Next"));
-	($mol_mem(($.$bog_vk_player.prototype), "Center"));
-	($mol_mem(($.$bog_vk_player.prototype), "Time"));
-	($mol_mem(($.$bog_vk_player.prototype), "Right"));
-	($mol_mem(($.$bog_vk_player.prototype), "Controls"));
-	($mol_mem(($.$bog_vk_player.prototype), "current_audio"));
-	($mol_mem(($.$bog_vk_player.prototype), "queue_index"));
-	($mol_mem(($.$bog_vk_player.prototype), "play_track"));
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    /**
-     * Персональное хранилище треков пользователя в Giper Baza.
-     * Живёт в home land (персональные данные, синкаются между устройствами).
-     * Ключ — VK cache_key вида `${owner_id}_${id}`.
-     */
-    class $bog_vk_store extends $mol_object2 {
-        /** Home land текущего пользователя. НЕ @$mol_mem — чтобы не было circular. */
-        static land() {
-            return this.$.$giper_baza_glob.home().land();
-        }
-        /** Словарь треков: cache_key → $bog_vk_track_baza. НЕ @$mol_mem. */
-        static tracks_dict() {
-            const Tracks = $giper_baza_dict_to($bog_vk_track_baza);
-            return this.land().Data(Tracks);
-        }
-        /** Ключ для baza из VK-аудио. */
-        static cache_key(audio) {
-            return `${audio.owner_id}_${audio.id}`;
-        }
-        /**
-         * Собирает треки из baza. archived=false → активные, archived=true → архивные.
-         * Сортирует по Order (asc, с fallback на Added).
-         */
-        static list_audios(archived) {
-            const dict = this.tracks_dict();
-            const keys = (dict.keys() ?? []);
-            const rows = [];
-            for (const key of keys) {
-                const track = dict.key(key);
-                if (!track)
-                    continue;
-                const is_arch = track.Archived()?.val() === true;
-                if (is_arch !== archived)
-                    continue;
-                const vk_id = track.Vk_id()?.val() ?? String(key);
-                const parts = vk_id.split('_');
-                const owner_id = Number(parts[0]);
-                const id = Number(parts[1]);
-                if (!Number.isFinite(owner_id) || !Number.isFinite(id))
-                    continue;
-                const added = Number(track.Added()?.val() ?? 0);
-                const order_val = track.Order()?.val();
-                // Если Order не задан — fallback на Added (делим, чтобы был в том же порядке).
-                const order = order_val == null ? added : Number(order_val);
-                let url = track.Url()?.val() ?? '';
-                rows.push({
-                    audio: {
-                        id,
-                        owner_id,
-                        artist: track.Artist()?.val() ?? '',
-                        title: track.Title()?.val() ?? '',
-                        duration: track.Duration()?.val() ?? 0,
-                        url,
-                    },
-                    order,
-                    added,
-                });
-            }
-            rows.sort((a, b) => {
-                if (a.order !== b.order)
-                    return a.order - b.order;
-                return b.added - a.added;
-            });
-            return rows.map(r => r.audio);
-        }
-        /** Активные (не архивные) треки. */
-        static saved_audios() {
-            return this.list_audios(false);
-        }
-        /** Архивные треки. */
-        static archived_audios() {
-            return this.list_audios(true);
-        }
-        /** Максимальный Order среди всех треков (для добавления новых). */
-        static max_order() {
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return 0;
-            }
-            const keys = (dict.keys() ?? []);
-            let max = 0;
-            for (const key of keys) {
-                const track = dict.key(key);
-                if (!track)
-                    continue;
-                const o = Number(track.Order()?.val() ?? 0);
-                if (o > max)
-                    max = o;
-                const a = Number(track.Added()?.val() ?? 0);
-                if (a > max)
-                    max = a;
-            }
-            return max;
-        }
-        /** Сохраняет/обновляет трек в baza. Идемпотентно. */
-        static save_track(audio) {
-            if (!audio)
-                return;
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return;
-            }
-            const key = this.cache_key(audio);
-            const track = dict.key(key, 'auto');
-            if (!track)
-                return;
-            // Обновляем только если значения реально отличаются, чтобы не засорять CRDT.
-            if (track.Vk_id()?.val() !== key)
-                track.Vk_id('auto').val(key);
-            const title = audio.title ?? '';
-            if (track.Title()?.val() !== title)
-                track.Title('auto').val(title);
-            const artist = audio.artist ?? '';
-            if (track.Artist()?.val() !== artist)
-                track.Artist('auto').val(artist);
-            const dur = Number(audio.duration ?? 0);
-            if (track.Duration()?.val() !== dur)
-                track.Duration('auto').val(dur);
-            if (audio.url && track.Url()?.val() !== audio.url)
-                track.Url('auto').val(audio.url);
-            if (track.Added()?.val() == null)
-                track.Added('auto').val(Date.now());
-            // Назначаем Order для новых треков (max + 1), чтобы в списке шли последними.
-            if (track.Order()?.val() == null) {
-                track.Order('auto').val(this.max_order() + 1);
-            }
-            // Флаг Archived НЕ трогаем — снимается только явным restore_track.
-        }
-        /** Меняет Order двух треков местами. */
-        static swap_order(a, b) {
-            if (!a || !b)
-                return;
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return;
-            }
-            const ta = dict.key(this.cache_key(a), 'auto');
-            const tb = dict.key(this.cache_key(b), 'auto');
-            if (!ta || !tb)
-                return;
-            const oa_raw = ta.Order()?.val();
-            const ob_raw = tb.Order()?.val();
-            const aa = Number(ta.Added()?.val() ?? 0);
-            const ab = Number(tb.Added()?.val() ?? 0);
-            const oa = oa_raw == null ? aa : Number(oa_raw);
-            const ob = ob_raw == null ? ab : Number(ob_raw);
-            // Если значения равны — сдвигаем на 1, чтобы порядок действительно поменялся.
-            const next_a = ob === oa ? oa + 1 : ob;
-            const next_b = ob === oa ? oa : oa;
-            ta.Order('auto').val(next_a);
-            tb.Order('auto').val(next_b);
-        }
-        /** Помечает трек как удалённый (мягкое удаление). */
-        static archive_track(audio) {
-            if (!audio)
-                return;
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return;
-            }
-            const key = this.cache_key(audio);
-            const track = dict.key(key);
-            if (!track)
-                return;
-            track.Archived('auto').val(true);
-        }
-        /** RAM-кеш свежезагруженных файлов на текущей сессии — играем без ожидания синка baza. */
-        static fresh_files = new Map();
-        /** Достаёт blob локально загруженного трека. null если не локальный или нет файла. */
-        static local_blob(audio) {
-            if (audio.owner_id !== 0)
-                return null;
-            const key = this.cache_key(audio);
-            const fresh = this.fresh_files.get(key);
-            if (fresh) {
-                console.log('[store] local blob from RAM:', audio.title, fresh.size, 'bytes,', fresh.type);
-                return fresh;
-            }
-            const dict = this.tracks_dict();
-            const track = dict.key(key);
-            if (!track)
-                return null;
-            const file = track.File()?.remote();
-            if (!file)
-                return null;
-            const buf = file.buffer();
-            if (!buf || buf.byteLength === 0) {
-                console.warn('[store] local blob empty:', audio.title, 'type:', file.type());
-                return null;
-            }
-            const type = file.type() || 'audio/mpeg';
-            const blob = new Blob([buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength)], { type });
-            console.log('[store] local blob from baza:', audio.title, blob.size, 'bytes,', type);
-            return blob;
-        }
-        /** Парсит "Artist - Title" из имени файла. */
-        static parse_filename(name) {
-            const base = name.replace(/\.[^.]+$/, '').trim();
-            const m = base.match(/^(.+?)\s*[-–—]\s*(.+)$/);
-            if (m)
-                return { artist: m[1].trim(), title: m[2].trim() };
-            return { artist: '', title: base };
-        }
-        /**
-         * Загружает локальный аудиофайл (с телефона) в home land.
-         * Блоб кладётся в $giper_baza_file, метаданные — в $bog_vk_track_baza.
-         * Возвращает audio для воспроизведения.
-         */
-        /** Детерминированный hash по строке (FNV-1a 32 bit). */
-        static hash_str(s) {
-            let h = 2166136261;
-            for (let i = 0; i < s.length; i++) {
-                h ^= s.charCodeAt(i);
-                h = Math.imul(h, 16777619);
-            }
-            return h >>> 0;
-        }
-        static save_local_track(file, buffer) {
-            const { artist, title } = this.parse_filename(file.name);
-            // Детерминированный id — одинаковый при ретраях wire, не создаёт дубликаты.
-            const id = this.hash_str(`${file.name}|${file.size}|${file.lastModified}`);
-            const audio = {
-                id,
-                owner_id: 0,
-                artist,
-                title,
-                duration: 0,
-                url: '',
-            };
-            console.log('[store] save_local_track:', file.name, file.size, 'bytes, type:', file.type, 'key:', `0_${id}`);
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                console.warn('[store] tracks_dict failed:', e);
-                return null;
-            }
-            const key = this.cache_key(audio);
-            const track = dict.key(key, 'auto');
-            if (!track) {
-                console.warn('[store] dict.key returned null for', key);
-                return null;
-            }
-            track.Vk_id('auto').val(key);
-            track.Title('auto').val(title);
-            track.Artist('auto').val(artist);
-            if (track.Added()?.val() == null)
-                track.Added('auto').val(Date.now());
-            if (track.Order()?.val() == null)
-                track.Order('auto').val(this.max_order() + 1);
-            track.Archived('auto').val(false);
-            const store = track.File('auto').ensure(null);
-            if (store) {
-                store.buffer(buffer);
-                store.type(file.type || 'audio/mpeg');
-                if (file.name)
-                    store.name(file.name);
-                console.log('[store] file written, type:', store.type(), 'chunks:', store.chunks().length);
-            }
-            else {
-                console.warn('[store] File ensure returned null');
-            }
-            this.fresh_files.set(key, file);
-            return audio;
-        }
-        /** Окончательно удаляет трек из baza (по ключу). */
-        static delete_track(audio) {
-            if (!audio)
-                return;
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return;
-            }
-            dict.cut(this.cache_key(audio));
-        }
-        /** Удаляет флаг Archived. */
-        static restore_track(audio) {
-            if (!audio)
-                return;
-            let dict;
-            try {
-                dict = this.tracks_dict();
-            }
-            catch (e) {
-                if (e instanceof Promise)
-                    throw e;
-                return;
-            }
-            const key = this.cache_key(audio);
-            const track = dict.key(key);
-            if (!track)
-                return;
-            track.Archived('auto').val(false);
-        }
-    }
-    __decorate([
-        $mol_mem_key
-    ], $bog_vk_store, "list_audios", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "save_track", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "swap_order", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "archive_track", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "save_local_track", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "delete_track", null);
-    __decorate([
-        $mol_action
-    ], $bog_vk_store, "restore_track", null);
-    $.$bog_vk_store = $bog_vk_store;
-})($ || ($ = {}));
-
-;
-"use strict";
-
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        class $bog_vk_player extends $.$bog_vk_player {
-            _audio_el;
-            _queue_idx = 0;
-            audio_el() {
-                if (this._audio_el)
-                    return this._audio_el;
-                const el = new Audio();
-                el.volume = 0.7;
-                el.addEventListener('ended', () => {
-                    try {
-                        const finished = this.current_audio();
-                        this.next();
-                        if (finished && navigator.onLine) {
-                            $bog_vk_cache.save_hls(finished).catch(() => { });
-                        }
-                    }
-                    catch (e) {
-                        console.warn('[player] ended handler error:', e);
-                    }
-                });
-                el.addEventListener('play', () => {
-                    try {
-                        this.playing(true);
-                    }
-                    catch { }
-                    if ('mediaSession' in navigator)
-                        navigator.mediaSession.playbackState = 'playing';
-                });
-                el.addEventListener('pause', () => {
-                    try {
-                        this.playing(false);
-                    }
-                    catch { }
-                    if ('mediaSession' in navigator)
-                        navigator.mediaSession.playbackState = 'paused';
-                });
-                el.addEventListener('timeupdate', () => {
-                    this.current_time(el.currentTime);
-                });
-                el.addEventListener('loadedmetadata', () => {
-                    this.duration(el.duration);
-                });
-                el.addEventListener('error', (e) => {
-                    console.error('[player] audio error:', el.error?.code, el.error?.message, el.error);
-                });
-                this._audio_el = el;
-                return el;
-            }
-            setup_media_session() {
-                if (!('mediaSession' in navigator))
-                    return;
-                const el = this.audio_el();
-                const ms = navigator.mediaSession;
-                ms.setActionHandler('previoustrack', () => { try {
-                    this.prev();
-                }
-                catch { } });
-                ms.setActionHandler('nexttrack', () => { try {
-                    this.next();
-                }
-                catch { } });
-                ms.setActionHandler('seekto', (details) => {
-                    if (details.seekTime != null)
-                        el.currentTime = details.seekTime;
-                });
-                ms.setActionHandler('play', () => { el.play().catch(() => { }); });
-                ms.setActionHandler('pause', () => { el.pause(); });
-            }
-            queue_index(next) {
-                if (next !== undefined)
-                    this._queue_idx = next;
-                return this._queue_idx;
-            }
-            playing(next) {
-                return next ?? false;
-            }
-            current_time(next) {
-                return next ?? 0;
-            }
-            duration(next) {
-                return next ?? 0;
-            }
-            title() {
-                return this.current_audio()?.title ?? '';
-            }
-            artist() {
-                return this.current_audio()?.artist ?? '';
-            }
-            cover() {
-                return this.current_audio()?.album?.thumb?.photo_300 ?? '';
-            }
-            Cover() {
-                if (!this.cover())
-                    return null;
-                return super.Cover();
-            }
-            Cover_placeholder() {
-                if (this.cover())
-                    return null;
-                return super.Cover_placeholder();
-            }
-            time_text() {
-                const cur = this.current_time();
-                const dur = this.duration();
-                return `${this.format_time(cur)} / ${this.format_time(dur)}`;
-            }
-            format_time(seconds) {
-                const min = Math.floor(seconds / 60);
-                const sec = Math.floor(seconds % 60);
-                return `${min}:${sec.toString().padStart(2, '0')}`;
-            }
-            progress_percent() {
-                const dur = this.duration();
-                if (!dur)
-                    return 0;
-                return (this.current_time() / dur) * 100;
-            }
-            play_track(audio) {
-                if (!audio)
-                    return;
-                const el = this.audio_el();
-                this.current_audio(audio);
-                if ('mediaSession' in navigator) {
-                    const artwork = [];
-                    const thumb = audio.album?.thumb?.photo_300;
-                    if (thumb) {
-                        artwork.push({ src: thumb, sizes: '300x300' });
-                    }
-                    navigator.mediaSession.metadata = new MediaMetadata({
-                        title: audio.title,
-                        artist: audio.artist,
-                        artwork,
-                    });
-                    this.setup_media_session();
-                }
-                // Immediately claim audio focus before any async work.
-                // On iOS/Android lock screen, user activation expires fast —
-                // calling play() synchronously preserves the gesture context.
-                if (audio.url) {
-                    el.src = audio.url;
-                    el.play().catch(() => { });
-                }
-                this.play_source(audio, el);
-            }
-            _last_blob_url = '';
-            async play_source(audio, el) {
-                try {
-                    // Revoke previous blob URL to prevent memory leaks
-                    if (this._last_blob_url) {
-                        URL.revokeObjectURL(this._last_blob_url);
-                        this._last_blob_url = '';
-                    }
-                    // 0. Локальный трек — blob лежит в Giper Baza.
-                    if (audio.owner_id === 0) {
-                        // $mol_wire_async (не sync!) внутри обычной async-функции —
-                        // возвращает Promise, который реально ждёт IDB ball_load.
-                        const blob = await $mol_wire_async($bog_vk_store).local_blob(audio);
-                        if (blob) {
-                            const url = URL.createObjectURL(blob);
-                            this._last_blob_url = url;
-                            el.src = url;
-                            await this.safe_play(el);
-                            return;
-                        }
-                    }
-                    // 1. Try cache (has actual audio data, works offline)
-                    const cached = await $bog_vk_cache.get(audio);
-                    if (cached) {
-                        this._last_blob_url = cached;
-                        el.src = cached;
-                        await this.safe_play(el);
-                        return;
-                    }
-                    // 2. Try direct URL (Safari supports HLS natively)
-                    if (audio.url) {
-                        el.src = audio.url;
-                        try {
-                            await this.safe_play(el);
-                            $bog_vk_cache.save_hls(audio).catch(() => { });
-                            return;
-                        }
-                        catch {
-                            // Direct play failed — download first
-                        }
-                    }
-                    // 3. Download HLS → cache → play
-                    if (audio.url) {
-                        await $bog_vk_cache.save_hls(audio);
-                        const url = await $bog_vk_cache.get(audio);
-                        if (url) {
-                            this._last_blob_url = url;
-                            el.src = url;
-                            await this.safe_play(el);
-                            return;
-                        }
-                    }
-                    console.warn('[player] no source:', audio.artist, '—', audio.title);
-                }
-                catch (e) {
-                    console.error('[player] play failed:', e);
-                }
-                this.playing(false);
-            }
-            async safe_play(el) {
-                try {
-                    await el.play();
-                }
-                catch (e) {
-                    // NotAllowedError = user activation lost (lock screen, background tab)
-                    // Retry: set up to play when user interacts or audio becomes available
-                    if (e?.name === 'NotAllowedError') {
-                        console.warn('[player] play blocked, will resume on user interaction');
-                        el.muted = true;
-                        try {
-                            await el.play();
-                        }
-                        catch { }
-                        // Unmute after short delay — audio context is now active
-                        el.muted = false;
-                    }
-                    else {
-                        throw e;
-                    }
-                }
-            }
-            toggle() {
-                const el = this.audio_el();
-                if (this.playing()) {
-                    el.pause();
-                }
-                else {
-                    el.play();
-                }
-            }
-            prev() {
-                const queue = this.queue();
-                const idx = this._queue_idx;
-                if (idx > 0) {
-                    this._queue_idx = idx - 1;
-                    this.play_track(queue[idx - 1]);
-                }
-            }
-            next() {
-                const queue = this.queue();
-                if (!queue.length)
-                    return;
-                const next_idx = this._queue_idx + 1 < queue.length ? this._queue_idx + 1 : 0;
-                this._queue_idx = next_idx;
-                this.play_track(queue[next_idx]);
-            }
-            sub() {
-                if (!this.current_audio())
-                    return [];
-                return super.sub();
-            }
-            Play() {
-                if (this.playing())
-                    return null;
-                return super.Play();
-            }
-            Pause() {
-                if (!this.playing())
-                    return null;
-                return super.Pause();
-            }
-            auto() {
-                const style = this.Progress_bar().dom_node().style;
-                style.width = `${this.progress_percent()}%`;
-            }
-        }
-        __decorate([
-            $mol_mem
-        ], $bog_vk_player.prototype, "playing", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_player.prototype, "current_time", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_player.prototype, "duration", null);
-        $$.$bog_vk_player = $bog_vk_player;
-    })($$ = $.$$ || ($.$$ = {}));
-})($ || ($ = {}));
-
-;
-"use strict";
-var $;
-(function ($) {
-    var $$;
-    (function ($$) {
-        $mol_style_define($bog_vk_player, {
-            width: '100%',
-            flex: {
-                direction: 'column',
-                shrink: 0,
-            },
-            background: {
-                color: $mol_theme.card,
-            },
-            position: 'sticky',
-            bottom: 0,
-            Progress: {
-                height: '3px',
-                background: {
-                    color: $mol_theme.line,
-                },
-                cursor: 'pointer',
-            },
-            Progress_bar: {
-                height: '3px',
-                background: {
-                    color: $mol_theme.focus,
-                },
-                width: 0,
-            },
-            Controls: {
-                flex: {
-                    direction: 'row',
-                },
-                align: {
-                    items: 'center',
-                },
-                padding: {
-                    top: '0.25rem',
-                    bottom: '0.25rem',
-                    left: '0.75rem',
-                    right: '0.75rem',
-                },
-                gap: $mol_gap.text,
-            },
-            Left: {
-                flex: {
-                    direction: 'row',
-                    grow: 1,
-                    shrink: 1,
-                },
-                align: {
-                    items: 'center',
-                },
-                gap: $mol_gap.text,
-                overflow: {
-                    x: 'hidden',
-                },
-            },
-            Cover: {
-                width: '2.5rem',
-                height: '2.5rem',
-                borderRadius: '4px',
-                flex: {
-                    shrink: 0,
-                },
-                objectFit: 'cover',
-            },
-            Cover_placeholder: {
-                width: '2.5rem',
-                height: '2.5rem',
-                borderRadius: '4px',
-                flex: {
-                    shrink: 0,
-                },
-                background: {
-                    color: $mol_theme.line,
-                },
-                color: $mol_theme.shade,
-                justify: {
-                    content: 'center',
-                },
-                align: {
-                    items: 'center',
-                },
-            },
-            Track_info: {
-                flex: {
-                    direction: 'column',
-                    shrink: 1,
-                },
-                overflow: {
-                    x: 'hidden',
-                },
-                gap: '0.125rem',
-            },
-            Title: {
-                font: {
-                    weight: 'bold',
-                    size: '0.8125rem',
-                },
-                whiteSpace: 'nowrap',
-                overflow: {
-                    x: 'hidden',
-                },
-                textOverflow: 'ellipsis',
-            },
-            Artist: {
-                font: {
-                    size: '0.75rem',
-                },
-                color: $mol_theme.shade,
-                whiteSpace: 'nowrap',
-                overflow: {
-                    x: 'hidden',
-                },
-                textOverflow: 'ellipsis',
-            },
-            Center: {
-                flex: {
-                    direction: 'row',
-                    shrink: 0,
-                },
-                align: {
-                    items: 'center',
-                },
-                gap: '0.25rem',
-            },
-            Right: {
-                flex: {
-                    direction: 'row',
-                    shrink: 0,
-                },
-                align: {
-                    items: 'center',
-                },
-                gap: $mol_gap.text,
-            },
-            Time: {
-                font: {
-                    size: '0.75rem',
-                },
-                color: $mol_theme.shade,
-                whiteSpace: 'nowrap',
-            },
-        });
-    })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));
 
 ;
@@ -22698,6 +19597,60 @@ var $;
 "use strict";
 var $;
 (function ($) {
+    /** Creates lexer by dictionary of lexems. Lexem that started first wins. Then lexem that declared earlier wins. Use regexp capture to take parts of token. */
+    class $mol_syntax2 {
+        lexems;
+        constructor(lexems) {
+            this.lexems = lexems;
+            for (let name in lexems) {
+                this.rules.push({
+                    name: name,
+                    regExp: lexems[name],
+                    size: RegExp('^$|' + lexems[name].source).exec('').length - 1,
+                });
+            }
+            const parts = '(' + this.rules.map(rule => rule.regExp.source).join(')|(') + ')';
+            this.regexp = RegExp(`([\\s\\S]*?)(?:(${parts})|$(?![^]))`, 'gmu');
+        }
+        rules = [];
+        regexp;
+        tokenize(text, handle) {
+            let end = 0;
+            lexing: while (end < text.length) {
+                const start = end;
+                this.regexp.lastIndex = start;
+                var found = this.regexp.exec(text);
+                end = this.regexp.lastIndex;
+                if (start === end)
+                    throw new Error('Empty token');
+                var prefix = found[1];
+                if (prefix)
+                    handle('', prefix, [prefix], start);
+                var suffix = found[2];
+                if (!suffix)
+                    continue;
+                let offset = 4;
+                for (let rule of this.rules) {
+                    if (found[offset - 1]) {
+                        handle(rule.name, suffix, found.slice(offset, offset + rule.size), start + prefix.length);
+                        continue lexing;
+                    }
+                    offset += rule.size + 1;
+                }
+                $mol_fail(new Error('$mol_syntax2 is broken'));
+            }
+        }
+        parse(text, handlers) {
+            this.tokenize(text, (name, ...args) => handlers[name](...args));
+        }
+    }
+    $.$mol_syntax2 = $mol_syntax2;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
     $.$mol_syntax2_md_flow = new $mol_syntax2({
         'quote': /^((?:(?:[>"] )(?:[^]*?)$(\r?\n?))+)([\n\r]*)/,
         'spoiler': /^((?:(?:[\?] )(?:[^]*?)$(\r?\n?))+)([\n\r]*)/,
@@ -22891,6 +19844,13 @@ var $;
             },
         });
     })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    $.$mol_blob = ($node.buffer?.Blob ?? $mol_dom_context.Blob);
 })($ || ($ = {}));
 
 ;
@@ -27251,6 +24211,30 @@ var $;
 })($ || ($ = {}));
 
 ;
+	($.$mol_icon_delete) = class $mol_icon_delete extends ($.$mol_icon) {
+		path(){
+			return "M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z";
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
+	($.$mol_icon_delete_forever) = class $mol_icon_delete_forever extends ($.$mol_icon) {
+		path(){
+			return "M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8.46,11.88L9.87,10.47L12,12.59L14.12,10.47L15.53,11.88L13.41,14L15.53,16.12L14.12,17.53L12,15.41L9.88,17.53L8.47,16.12L10.59,14L8.46,11.88M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z";
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
 	($.$giper_baza_land_grab) = class $giper_baza_land_grab extends ($.$mol_select) {
 		Trigger_icon(){
 			const obj = new this.$.$mol_icon_plus();
@@ -30873,6 +27857,18 @@ var $;
 })($ || ($ = {}));
 
 ;
+	($.$mol_icon_play) = class $mol_icon_play extends ($.$mol_icon) {
+		path(){
+			return "M8,5.14V19.14L19,12.14L8,5.14Z";
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
 	($.$giper_baza_auth_slot) = class $giper_baza_auth_slot extends ($.$mol_page) {
 		prefix(next){
 			if(next !== undefined) return next;
@@ -30960,6 +27956,58 @@ var $;
 	($mol_mem(($.$giper_baza_auth_slot.prototype), "glob"));
 	($mol_mem_key(($.$giper_baza_auth_slot.prototype), "found"));
 
+
+;
+"use strict";
+var $;
+(function ($) {
+    class $mol_state_session extends $mol_object {
+        static 'native()';
+        static native() {
+            if (this['native()'])
+                return this['native()'];
+            check: try {
+                const native = $mol_dom_context.sessionStorage;
+                if (!native)
+                    break check;
+                native.setItem('', '');
+                native.removeItem('');
+                return this['native()'] = native;
+            }
+            catch (error) {
+                console.warn(error);
+            }
+            return this['native()'] = {
+                getItem(key) {
+                    return this[':' + key];
+                },
+                setItem(key, value) {
+                    this[':' + key] = value;
+                },
+                removeItem(key) {
+                    this[':' + key] = void 0;
+                }
+            };
+        }
+        static value(key, next) {
+            if (next === void 0)
+                return JSON.parse(this.native().getItem(key) || 'null');
+            if (next === null)
+                this.native().removeItem(key);
+            else
+                this.native().setItem(key, JSON.stringify(next));
+            return next;
+        }
+        prefix() { return ''; }
+        value(key, next) {
+            return $mol_state_session.value(this.prefix() + '.' + key, next);
+        }
+    }
+    __decorate([
+        $mol_mem_key
+    ], $mol_state_session, "value", null);
+    $.$mol_state_session = $mol_state_session;
+})($ || ($ = {}));
 
 ;
 "use strict";
@@ -31167,9 +28215,3632 @@ var $;
 })($ || ($ = {}));
 
 ;
+	($.$mol_button_major) = class $mol_button_major extends ($.$mol_button_minor) {
+		theme(){
+			return "$mol_theme_base";
+		}
+	};
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_style_attach("mol/button/major/major.view.css", "[mol_button_major] {\n\tbackground-color: var(--mol_theme_back);\n\tcolor: var(--mol_theme_text);\n}\n");
+})($ || ($ = {}));
+
+;
+"use strict";
+
+
+;
+	($.$mol_status) = class $mol_status extends ($.$mol_view) {
+		message(){
+			return "";
+		}
+		status(){
+			return (this.title());
+		}
+		minimal_height(){
+			return 24;
+		}
+		minimal_width(){
+			return 0;
+		}
+		sub(){
+			return [(this.message())];
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        class $mol_status extends $.$mol_status {
+            message() {
+                try {
+                    return this.status() ?? null;
+                }
+                catch (error) {
+                    if (error instanceof Promise)
+                        $mol_fail_hidden(error);
+                    $mol_fail_log(error);
+                    return error.message;
+                }
+            }
+        }
+        $$.$mol_status = $mol_status;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_style_attach("mol/status/status.view.css", "[mol_status] {\n\tpadding: var(--mol_gap_text);\n\tborder-radius: var(--mol_gap_round);\n\tdisplay: block;\n\tflex-shrink: 1;\n\tword-wrap: break-word;\n}\n\n[mol_status]:not([mol_view_error=\"Promise\"]) {\n\tcolor: var(--mol_theme_focus);\n}\n\n[mol_status]:not([mol_view_error=\"Promise\"]):empty {\n\tdisplay: none;\n}\n");
+})($ || ($ = {}));
+
+;
+	($.$mol_row) = class $mol_row extends ($.$mol_view) {};
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_style_attach("mol/row/row.view.css", "[mol_row] {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: flex-start;\n\talign-content: flex-start;\n\tjustify-content: flex-start;\n\tpadding: var(--mol_gap_block);\n\tgap: var(--mol_gap_block);\n\tflex: 0 0 auto;\n\tbox-sizing: border-box;\n\tmax-width: 100%;\n}\n\n[mol_row] > * {\n\tmax-width: 100%;\n}\n");
+})($ || ($ = {}));
+
+;
+"use strict";
+
+
+;
+	($.$mol_form) = class $mol_form extends ($.$mol_list) {
+		keydown(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		form_invalid(){
+			return (this.$.$mol_locale.text("$mol_form_form_invalid"));
+		}
+		form_fields(){
+			return [];
+		}
+		body(){
+			return (this.form_fields());
+		}
+		Body(){
+			const obj = new this.$.$mol_list();
+			(obj.sub) = () => ((this.body()));
+			return obj;
+		}
+		submit_title(){
+			return (this.$.$mol_locale.text("$mol_form_submit_title"));
+		}
+		submit_hint(){
+			return "";
+		}
+		submit_activate(next){
+			return (this.Submit().activate(next));
+		}
+		submit(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Submit(){
+			const obj = new this.$.$mol_button_major();
+			(obj.title) = () => ((this.submit_title()));
+			(obj.hint) = () => ((this.submit_hint()));
+			(obj.click) = (next) => ((this.submit(next)));
+			return obj;
+		}
+		result(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Result(){
+			const obj = new this.$.$mol_status();
+			(obj.message) = () => ((this.result()));
+			return obj;
+		}
+		buttons(){
+			return [(this.Submit()), (this.Result())];
+		}
+		foot(){
+			return (this.buttons());
+		}
+		Foot(){
+			const obj = new this.$.$mol_row();
+			(obj.sub) = () => ((this.foot()));
+			return obj;
+		}
+		submit_allowed(){
+			return true;
+		}
+		submit_blocked(){
+			return false;
+		}
+		event(){
+			return {...(super.event()), "keydown": (next) => (this.keydown(next))};
+		}
+		save(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		message_done(){
+			return (this.$.$mol_locale.text("$mol_form_message_done"));
+		}
+		errors(){
+			return {"Form invalid": (this.form_invalid())};
+		}
+		rows(){
+			return [(this.Body()), (this.Foot())];
+		}
+	};
+	($mol_mem(($.$mol_form.prototype), "keydown"));
+	($mol_mem(($.$mol_form.prototype), "Body"));
+	($mol_mem(($.$mol_form.prototype), "submit"));
+	($mol_mem(($.$mol_form.prototype), "Submit"));
+	($mol_mem(($.$mol_form.prototype), "result"));
+	($mol_mem(($.$mol_form.prototype), "Result"));
+	($mol_mem(($.$mol_form.prototype), "Foot"));
+	($mol_mem(($.$mol_form.prototype), "save"));
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_style_attach("mol/form/form.view.css", "[mol_form] {\r\n\tgap: var(--mol_gap_block);\r\n}\r\n\r\n[mol_form_body] {\r\n\tgap: var(--mol_gap_block);\r\n}");
+})($ || ($ = {}));
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        /**
+         * Form, that contains form fields and action buttons.
+         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_form_demo
+         */
+        class $mol_form extends $.$mol_form {
+            form_fields() {
+                return [...this.view_find(view => view instanceof $mol_form_field)]
+                    .map(path => path[path.length - 1]);
+            }
+            submit_allowed() {
+                return this.form_fields().every(field => !field.bid());
+            }
+            submit_blocked() {
+                return !this.submit_allowed();
+            }
+            keydown(next) {
+                if (next.ctrlKey && next.keyCode === $mol_keyboard_code.enter && !this.submit_blocked())
+                    this.submit(next);
+            }
+            result(next) {
+                if (next instanceof Error)
+                    next = this.errors()[next.message] || next.message || this.form_invalid();
+                return next ?? '';
+            }
+            buttons() {
+                return [
+                    this.Submit(),
+                    ...this.result() ? [this.Result()] : [],
+                ];
+            }
+            submit(next) {
+                try {
+                    if (!this.submit_allowed()) {
+                        throw new Error('Form invalid');
+                    }
+                    this.save(next);
+                }
+                catch (e) {
+                    if ($mol_promise_like(e))
+                        $mol_fail_hidden(e);
+                    $mol_fail_log(e);
+                    this.result(e);
+                    return false;
+                }
+                this.result(this.message_done());
+                return true;
+            }
+        }
+        __decorate([
+            $mol_mem
+        ], $mol_form.prototype, "form_fields", null);
+        __decorate([
+            $mol_mem
+        ], $mol_form.prototype, "submit_allowed", null);
+        __decorate([
+            $mol_mem
+        ], $mol_form.prototype, "result", null);
+        __decorate([
+            $mol_mem
+        ], $mol_form.prototype, "buttons", null);
+        __decorate([
+            $mol_action
+        ], $mol_form.prototype, "submit", null);
+        $$.$mol_form = $mol_form;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+	($.$bog_vk_account) = class $bog_vk_account extends ($.$mol_list) {
+		Sync_status(){
+			const obj = new this.$.$giper_baza_status();
+			return obj;
+		}
+		nickname(next){
+			if(next !== undefined) return next;
+			return "";
+		}
+		Nickname_input(){
+			const obj = new this.$.$mol_string();
+			(obj.value) = (next) => ((this.nickname(next)));
+			(obj.hint) = () => ("Как тебя зовут?");
+			return obj;
+		}
+		Nickname_field(){
+			const obj = new this.$.$mol_form_field();
+			(obj.name) = () => ("Имя");
+			(obj.Content) = () => ((this.Nickname_input()));
+			return obj;
+		}
+		lord_short(){
+			return "";
+		}
+		Lord_text(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([(this.lord_short())]);
+			return obj;
+		}
+		Lord(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => (["ЛК:", (this.Lord_text())]);
+			return obj;
+		}
+		Warning(){
+			const obj = new this.$.$mol_paragraph();
+			(obj.title) = () => ("Ссылка ниже — СЕКРЕТ. Не делись ей публично.");
+			return obj;
+		}
+		copy(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Copy(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.title) = () => ("Скопировать ссылку для переноса");
+			(obj.click) = (next) => ((this.copy(next)));
+			return obj;
+		}
+		copy_status(){
+			return "";
+		}
+		Copy_status(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([(this.copy_status())]);
+			return obj;
+		}
+		Import_hint(){
+			const obj = new this.$.$mol_paragraph();
+			(obj.title) = () => ("Перенести с другого устройства — вставь ссылку:");
+			return obj;
+		}
+		import_link(next){
+			if(next !== undefined) return next;
+			return "";
+		}
+		Import_input(){
+			const obj = new this.$.$mol_string();
+			(obj.hint) = () => ("https://.../vk/#account=...");
+			(obj.value) = (next) => ((this.import_link(next)));
+			return obj;
+		}
+		apply_import(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Import_apply(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.title) = () => ("Применить");
+			(obj.click) = (next) => ((this.apply_import(next)));
+			return obj;
+		}
+		import_status(){
+			return "";
+		}
+		Import_status(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([(this.import_status())]);
+			return obj;
+		}
+		Reset_hint(){
+			const obj = new this.$.$mol_paragraph();
+			(obj.title) = () => ("Сбросить состояние и сгенерировать новый аккаунт. Текущие треки в Giper Baza останутся orphan.");
+			return obj;
+		}
+		reset_account(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Reset_button(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.title) = () => ("Сбросить локальный аккаунт");
+			(obj.click) = (next) => ((this.reset_account(next)));
+			return obj;
+		}
+		rows(){
+			return [
+				(this.Sync_status()), 
+				(this.Nickname_field()), 
+				(this.Lord()), 
+				(this.Warning()), 
+				(this.Copy()), 
+				(this.Copy_status()), 
+				(this.Import_hint()), 
+				(this.Import_input()), 
+				(this.Import_apply()), 
+				(this.Import_status()), 
+				(this.Reset_hint()), 
+				(this.Reset_button())
+			];
+		}
+	};
+	($mol_mem(($.$bog_vk_account.prototype), "Sync_status"));
+	($mol_mem(($.$bog_vk_account.prototype), "nickname"));
+	($mol_mem(($.$bog_vk_account.prototype), "Nickname_input"));
+	($mol_mem(($.$bog_vk_account.prototype), "Nickname_field"));
+	($mol_mem(($.$bog_vk_account.prototype), "Lord_text"));
+	($mol_mem(($.$bog_vk_account.prototype), "Lord"));
+	($mol_mem(($.$bog_vk_account.prototype), "Warning"));
+	($mol_mem(($.$bog_vk_account.prototype), "copy"));
+	($mol_mem(($.$bog_vk_account.prototype), "Copy"));
+	($mol_mem(($.$bog_vk_account.prototype), "Copy_status"));
+	($mol_mem(($.$bog_vk_account.prototype), "Import_hint"));
+	($mol_mem(($.$bog_vk_account.prototype), "import_link"));
+	($mol_mem(($.$bog_vk_account.prototype), "Import_input"));
+	($mol_mem(($.$bog_vk_account.prototype), "apply_import"));
+	($mol_mem(($.$bog_vk_account.prototype), "Import_apply"));
+	($mol_mem(($.$bog_vk_account.prototype), "Import_status"));
+	($mol_mem(($.$bog_vk_account.prototype), "Reset_hint"));
+	($mol_mem(($.$bog_vk_account.prototype), "reset_account"));
+	($mol_mem(($.$bog_vk_account.prototype), "Reset_button"));
+
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        class $bog_vk_account extends $.$bog_vk_account {
+            static land() {
+                return this.$.$giper_baza_glob.home().land();
+            }
+            static profile() {
+                const Profile = $bog_vk_account_baza;
+                return this.land().Data(Profile);
+            }
+            nickname(next) {
+                const profile = $bog_vk_account.profile();
+                if (next !== undefined) {
+                    profile.Nickname('auto').val(next);
+                    return next;
+                }
+                return profile.Nickname()?.val() ?? '';
+            }
+            lord_short() {
+                try {
+                    const auth = $giper_baza_auth.current();
+                    if (!auth)
+                        return '—';
+                    return auth.pass().lord().str.slice(0, 8) + '…';
+                }
+                catch (e) {
+                    if (e instanceof Promise)
+                        throw e;
+                    return '—';
+                }
+            }
+            account_key() {
+                return String($mol_state_local.value('$giper_baza_auth') ?? '');
+            }
+            account_link() {
+                const key = this.account_key();
+                if (!key)
+                    return '';
+                const base = location.origin + location.pathname + location.search;
+                return base + '#account=' + encodeURIComponent(key);
+            }
+            copy_status(next) {
+                return next ?? '';
+            }
+            copy() {
+                const link = this.account_link();
+                if (!link) {
+                    this.copy_status('Ключ не найден');
+                    return;
+                }
+                try {
+                    navigator.clipboard.writeText(link);
+                    this.copy_status('Скопировано. Не делись публично!');
+                }
+                catch (e) {
+                    console.warn('[account] clipboard failed:', e?.message);
+                    this.copy_status('Не удалось — скопируй из адресной строки: ' + link);
+                }
+            }
+            import_link(next) {
+                return next ?? '';
+            }
+            import_status(next) {
+                return next ?? '';
+            }
+            reset_account() {
+                if (typeof window === 'undefined')
+                    return;
+                try {
+                    const ext = globalThis.chrome;
+                    if (ext?.storage?.local?.clear)
+                        ext.storage.local.clear();
+                }
+                catch { }
+                try {
+                    window.localStorage.clear();
+                }
+                catch { }
+                try {
+                    const idb = globalThis.indexedDB;
+                    if (idb?.deleteDatabase) {
+                        idb.deleteDatabase('$giper_baza_mine');
+                        idb.deleteDatabase('vk_audio_cache');
+                    }
+                }
+                catch { }
+                setTimeout(() => location.reload(), 100);
+            }
+            apply_import() {
+                const raw = this.import_link().trim();
+                if (!raw) {
+                    this.import_status('Вставь ссылку с #account=…');
+                    return;
+                }
+                const match = raw.match(/[#&]account=([^&\s]+)/);
+                const key = match ? decodeURIComponent(match[1]) : raw;
+                if (key.length < 172) {
+                    this.import_status('Ключ слишком короткий');
+                    return;
+                }
+                const current = $mol_state_local.value('$giper_baza_auth');
+                if (current !== key)
+                    $mol_state_local.value('$giper_baza_auth', key);
+                this.import_status(current === key ? 'Перезапуск…' : 'Применено, перезагрузка…');
+                location.reload();
+            }
+        }
+        __decorate([
+            $mol_mem
+        ], $bog_vk_account.prototype, "nickname", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_account.prototype, "lord_short", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_account.prototype, "copy_status", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_account.prototype, "copy", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_account.prototype, "import_link", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_account.prototype, "import_status", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_account.prototype, "reset_account", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_account.prototype, "apply_import", null);
+        $$.$bog_vk_account = $bog_vk_account;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    /**
+     * Профиль пользователя в home land.
+     * Никнейм отображается в шапке/попапе аккаунта.
+     */
+    class $bog_vk_account_baza extends $giper_baza_dict.with({
+        Nickname: $giper_baza_atom_text,
+    }) {
+    }
+    $.$bog_vk_account_baza = $bog_vk_account_baza;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        $mol_style_define($bog_vk_account, {
+            width: '100%',
+            maxWidth: $mol_style_func.calc('100vw - 1rem'),
+            boxSizing: 'border-box',
+            padding: {
+                top: '0.5rem',
+                bottom: '0.5rem',
+                left: '0.5rem',
+                right: '0.5rem',
+            },
+            gap: '0.25rem',
+            Lord: {
+                font: {
+                    family: 'monospace',
+                    size: '0.875rem',
+                },
+                padding: {
+                    top: '0.25rem',
+                    bottom: '0.25rem',
+                },
+                gap: '0.5rem',
+            },
+            Warning: {
+                font: { size: '0.8125rem' },
+                color: '#d33',
+            },
+            Copy_status: {
+                font: { size: '0.8125rem' },
+                color: $mol_theme.shade,
+                minHeight: '1rem',
+            },
+            Import_status: {
+                font: { size: '0.8125rem' },
+                color: $mol_theme.shade,
+                minHeight: '1rem',
+            },
+            Import_hint: {
+                font: { size: '0.8125rem' },
+                color: $mol_theme.shade,
+            },
+        });
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+	($.$mol_check_list) = class $mol_check_list extends ($.$mol_view) {
+		option_checked(id, next){
+			if(next !== undefined) return next;
+			return false;
+		}
+		option_title(id){
+			return "";
+		}
+		option_label(id){
+			return [(this.option_title(id))];
+		}
+		enabled(){
+			return true;
+		}
+		option_enabled(id){
+			return (this.enabled());
+		}
+		option_hint(id){
+			return "";
+		}
+		items(){
+			return [];
+		}
+		dictionary(){
+			return {};
+		}
+		Option(id){
+			const obj = new this.$.$mol_check();
+			(obj.checked) = (next) => ((this.option_checked(id, next)));
+			(obj.label) = () => ((this.option_label(id)));
+			(obj.enabled) = () => ((this.option_enabled(id)));
+			(obj.hint) = () => ((this.option_hint(id)));
+			(obj.minimal_height) = () => (24);
+			return obj;
+		}
+		options(){
+			return {};
+		}
+		keys(){
+			return [];
+		}
+		sub(){
+			return (this.items());
+		}
+	};
+	($mol_mem_key(($.$mol_check_list.prototype), "option_checked"));
+	($mol_mem_key(($.$mol_check_list.prototype), "Option"));
+
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        /**
+         * List of checkboxes
+         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_check_list_demo
+         */
+        class $mol_check_list extends $.$mol_check_list {
+            options() {
+                return {};
+            }
+            dictionary(next) {
+                return next ?? {};
+            }
+            option_checked(id, next) {
+                const prev = this.dictionary();
+                if (next === undefined)
+                    return prev[id] ?? null;
+                const next_rec = { ...prev, [id]: next };
+                if (next === null)
+                    delete next_rec[id];
+                return this.dictionary(next_rec)[id] ?? null;
+            }
+            keys() {
+                return Object.keys(this.options());
+            }
+            items() {
+                return this.keys().map(key => this.Option(key));
+            }
+            option_title(key) {
+                return this.options()[key] || key;
+            }
+        }
+        __decorate([
+            $mol_mem
+        ], $mol_check_list.prototype, "keys", null);
+        __decorate([
+            $mol_mem
+        ], $mol_check_list.prototype, "items", null);
+        $$.$mol_check_list = $mol_check_list;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_style_attach("mol/check/list/list.view.css", "[mol_check_list] {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tflex: 1 1 auto;\n\tborder-radius: var(--mol_gap_round);\n\tgap: 1px;\n}\n\n[mol_check_list_option] {\n\tflex: 0 1 auto;\n}\n\n[mol_check_list_option]:where([mol_check_checked=\"true\"]) {\n\ttext-shadow: 0 0;\n\tcolor: var(--mol_theme_current);\n}\n\n[mol_check_list_option]:where([mol_check_checked=\"true\"][disabled]) {\n\tcolor: var(--mol_theme_text);\n}\n");
+})($ || ($ = {}));
+
+;
+	($.$mol_switch) = class $mol_switch extends ($.$mol_check_list) {
+		value(next){
+			if(next !== undefined) return next;
+			return "";
+		}
+	};
+	($mol_mem(($.$mol_switch.prototype), "value"));
+
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        /**
+         * Buttons which switching the state
+         * @see https://mol.hyoo.ru/#!section=demos/demo=mol_switch_demo
+         */
+        class $mol_switch extends $.$mol_switch {
+            value(next) {
+                return $mol_state_session.value(`${this}.value()`, next) ?? '';
+            }
+            option_checked(key, next) {
+                if (next === undefined)
+                    return this.value() == key;
+                this.value(next ? key : '');
+                return next;
+            }
+        }
+        $$.$mol_switch = $mol_switch;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+	($.$mol_icon_music) = class $mol_icon_music extends ($.$mol_icon) {
+		path(){
+			return "M21,3V15.5A3.5,3.5 0 0,1 17.5,19A3.5,3.5 0 0,1 14,15.5A3.5,3.5 0 0,1 17.5,12C18.04,12 18.55,12.12 19,12.34V6.47L9,8.6V17.5A3.5,3.5 0 0,1 5.5,21A3.5,3.5 0 0,1 2,17.5A3.5,3.5 0 0,1 5.5,14C6.04,14 6.55,14.12 7,14.34V6L21,3Z";
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
+	($.$mol_icon_archive) = class $mol_icon_archive extends ($.$mol_icon) {
+		path(){
+			return "M3,3H21V7H3V3M4,8H20V21H4V8M9.5,11A0.5,0.5 0 0,0 9,11.5V13H15V11.5A0.5,0.5 0 0,0 14.5,11H9.5Z";
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
+	($.$mol_icon_restore) = class $mol_icon_restore extends ($.$mol_icon) {
+		path(){
+			return "M13,3A9,9 0 0,0 4,12H1L4.89,15.89L4.96,16.03L9,12H6A7,7 0 0,1 13,5A7,7 0 0,1 20,12A7,7 0 0,1 13,19C11.07,19 9.32,18.21 8.06,16.94L6.64,18.36C8.27,20 10.5,21 13,21A9,9 0 0,0 22,12A9,9 0 0,0 13,3Z";
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
+	($.$bog_vk_track) = class $bog_vk_track extends ($.$mol_view) {
+		event_drag_start(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		event_drag_over(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		event_drop(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		on_play_click(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		cover(){
+			return "";
+		}
+		Cover(){
+			const obj = new this.$.$mol_image();
+			(obj.uri) = () => ((this.cover()));
+			return obj;
+		}
+		Cover_placeholder(){
+			const obj = new this.$.$mol_icon_music();
+			return obj;
+		}
+		Cover_box(){
+			const obj = new this.$.$mol_view();
+			(obj.event) = () => ({"click": (next) => (this.on_play_click(next))});
+			(obj.sub) = () => ([(this.Cover()), (this.Cover_placeholder())]);
+			return obj;
+		}
+		title(){
+			return "";
+		}
+		Title(){
+			const obj = new this.$.$mol_paragraph();
+			(obj.title) = () => ((this.title()));
+			return obj;
+		}
+		artist(){
+			return "";
+		}
+		Artist(){
+			const obj = new this.$.$mol_paragraph();
+			(obj.title) = () => ((this.artist()));
+			return obj;
+		}
+		duration_text(){
+			return "";
+		}
+		Duration(){
+			const obj = new this.$.$mol_paragraph();
+			(obj.title) = () => ((this.duration_text()));
+			return obj;
+		}
+		Info(){
+			const obj = new this.$.$mol_view();
+			(obj.event) = () => ({"click": (next) => (this.on_play_click(next))});
+			(obj.sub) = () => ([
+				(this.Title()), 
+				(this.Artist()), 
+				(this.Duration())
+			]);
+			return obj;
+		}
+		delete_cached(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Delete_icon(){
+			const obj = new this.$.$mol_icon_delete();
+			return obj;
+		}
+		Delete(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.click) = (next) => ((this.delete_cached(next)));
+			(obj.sub) = () => ([(this.Delete_icon())]);
+			return obj;
+		}
+		archive(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Archive_icon(){
+			const obj = new this.$.$mol_icon_archive();
+			return obj;
+		}
+		Archive(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.hint) = () => ("В архив");
+			(obj.click) = (next) => ((this.archive(next)));
+			(obj.sub) = () => ([(this.Archive_icon())]);
+			return obj;
+		}
+		restore(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Restore_icon(){
+			const obj = new this.$.$mol_icon_restore();
+			return obj;
+		}
+		Restore(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.hint) = () => ("Восстановить");
+			(obj.click) = (next) => ((this.restore(next)));
+			(obj.sub) = () => ([(this.Restore_icon())]);
+			return obj;
+		}
+		delete_forever(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Delete_forever_icon(){
+			const obj = new this.$.$mol_icon_delete_forever();
+			return obj;
+		}
+		Delete_forever(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.hint) = () => ("Удалить навсегда");
+			(obj.click) = (next) => ((this.delete_forever(next)));
+			(obj.sub) = () => ([(this.Delete_forever_icon())]);
+			return obj;
+		}
+		audio(){
+			return null;
+		}
+		current(){
+			return false;
+		}
+		play(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		archive_mode(){
+			return false;
+		}
+		can_drag(){
+			return false;
+		}
+		drag_start(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		drop_here(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		attr(){
+			return {"bog_vk_track_current": (this.current()), "draggable": (this.can_drag())};
+		}
+		event(){
+			return {
+				"dragstart": (next) => (this.event_drag_start(next)), 
+				"dragover": (next) => (this.event_drag_over(next)), 
+				"drop": (next) => (this.event_drop(next))
+			};
+		}
+		sub(){
+			return [
+				(this.Cover_box()), 
+				(this.Info()), 
+				(this.Delete()), 
+				(this.Archive()), 
+				(this.Restore()), 
+				(this.Delete_forever())
+			];
+		}
+	};
+	($mol_mem(($.$bog_vk_track.prototype), "event_drag_start"));
+	($mol_mem(($.$bog_vk_track.prototype), "event_drag_over"));
+	($mol_mem(($.$bog_vk_track.prototype), "event_drop"));
+	($mol_mem(($.$bog_vk_track.prototype), "on_play_click"));
+	($mol_mem(($.$bog_vk_track.prototype), "Cover"));
+	($mol_mem(($.$bog_vk_track.prototype), "Cover_placeholder"));
+	($mol_mem(($.$bog_vk_track.prototype), "Cover_box"));
+	($mol_mem(($.$bog_vk_track.prototype), "Title"));
+	($mol_mem(($.$bog_vk_track.prototype), "Artist"));
+	($mol_mem(($.$bog_vk_track.prototype), "Duration"));
+	($mol_mem(($.$bog_vk_track.prototype), "Info"));
+	($mol_mem(($.$bog_vk_track.prototype), "delete_cached"));
+	($mol_mem(($.$bog_vk_track.prototype), "Delete_icon"));
+	($mol_mem(($.$bog_vk_track.prototype), "Delete"));
+	($mol_mem(($.$bog_vk_track.prototype), "archive"));
+	($mol_mem(($.$bog_vk_track.prototype), "Archive_icon"));
+	($mol_mem(($.$bog_vk_track.prototype), "Archive"));
+	($mol_mem(($.$bog_vk_track.prototype), "restore"));
+	($mol_mem(($.$bog_vk_track.prototype), "Restore_icon"));
+	($mol_mem(($.$bog_vk_track.prototype), "Restore"));
+	($mol_mem(($.$bog_vk_track.prototype), "delete_forever"));
+	($mol_mem(($.$bog_vk_track.prototype), "Delete_forever_icon"));
+	($mol_mem(($.$bog_vk_track.prototype), "Delete_forever"));
+	($mol_mem(($.$bog_vk_track.prototype), "play"));
+	($mol_mem(($.$bog_vk_track.prototype), "drag_start"));
+	($mol_mem(($.$bog_vk_track.prototype), "drop_here"));
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    class $bog_vk_api extends $mol_object {
+        static default_proxy_url = 'https://bog-vk-audio.cmyser-fast-i.workers.dev';
+        static token(next) {
+            return $mol_state_local.value('vk_token', next) ?? '';
+        }
+        static cookies(next) {
+            return $mol_state_local.value('vk_cookies', next) ?? '';
+        }
+        /**
+         * Конфигурируемый URL прокси. Пустое значение — дефолт.
+         * Позволяет обходить блокировки VK API через свой / альтернативный хост.
+         */
+        static proxy_url(next) {
+            const custom = $mol_state_local.value('vk_proxy_url', next) ?? '';
+            return custom || this.default_proxy_url;
+        }
+        /**
+         * Запущены ли мы как Chrome/Firefox extension popup?
+         * В этом контексте host_permissions снимают CORS, и VK API можно дёргать
+         * напрямую без прокси-воркера.
+         */
+        static in_extension() {
+            try {
+                const proto = location.protocol;
+                return proto === 'chrome-extension:' || proto === 'moz-extension:';
+            }
+            catch {
+                return false;
+            }
+        }
+        /** Прямой вызов VK API из popup (использует host_permissions расширения). */
+        static async fetch_vk_direct(method, params) {
+            const token = this.token();
+            if (!token)
+                throw new Error('Token is not set');
+            const body = new URLSearchParams({
+                ...Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
+                access_token: token,
+                v: '5.275',
+                client_id: '6287487',
+            });
+            // credentials: 'include' прицепляет cookies vk.com (если user залогинен) —
+            // нужно для приватных треков с непустым audio.url.
+            const resp = await fetch(`https://api.vk.com/method/${method}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString(),
+                credentials: 'include',
+            });
+            const data = await resp.json();
+            if (data?.error) {
+                const msg = data.error.error_msg ?? 'VK API error';
+                const code = data.error.error_code ?? '?';
+                console.error(`[vk-api] error ${code}: ${msg}`);
+                throw new Error(`[${code}] ${msg}`);
+            }
+            return data.response;
+        }
+        static async fetch_proxy(endpoint, body) {
+            const base = this.proxy_url().replace(/\/$/, '');
+            const resp = await fetch(`${base}${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            });
+            const data = await resp.json();
+            if (!resp.ok) {
+                const code = data.code ?? '?';
+                const msg = data.error ?? 'Proxy error';
+                console.error(`[vk-api] error ${code}: ${msg}`);
+                throw new Error(`[${code}] ${msg}`);
+            }
+            return data;
+        }
+        static my_audios() {
+            const token = this.token();
+            if (!token)
+                throw new Error('Token is not set');
+            if (this.in_extension()) {
+                return $mol_wire_sync(this).fetch_vk_direct('audio.get', { count: 200 });
+            }
+            return $mol_wire_sync(this).fetch_proxy('/audios', { token, cookies: this.cookies(), count: 200 });
+        }
+        static search_audios(query) {
+            const token = this.token();
+            if (!token)
+                throw new Error('Token is not set');
+            if (this.in_extension()) {
+                return $mol_wire_sync(this).fetch_vk_direct('audio.search', { q: query, count: 100, sort: 2 });
+            }
+            return $mol_wire_sync(this).fetch_proxy('/search', { token, cookies: this.cookies(), query, count: 100 });
+        }
+        /**
+         * Обновляет URL трека (HLS-ссылки от VK живут ~60 минут).
+         * Используется перед save_hls для треков, у которых url протух.
+         */
+        static refresh_audio(audio_key) {
+            const token = this.token();
+            if (!token)
+                throw new Error('Token is not set');
+            if (this.in_extension()) {
+                const resp = $mol_wire_sync(this).fetch_vk_direct('audio.getById', { audios: audio_key });
+                return resp?.[0] ?? null;
+            }
+            const resp = $mol_wire_sync(this).fetch_proxy('/getById', { token, cookies: this.cookies(), audios: audio_key });
+            return resp?.[0] ?? null;
+        }
+    }
+    __decorate([
+        $mol_mem
+    ], $bog_vk_api, "token", null);
+    __decorate([
+        $mol_mem
+    ], $bog_vk_api, "cookies", null);
+    __decorate([
+        $mol_mem
+    ], $bog_vk_api, "proxy_url", null);
+    __decorate([
+        $mol_mem
+    ], $bog_vk_api, "my_audios", null);
+    __decorate([
+        $mol_mem_key
+    ], $bog_vk_api, "search_audios", null);
+    __decorate([
+        $mol_mem_key
+    ], $bog_vk_api, "refresh_audio", null);
+    $.$bog_vk_api = $bog_vk_api;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    class $bog_vk_cache extends $mol_object {
+        static version(next) {
+            return next ?? 0;
+        }
+        static db() {
+            return $mol_wire_sync(this).db_async();
+        }
+        static async db_async() {
+            return $$.$mol_db('vk_audio_cache', mig => mig.store_make('tracks'), mig => mig.store_make('meta'));
+        }
+        static cache_key(audio) {
+            return `${audio.owner_id}_${audio.id}`;
+        }
+        static async get(audio) {
+            const key = this.cache_key(audio);
+            try {
+                const db = await this.db_async();
+                const blob = await db.read('tracks').tracks.get(key);
+                db.destructor();
+                if (blob) {
+                    // Delete broken cache entries (empty or too small)
+                    if (blob.size < 1000) {
+                        console.warn(`[cache] broken entry (${blob.size} bytes), deleting: ${audio.artist} — ${audio.title}`);
+                        const db2 = await this.db_async();
+                        const tx = db2.change('tracks', 'meta');
+                        await tx.stores.tracks.drop(key);
+                        await tx.stores.meta.drop(key);
+                        db2.destructor();
+                        return null;
+                    }
+                    // Re-mux old audio/aac entries to audio/mp4
+                    if (blob.type === 'audio/aac') {
+                        console.log(`[cache] migrating ${audio.artist} — ${audio.title} from aac to m4a...`);
+                        const adts = new Uint8Array(await blob.arrayBuffer());
+                        const m4a = this.adts_to_m4a(adts);
+                        const newBlob = new Blob([m4a.buffer], { type: 'audio/mp4' });
+                        const db2 = await this.db_async();
+                        const tx = db2.change('tracks');
+                        await tx.stores.tracks.put(newBlob, key);
+                        db2.destructor();
+                        return URL.createObjectURL(newBlob);
+                    }
+                    console.log(`[cache] hit: ${audio.artist} — ${audio.title} (${(blob.size / 1024 / 1024).toFixed(1)} MB)`);
+                    return URL.createObjectURL(blob);
+                }
+                console.warn(`[cache] miss: ${audio.artist} — ${audio.title} (key: ${key})`);
+                return null;
+            }
+            catch (e) {
+                console.warn(`[cache] get error: ${key}`, e?.message);
+                return null;
+            }
+        }
+        static async is_cached(audio) {
+            const key = this.cache_key(audio);
+            try {
+                const db = await this.db_async();
+                const count = await db.read('tracks').tracks.count(key);
+                db.destructor();
+                return count > 0;
+            }
+            catch {
+                return false;
+            }
+        }
+        static async drop(audio) {
+            const key = this.cache_key(audio);
+            const db = await this.db_async();
+            const tx = db.change('tracks', 'meta');
+            await tx.stores.tracks.drop(key);
+            await tx.stores.meta.drop(key);
+            db.destructor();
+            console.log(`[cache] dropped: ${audio.artist} — ${audio.title}`);
+        }
+        static async all_cached() {
+            try {
+                const db = await this.db_async();
+                const all = await db.read('meta').meta.select();
+                db.destructor();
+                return all.reverse();
+            }
+            catch {
+                return [];
+            }
+        }
+        static adts_to_m4a(adts) {
+            const frames = [];
+            const frameSizes = [];
+            let audioObjectType = 2;
+            let sampleRateIndex = 4;
+            let channelConfig = 2;
+            let i = 0;
+            while (i < adts.length - 7) {
+                if (adts[i] !== 0xFF || (adts[i + 1] & 0xF6) !== 0xF0) {
+                    i++;
+                    continue;
+                }
+                const protAbsent = adts[i + 1] & 0x01;
+                const profile = (adts[i + 2] >> 6) & 0x03;
+                const srIdx = (adts[i + 2] >> 2) & 0x0F;
+                const chCfg = ((adts[i + 2] & 0x01) << 2) | ((adts[i + 3] >> 6) & 0x03);
+                const frameLen = ((adts[i + 3] & 0x03) << 11) | (adts[i + 4] << 3) | ((adts[i + 5] >> 5) & 0x07);
+                if (frameLen < 7 || frameLen > 8192 || i + frameLen > adts.length) {
+                    i++;
+                    continue;
+                }
+                // Verify next frame sync to filter false positives
+                if (i + frameLen + 1 < adts.length) {
+                    if (adts[i + frameLen] !== 0xFF || (adts[i + frameLen + 1] & 0xF6) !== 0xF0) {
+                        i++;
+                        continue;
+                    }
+                }
+                // Lock codec params from first valid frame
+                if (frames.length === 0) {
+                    audioObjectType = profile + 1;
+                    sampleRateIndex = srIdx;
+                    channelConfig = chCfg;
+                }
+                const hdrLen = protAbsent ? 7 : 9;
+                if (hdrLen >= frameLen) {
+                    i++;
+                    continue;
+                }
+                const raw = adts.slice(i + hdrLen, i + frameLen);
+                frames.push(raw);
+                frameSizes.push(raw.length);
+                i += frameLen;
+            }
+            if (frames.length === 0)
+                return adts;
+            const sampleRates = [96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350];
+            const sampleRate = sampleRates[sampleRateIndex] || 44100;
+            const totalSamples = frames.length * 1024;
+            const rawSize = frameSizes.reduce((a, b) => a + b, 0);
+            // AudioSpecificConfig (2 bytes)
+            const asc0 = (audioObjectType << 3) | (sampleRateIndex >> 1);
+            const asc1 = ((sampleRateIndex & 1) << 7) | (channelConfig << 3);
+            const u32 = (v) => [(v >>> 24) & 0xFF, (v >>> 16) & 0xFF, (v >>> 8) & 0xFF, v & 0xFF];
+            const u16 = (v) => [(v >> 8) & 0xFF, v & 0xFF];
+            const str = (s) => s.split('').map(c => c.charCodeAt(0));
+            const box = (type, payload) => [...u32(8 + payload.length), ...str(type), ...payload];
+            const fbox = (type, ver, fl, payload) => [...u32(12 + payload.length), ...str(type), ver, (fl >> 16) & 0xFF, (fl >> 8) & 0xFF, fl & 0xFF, ...payload];
+            // ftyp
+            const ftyp = box('ftyp', [...str('M4A '), ...u32(0), ...str('M4A '), ...str('isom'), ...str('mp42')]);
+            // esds descriptor chain
+            const decSpecInfo = [0x05, 0x02, asc0, asc1];
+            const decConfigPayload = [0x40, 0x15, 0x00, 0x00, 0x00, ...u32(0), ...u32(0), ...decSpecInfo];
+            const decConfig = [0x04, decConfigPayload.length, ...decConfigPayload];
+            const slConfig = [0x06, 0x01, 0x02];
+            const esPayload = [...u16(1), 0x00, ...decConfig, ...slConfig];
+            const esDescr = [0x03, esPayload.length, ...esPayload];
+            const esds = fbox('esds', 0, 0, esDescr);
+            // mp4a sample entry
+            const mp4aPayload = [
+                ...Array(6).fill(0), ...u16(1), // reserved + data_reference_index
+                ...Array(8).fill(0), // reserved
+                ...u16(channelConfig), ...u16(16), // channels, sample_size
+                ...u16(0), ...u16(0), // compression_id, packet_size
+                ...u16(sampleRate), ...u16(0), // samplerate 16.16 fixed
+                ...esds,
+            ];
+            const mp4a = [...u32(8 + mp4aPayload.length), ...str('mp4a'), ...mp4aPayload];
+            const stsd = fbox('stsd', 0, 0, [...u32(1), ...mp4a]);
+            const stts = fbox('stts', 0, 0, [...u32(1), ...u32(frames.length), ...u32(1024)]);
+            const stsc = fbox('stsc', 0, 0, [...u32(1), ...u32(1), ...u32(frames.length), ...u32(1)]);
+            const stsz = fbox('stsz', 0, 0, [...u32(0), ...u32(frames.length), ...frameSizes.flatMap(s => u32(s))]);
+            const stco = fbox('stco', 0, 0, [...u32(1), ...u32(0)]); // offset patched below
+            const stbl = box('stbl', [...stsd, ...stts, ...stsc, ...stsz, ...stco]);
+            const smhd = fbox('smhd', 0, 0, [...u16(0), ...u16(0)]);
+            const urlBox = fbox('url ', 0, 1, []);
+            const dref = fbox('dref', 0, 0, [...u32(1), ...urlBox]);
+            const dinf = box('dinf', dref);
+            const minf = box('minf', [...smhd, ...dinf, ...stbl]);
+            const mdhd = fbox('mdhd', 0, 0, [...u32(0), ...u32(0), ...u32(sampleRate), ...u32(totalSamples), ...u16(0x55C4), ...u16(0)]);
+            const hdlr = fbox('hdlr', 0, 0, [...u32(0), ...str('soun'), ...u32(0), ...u32(0), ...u32(0), 0]);
+            const mdia = box('mdia', [...mdhd, ...hdlr, ...minf]);
+            const identity = [
+                0x00, 0x01, 0x00, 0x00, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0x00, 0x01, 0x00, 0x00, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0x40, 0x00, 0x00, 0x00,
+            ];
+            const tkhd = fbox('tkhd', 0, 3, [
+                ...u32(0), ...u32(0), ...u32(1), ...u32(0), ...u32(totalSamples),
+                ...u32(0), ...u32(0), ...u16(0), ...u16(0), ...u16(0x0100), ...u16(0),
+                ...identity, ...u32(0), ...u32(0),
+            ]);
+            const trak = box('trak', [...tkhd, ...mdia]);
+            const mvhd = fbox('mvhd', 0, 0, [
+                ...u32(0), ...u32(0), ...u32(sampleRate), ...u32(totalSamples),
+                ...u32(0x00010000), ...u16(0x0100), ...Array(10).fill(0),
+                ...identity, ...Array(24).fill(0), ...u32(2),
+            ]);
+            const moov = box('moov', [...mvhd, ...trak]);
+            // Patch stco chunk_offset: mdat data starts after ftyp + moov + mdat header(8)
+            const mdatDataOffset = ftyp.length + moov.length + 8;
+            for (let j = 0; j < moov.length - 4; j++) {
+                if (moov[j] === 0x73 && moov[j + 1] === 0x74 && moov[j + 2] === 0x63 && moov[j + 3] === 0x6F) {
+                    // 'stco' found: type(4) + version(1) + flags(3) + entry_count(4) = 12 bytes to offset
+                    const p = j + 12;
+                    moov[p] = (mdatDataOffset >>> 24) & 0xFF;
+                    moov[p + 1] = (mdatDataOffset >>> 16) & 0xFF;
+                    moov[p + 2] = (mdatDataOffset >>> 8) & 0xFF;
+                    moov[p + 3] = mdatDataOffset & 0xFF;
+                    break;
+                }
+            }
+            // Assemble: ftyp + moov + mdat
+            const mdatHeader = [...u32(8 + rawSize), ...str('mdat')];
+            const total = ftyp.length + moov.length + mdatHeader.length + rawSize;
+            const out = new Uint8Array(total);
+            let pos = 0;
+            out.set(ftyp, pos);
+            pos += ftyp.length;
+            out.set(moov, pos);
+            pos += moov.length;
+            out.set(mdatHeader, pos);
+            pos += mdatHeader.length;
+            for (const frame of frames) {
+                out.set(frame, pos);
+                pos += frame.length;
+            }
+            console.log(`[cache] muxed ${frames.length} AAC frames → ${(total / 1024).toFixed(0)} KB M4A`);
+            return out;
+        }
+        static extract_audio(ts) {
+            // Already raw AAC (ADTS)
+            if (ts[0] === 0xFF && (ts[1] & 0xF0) === 0xF0) {
+                return { data: ts, mime: 'audio/aac' };
+            }
+            // Already MP3
+            if (ts[0] === 0xFF && (ts[1] & 0xE0) === 0xE0) {
+                return { data: ts, mime: 'audio/mpeg' };
+            }
+            // ID3 tag (MP3 with metadata)
+            if (ts[0] === 0x49 && ts[1] === 0x44 && ts[2] === 0x33) {
+                return { data: ts, mime: 'audio/mpeg' };
+            }
+            // MPEG-TS → proper demux: parse TS packets, extract PES audio payloads
+            if (ts[0] === 0x47) {
+                const audio = this.demux_ts_audio(ts);
+                if (audio)
+                    return { data: audio, mime: 'audio/aac' };
+            }
+            // Fallback: return as-is
+            return { data: ts, mime: 'audio/mpeg' };
+        }
+        static demux_ts_audio(ts) {
+            // Phase 1: parse TS packets, group payloads by PID
+            const pidChunks = new Map();
+            for (let pos = 0; pos + 188 <= ts.length; pos += 188) {
+                if (ts[pos] !== 0x47)
+                    continue;
+                const pusi = !!(ts[pos + 1] & 0x40);
+                const pid = ((ts[pos + 1] & 0x1F) << 8) | ts[pos + 2];
+                const afc = (ts[pos + 3] >> 4) & 0x03;
+                if (pid === 0 || pid === 0x1FFF)
+                    continue; // skip PAT / null
+                if (!(afc & 0x01))
+                    continue; // no payload
+                let off = 4;
+                if (afc & 0x02)
+                    off += 1 + ts[pos + 4]; // adaptation field
+                if (off >= 188)
+                    continue;
+                if (!pidChunks.has(pid))
+                    pidChunks.set(pid, []);
+                pidChunks.get(pid).push({ pusi, data: ts.slice(pos + off, pos + 188) });
+            }
+            // Phase 2: find audio PID (PES stream_id 0xC0..0xDF)
+            for (const [pid, chunks] of pidChunks) {
+                const first = chunks.find(c => c.pusi);
+                if (!first)
+                    continue;
+                const d = first.data;
+                if (d.length < 9)
+                    continue;
+                if (d[0] !== 0x00 || d[1] !== 0x00 || d[2] !== 0x01)
+                    continue;
+                if (d[3] < 0xC0 || d[3] > 0xDF)
+                    continue; // not audio
+                // Phase 3: reassemble PES payloads, strip PES headers → raw ADTS
+                const parts = [];
+                for (const chunk of chunks) {
+                    if (chunk.pusi) {
+                        const p = chunk.data;
+                        if (p.length < 9 || p[0] !== 0x00 || p[1] !== 0x00 || p[2] !== 0x01)
+                            continue;
+                        const pesHdrLen = 9 + p[8];
+                        if (pesHdrLen < p.length) {
+                            parts.push(p.slice(pesHdrLen));
+                        }
+                    }
+                    else {
+                        parts.push(chunk.data);
+                    }
+                }
+                const total = parts.reduce((s, p) => s + p.length, 0);
+                if (total === 0)
+                    continue;
+                const out = new Uint8Array(total);
+                let off = 0;
+                for (const p of parts) {
+                    out.set(p, off);
+                    off += p.length;
+                }
+                console.log(`[cache] demuxed TS: PID ${pid}, ${total} bytes raw ADTS`);
+                return out;
+            }
+            return null;
+        }
+        static parse_m3u8(text, base_url) {
+            const lines = text.split('\n');
+            let key_url = '';
+            let key_iv = '';
+            const segments = [];
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('#EXT-X-KEY:')) {
+                    const uri_match = trimmed.match(/URI="([^"]+)"/);
+                    if (uri_match) {
+                        key_url = uri_match[1].startsWith('http') ? uri_match[1] : base_url + uri_match[1];
+                    }
+                    const iv_match = trimmed.match(/IV=0x([0-9a-fA-F]+)/);
+                    if (iv_match) {
+                        key_iv = iv_match[1];
+                    }
+                }
+                else if (trimmed && !trimmed.startsWith('#')) {
+                    segments.push(trimmed.startsWith('http') ? trimmed : base_url + trimmed);
+                }
+            }
+            return { segments, key_url, key_iv };
+        }
+        static async decrypt_segment(data, cryptoKey, index, iv_hex) {
+            let iv;
+            if (iv_hex) {
+                const bytes = new Uint8Array(16);
+                for (let i = 0; i < 16 && i * 2 < iv_hex.length; i++) {
+                    bytes[i] = parseInt(iv_hex.substring(i * 2, i * 2 + 2), 16);
+                }
+                iv = bytes.buffer;
+            }
+            else {
+                const bytes = new Uint8Array(16);
+                bytes[15] = index & 0xFF;
+                bytes[14] = (index >> 8) & 0xFF;
+                bytes[13] = (index >> 16) & 0xFF;
+                bytes[12] = (index >> 24) & 0xFF;
+                iv = bytes.buffer;
+            }
+            return crypto.subtle.decrypt({ name: 'AES-CBC', iv }, cryptoKey, data);
+        }
+        /**
+         * Освежает audio.url через VK audio.getById — HLS ссылки протухают ~60 мин.
+         * Возвращает рабочий URL или пустую строку если не получилось.
+         */
+        static async refresh_url(audio) {
+            try {
+                const key = `${audio.owner_id}_${audio.id}${audio.access_key ? '_' + audio.access_key : ''}`;
+                const fresh = $mol_wire_sync($bog_vk_api).refresh_audio(key);
+                return fresh?.url ?? '';
+            }
+            catch (e) {
+                console.warn('[cache] refresh_url failed:', e?.message);
+                return '';
+            }
+        }
+        static async save_hls(audio) {
+            let url = audio.url;
+            if (!url) {
+                console.warn('[cache] skip — no URL:', audio.artist, '—', audio.title);
+                return;
+            }
+            const cache_id = this.cache_key(audio);
+            try {
+                const db_check = await this.db_async();
+                const existing = await db_check.read('tracks').tracks.count(cache_id);
+                db_check.destructor();
+                if (existing > 0) {
+                    console.log('[cache] already cached:', audio.artist, '—', audio.title);
+                    return;
+                }
+                console.log('[cache] start download:', audio.artist, '—', audio.title);
+                let m3u8_resp = await fetch(url);
+                // Если url протух — пробуем обновить через audio.getById.
+                if (m3u8_resp.status === 403 || m3u8_resp.status === 404) {
+                    console.log('[cache] url expired, refreshing:', audio.artist, '—', audio.title);
+                    const fresh_url = await this.refresh_url(audio);
+                    if (fresh_url) {
+                        url = fresh_url;
+                        m3u8_resp = await fetch(url);
+                    }
+                }
+                if (!m3u8_resp.ok)
+                    throw new Error(`m3u8 fetch ${m3u8_resp.status}`);
+                const m3u8_text = await m3u8_resp.text();
+                const base_url = url.substring(0, url.lastIndexOf('/') + 1);
+                // (url мог быть подменён на fresh_url выше — base пересчитывается от него)
+                const { segments, key_url, key_iv } = this.parse_m3u8(m3u8_text, base_url);
+                if (!segments.length)
+                    throw new Error('No segments in m3u8');
+                let cryptoKey = null;
+                if (key_url) {
+                    console.log(`[cache] encrypted HLS, fetching key from:`, key_url);
+                    const key_resp = await fetch(key_url);
+                    if (!key_resp.ok)
+                        throw new Error(`Key fetch failed: ${key_resp.status}`);
+                    const key_data = await key_resp.arrayBuffer();
+                    console.log(`[cache] key size: ${key_data.byteLength} bytes, hex: ${Array.from(new Uint8Array(key_data)).map(b => b.toString(16).padStart(2, '0')).join('')}`);
+                    if (key_data.byteLength !== 16) {
+                        console.warn(`[cache] unexpected key size ${key_data.byteLength}, expected 16`);
+                    }
+                    cryptoKey = await crypto.subtle.importKey('raw', key_data, 'AES-CBC', false, ['decrypt']);
+                    console.log(`[cache] key imported, IV: ${key_iv || '(sequence number)'}`);
+                }
+                console.log(`[cache] ${segments.length} segments to download${cryptoKey ? ' (encrypted)' : ''}`);
+                const chunks = [];
+                for (let i = 0; i < segments.length; i++) {
+                    const resp = await fetch(segments[i]);
+                    if (!resp.ok)
+                        throw new Error(`Segment ${i + 1}/${segments.length} failed: ${resp.status}`);
+                    let data = await resp.arrayBuffer();
+                    const firstByte = new Uint8Array(data)[0];
+                    if (cryptoKey && firstByte !== 0x47) {
+                        data = await this.decrypt_segment(data, cryptoKey, i, key_iv);
+                    }
+                    chunks.push(data);
+                }
+                const total = chunks.reduce((s, c) => s + c.byteLength, 0);
+                const merged = new Uint8Array(total);
+                let offset = 0;
+                for (const chunk of chunks) {
+                    merged.set(new Uint8Array(chunk), offset);
+                    offset += chunk.byteLength;
+                }
+                let { data: audioData, mime } = this.extract_audio(merged);
+                if (mime === 'audio/aac') {
+                    audioData = this.adts_to_m4a(audioData);
+                    mime = 'audio/mp4';
+                }
+                const blob = new Blob([audioData.buffer], { type: mime });
+                const sizeMB = (audioData.byteLength / 1024 / 1024).toFixed(1);
+                console.log(`[cache] format: ${mime}, extracted ${sizeMB} MB from ${(total / 1024 / 1024).toFixed(1)} MB raw`);
+                const db = await this.db_async();
+                const tx = db.change('tracks', 'meta');
+                await tx.stores.tracks.put(blob, cache_id);
+                await tx.stores.meta.put({ ...audio, url: '' }, cache_id);
+                db.destructor();
+                console.log(`[cache] saved: ${audio.artist} — ${audio.title} (${sizeMB} MB)`);
+            }
+            catch (e) {
+                console.warn(`[cache] FAILED: ${audio.artist} — ${audio.title}:`, e?.message || e?.name || String(e), e);
+            }
+        }
+    }
+    __decorate([
+        $mol_mem
+    ], $bog_vk_cache, "version", null);
+    $.$bog_vk_cache = $bog_vk_cache;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    class $giper_baza_file extends $giper_baza_dict.with({
+        /** File name */
+        Name: $giper_baza_atom_text,
+        /** File Content-Type */
+        Type: $giper_baza_atom_text,
+        /** File content in chunks - list of binaries */
+        Chunks: $giper_baza_list_bin,
+    }) {
+        /** Persistent URI to file content */
+        uri() {
+            return `?BAZA:file=${this.link()};name=${this.name()}`;
+        }
+        /** File name */
+        name(next) {
+            const ext = {
+                'text/plain': 'txt',
+                'application/json': 'json',
+            }[this.type()] ?? 'bin';
+            return this.Name(next)?.val(next) ?? `${this.link()}.${ext}`;
+        }
+        /** Mime type */
+        type(next) {
+            return this.Type(next)?.val(next) ?? 'application/octet-stream';
+        }
+        /** Blob, File etc. */
+        blob(next) {
+            if (!next)
+                return new $mol_blob(this.chunks(), { type: this.type() });
+            const buffer = new Uint8Array($mol_wire_sync(next).arrayBuffer());
+            this.buffer(buffer);
+            this.type(next.type);
+            if (next instanceof $mol_dom_context.File)
+                this.name(next.name);
+            return next;
+        }
+        /** Solid byte buffer. */
+        buffer(next) {
+            if (next) {
+                const chunks = [];
+                for (let offset = 0; offset < next.byteLength;) {
+                    chunks.push(next.slice(offset, offset += 2 ** 15)); // split by 32 KB
+                }
+                this.chunks(chunks);
+                return next;
+            }
+            else {
+                const chunks = this.chunks();
+                const size = chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0);
+                const res = new Uint8Array(size);
+                let offset = 0;
+                for (const chunk of chunks) {
+                    res.set(chunk, offset);
+                    offset += chunk.byteLength;
+                }
+                return res;
+            }
+        }
+        chunks(next) {
+            return (this.Chunks(next)?.items(next)?.filter($mol_guard_defined) ?? []);
+        }
+        str(next, type = 'text/plain') {
+            if (next === undefined)
+                return $mol_charset_decode(this.buffer());
+            this.buffer($mol_charset_encode(next));
+            this.type(type);
+            return next;
+        }
+        json(next, type = 'application/json') {
+            if (next === undefined)
+                return JSON.parse(this.str());
+            this.str(JSON.stringify(next), type);
+            return next;
+        }
+    }
+    $.$giper_baza_file = $giper_baza_file;
+})($ || ($ = {}));
+
+;
+"use strict";
+// namespace $ {
+// 	$mol_report_bugsnag = '18acf016ed2a2a4cc4445daa9dd2dd3c'
+// }
+
+;
+"use strict";
+var $;
+(function ($) {
+    /**
+     * Checks for some of given runtype or throws error.
+     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_data_variant_demo
+     */
+    function $mol_data_variant(...sub) {
+        return $mol_data_setup((val) => {
+            const errors = [];
+            for (const type of sub) {
+                let hidden = $.$mol_fail_hidden;
+                try {
+                    $.$mol_fail = $.$mol_fail_hidden;
+                    return type(val);
+                }
+                catch (error) {
+                    $.$mol_fail = hidden;
+                    if (error instanceof $mol_data_error) {
+                        errors.push(error);
+                    }
+                    else {
+                        return $mol_fail_hidden(error);
+                    }
+                }
+            }
+            return $mol_fail(new $mol_data_error(`${val} is not any of variants`, {}, ...errors));
+        }, sub);
+    }
+    $.$mol_data_variant = $mol_data_variant;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    /**
+     * Checks for string and returns string type.
+     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_data_string_demo
+     */
+    $.$mol_data_string = (val) => {
+        if (typeof val === 'string')
+            return val;
+        return $mol_fail(new $mol_data_error(`${val} is not a string`));
+    };
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    /**
+     * Checks for undefined or passing given runtype.
+     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_data_optional_demo
+     */
+    function $mol_data_optional(sub, fallback) {
+        return $mol_data_setup((val) => {
+            if (val === undefined) {
+                return fallback?.();
+            }
+            return sub(val);
+        }, { sub, fallback });
+    }
+    $.$mol_data_optional = $mol_data_optional;
+})($ || ($ = {}));
+
+;
+"use strict";
+
+;
+"use strict";
+var $;
+(function ($) {
+    /**
+     * Checks for record of given fields with by its runtypes and returns expected type.
+     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_data_record_demo
+     */
+    function $mol_data_record(sub) {
+        return $mol_data_setup((val) => {
+            let res = {};
+            for (const field in sub) {
+                try {
+                    res[field] =
+                        sub[field](val[field]);
+                }
+                catch (error) {
+                    if (error instanceof Promise)
+                        return $mol_fail_hidden(error);
+                    error.message = `[${JSON.stringify(field)}] ${error.message}`;
+                    return $mol_fail(error);
+                }
+            }
+            return res;
+        }, sub);
+    }
+    $.$mol_data_record = $mol_data_record;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    /**
+     * Checks for array of given runtype and returns expected type.
+     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_data_array_demo
+     */
+    function $mol_data_array(sub) {
+        return $mol_data_setup((val) => {
+            if (!Array.isArray(val))
+                return $mol_fail(new $mol_data_error(`${val} is not an array`));
+            return val.map((item, index) => {
+                try {
+                    return sub(item);
+                }
+                catch (error) {
+                    if (error instanceof Promise)
+                        return $mol_fail_hidden(error);
+                    error.message = `[${index}] ${error.message}`;
+                    return $mol_fail(error);
+                }
+            });
+        }, sub);
+    }
+    $.$mol_data_array = $mol_data_array;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    /**
+     * Checks for boolean and returns boolean type.
+     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_data_boolean_demo
+     */
+    $.$mol_data_boolean = (val) => {
+        if (typeof val === 'boolean')
+            return val;
+        return $mol_fail(new $mol_data_error(`${val} is not a boolean`));
+    };
+})($ || ($ = {}));
+
+;
+"use strict";
+
+;
+"use strict";
+var $;
+(function ($) {
+    const syntax = new $mol_syntax2({
+        'filter': /!?=/,
+        'range_separator': /@/,
+        'fetch_open': /\(/,
+        'fetch_separator': /[:;&\/?#]/,
+        'fetch_close': /\)/,
+    });
+    function $hyoo_harp_from_string(uri) {
+        let parent = {};
+        let prev = null;
+        let stack = [parent];
+        let range = null;
+        let values = null;
+        function fail_at(offset) {
+            const uri_marked = uri.substring(0, offset) + '\u035C' + uri.substring(offset);
+            $mol_fail(new Error(`Unexpected token at ${offset} of "${uri_marked}"`));
+        }
+        syntax.parse(uri, {
+            '': (text, chunks, offset) => {
+                if (values) {
+                    text = decodeURIComponent(text);
+                    range = (range && range.length > 1)
+                        ? [range[0], range[1] + text]
+                        : [(range?.[0] ?? '') + text];
+                }
+                else {
+                    let [, order, name] = /^([+-]?)(.*)$/.exec(text);
+                    prev = parent[decodeURIComponent(name)] = {};
+                    if (order)
+                        prev['+'] = order === '+';
+                    stack.push(parent);
+                }
+            },
+            'filter': (filter, chinks, offset) => {
+                if (values) {
+                    if (range) {
+                        if (filter === '!=')
+                            range.push(range.pop() + '!');
+                        values.push(range);
+                        range = null;
+                    }
+                    else {
+                        range = [filter];
+                    }
+                }
+                else if (prev) {
+                    values = prev[filter] = [];
+                }
+                else {
+                    values = [];
+                    parent[''] = values;
+                }
+            },
+            'range_separator': (found, chunks, offset) => {
+                if (!values)
+                    fail_at(offset);
+                range = [range?.[0] ?? '', ''];
+            },
+            'fetch_open': (found, chunks, offset) => {
+                if (range) {
+                    range[range.length - 1] += found;
+                }
+                else {
+                    if (!prev)
+                        fail_at(offset);
+                    parent = prev;
+                    values = null;
+                    prev = null;
+                }
+            },
+            'fetch_separator': (found, chunks, offset) => {
+                if (range) {
+                    values.push(range);
+                    range = null;
+                }
+                parent = stack.pop();
+                values = null;
+                prev = null;
+            },
+            'fetch_close': (found) => {
+                if (range) {
+                    range[range.length - 1] += found;
+                }
+                else {
+                    parent = stack.pop();
+                    values = null;
+                    prev = null;
+                }
+            },
+        });
+        if (range)
+            values.push(range);
+        return stack[0];
+    }
+    $.$hyoo_harp_from_string = $hyoo_harp_from_string;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    function $hyoo_harp_to_string(query) {
+        return Object.entries(query).map(([field, harp]) => {
+            if (field === '+')
+                return '';
+            if (field === '=')
+                return '';
+            if (field === '!=')
+                return '';
+            if (!harp)
+                return '';
+            const harp2 = harp;
+            const order = harp2['+'] === true ? '+' : harp2['+'] === false ? '-' : '';
+            const filter = harp2['='] ? '=' : harp2['!='] ? '!=' : '';
+            const name = encodeURIComponent(field);
+            let values = (harp2['='] || harp2['!='] || []).map(([min, max]) => {
+                if (max === undefined || min === max)
+                    return encodeURIComponent(String(min)) + '=';
+                min = (min === undefined) ? '' : encodeURIComponent(String(min));
+                max = (max === undefined) ? '' : encodeURIComponent(String(max));
+                return `${min}@${max}=`;
+            }).join('');
+            let fetch = $hyoo_harp_to_string(harp);
+            if (fetch)
+                fetch = `(${fetch})`;
+            return `${order}${name}${filter}${values}${fetch}`;
+        }).filter(Boolean).join(';');
+    }
+    $.$hyoo_harp_to_string = $hyoo_harp_to_string;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    const Int = $mol_data_pipe($mol_data_variant($mol_data_string, $mol_data_integer), Number);
+    function $hyoo_harp_scheme(sub, value = $mol_data_integer) {
+        const inner = $mol_data_optional($mol_data_record(sub));
+        const values = $mol_data_optional($mol_data_array($mol_data_array(value)));
+        const val = $mol_data_record({
+            ...sub,
+            '+': $mol_data_optional($mol_data_boolean),
+            '=': values,
+            '!=': values,
+            '_num': $mol_data_optional($mol_data_record({
+                '=': $mol_data_array($mol_data_array(Int))
+            })),
+            '_len': inner,
+            '_max': inner,
+            '_min': inner,
+            '_sum': inner,
+        });
+        return Object.assign(val, {
+            parse(str) {
+                return val($hyoo_harp_from_string(str));
+            },
+            build(query) {
+                return $hyoo_harp_to_string(query);
+            },
+        });
+    }
+    $.$hyoo_harp_scheme = $hyoo_harp_scheme;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    function $mol_offline() { }
+    $.$mol_offline = $mol_offline;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    const blacklist = new Set([
+        '//cse.google.com/adsense/search/async-ads.js'
+    ]);
+    /** Installs service worker proxy, which caches all requests and respond from cache on http errors. */
+    function $mol_offline_web() {
+        if (typeof window === 'undefined') {
+            self.addEventListener('install', (event) => {
+                ;
+                self.skipWaiting();
+            });
+            self.addEventListener('activate', (event) => {
+                // caches.delete( '$mol_offline' )
+                ;
+                self.clients.claim();
+                $$.$mol_log3_done({
+                    place: '$mol_offline',
+                    message: 'Activated',
+                });
+            });
+            self.addEventListener('fetch', (event) => {
+                const request = event.request;
+                // console.log( 'FETCH', request.mode, request.cache, request.url )
+                if (blacklist.has(request.url.replace(/^https?:/, ''))) {
+                    return event.respondWith(new Response(null, {
+                        status: 418,
+                        statusText: 'Blocked'
+                    }));
+                }
+                if (request.method !== 'GET')
+                    return;
+                if (!/^https?:/.test(request.url))
+                    return;
+                if (/\?/.test(request.url))
+                    return;
+                if (request.cache === 'no-store')
+                    return;
+                const fetch_data = () => fetch(new Request(request, { credentials: 'omit' })).then(response => {
+                    if (response.status !== 200)
+                        return response;
+                    event.waitUntil(caches.open('$mol_offline').then(cache => cache.put(request, response)));
+                    return response.clone();
+                });
+                const enrich = (response) => {
+                    // console.log( 'ENRICH', response.status, response.url )
+                    if (!response.status)
+                        return response;
+                    const headers = new Headers(response.headers);
+                    headers.set("$mol_offline", "");
+                    headers.set("Origin-Agent-Cluster", "?1"); // prevent thread sharing
+                    // headers.set( "Cross-Origin-Embedder-Policy", "credentialless" )
+                    // headers.set( "Cross-Origin-Resource-Policy", "cross-origin" )
+                    // headers.set( "Cross-Origin-Opener-Policy", "same-origin" )
+                    return new Response(response.body, {
+                        status: response.status,
+                        statusText: response.statusText,
+                        headers,
+                    });
+                };
+                const fresh = request.cache === 'force-cache' ? null : fetch_data();
+                if (fresh)
+                    event.waitUntil(fresh.then(enrich));
+                event.respondWith(caches.match(request).then(cached => request.cache === 'no-cache' || request.cache === 'reload'
+                    ? (cached
+                        ? fresh
+                            .then(actual => {
+                            if (actual.status === cached.status)
+                                return actual;
+                            throw new Error(`${actual.status}${actual.statusText ? ` ${actual.statusText}` : ''}`, { cause: actual });
+                        })
+                            .catch((err) => {
+                            const cloned = cached.clone();
+                            const message = `${err.cause instanceof Response ? '' : '500 '}${err.message} $mol_offline fallback to cache`;
+                            cloned.headers.set('$mol_offline_remote_status', message);
+                            return cloned;
+                        })
+                        : fresh)
+                    : (cached || fresh || fetch_data())).then(enrich));
+            });
+            self.addEventListener('beforeinstallprompt', (event) => event.prompt());
+        }
+        else if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+            console.warn('HTTPS or localhost is required for service workers.');
+        }
+        else if (!navigator.serviceWorker) {
+            console.warn('Service Worker is not supported.');
+        }
+        else {
+            $mol_dom.addEventListener('DOMContentLoaded', () => {
+                navigator.serviceWorker.register('web.js').then(reg => {
+                    reg.addEventListener('updatefound', () => {
+                        $$.$mol_log3_rise({
+                            place: '$mol_offline',
+                            message: 'Outdated',
+                        });
+                        const worker = reg.installing;
+                        worker.addEventListener('statechange', () => {
+                            if (worker.state !== 'activated')
+                                return;
+                            window.location.reload();
+                        });
+                    });
+                });
+            });
+        }
+    }
+    $.$mol_offline_web = $mol_offline_web;
+    $.$mol_offline = $mol_offline_web;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    try {
+        $mol_offline();
+    }
+    catch (error) {
+        console.error(error);
+    }
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    if (typeof window === 'undefined') {
+        const Query = $hyoo_harp_scheme({
+            BAZA: $hyoo_harp_scheme({}),
+            file: $hyoo_harp_scheme({}, $mol_data_string),
+            // name: $mol_data_optional( $hyoo_harp_scheme( {}, $mol_data_string ) ),
+        });
+        self.addEventListener('fetch', (event) => {
+            const url = new URL(event.request.url);
+            try {
+                var query = Query.parse(url.search);
+            }
+            catch {
+                return;
+            }
+            const id = query.file['=']?.[0][0];
+            if (!id)
+                return;
+            const link = new $giper_baza_link(id);
+            const file = $.$giper_baza_glob.Pawn(link, $giper_baza_file);
+            return event.respondWith($mol_wire_async(file).blob().then(blob => {
+                return new Response(blob, {
+                    status: file.filled() ? 200 : 404,
+                    statusText: file.filled() ? 'OK' : 'Not Filled',
+                    headers: {
+                        'Content-Type': file.type(),
+                        'X-Powered-By': '$giper_baza_file',
+                    },
+                });
+            }));
+        });
+    }
+})($ || ($ = {}));
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        class $bog_vk_track extends $.$bog_vk_track {
+            audio_data() {
+                return this.audio();
+            }
+            title() {
+                return this.audio_data()?.title ?? '';
+            }
+            artist() {
+                return this.audio_data()?.artist ?? '';
+            }
+            cover() {
+                return this.audio_data()?.album?.thumb?.photo_300 ?? '';
+            }
+            Cover() {
+                if (!this.cover())
+                    return null;
+                return super.Cover();
+            }
+            Cover_placeholder() {
+                if (this.cover())
+                    return null;
+                return super.Cover_placeholder();
+            }
+            duration_text() {
+                const d = this.audio_data()?.duration ?? 0;
+                const min = Math.floor(d / 60);
+                const sec = d % 60;
+                return `${min}:${sec.toString().padStart(2, '0')}`;
+            }
+            cached(next) {
+                const audio = this.audio_data();
+                if (!audio)
+                    return false;
+                if (next !== undefined)
+                    return next;
+                $bog_vk_cache.version();
+                return $mol_wire_sync($bog_vk_cache).is_cached(audio);
+            }
+            is_local() {
+                return this.audio_data()?.owner_id === 0;
+            }
+            can_drag() {
+                return !this.archive_mode();
+            }
+            Archive() {
+                if (this.archive_mode())
+                    return null;
+                return super.Archive();
+            }
+            Restore() {
+                if (!this.archive_mode())
+                    return null;
+                return super.Restore();
+            }
+            Delete_forever() {
+                if (!this.archive_mode())
+                    return null;
+                return super.Delete_forever();
+            }
+            Delete() {
+                if (!this.archive_mode())
+                    return null;
+                if (this.is_local())
+                    return null;
+                if (!this.cached())
+                    return null;
+                return super.Delete();
+            }
+            on_play_click() {
+                this.play(this.audio());
+            }
+            event_drag_start(event) {
+                if (!this.can_drag()) {
+                    event.preventDefault();
+                    return;
+                }
+                try {
+                    event.dataTransfer?.setData('text/x-bog-track', '1');
+                    if (event.dataTransfer)
+                        event.dataTransfer.effectAllowed = 'move';
+                }
+                catch { }
+                this.drag_start();
+            }
+            event_drag_over(event) {
+                if (!this.can_drag())
+                    return;
+                event.preventDefault();
+                if (event.dataTransfer)
+                    event.dataTransfer.dropEffect = 'move';
+            }
+            event_drop(event) {
+                if (!this.can_drag())
+                    return;
+                event.preventDefault();
+                this.drop_here();
+            }
+            delete_cached() {
+                const audio = this.audio_data();
+                if (!audio)
+                    return;
+                $mol_wire_sync($bog_vk_cache).drop(audio);
+                this.cached(false);
+                $bog_vk_cache.version($bog_vk_cache.version() + 1);
+            }
+        }
+        __decorate([
+            $mol_mem
+        ], $bog_vk_track.prototype, "cached", null);
+        $$.$bog_vk_track = $bog_vk_track;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    /**
+     * Персональная запись трека в home land пользователя.
+     * Синкается между устройствами через Giper Baza.
+     * Ключ в $giper_baza_dict_to — VK cache_key (`${owner_id}_${id}`).
+     */
+    class $bog_vk_track_baza extends $giper_baza_dict.with({
+        Vk_id: $giper_baza_atom_text,
+        Title: $giper_baza_atom_text,
+        Artist: $giper_baza_atom_text,
+        Duration: $giper_baza_atom_real,
+        Url: $giper_baza_atom_text,
+        Added: $giper_baza_atom_real,
+        Order: $giper_baza_atom_real,
+        Archived: $giper_baza_atom_bool,
+        File: $giper_baza_atom_link_to(() => $giper_baza_file),
+    }) {
+    }
+    $.$bog_vk_track_baza = $bog_vk_track_baza;
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        $mol_style_define($bog_vk_track, {
+            flex: {
+                direction: 'row',
+            },
+            align: {
+                items: 'center',
+            },
+            gap: $mol_gap.text,
+            padding: {
+                top: '0.5rem',
+                bottom: '0.5rem',
+                left: '0.5rem',
+                right: '0.5rem',
+            },
+            borderRadius: '0.5rem',
+            Cover_box: {
+                flex: {
+                    shrink: 0,
+                    grow: 0,
+                },
+                width: '3rem',
+                height: '3rem',
+                borderRadius: '4px',
+                overflow: { x: 'hidden', y: 'hidden' },
+                cursor: 'pointer',
+                justify: { content: 'center' },
+                align: { items: 'center' },
+            },
+            Cover: {
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+            },
+            Cover_placeholder: {
+                width: '100%',
+                height: '100%',
+                background: {
+                    color: $mol_theme.line,
+                },
+                color: $mol_theme.shade,
+                justify: {
+                    content: 'center',
+                },
+                align: {
+                    items: 'center',
+                },
+            },
+            Info: {
+                flex: {
+                    direction: 'column',
+                    grow: 1,
+                    shrink: 1,
+                },
+                minWidth: 0,
+                gap: '0.125rem',
+                cursor: 'pointer',
+            },
+            Title: {
+                font: {
+                    weight: 500,
+                    size: '0.8125rem',
+                },
+                whiteSpace: 'normal',
+                wordBreak: 'break-word',
+            },
+            Artist: {
+                font: {
+                    size: '0.75rem',
+                },
+                color: $mol_theme.shade,
+                whiteSpace: 'normal',
+                wordBreak: 'break-word',
+            },
+            Duration: {
+                font: {
+                    size: '0.6875rem',
+                },
+                color: $mol_theme.shade,
+            },
+            Delete: {
+                flex: { shrink: 0 },
+                justify: { content: 'flex-end' },
+            },
+            Archive: {
+                flex: { shrink: 0 },
+                justify: { content: 'flex-end' },
+            },
+            Restore: {
+                flex: { shrink: 0 },
+                justify: { content: 'flex-end' },
+            },
+            Delete_forever: {
+                flex: { shrink: 0 },
+                justify: { content: 'flex-end' },
+            },
+            '@': {
+                bog_vk_track_current: {
+                    true: {
+                        color: $mol_theme.focus,
+                    },
+                },
+            },
+        });
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+	($.$bog_vk_tracks) = class $bog_vk_tracks extends ($.$mol_list) {
+		track_audio(id){
+			return null;
+		}
+		track_current(id){
+			return false;
+		}
+		track_play(id, next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		track_can_drag(id){
+			return false;
+		}
+		track_drag_start(id, next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		track_drop_here(id, next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		track_archive(id, next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		track_restore(id, next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		track_delete(id, next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Track(id){
+			const obj = new this.$.$bog_vk_track();
+			(obj.audio) = () => ((this.track_audio(id)));
+			(obj.current) = () => ((this.track_current(id)));
+			(obj.play) = (next) => ((this.track_play(id, next)));
+			(obj.archive_mode) = () => ((this.archive_mode()));
+			(obj.can_drag) = () => ((this.track_can_drag(id)));
+			(obj.drag_start) = (next) => ((this.track_drag_start(id, next)));
+			(obj.drop_here) = (next) => ((this.track_drop_here(id, next)));
+			(obj.archive) = (next) => ((this.track_archive(id, next)));
+			(obj.restore) = (next) => ((this.track_restore(id, next)));
+			(obj.delete_forever) = (next) => ((this.track_delete(id, next)));
+			return obj;
+		}
+		track_rows(){
+			return [(this.Track("0"))];
+		}
+		audios(){
+			return [];
+		}
+		current_audio(){
+			return null;
+		}
+		play_audio(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		archive_mode(){
+			return false;
+		}
+		reorder_to(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		archive_audio(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		restore_audio(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		delete_audio(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		rows(){
+			return (this.track_rows());
+		}
+	};
+	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_play"));
+	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_drag_start"));
+	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_drop_here"));
+	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_archive"));
+	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_restore"));
+	($mol_mem_key(($.$bog_vk_tracks.prototype), "track_delete"));
+	($mol_mem_key(($.$bog_vk_tracks.prototype), "Track"));
+	($mol_mem(($.$bog_vk_tracks.prototype), "play_audio"));
+	($mol_mem(($.$bog_vk_tracks.prototype), "reorder_to"));
+	($mol_mem(($.$bog_vk_tracks.prototype), "archive_audio"));
+	($mol_mem(($.$bog_vk_tracks.prototype), "restore_audio"));
+	($mol_mem(($.$bog_vk_tracks.prototype), "delete_audio"));
+
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        class $bog_vk_tracks extends $.$bog_vk_tracks {
+            _drag_index = -1;
+            track_rows() {
+                return this.audios().map((_, i) => this.Track(i));
+            }
+            track_audio(index) {
+                return this.audios()[index] ?? null;
+            }
+            track_current(index) {
+                const audio = this.track_audio(index);
+                const current = this.current_audio();
+                if (!audio || !current)
+                    return false;
+                return audio.id === current.id && audio.owner_id === current.owner_id;
+            }
+            track_play(index) {
+                const audio = this.track_audio(index);
+                if (audio)
+                    this.play_audio(audio);
+            }
+            track_can_drag(_index) {
+                return !this.archive_mode();
+            }
+            track_drag_start(index) {
+                this._drag_index = index;
+            }
+            track_drop_here(index) {
+                const from = this._drag_index;
+                this._drag_index = -1;
+                if (from < 0 || from === index)
+                    return;
+                this.reorder_to({ from, to: index });
+            }
+            track_archive(index) {
+                const audio = this.track_audio(index);
+                if (audio)
+                    this.archive_audio(audio);
+            }
+            track_restore(index) {
+                const audio = this.track_audio(index);
+                if (audio)
+                    this.restore_audio(audio);
+            }
+            track_delete(index) {
+                const audio = this.track_audio(index);
+                if (audio)
+                    this.delete_audio(audio);
+            }
+        }
+        __decorate([
+            $mol_mem
+        ], $bog_vk_tracks.prototype, "track_rows", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_tracks.prototype, "track_play", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_tracks.prototype, "track_drop_here", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_tracks.prototype, "track_archive", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_tracks.prototype, "track_restore", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_tracks.prototype, "track_delete", null);
+        $$.$bog_vk_tracks = $bog_vk_tracks;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+	($.$mol_icon_skip_previous) = class $mol_icon_skip_previous extends ($.$mol_icon) {
+		path(){
+			return "M6,18V6H8V18H6M9.5,12L18,6V18L9.5,12Z";
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
+	($.$mol_icon_pause) = class $mol_icon_pause extends ($.$mol_icon) {
+		path(){
+			return "M14,19H18V5H14M6,19H10V5H6V19Z";
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
+	($.$mol_icon_skip_next) = class $mol_icon_skip_next extends ($.$mol_icon) {
+		path(){
+			return "M16,18H18V6H16M6,18L14.5,12L6,6V18Z";
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
+	($.$bog_vk_player) = class $bog_vk_player extends ($.$mol_view) {
+		Progress_bar(){
+			const obj = new this.$.$mol_view();
+			return obj;
+		}
+		Progress(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([(this.Progress_bar())]);
+			return obj;
+		}
+		cover(){
+			return "";
+		}
+		Cover(){
+			const obj = new this.$.$mol_image();
+			(obj.uri) = () => ((this.cover()));
+			return obj;
+		}
+		Cover_placeholder(){
+			const obj = new this.$.$mol_icon_music();
+			return obj;
+		}
+		title(){
+			return "";
+		}
+		Title(){
+			const obj = new this.$.$mol_paragraph();
+			(obj.title) = () => ((this.title()));
+			return obj;
+		}
+		artist(){
+			return "";
+		}
+		Artist(){
+			const obj = new this.$.$mol_paragraph();
+			(obj.title) = () => ((this.artist()));
+			return obj;
+		}
+		Track_info(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([(this.Title()), (this.Artist())]);
+			return obj;
+		}
+		Left(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([
+				(this.Cover()), 
+				(this.Cover_placeholder()), 
+				(this.Track_info())
+			]);
+			return obj;
+		}
+		prev(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Prev_icon(){
+			const obj = new this.$.$mol_icon_skip_previous();
+			return obj;
+		}
+		Prev(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.click) = (next) => ((this.prev(next)));
+			(obj.sub) = () => ([(this.Prev_icon())]);
+			return obj;
+		}
+		toggle(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Play_icon(){
+			const obj = new this.$.$mol_icon_play();
+			return obj;
+		}
+		Play(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.click) = (next) => ((this.toggle(next)));
+			(obj.sub) = () => ([(this.Play_icon())]);
+			return obj;
+		}
+		Pause_icon(){
+			const obj = new this.$.$mol_icon_pause();
+			return obj;
+		}
+		Pause(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.click) = (next) => ((this.toggle(next)));
+			(obj.sub) = () => ([(this.Pause_icon())]);
+			return obj;
+		}
+		next(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Next_icon(){
+			const obj = new this.$.$mol_icon_skip_next();
+			return obj;
+		}
+		Next(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.click) = (next) => ((this.next(next)));
+			(obj.sub) = () => ([(this.Next_icon())]);
+			return obj;
+		}
+		Center(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([
+				(this.Prev()), 
+				(this.Play()), 
+				(this.Pause()), 
+				(this.Next())
+			]);
+			return obj;
+		}
+		time_text(){
+			return "";
+		}
+		Time(){
+			const obj = new this.$.$mol_paragraph();
+			(obj.title) = () => ((this.time_text()));
+			return obj;
+		}
+		Right(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([(this.Time())]);
+			return obj;
+		}
+		Controls(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([
+				(this.Left()), 
+				(this.Center()), 
+				(this.Right())
+			]);
+			return obj;
+		}
+		current_audio(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		queue(){
+			return [];
+		}
+		queue_index(next){
+			if(next !== undefined) return next;
+			return 0;
+		}
+		play_track(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		sub(){
+			return [(this.Progress()), (this.Controls())];
+		}
+	};
+	($mol_mem(($.$bog_vk_player.prototype), "Progress_bar"));
+	($mol_mem(($.$bog_vk_player.prototype), "Progress"));
+	($mol_mem(($.$bog_vk_player.prototype), "Cover"));
+	($mol_mem(($.$bog_vk_player.prototype), "Cover_placeholder"));
+	($mol_mem(($.$bog_vk_player.prototype), "Title"));
+	($mol_mem(($.$bog_vk_player.prototype), "Artist"));
+	($mol_mem(($.$bog_vk_player.prototype), "Track_info"));
+	($mol_mem(($.$bog_vk_player.prototype), "Left"));
+	($mol_mem(($.$bog_vk_player.prototype), "prev"));
+	($mol_mem(($.$bog_vk_player.prototype), "Prev_icon"));
+	($mol_mem(($.$bog_vk_player.prototype), "Prev"));
+	($mol_mem(($.$bog_vk_player.prototype), "toggle"));
+	($mol_mem(($.$bog_vk_player.prototype), "Play_icon"));
+	($mol_mem(($.$bog_vk_player.prototype), "Play"));
+	($mol_mem(($.$bog_vk_player.prototype), "Pause_icon"));
+	($mol_mem(($.$bog_vk_player.prototype), "Pause"));
+	($mol_mem(($.$bog_vk_player.prototype), "next"));
+	($mol_mem(($.$bog_vk_player.prototype), "Next_icon"));
+	($mol_mem(($.$bog_vk_player.prototype), "Next"));
+	($mol_mem(($.$bog_vk_player.prototype), "Center"));
+	($mol_mem(($.$bog_vk_player.prototype), "Time"));
+	($mol_mem(($.$bog_vk_player.prototype), "Right"));
+	($mol_mem(($.$bog_vk_player.prototype), "Controls"));
+	($mol_mem(($.$bog_vk_player.prototype), "current_audio"));
+	($mol_mem(($.$bog_vk_player.prototype), "queue_index"));
+	($mol_mem(($.$bog_vk_player.prototype), "play_track"));
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    /**
+     * Персональное хранилище треков пользователя в Giper Baza.
+     * Живёт в home land (персональные данные, синкаются между устройствами).
+     * Ключ — VK cache_key вида `${owner_id}_${id}`.
+     */
+    class $bog_vk_store extends $mol_object2 {
+        /** Home land текущего пользователя. НЕ @$mol_mem — чтобы не было circular. */
+        static land() {
+            return this.$.$giper_baza_glob.home().land();
+        }
+        /** Словарь треков: cache_key → $bog_vk_track_baza. НЕ @$mol_mem. */
+        static tracks_dict() {
+            const Tracks = $giper_baza_dict_to($bog_vk_track_baza);
+            return this.land().Data(Tracks);
+        }
+        /** Ключ для baza из VK-аудио. */
+        static cache_key(audio) {
+            return `${audio.owner_id}_${audio.id}`;
+        }
+        /**
+         * Собирает треки из baza. archived=false → активные, archived=true → архивные.
+         * Сортирует по Order (asc, с fallback на Added).
+         */
+        static list_audios(archived) {
+            const dict = this.tracks_dict();
+            const keys = (dict.keys() ?? []);
+            const rows = [];
+            for (const key of keys) {
+                const track = dict.key(key);
+                if (!track)
+                    continue;
+                const is_arch = track.Archived()?.val() === true;
+                if (is_arch !== archived)
+                    continue;
+                const vk_id = track.Vk_id()?.val() ?? String(key);
+                const parts = vk_id.split('_');
+                const owner_id = Number(parts[0]);
+                const id = Number(parts[1]);
+                if (!Number.isFinite(owner_id) || !Number.isFinite(id))
+                    continue;
+                const added = Number(track.Added()?.val() ?? 0);
+                const order_val = track.Order()?.val();
+                // Если Order не задан — fallback на Added (делим, чтобы был в том же порядке).
+                const order = order_val == null ? added : Number(order_val);
+                let url = track.Url()?.val() ?? '';
+                rows.push({
+                    audio: {
+                        id,
+                        owner_id,
+                        artist: track.Artist()?.val() ?? '',
+                        title: track.Title()?.val() ?? '',
+                        duration: track.Duration()?.val() ?? 0,
+                        url,
+                    },
+                    order,
+                    added,
+                });
+            }
+            rows.sort((a, b) => {
+                if (a.order !== b.order)
+                    return a.order - b.order;
+                return b.added - a.added;
+            });
+            return rows.map(r => r.audio);
+        }
+        /** Активные (не архивные) треки. */
+        static saved_audios() {
+            return this.list_audios(false);
+        }
+        /** Архивные треки. */
+        static archived_audios() {
+            return this.list_audios(true);
+        }
+        /** Максимальный Order среди всех треков (для добавления новых). */
+        static max_order() {
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return 0;
+            }
+            const keys = (dict.keys() ?? []);
+            let max = 0;
+            for (const key of keys) {
+                const track = dict.key(key);
+                if (!track)
+                    continue;
+                const o = Number(track.Order()?.val() ?? 0);
+                if (o > max)
+                    max = o;
+                const a = Number(track.Added()?.val() ?? 0);
+                if (a > max)
+                    max = a;
+            }
+            return max;
+        }
+        /** Сохраняет/обновляет трек в baza. Идемпотентно. */
+        static save_track(audio) {
+            if (!audio)
+                return;
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return;
+            }
+            const key = this.cache_key(audio);
+            const track = dict.key(key, 'auto');
+            if (!track)
+                return;
+            // Обновляем только если значения реально отличаются, чтобы не засорять CRDT.
+            if (track.Vk_id()?.val() !== key)
+                track.Vk_id('auto').val(key);
+            const title = audio.title ?? '';
+            if (track.Title()?.val() !== title)
+                track.Title('auto').val(title);
+            const artist = audio.artist ?? '';
+            if (track.Artist()?.val() !== artist)
+                track.Artist('auto').val(artist);
+            const dur = Number(audio.duration ?? 0);
+            if (track.Duration()?.val() !== dur)
+                track.Duration('auto').val(dur);
+            if (audio.url && track.Url()?.val() !== audio.url)
+                track.Url('auto').val(audio.url);
+            if (track.Added()?.val() == null)
+                track.Added('auto').val(Date.now());
+            // Назначаем Order для новых треков (max + 1), чтобы в списке шли последними.
+            if (track.Order()?.val() == null) {
+                track.Order('auto').val(this.max_order() + 1);
+            }
+            // Флаг Archived НЕ трогаем — снимается только явным restore_track.
+        }
+        /** Меняет Order двух треков местами. */
+        static swap_order(a, b) {
+            if (!a || !b)
+                return;
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return;
+            }
+            const ta = dict.key(this.cache_key(a), 'auto');
+            const tb = dict.key(this.cache_key(b), 'auto');
+            if (!ta || !tb)
+                return;
+            const oa_raw = ta.Order()?.val();
+            const ob_raw = tb.Order()?.val();
+            const aa = Number(ta.Added()?.val() ?? 0);
+            const ab = Number(tb.Added()?.val() ?? 0);
+            const oa = oa_raw == null ? aa : Number(oa_raw);
+            const ob = ob_raw == null ? ab : Number(ob_raw);
+            // Если значения равны — сдвигаем на 1, чтобы порядок действительно поменялся.
+            const next_a = ob === oa ? oa + 1 : ob;
+            const next_b = ob === oa ? oa : oa;
+            ta.Order('auto').val(next_a);
+            tb.Order('auto').val(next_b);
+        }
+        /** Помечает трек как удалённый (мягкое удаление). */
+        static archive_track(audio) {
+            if (!audio)
+                return;
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return;
+            }
+            const key = this.cache_key(audio);
+            const track = dict.key(key);
+            if (!track)
+                return;
+            track.Archived('auto').val(true);
+        }
+        /** RAM-кеш свежезагруженных файлов на текущей сессии — играем без ожидания синка baza. */
+        static fresh_files = new Map();
+        /** Достаёт blob локально загруженного трека. null если не локальный или нет файла. */
+        static local_blob(audio) {
+            if (audio.owner_id !== 0)
+                return null;
+            const key = this.cache_key(audio);
+            const fresh = this.fresh_files.get(key);
+            if (fresh) {
+                console.log('[store] local blob from RAM:', audio.title, fresh.size, 'bytes,', fresh.type);
+                return fresh;
+            }
+            const dict = this.tracks_dict();
+            const track = dict.key(key);
+            if (!track)
+                return null;
+            const file = track.File()?.remote();
+            if (!file)
+                return null;
+            const buf = file.buffer();
+            if (!buf || buf.byteLength === 0) {
+                console.warn('[store] local blob empty:', audio.title, 'type:', file.type());
+                return null;
+            }
+            const type = file.type() || 'audio/mpeg';
+            const blob = new Blob([buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength)], { type });
+            console.log('[store] local blob from baza:', audio.title, blob.size, 'bytes,', type);
+            return blob;
+        }
+        /** Парсит "Artist - Title" из имени файла. */
+        static parse_filename(name) {
+            const base = name.replace(/\.[^.]+$/, '').trim();
+            const m = base.match(/^(.+?)\s*[-–—]\s*(.+)$/);
+            if (m)
+                return { artist: m[1].trim(), title: m[2].trim() };
+            return { artist: '', title: base };
+        }
+        /**
+         * Загружает локальный аудиофайл (с телефона) в home land.
+         * Блоб кладётся в $giper_baza_file, метаданные — в $bog_vk_track_baza.
+         * Возвращает audio для воспроизведения.
+         */
+        /** Детерминированный hash по строке (FNV-1a 32 bit). */
+        static hash_str(s) {
+            let h = 2166136261;
+            for (let i = 0; i < s.length; i++) {
+                h ^= s.charCodeAt(i);
+                h = Math.imul(h, 16777619);
+            }
+            return h >>> 0;
+        }
+        static save_local_track(file, buffer) {
+            const { artist, title } = this.parse_filename(file.name);
+            // Детерминированный id — одинаковый при ретраях wire, не создаёт дубликаты.
+            const id = this.hash_str(`${file.name}|${file.size}|${file.lastModified}`);
+            const audio = {
+                id,
+                owner_id: 0,
+                artist,
+                title,
+                duration: 0,
+                url: '',
+            };
+            console.log('[store] save_local_track:', file.name, file.size, 'bytes, type:', file.type, 'key:', `0_${id}`);
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                console.warn('[store] tracks_dict failed:', e);
+                return null;
+            }
+            const key = this.cache_key(audio);
+            const track = dict.key(key, 'auto');
+            if (!track) {
+                console.warn('[store] dict.key returned null for', key);
+                return null;
+            }
+            track.Vk_id('auto').val(key);
+            track.Title('auto').val(title);
+            track.Artist('auto').val(artist);
+            if (track.Added()?.val() == null)
+                track.Added('auto').val(Date.now());
+            if (track.Order()?.val() == null)
+                track.Order('auto').val(this.max_order() + 1);
+            track.Archived('auto').val(false);
+            const store = track.File('auto').ensure(null);
+            if (store) {
+                store.buffer(buffer);
+                store.type(file.type || 'audio/mpeg');
+                if (file.name)
+                    store.name(file.name);
+                console.log('[store] file written, type:', store.type(), 'chunks:', store.chunks().length);
+            }
+            else {
+                console.warn('[store] File ensure returned null');
+            }
+            this.fresh_files.set(key, file);
+            return audio;
+        }
+        /** Окончательно удаляет трек из baza (по ключу). */
+        static delete_track(audio) {
+            if (!audio)
+                return;
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return;
+            }
+            dict.cut(this.cache_key(audio));
+        }
+        /** Удаляет флаг Archived. */
+        static restore_track(audio) {
+            if (!audio)
+                return;
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return;
+            }
+            const key = this.cache_key(audio);
+            const track = dict.key(key);
+            if (!track)
+                return;
+            track.Archived('auto').val(false);
+        }
+    }
+    __decorate([
+        $mol_mem_key
+    ], $bog_vk_store, "list_audios", null);
+    __decorate([
+        $mol_action
+    ], $bog_vk_store, "save_track", null);
+    __decorate([
+        $mol_action
+    ], $bog_vk_store, "swap_order", null);
+    __decorate([
+        $mol_action
+    ], $bog_vk_store, "archive_track", null);
+    __decorate([
+        $mol_action
+    ], $bog_vk_store, "save_local_track", null);
+    __decorate([
+        $mol_action
+    ], $bog_vk_store, "delete_track", null);
+    __decorate([
+        $mol_action
+    ], $bog_vk_store, "restore_track", null);
+    $.$bog_vk_store = $bog_vk_store;
+})($ || ($ = {}));
+
+;
+"use strict";
+
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        class $bog_vk_player extends $.$bog_vk_player {
+            _audio_el;
+            _queue_idx = 0;
+            audio_el() {
+                if (this._audio_el)
+                    return this._audio_el;
+                const el = new Audio();
+                el.volume = 0.7;
+                el.addEventListener('ended', () => {
+                    try {
+                        const finished = this.current_audio();
+                        this.next();
+                        if (finished && navigator.onLine) {
+                            $bog_vk_cache.save_hls(finished).catch(() => { });
+                        }
+                    }
+                    catch (e) {
+                        console.warn('[player] ended handler error:', e);
+                    }
+                });
+                el.addEventListener('play', () => {
+                    try {
+                        this.playing(true);
+                    }
+                    catch { }
+                    if ('mediaSession' in navigator)
+                        navigator.mediaSession.playbackState = 'playing';
+                });
+                el.addEventListener('pause', () => {
+                    try {
+                        this.playing(false);
+                    }
+                    catch { }
+                    if ('mediaSession' in navigator)
+                        navigator.mediaSession.playbackState = 'paused';
+                });
+                el.addEventListener('timeupdate', () => {
+                    this.current_time(el.currentTime);
+                });
+                el.addEventListener('loadedmetadata', () => {
+                    this.duration(el.duration);
+                });
+                el.addEventListener('error', (e) => {
+                    console.error('[player] audio error:', el.error?.code, el.error?.message, el.error);
+                });
+                this._audio_el = el;
+                return el;
+            }
+            setup_media_session() {
+                if (!('mediaSession' in navigator))
+                    return;
+                const el = this.audio_el();
+                const ms = navigator.mediaSession;
+                ms.setActionHandler('previoustrack', () => { try {
+                    this.prev();
+                }
+                catch { } });
+                ms.setActionHandler('nexttrack', () => { try {
+                    this.next();
+                }
+                catch { } });
+                ms.setActionHandler('seekto', (details) => {
+                    if (details.seekTime != null)
+                        el.currentTime = details.seekTime;
+                });
+                ms.setActionHandler('play', () => { el.play().catch(() => { }); });
+                ms.setActionHandler('pause', () => { el.pause(); });
+            }
+            queue_index(next) {
+                if (next !== undefined)
+                    this._queue_idx = next;
+                return this._queue_idx;
+            }
+            playing(next) {
+                return next ?? false;
+            }
+            current_time(next) {
+                return next ?? 0;
+            }
+            duration(next) {
+                return next ?? 0;
+            }
+            title() {
+                return this.current_audio()?.title ?? '';
+            }
+            artist() {
+                return this.current_audio()?.artist ?? '';
+            }
+            cover() {
+                return this.current_audio()?.album?.thumb?.photo_300 ?? '';
+            }
+            Cover() {
+                if (!this.cover())
+                    return null;
+                return super.Cover();
+            }
+            Cover_placeholder() {
+                if (this.cover())
+                    return null;
+                return super.Cover_placeholder();
+            }
+            time_text() {
+                const cur = this.current_time();
+                const dur = this.duration();
+                return `${this.format_time(cur)} / ${this.format_time(dur)}`;
+            }
+            format_time(seconds) {
+                const min = Math.floor(seconds / 60);
+                const sec = Math.floor(seconds % 60);
+                return `${min}:${sec.toString().padStart(2, '0')}`;
+            }
+            progress_percent() {
+                const dur = this.duration();
+                if (!dur)
+                    return 0;
+                return (this.current_time() / dur) * 100;
+            }
+            play_track(audio) {
+                if (!audio)
+                    return;
+                const el = this.audio_el();
+                this.current_audio(audio);
+                if ('mediaSession' in navigator) {
+                    const artwork = [];
+                    const thumb = audio.album?.thumb?.photo_300;
+                    if (thumb) {
+                        artwork.push({ src: thumb, sizes: '300x300' });
+                    }
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: audio.title,
+                        artist: audio.artist,
+                        artwork,
+                    });
+                    this.setup_media_session();
+                }
+                // Immediately claim audio focus before any async work.
+                // On iOS/Android lock screen, user activation expires fast —
+                // calling play() synchronously preserves the gesture context.
+                if (audio.url) {
+                    el.src = audio.url;
+                    el.play().catch(() => { });
+                }
+                this.play_source(audio, el);
+            }
+            _last_blob_url = '';
+            async play_source(audio, el) {
+                try {
+                    // Revoke previous blob URL to prevent memory leaks
+                    if (this._last_blob_url) {
+                        URL.revokeObjectURL(this._last_blob_url);
+                        this._last_blob_url = '';
+                    }
+                    // 0. Локальный трек — blob лежит в Giper Baza.
+                    if (audio.owner_id === 0) {
+                        // $mol_wire_async (не sync!) внутри обычной async-функции —
+                        // возвращает Promise, который реально ждёт IDB ball_load.
+                        const blob = await $mol_wire_async($bog_vk_store).local_blob(audio);
+                        if (blob) {
+                            const url = URL.createObjectURL(blob);
+                            this._last_blob_url = url;
+                            el.src = url;
+                            await this.safe_play(el);
+                            return;
+                        }
+                    }
+                    // 1. Try cache (has actual audio data, works offline)
+                    const cached = await $bog_vk_cache.get(audio);
+                    if (cached) {
+                        this._last_blob_url = cached;
+                        el.src = cached;
+                        await this.safe_play(el);
+                        return;
+                    }
+                    // 2. Try direct URL (Safari supports HLS natively)
+                    if (audio.url) {
+                        el.src = audio.url;
+                        try {
+                            await this.safe_play(el);
+                            $bog_vk_cache.save_hls(audio).catch(() => { });
+                            return;
+                        }
+                        catch {
+                            // Direct play failed — download first
+                        }
+                    }
+                    // 3. Download HLS → cache → play
+                    if (audio.url) {
+                        await $bog_vk_cache.save_hls(audio);
+                        const url = await $bog_vk_cache.get(audio);
+                        if (url) {
+                            this._last_blob_url = url;
+                            el.src = url;
+                            await this.safe_play(el);
+                            return;
+                        }
+                    }
+                    console.warn('[player] no source:', audio.artist, '—', audio.title);
+                }
+                catch (e) {
+                    console.error('[player] play failed:', e);
+                }
+                this.playing(false);
+            }
+            async safe_play(el) {
+                try {
+                    await el.play();
+                }
+                catch (e) {
+                    // NotAllowedError = user activation lost (lock screen, background tab)
+                    // Retry: set up to play when user interacts or audio becomes available
+                    if (e?.name === 'NotAllowedError') {
+                        console.warn('[player] play blocked, will resume on user interaction');
+                        el.muted = true;
+                        try {
+                            await el.play();
+                        }
+                        catch { }
+                        // Unmute after short delay — audio context is now active
+                        el.muted = false;
+                    }
+                    else {
+                        throw e;
+                    }
+                }
+            }
+            toggle() {
+                const el = this.audio_el();
+                if (this.playing()) {
+                    el.pause();
+                }
+                else {
+                    el.play();
+                }
+            }
+            prev() {
+                const queue = this.queue();
+                const idx = this._queue_idx;
+                if (idx > 0) {
+                    this._queue_idx = idx - 1;
+                    this.play_track(queue[idx - 1]);
+                }
+            }
+            next() {
+                const queue = this.queue();
+                if (!queue.length)
+                    return;
+                const next_idx = this._queue_idx + 1 < queue.length ? this._queue_idx + 1 : 0;
+                this._queue_idx = next_idx;
+                this.play_track(queue[next_idx]);
+            }
+            sub() {
+                if (!this.current_audio())
+                    return [];
+                return super.sub();
+            }
+            Play() {
+                if (this.playing())
+                    return null;
+                return super.Play();
+            }
+            Pause() {
+                if (!this.playing())
+                    return null;
+                return super.Pause();
+            }
+            auto() {
+                const style = this.Progress_bar().dom_node().style;
+                style.width = `${this.progress_percent()}%`;
+            }
+        }
+        __decorate([
+            $mol_mem
+        ], $bog_vk_player.prototype, "playing", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_player.prototype, "current_time", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_player.prototype, "duration", null);
+        $$.$bog_vk_player = $bog_vk_player;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        $mol_style_define($bog_vk_player, {
+            width: '100%',
+            flex: {
+                direction: 'column',
+                shrink: 0,
+            },
+            background: {
+                color: $mol_theme.card,
+            },
+            position: 'sticky',
+            bottom: 0,
+            Progress: {
+                height: '3px',
+                background: {
+                    color: $mol_theme.line,
+                },
+                cursor: 'pointer',
+            },
+            Progress_bar: {
+                height: '3px',
+                background: {
+                    color: $mol_theme.focus,
+                },
+                width: 0,
+            },
+            Controls: {
+                flex: {
+                    direction: 'row',
+                },
+                align: {
+                    items: 'center',
+                },
+                padding: {
+                    top: '0.25rem',
+                    bottom: '0.25rem',
+                    left: '0.75rem',
+                    right: '0.75rem',
+                },
+                gap: $mol_gap.text,
+            },
+            Left: {
+                flex: {
+                    direction: 'row',
+                    grow: 1,
+                    shrink: 1,
+                },
+                align: {
+                    items: 'center',
+                },
+                gap: $mol_gap.text,
+                overflow: {
+                    x: 'hidden',
+                },
+            },
+            Cover: {
+                width: '2.5rem',
+                height: '2.5rem',
+                borderRadius: '4px',
+                flex: {
+                    shrink: 0,
+                },
+                objectFit: 'cover',
+            },
+            Cover_placeholder: {
+                width: '2.5rem',
+                height: '2.5rem',
+                borderRadius: '4px',
+                flex: {
+                    shrink: 0,
+                },
+                background: {
+                    color: $mol_theme.line,
+                },
+                color: $mol_theme.shade,
+                justify: {
+                    content: 'center',
+                },
+                align: {
+                    items: 'center',
+                },
+            },
+            Track_info: {
+                flex: {
+                    direction: 'column',
+                    shrink: 1,
+                },
+                overflow: {
+                    x: 'hidden',
+                },
+                gap: '0.125rem',
+            },
+            Title: {
+                font: {
+                    weight: 'bold',
+                    size: '0.8125rem',
+                },
+                whiteSpace: 'nowrap',
+                overflow: {
+                    x: 'hidden',
+                },
+                textOverflow: 'ellipsis',
+            },
+            Artist: {
+                font: {
+                    size: '0.75rem',
+                },
+                color: $mol_theme.shade,
+                whiteSpace: 'nowrap',
+                overflow: {
+                    x: 'hidden',
+                },
+                textOverflow: 'ellipsis',
+            },
+            Center: {
+                flex: {
+                    direction: 'row',
+                    shrink: 0,
+                },
+                align: {
+                    items: 'center',
+                },
+                gap: '0.25rem',
+            },
+            Right: {
+                flex: {
+                    direction: 'row',
+                    shrink: 0,
+                },
+                align: {
+                    items: 'center',
+                },
+                gap: $mol_gap.text,
+            },
+            Time: {
+                font: {
+                    size: '0.75rem',
+                },
+                color: $mol_theme.shade,
+                whiteSpace: 'nowrap',
+            },
+        });
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+
+;
 	($.$bog_vk_app) = class $bog_vk_app extends ($.$mol_page) {
 		Theme(){
-			const obj = new this.$.$mol_theme_auto();
+			const obj = new this.$.$bog_theme_auto();
 			return obj;
 		}
 		Popup_fix(){
@@ -31209,21 +31880,6 @@ var $;
 			(obj.checked) = (next) => ((this.account_open(next)));
 			return obj;
 		}
-		Help_icon(){
-			const obj = new this.$.$mol_icon_help_circle_outline();
-			return obj;
-		}
-		help_open(next){
-			if(next !== undefined) return next;
-			return false;
-		}
-		Help_toggle(){
-			const obj = new this.$.$mol_check_icon();
-			(obj.hint) = () => ("Подсказка");
-			(obj.Icon) = () => ((this.Help_icon()));
-			(obj.checked) = (next) => ((this.help_open(next)));
-			return obj;
-		}
 		upload_files(next){
 			if(next !== undefined) return next;
 			return [];
@@ -31235,17 +31891,9 @@ var $;
 			(obj.files) = (next) => ((this.upload_files(next)));
 			return obj;
 		}
-		Version(){
-			const obj = new this.$.$bog_version();
-			(obj.version) = () => ("0.2.2");
-			return obj;
-		}
-		Sync_status(){
-			const obj = new this.$.$giper_baza_status();
-			return obj;
-		}
-		Lighter(){
-			const obj = new this.$.$mol_lights_toggle();
+		Theme_btn(){
+			const obj = new this.$.$bog_theme_toggle();
+			(obj.theme_auto) = () => ((this.Theme()));
 			return obj;
 		}
 		scroll(next){
@@ -31368,11 +32016,8 @@ var $;
 			return [
 				(this.Nickname_label()), 
 				(this.Account_toggle()), 
-				(this.Help_toggle()), 
 				(this.Upload()), 
-				(this.Version()), 
-				(this.Sync_status()), 
-				(this.Lighter())
+				(this.Theme_btn())
 			];
 		}
 		body_scroll_top(next){
@@ -31399,14 +32044,9 @@ var $;
 	($mol_mem(($.$bog_vk_app.prototype), "Account_icon"));
 	($mol_mem(($.$bog_vk_app.prototype), "account_open"));
 	($mol_mem(($.$bog_vk_app.prototype), "Account_toggle"));
-	($mol_mem(($.$bog_vk_app.prototype), "Help_icon"));
-	($mol_mem(($.$bog_vk_app.prototype), "help_open"));
-	($mol_mem(($.$bog_vk_app.prototype), "Help_toggle"));
 	($mol_mem(($.$bog_vk_app.prototype), "upload_files"));
 	($mol_mem(($.$bog_vk_app.prototype), "Upload"));
-	($mol_mem(($.$bog_vk_app.prototype), "Version"));
-	($mol_mem(($.$bog_vk_app.prototype), "Sync_status"));
-	($mol_mem(($.$bog_vk_app.prototype), "Lighter"));
+	($mol_mem(($.$bog_vk_app.prototype), "Theme_btn"));
 	($mol_mem(($.$bog_vk_app.prototype), "scroll"));
 	($mol_mem(($.$bog_vk_app.prototype), "Account"));
 	($mol_mem(($.$bog_vk_app.prototype), "Auth_link"));
@@ -35721,13 +36361,20 @@ var $;
             account_open(next) {
                 return $mol_state_local.value('vk_account_open', next) ?? false;
             }
-            help_open(next) {
-                return $mol_state_local.value('vk_help_open', next) ?? true;
-            }
             Account() {
                 if (!this.account_open())
                     return null;
                 return super.Account();
+            }
+            /** Динамические лейблы вкладок с количеством треков. */
+            tab_options() {
+                const my = this.my_audios().length;
+                const arch = this.archived_audios().length;
+                return {
+                    my: my ? `Моя музыка ${my}` : 'Моя музыка',
+                    search: 'Поиск',
+                    archive: arch ? `Архив ${arch}` : 'Архив',
+                };
             }
             /** Никнейм для шапки — берём прямо из home land профиля. */
             nickname_label() {
@@ -35759,8 +36406,6 @@ var $;
             }
             Auth_block() {
                 if (this.token())
-                    return null;
-                if (!this.help_open())
                     return null;
                 return super.Auth_block();
             }
@@ -35830,9 +36475,6 @@ var $;
         __decorate([
             $mol_mem
         ], $bog_vk_app.prototype, "account_open", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_app.prototype, "help_open", null);
         __decorate([
             $mol_mem
         ], $bog_vk_app.prototype, "nickname_label", null);

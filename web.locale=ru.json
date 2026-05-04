@@ -1,4 +1,5 @@
 {
+	"$bog_theme_picker_Search_hint": "Начните вводить для поиска",
 	"$giper_baza_land_grab_dictionary_deny": "🔐 Приватно",
 	"$giper_baza_land_grab_dictionary_post": "✍ Изменяемо",
 	"$giper_baza_land_grab_dictionary_pull": "🔱 Вливаемо",
@@ -25,7 +26,6 @@
 	"$mol_form_form_invalid": "В форме есть ошибки",
 	"$mol_form_message_done": "Сохранено",
 	"$mol_form_submit_title": "Сохранить",
-	"$mol_lights_toggle_hint": "Переключить освещение",
 	"$mol_link_source_hint": "Исходные коды",
 	"$mol_search_Clear_hint": "Очистить",
 	"$mol_search_hint": "Поиск..",
