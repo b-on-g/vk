@@ -9611,8 +9611,18 @@ declare namespace $ {
         static archive_track(audio: $bog_vk_api_audio): void;
         /** RAM-кеш свежезагруженных файлов на текущей сессии — играем без ожидания синка baza. */
         private static fresh_files;
-        /** Достаёт blob локально загруженного трека. null если не локальный или нет файла. */
+        /**
+         * Достаёт blob трека из Giper Baza. null если в baza нет файла.
+         * Работает и для локальных загрузок (owner_id === 0), и для VK-треков —
+         * baza используется как cross-device blob storage.
+         */
         static local_blob(audio: $bog_vk_api_audio): Blob | null;
+        /**
+         * Сохраняет байты аудио в baza (поле File у $bog_vk_track_baza).
+         * Вызывается из cache.save_hls после успешной выкачки HLS — чтобы блоб
+         * синкался на другие устройства через Giper Baza.
+         */
+        static save_blob(audio: $bog_vk_api_audio, buffer: Uint8Array, mime: string): void;
         /** Парсит "Artist - Title" из имени файла. */
         static parse_filename(name: string): {
             artist: string;
@@ -10475,6 +10485,13 @@ declare namespace $.$$ {
         Account(): any;
         nickname_label(): string;
         Nickname_label(): any;
+        /**
+         * Авто-импорт треков из VK в Giper Baza.
+         * Вызывается реактивно из auto() — `@$mol_mem` ретраит при появлении
+         * токена / готовности baza. Идемпотентно (save_track обновляет только
+         * изменившиеся поля), так что вызов на каждом тике безопасен.
+         */
+        auto_import(): number | null;
         auto(): any;
     }
 }

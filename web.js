@@ -29514,6 +29514,16 @@ var $;
                 await tx.stores.meta.put({ ...audio, url: '' }, cache_id);
                 db.destructor();
                 console.log(`[cache] saved: ${audio.artist} — ${audio.title} (${sizeMB} MB)`);
+                // Дублируем blob в Giper Baza, чтобы offline-воспроизведение работало
+                // и на других устройствах (sync через GB).
+                try {
+                    $bog_vk_store.save_blob(audio, audioData, mime);
+                }
+                catch (e) {
+                    if (e instanceof Promise)
+                        throw e;
+                    console.warn(`[cache] baza save failed: ${audio.artist} — ${audio.title}:`, e?.message);
+                }
             }
             catch (e) {
                 console.warn(`[cache] FAILED: ${audio.artist} — ${audio.title}:`, e?.message || e?.name || String(e), e);
@@ -30547,14 +30557,16 @@ var $;
         }
         /** RAM-кеш свежезагруженных файлов на текущей сессии — играем без ожидания синка baza. */
         static fresh_files = new Map();
-        /** Достаёт blob локально загруженного трека. null если не локальный или нет файла. */
+        /**
+         * Достаёт blob трека из Giper Baza. null если в baza нет файла.
+         * Работает и для локальных загрузок (owner_id === 0), и для VK-треков —
+         * baza используется как cross-device blob storage.
+         */
         static local_blob(audio) {
-            if (audio.owner_id !== 0)
-                return null;
             const key = this.cache_key(audio);
             const fresh = this.fresh_files.get(key);
             if (fresh) {
-                console.log('[store] local blob from RAM:', audio.title, fresh.size, 'bytes,', fresh.type);
+                console.log('[store] blob from RAM:', audio.title, fresh.size, 'bytes,', fresh.type);
                 return fresh;
             }
             const dict = this.tracks_dict();
@@ -30565,14 +30577,40 @@ var $;
             if (!file)
                 return null;
             const buf = file.buffer();
-            if (!buf || buf.byteLength === 0) {
-                console.warn('[store] local blob empty:', audio.title, 'type:', file.type());
+            if (!buf || buf.byteLength === 0)
                 return null;
-            }
             const type = file.type() || 'audio/mpeg';
             const blob = new Blob([buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength)], { type });
-            console.log('[store] local blob from baza:', audio.title, blob.size, 'bytes,', type);
+            console.log('[store] blob from baza:', audio.title, blob.size, 'bytes,', type);
             return blob;
+        }
+        /**
+         * Сохраняет байты аудио в baza (поле File у $bog_vk_track_baza).
+         * Вызывается из cache.save_hls после успешной выкачки HLS — чтобы блоб
+         * синкался на другие устройства через Giper Baza.
+         */
+        static save_blob(audio, buffer, mime) {
+            if (!audio)
+                return;
+            let dict;
+            try {
+                dict = this.tracks_dict();
+            }
+            catch (e) {
+                if (e instanceof Promise)
+                    throw e;
+                return;
+            }
+            const key = this.cache_key(audio);
+            const track = dict.key(key, 'auto');
+            if (!track)
+                return;
+            const store = track.File('auto').ensure(null);
+            if (!store)
+                return;
+            store.buffer(buffer);
+            store.type(mime || 'audio/mpeg');
+            console.log('[store] blob saved to baza:', audio.title, buffer.byteLength, 'bytes,', mime);
         }
         /** Парсит "Artist - Title" из имени файла. */
         static parse_filename(name) {
@@ -30694,6 +30732,9 @@ var $;
     __decorate([
         $mol_action
     ], $bog_vk_store, "archive_track", null);
+    __decorate([
+        $mol_action
+    ], $bog_vk_store, "save_blob", null);
     __decorate([
         $mol_action
     ], $bog_vk_store, "save_local_track", null);
@@ -31856,18 +31897,15 @@ var $;
                         URL.revokeObjectURL(this._last_blob_url);
                         this._last_blob_url = '';
                     }
-                    // 0. Локальный трек — blob лежит в Giper Baza.
-                    if (audio.owner_id === 0) {
-                        // $mol_wire_async (не sync!) внутри обычной async-функции —
-                        // возвращает Promise, который реально ждёт IDB ball_load.
-                        const blob = await $mol_wire_async($bog_vk_store).local_blob(audio);
-                        if (blob) {
-                            const url = URL.createObjectURL(blob);
-                            this._last_blob_url = url;
-                            el.src = url;
-                            await this.safe_play(el);
-                            return;
-                        }
+                    // 0. Blob из Giper Baza (локальные загрузки + VK-треки, синкнутые с другого устройства).
+                    // $mol_wire_async внутри обычной async-функции реально ждёт IDB ball_load.
+                    const blob = await $mol_wire_async($bog_vk_store).local_blob(audio);
+                    if (blob) {
+                        const url = URL.createObjectURL(blob);
+                        this._last_blob_url = url;
+                        el.src = url;
+                        await this.safe_play(el);
+                        return;
                     }
                     // 1. Try cache (has actual audio data, works offline)
                     const cached = await $bog_vk_cache.get(audio);
@@ -32558,6 +32596,35 @@ var $;
                 console.warn('[app] yard masters fix failed:', e?.message);
             }
         })();
+        (function bridge_vk_token_from_chrome_storage() {
+            try {
+                const ext = globalThis.chrome;
+                if (!ext?.storage?.local?.get)
+                    return;
+                const apply = (token) => {
+                    if (!token)
+                        return;
+                    try {
+                        if (window.localStorage.getItem('vk_token') === JSON.stringify(token))
+                            return;
+                        window.localStorage.setItem('vk_token', JSON.stringify(token));
+                        window.dispatchEvent(new StorageEvent('storage', { key: 'vk_token' }));
+                    }
+                    catch (e) {
+                        console.warn('[app] vk_token write failed:', e?.message);
+                    }
+                };
+                ext.storage.local.get(['vk_token'], (r) => apply(r?.vk_token ?? ''));
+                ext.storage.onChanged?.addListener?.((changes, area) => {
+                    if (area !== 'local' || !changes?.vk_token)
+                        return;
+                    apply(changes.vk_token.newValue ?? '');
+                });
+            }
+            catch (e) {
+                console.warn('[app] vk_token bridge failed:', e?.message);
+            }
+        })();
         (function import_account_from_hash() {
             try {
                 if (typeof location === 'undefined')
@@ -32834,11 +32901,55 @@ var $;
                     return null;
                 return super.Nickname_label();
             }
+            /**
+             * Авто-импорт треков из VK в Giper Baza.
+             * Вызывается реактивно из auto() — `@$mol_mem` ретраит при появлении
+             * токена / готовности baza. Идемпотентно (save_track обновляет только
+             * изменившиеся поля), так что вызов на каждом тике безопасен.
+             */
+            auto_import() {
+                if (!$bog_vk_api.in_extension())
+                    return null;
+                const token = $bog_vk_api.token();
+                if (!token)
+                    return null;
+                let list;
+                try {
+                    list = $bog_vk_api.my_audios();
+                }
+                catch (e) {
+                    if (e instanceof Promise)
+                        throw e;
+                    console.warn('[app] auto_import fetch failed:', e?.message);
+                    return null;
+                }
+                const items = list?.items ?? [];
+                if (!items.length)
+                    return null;
+                for (const audio of items) {
+                    try {
+                        $bog_vk_store.save_track(audio);
+                    }
+                    catch (e) {
+                        if (e instanceof Promise)
+                            throw e;
+                        console.warn('[app] auto_import save failed:', audio.title, e?.message);
+                    }
+                }
+                return items.length;
+            }
             auto() {
                 try {
                     $bog_vk_store.saved_audios();
                 }
                 catch { }
+                try {
+                    this.auto_import();
+                }
+                catch (e) {
+                    if (e instanceof Promise)
+                        throw e;
+                }
                 return super.auto();
             }
         }
@@ -32884,6 +32995,9 @@ var $;
         __decorate([
             $mol_mem
         ], $bog_vk_app.prototype, "nickname_label", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_app.prototype, "auto_import", null);
         $$.$bog_vk_app = $bog_vk_app;
     })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));
