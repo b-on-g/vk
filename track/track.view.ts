@@ -66,7 +66,7 @@ namespace $.$$ {
 		}
 
 		Delete() {
-			if (this.archive_mode()) return null as any
+			if (!this.archive_mode()) return null as any
 			if (this.is_local()) return null as any
 			if (!this.cached()) return null as any
 			return super.Delete()
