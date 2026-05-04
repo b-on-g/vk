@@ -115,18 +115,7 @@ namespace $.$$ {
 			},
 		},
 
-		Help_panel: {
-			padding: {
-				top: '0.5rem',
-				bottom: '0.5rem',
-				left: '0.75rem',
-				right: '0.75rem',
-			},
-			whiteSpace: 'pre-wrap',
-			wordBreak: 'break-word',
-		},
-
-		Proxy_input: {
+Proxy_input: {
 			font: {
 				size: '0.875rem',
 			},

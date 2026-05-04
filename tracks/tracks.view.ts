@@ -1,6 +1,8 @@
 namespace $.$$ {
 	export class $bog_vk_tracks extends $.$bog_vk_tracks {
 
+		private _drag_index = -1
+
 		@$mol_mem
 		track_rows() {
 			return this.audios().map((_: any, i: number) => this.Track(i))
@@ -23,26 +25,20 @@ namespace $.$$ {
 			if (audio) this.play_audio(audio)
 		}
 
-		track_can_move_up(index: number) {
-			if (this.archive_mode()) return false
-			return index > 0
+		track_can_drag(_index: number) {
+			return !this.archive_mode()
 		}
 
-		track_can_move_down(index: number) {
-			if (this.archive_mode()) return false
-			return index < this.audios().length - 1
-		}
-
-		@$mol_action
-		track_move_up(index: number) {
-			const audio = this.track_audio(index)
-			if (audio) this.reorder_up(audio)
+		track_drag_start(index: number) {
+			this._drag_index = index
 		}
 
 		@$mol_action
-		track_move_down(index: number) {
-			const audio = this.track_audio(index)
-			if (audio) this.reorder_down(audio)
+		track_drop_here(index: number) {
+			const from = this._drag_index
+			this._drag_index = -1
+			if (from < 0 || from === index) return
+			this.reorder_to({ from, to: index })
 		}
 
 		@$mol_action

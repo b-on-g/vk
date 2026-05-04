@@ -315,33 +315,37 @@ namespace $.$$ {
 		}
 
 		@$mol_action
-		reorder_up(audio: $bog_vk_api_audio | null) {
-			if (!audio) return
+		reorder_to(args: { from: number, to: number } | null) {
+			if (!args) return
+			const { from, to } = args
 			const list = this.visible_audios()
-			const idx = list.findIndex((a: $bog_vk_api_audio) => a.id === audio.id && a.owner_id === audio.owner_id)
-			if (idx <= 0) return
-			const prev = list[idx - 1]
-			// Для треков, которые есть в VK но не в baza — сначала сохраняем в baza, чтобы Order появился.
-			try { $bog_vk_store.save_track(audio) } catch (e: any) { if (e instanceof Promise) return }
-			try { $bog_vk_store.save_track(prev) } catch (e: any) { if (e instanceof Promise) return }
-			try { $bog_vk_store.swap_order(audio, prev) } catch (e: any) {
-				if (e instanceof Promise) return
-				console.warn('[app] baza reorder failed:', e?.message)
-			}
-		}
-
-		@$mol_action
-		reorder_down(audio: $bog_vk_api_audio | null) {
-			if (!audio) return
-			const list = this.visible_audios()
-			const idx = list.findIndex((a: $bog_vk_api_audio) => a.id === audio.id && a.owner_id === audio.owner_id)
-			if (idx < 0 || idx >= list.length - 1) return
-			const nxt = list[idx + 1]
-			try { $bog_vk_store.save_track(audio) } catch (e: any) { if (e instanceof Promise) return }
-			try { $bog_vk_store.save_track(nxt) } catch (e: any) { if (e instanceof Promise) return }
-			try { $bog_vk_store.swap_order(audio, nxt) } catch (e: any) {
-				if (e instanceof Promise) return
-				console.warn('[app] baza reorder failed:', e?.message)
+			if (from === to) return
+			if (from < 0 || to < 0 || from >= list.length || to >= list.length) return
+			const moving = list[from]
+			if (!moving) return
+			// Прогоняем серию swap'ов — каждый перестановкой сдвигает moving на одну позицию
+			// в нужную сторону. Локальный list статичен, а в baza Order меняется реально.
+			try { $bog_vk_store.save_track(moving) } catch (e: any) { if (e instanceof Promise) return }
+			if (from < to) {
+				for (let i = from; i < to; i++) {
+					const next = list[i + 1]
+					if (!next) break
+					try { $bog_vk_store.save_track(next) } catch (e: any) { if (e instanceof Promise) return }
+					try { $bog_vk_store.swap_order(moving, next) } catch (e: any) {
+						if (e instanceof Promise) return
+						console.warn('[app] reorder_to swap failed:', e?.message)
+					}
+				}
+			} else {
+				for (let i = from; i > to; i--) {
+					const prev = list[i - 1]
+					if (!prev) break
+					try { $bog_vk_store.save_track(prev) } catch (e: any) { if (e instanceof Promise) return }
+					try { $bog_vk_store.swap_order(moving, prev) } catch (e: any) {
+						if (e instanceof Promise) return
+						console.warn('[app] reorder_to swap failed:', e?.message)
+					}
+				}
 			}
 		}
 
@@ -460,10 +464,6 @@ namespace $.$$ {
 			return super.Account()
 		}
 
-		Help_panel() {
-			if (!this.help_open()) return null as any
-			return super.Help_panel()
-		}
 
 		/**
 		 * Пользовательский URL прокси (для обхода блокировок VK API).

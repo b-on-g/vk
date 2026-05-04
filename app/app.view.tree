@@ -3,6 +3,7 @@ $bog_vk_app $mol_page
 		<= Theme $mol_theme_auto
 		<= Popup_fix $bog_popup_plugin
 	title \Bog Music
+	token_hint \
 	Title <= Brand $mol_image
 		uri \bog/vk/app/favicon.svg
 		title <= title
@@ -80,8 +81,7 @@ $bog_vk_app $mol_page
 			current_audio <= current_audio null
 			play_audio? <=> on_play_audio? null
 			archive_mode <= archive_mode false
-			reorder_up? <=> reorder_up? null
-			reorder_down? <=> reorder_down? null
+			reorder_to? <=> reorder_to? null
 			archive_audio? <=> archive_audio? null
 			restore_audio? <=> restore_audio? null
 			delete_audio? <=> delete_audio? null

@@ -42,16 +42,12 @@ namespace $.$$ {
 			return ($mol_wire_sync($bog_vk_cache) as any).is_cached(audio) as boolean
 		}
 
-		Move_up() {
-			if (this.archive_mode()) return null as any
-			if (!this.can_move_up()) return null as any
-			return super.Move_up()
+		is_local() {
+			return this.audio_data()?.owner_id === 0
 		}
 
-		Move_down() {
-			if (this.archive_mode()) return null as any
-			if (!this.can_move_down()) return null as any
-			return super.Move_down()
+		can_drag() {
+			return !this.archive_mode()
 		}
 
 		Archive() {
@@ -69,10 +65,6 @@ namespace $.$$ {
 			return super.Delete_forever()
 		}
 
-		is_local() {
-			return this.audio_data()?.owner_id === 0
-		}
-
 		Download() {
 			if (this.archive_mode()) return null as any
 			if (this.is_local()) return null as any
@@ -87,24 +79,32 @@ namespace $.$$ {
 			return super.Delete()
 		}
 
-		/** Был ли клик внутри какой-то кнопки-хэндлера — чтобы не проигрывать трек. */
-		private click_on_button(event: Event, getter: () => any): boolean {
-			try {
-				const node = getter().dom_node() as Node
-				if (node.contains(event.target as Node)) return true
-			} catch {}
-			return false
+		on_play_click() {
+			this.play(this.audio())
 		}
 
-		event_click(event: Event) {
-			if (this.click_on_button(event, () => this.Download())) return
-			if (this.click_on_button(event, () => this.Delete())) return
-			if (this.click_on_button(event, () => this.Move_up())) return
-			if (this.click_on_button(event, () => this.Move_down())) return
-			if (this.click_on_button(event, () => this.Archive())) return
-			if (this.click_on_button(event, () => this.Restore())) return
-			if (this.click_on_button(event, () => this.Delete_forever())) return
-			this.play(this.audio())
+		event_drag_start(event: DragEvent) {
+			if (!this.can_drag()) {
+				event.preventDefault()
+				return
+			}
+			try {
+				event.dataTransfer?.setData('text/x-bog-track', '1')
+				if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move'
+			} catch {}
+			this.drag_start()
+		}
+
+		event_drag_over(event: DragEvent) {
+			if (!this.can_drag()) return
+			event.preventDefault()
+			if (event.dataTransfer) event.dataTransfer.dropEffect = 'move'
+		}
+
+		event_drop(event: DragEvent) {
+			if (!this.can_drag()) return
+			event.preventDefault()
+			this.drop_here()
 		}
 
 		download() {
@@ -114,7 +114,6 @@ namespace $.$$ {
 			}
 			;($mol_wire_sync($bog_vk_cache) as any).save_hls(audio)
 			this.cached(true)
-			// Синкаем трек в персональный Giper Baza home land.
 			try { $bog_vk_store.save_track(audio) } catch (e: any) {
 				if (e instanceof Promise) return
 				console.warn('[track] baza save failed:', e?.message)

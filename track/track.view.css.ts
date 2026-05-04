@@ -10,55 +10,12 @@ namespace $.$$ {
 		padding: {
 			top: '0.5rem',
 			bottom: '0.5rem',
-			left: '0.75rem',
-			right: '0.75rem',
+			left: '0.5rem',
+			right: '0.5rem',
 		},
-		cursor: 'pointer',
 		borderRadius: '0.5rem',
 
-		Download: {
-			justify: {
-				content: 'flex-end',
-			},
-		},
-
-		Delete: {
-			justify: {
-				content: 'flex-end',
-			},
-		},
-
-		Move_up: {
-			justify: {
-				content: 'flex-end',
-			},
-		},
-
-		Move_down: {
-			justify: {
-				content: 'flex-end',
-			},
-		},
-
-		Archive: {
-			justify: {
-				content: 'flex-end',
-			},
-		},
-
-		Restore: {
-			justify: {
-				content: 'flex-end',
-			},
-		},
-
-		Delete_forever: {
-			justify: {
-				content: 'flex-end',
-			},
-		},
-
-		Cover: {
+		Cover_box: {
 			flex: {
 				shrink: 0,
 				grow: 0,
@@ -66,17 +23,21 @@ namespace $.$$ {
 			width: '3rem',
 			height: '3rem',
 			borderRadius: '4px',
+			overflow: { x: 'hidden', y: 'hidden' },
+			cursor: 'pointer',
+			justify: { content: 'center' },
+			align: { items: 'center' },
+		},
+
+		Cover: {
+			width: '100%',
+			height: '100%',
 			objectFit: 'cover',
 		},
 
 		Cover_placeholder: {
-			flex: {
-				shrink: 0,
-				grow: 0,
-			},
-			width: '3rem',
-			height: '3rem',
-			borderRadius: '4px',
+			width: '100%',
+			height: '100%',
 			background: {
 				color: $mol_theme.line,
 			},
@@ -95,44 +56,59 @@ namespace $.$$ {
 				grow: 1,
 				shrink: 1,
 			},
-			overflow: {
-				x: 'hidden',
-			},
+			minWidth: 0,
 			gap: '0.125rem',
+			cursor: 'pointer',
 		},
 
 		Title: {
 			font: {
-				weight: 'bold',
-				size: '0.875rem',
+				weight: 500,
+				size: '0.8125rem',
 			},
-			whiteSpace: 'nowrap',
-			overflow: {
-				x: 'hidden',
-			},
-			textOverflow: 'ellipsis',
+			whiteSpace: 'normal',
+			wordBreak: 'break-word',
 		},
 
 		Artist: {
 			font: {
-				size: '0.8125rem',
+				size: '0.75rem',
 			},
 			color: $mol_theme.shade,
-			whiteSpace: 'nowrap',
-			overflow: {
-				x: 'hidden',
-			},
-			textOverflow: 'ellipsis',
+			whiteSpace: 'normal',
+			wordBreak: 'break-word',
 		},
 
 		Duration: {
-			flex: {
-				shrink: 0,
-			},
 			font: {
-				size: '0.8125rem',
+				size: '0.6875rem',
 			},
 			color: $mol_theme.shade,
+		},
+
+		Download: {
+			flex: { shrink: 0 },
+			justify: { content: 'flex-end' },
+		},
+
+		Delete: {
+			flex: { shrink: 0 },
+			justify: { content: 'flex-end' },
+		},
+
+		Archive: {
+			flex: { shrink: 0 },
+			justify: { content: 'flex-end' },
+		},
+
+		Restore: {
+			flex: { shrink: 0 },
+			justify: { content: 'flex-end' },
+		},
+
+		Delete_forever: {
+			flex: { shrink: 0 },
+			justify: { content: 'flex-end' },
 		},
 
 		'@': {

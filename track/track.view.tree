@@ -3,39 +3,37 @@ $bog_vk_track $mol_view
 	current false
 	play? null
 	archive_mode false
-	can_move_up false
-	can_move_down false
-	move_up? null
-	move_down? null
+	can_drag false
+	drag_start? null
+	drop_here? null
 	archive? null
 	restore? null
 	delete_forever? null
-	event *
-		click? <=> event_click? null
 	attr *
 		bog_vk_track_current <= current
+		draggable <= can_drag
+	event *
+		dragstart?event <=> event_drag_start?event null
+		dragover?event <=> event_drag_over?event null
+		drop?event <=> event_drop?event null
 	sub /
-		<= Cover $mol_image
-			uri <= cover \
-		<= Cover_placeholder $mol_icon_music
+		<= Cover_box $mol_view
+			event *
+				click?event <=> on_play_click? null
+			sub /
+				<= Cover $mol_image
+					uri <= cover \
+				<= Cover_placeholder $mol_icon_music
 		<= Info $mol_view
+			event *
+				click?event <=> on_play_click?
 			sub /
 				<= Title $mol_paragraph
 					title <= title \
 				<= Artist $mol_paragraph
 					title <= artist \
-		<= Duration $mol_paragraph
-			title <= duration_text \
-		<= Move_up $mol_button_minor
-			hint \Вверх
-			click? <=> move_up? null
-			sub /
-				<= Move_up_icon $mol_icon_arrow_up
-		<= Move_down $mol_button_minor
-			hint \Вниз
-			click? <=> move_down? null
-			sub /
-				<= Move_down_icon $mol_icon_arrow_down
+				<= Duration $mol_paragraph
+					title <= duration_text \
 		<= Download $mol_button_minor
 			click? <=> download? null
 			sub /
