@@ -28926,6 +28926,8 @@ var $;
                     return 'bin';
                 };
                 const app = $bog_vk_app.Root(0);
+                // Порядок такой же, как в UI (сверху вниз). Префикс с индексом сохраняет
+                // его в файлменеджере несмотря на алфавитную сортировку.
                 const tracks = [
                     ...app.saved_audios(),
                     ...app.archived_audios(),
@@ -28935,6 +28937,7 @@ var $;
                     return;
                 }
                 const entries = [];
+                const pad = String(tracks.length).length;
                 let i = 0;
                 for (const audio of tracks) {
                     ++i;
@@ -28942,16 +28945,21 @@ var $;
                     let blob = null;
                     let mime = 'audio/aac';
                     try {
-                        blob = app.local_blob(audio);
+                        // Через wire_async — иначе throw Promise (baza loading) ретраит ВСЮ
+                        // download_all_async с начала → бесконечный цикл "skip" логов.
+                        blob = await $mol_wire_async(app).local_blob(audio);
                         mime = blob?.type || 'audio/mpeg';
                     }
                     catch (e) {
-                        console.warn('[account] zip skip:', audio.title, e?.message);
+                        console.warn('[account] zip skip:', audio.title, e?.message ?? e);
                     }
                     if (!blob)
                         continue;
                     const ext = ext_of(mime);
-                    const name = `${safe(audio.artist)} - ${safe(audio.title)}.${ext}`.replace(/^_? - /, '');
+                    // Префикс с zero-padded индексом — иначе файлменеджер сортирует по
+                    // алфавиту имени артиста, и порядок прослушивания теряется.
+                    const idx = String(i).padStart(pad, '0');
+                    const name = `${idx}. ${safe(audio.artist)} - ${safe(audio.title)}.${ext}`;
                     entries.push({ name, data: new Uint8Array(await blob.arrayBuffer()) });
                 }
                 if (!entries.length) {
