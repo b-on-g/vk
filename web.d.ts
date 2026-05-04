@@ -17198,6 +17198,9 @@ declare namespace $.$$ {
          * Последовательно скачивает HLS для треков, у которых в baza нет файла.
          * `save_hls` идемпотентен (проверяет `is_cached`), так что повторные
          * вызовы безопасны. Запускается из auto_import фоном.
+         *
+         * VK `audio.get` отдаёт треки БЕЗ url — приходится запрашивать его через
+         * `audio.getById` для каждого трека отдельно перед скачиванием HLS.
          */
         static prefetch_blobs(items: $bog_vk_api_audio[]): Promise<void>;
         auto(): any;

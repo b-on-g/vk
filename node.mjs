@@ -23737,28 +23737,40 @@ var $;
              * Последовательно скачивает HLS для треков, у которых в baza нет файла.
              * `save_hls` идемпотентен (проверяет `is_cached`), так что повторные
              * вызовы безопасны. Запускается из auto_import фоном.
+             *
+             * VK `audio.get` отдаёт треки БЕЗ url — приходится запрашивать его через
+             * `audio.getById` для каждого трека отдельно перед скачиванием HLS.
              */
             static async prefetch_blobs(items) {
                 if (!items?.length)
                     return;
-                let downloaded = 0;
+                let downloaded = 0, failed = 0;
+                console.log('[app] prefetch start:', items.length, 'tracks');
                 for (const audio of items) {
                     try {
                         if ($bog_vk_cache.is_cached(audio))
                             continue;
-                        if (!audio.url)
-                            continue;
-                        await $bog_vk_cache.save_hls(audio);
+                        let target = audio;
+                        if (!target.url) {
+                            const key = `${audio.owner_id}_${audio.id}${audio.access_key ? '_' + audio.access_key : ''}`;
+                            const fresh = $mol_wire_sync($bog_vk_api).refresh_audio(key);
+                            if (!fresh?.url) {
+                                failed++;
+                                continue;
+                            }
+                            target = { ...audio, url: fresh.url };
+                        }
+                        await $bog_vk_cache.save_hls(target);
                         downloaded++;
                     }
                     catch (e) {
                         if (e instanceof Promise)
                             continue;
+                        failed++;
                         console.warn('[app] prefetch failed:', audio.title, e?.message);
                     }
                 }
-                if (downloaded)
-                    console.log('[app] prefetched', downloaded, 'tracks to baza');
+                console.log('[app] prefetch done:', downloaded, 'downloaded,', failed, 'failed');
             }
             auto() {
                 try {
