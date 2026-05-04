@@ -23801,13 +23801,14 @@ var $;
                 console.log('[app] prefetch start:', items.length, 'tracks');
                 $bog_vk_app.prefetch_state({ total: items.length, done: 0, failed: 0 });
                 let done = 0, failed = 0;
-                // for-let-i вместо for-of, чтобы можно было `i--` для ретрая того же трека
-                // при baza-Promise (ещё грузится — подождать и повторить).
                 for (let i = 0; i < items.length; i++) {
                     const audio = items[i];
                     try {
-                        // Метаданные сейвим перед скачиванием — трек появляется в списке сразу.
+                        // Метаданные сейвим в отдельном тике перед скачиванием — даём baza
+                        // запушить sand/seal на сервер мелкими пакетами, а не одним
+                        // гигантским pack из 300+ юнитов.
                         $bog_vk_store.save_track(audio);
+                        await new Promise(r => setTimeout(r, 50));
                         if ($bog_vk_cache.is_cached(audio)) {
                             done++;
                             continue;
@@ -23830,7 +23831,6 @@ var $;
                     }
                     catch (e) {
                         if (e instanceof Promise) {
-                            // Baza ещё догружается. Ждём и повторяем тот же трек — это НЕ ошибка.
                             await e;
                             i--;
                             continue;
