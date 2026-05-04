@@ -2833,7 +2833,7 @@ declare namespace $ {
     class $mol_fetch_response extends $mol_object {
         readonly native: Response;
         readonly request: $mol_fetch_request;
-        status(): "success" | "unknown" | "inform" | "redirect" | "wrong" | "failed";
+        status(): "success" | "failed" | "unknown" | "inform" | "redirect" | "wrong";
         code(): number;
         ok(): boolean;
         message(): string;
@@ -17194,13 +17194,26 @@ declare namespace $.$$ {
          * после синка metadata пользователь мог играть offline.
          */
         auto_import(): number | null;
+        static __prefetch_started: boolean;
         /**
-         * Последовательно скачивает HLS для треков, у которых в baza нет файла.
-         * `save_hls` идемпотентен (проверяет `is_cached`), так что повторные
-         * вызовы безопасны. Запускается из auto_import фоном.
-         *
-         * VK `audio.get` отдаёт треки БЕЗ url — приходится запрашивать его через
-         * `audio.getById` для каждого трека отдельно перед скачиванием HLS.
+         * Реактивный статус префетча для UI.
+         * `total` — всего треков, `done` — скачано в baza, `failed` — упало.
+         */
+        static prefetch_state(next?: {
+            total: number;
+            done: number;
+            failed: number;
+        }): {
+            total: number;
+            done: number;
+            failed: number;
+        };
+        /**
+         * Скачивает HLS-блобы для треков без `File` в baza.
+         * Чистый async — без `$mol_wire_*`, чтобы гарантированно стартовало
+         * из обычного callback-контекста. Внутри для refresh URL'а дёргает
+         * `fetch_vk_direct` (тоже plain async), а не `refresh_audio` (mem_key
+         * с wire_sync — требует фибра).
          */
         static prefetch_blobs(items: $bog_vk_api_audio[]): Promise<void>;
         auto(): any;
