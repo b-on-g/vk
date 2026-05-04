@@ -1,22 +1,25 @@
 namespace $ {
 
+	/** Словарь cache_key → $bog_vk_track_baza. Вынесен отдельно, чтобы не циклить TS-инференс. */
+	export class $bog_vk_tracks_dict extends $giper_baza_dict_to($bog_vk_track_baza) {}
+
 	/**
 	 * Хранилище треков пользователя.
-	 * Сама сущность Giper Baza с словарём треков (cache_key → $bog_vk_track_baza).
+	 * Сама сущность Giper Baza с словарём треков.
 	 * Живёт в home land. Паттерн blitz: $bog_blitz_registry / $bog_blitz_profile.
 	 */
 	export class $bog_vk_store extends $giper_baza_dict.with({
-		Tracks: $giper_baza_dict_to($bog_vk_track_baza),
+		Tracks: $bog_vk_tracks_dict,
 	}) {
 
 		/** Home land текущего пользователя. */
 		static land() {
-			return this.$.$giper_baza_glob.home().land()
+			return $.$giper_baza_glob.home().land()
 		}
 
 		/** Корневой store-объект в home land. */
-		static root() {
-			return this.land().Data($bog_vk_store)
+		static root(): $bog_vk_store {
+			return this.land().Data(this as any as typeof $giper_baza_pawn) as any
 		}
 
 		/** Словарь треков. */
