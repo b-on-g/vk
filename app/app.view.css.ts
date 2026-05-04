@@ -24,18 +24,6 @@ namespace $.$$ {
 		},
 
 
-		Search_bar: {
-			font: {
-				size: '1rem',
-			},
-			margin: {
-				top: '0.25rem',
-				bottom: '0.25rem',
-				left: '0.5rem',
-				right: '0.5rem',
-			},
-		},
-
 		Tools: {
 			alignItems: 'center',
 		},

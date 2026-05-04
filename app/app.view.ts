@@ -1,45 +1,11 @@
 namespace $.$$ {
 
 	/**
-	 * Подтягиваем VK access_token из chrome.storage.local — туда его кладёт
-	 * content script на vk.com (см. bog/vk/ext/content.js). Юзеру не нужно
-	 * копировать cURL — достаточно зайти на vk.com в обычной вкладке.
-	 */
-	;(function sync_vk_token_from_chrome_storage() {
-		try {
-			const ext = (globalThis as any).chrome
-			if (!ext?.storage?.local) return
-			ext.storage.local.get(['vk_token'], (res: any) => {
-				const tok = res?.vk_token
-				if (tok && $mol_state_local.value('vk_token') !== tok) {
-					$mol_state_local.value('vk_token', tok)
-					console.info('[app] vk_token loaded from extension storage')
-				}
-			})
-			ext.storage.onChanged.addListener((changes: any, area: string) => {
-				if (area !== 'local') return
-				const next = changes?.vk_token?.newValue
-				if (next && $mol_state_local.value('vk_token') !== next) {
-					$mol_state_local.value('vk_token', next)
-					console.info('[app] vk_token updated from extension storage')
-				}
-			})
-		} catch (e: any) {
-			console.warn('[app] vk_token sync failed:', e?.message)
-		}
-	})()
-
-	/**
 	 * В chrome-extension/moz-extension контексте `location.origin` имеет схему
-	 * `chrome-extension://`, и yard.web.ts пушит его в masters_default.
-	 * Кроме того, peer-ы из Seed().peers() могут принести относительные URL,
-	 * которые в extension резолвятся в chrome-extension://. Любой такой URL
-	 * → `new WebSocket(...)` → SyntaxError.
-	 *
-	 * Фикс из двух частей:
-	 *   1) подкладываем публичный baza-master в masters_default;
-	 *   2) оборачиваем static masters() так, чтобы из итогового списка
-	 *      выпадали URL с невалидной для WebSocket схемой.
+	 * `chrome-extension://`, и yard.web.ts пушит его в masters_default. Кроме того,
+	 * peer-ы из Seed().peers() могут принести относительные URL, которые в extension
+	 * резолвятся в chrome-extension://. Любой такой URL → `new WebSocket(...)` →
+	 * SyntaxError. Чистим default-список и подкладываем публичный baza-master.
 	 */
 	;(function fix_yard_masters_in_extension() {
 		try {
@@ -65,18 +31,15 @@ namespace $.$$ {
 				})
 				yard.__bog_vk_masters_patched = true
 			}
-
-			console.info('[app] yard masters in extension:', yard.masters())
 		} catch (e: any) {
 			console.warn('[app] yard masters fix failed:', e?.message)
 		}
 	})()
 
 	/**
-	 * Импорт ЛК из URL вида `#account=<key>` — ровно как в piterjs $hyoo_meta_safe.
-	 * Должен сработать ДО первого обращения к $giper_baza_auth.current(),
-	 * поэтому выполняется на уровне модуля (IIFE).
-	 * Ключ пишется в localStorage под `$giper_baza_auth`, а хэш чистится.
+	 * Импорт ЛК из URL вида `#account=<key>`. Должен сработать ДО первого
+	 * обращения к $giper_baza_auth.current(), поэтому выполняется на уровне
+	 * модуля (IIFE).
 	 */
 	;(function import_account_from_hash() {
 		try {
@@ -85,105 +48,41 @@ namespace $.$$ {
 			const match = hash.match(/[#&]account=([^&]+)/)
 			if (!match) return
 			const key = decodeURIComponent(match[1])
-			// Должен быть 4 × 43 = 172 символа base64_url
 			if (key.length < 172) {
 				console.warn('[app] account key too short, ignoring')
 				return
 			}
 			const current = $mol_state_local.value('$giper_baza_auth')
 			$mol_state_local.value('$giper_baza_auth', key)
-			// Убираем секрет из адресной строки
 			const clean_hash = hash.replace(/[#&]?account=[^&]*/, '').replace(/^#&/, '#')
 			const new_url = location.origin + location.pathname + location.search + (clean_hash && clean_hash !== '#' ? clean_hash : '')
 			history.replaceState(null, '', new_url)
-			console.info('[app] account imported from URL')
-			// Если ключ реально менялся — перезагружаем, чтобы yard/glob/auth
-			// перечитали состояние с нуля и не зависли в connecting со старым lord.
-			if (current !== key) {
-				location.reload()
-			}
+			if (current !== key) location.reload()
 		} catch (e: any) {
 			console.warn('[app] account import failed:', e?.message)
 		}
 	})()
 
 	export class $bog_vk_app extends $.$bog_vk_app {
-		@$mol_mem
-		online(next?: boolean) {
-			if (next !== undefined) return next
-			const val = navigator.onLine
-			window.addEventListener('online', () => this.online(true), { once: true })
-			window.addEventListener('offline', () => this.online(false), { once: true })
-			return val
-		}
-
-		@$mol_mem
-		token_expired(next?: boolean) {
-			return next ?? false
-		}
-
-		token_invalid() {
-			const t = this.token()
-			return !!t && !t.startsWith('vk1.a.')
-		}
-
-		offline_mode() {
-			return !this.token() || this.token_invalid() || !this.online() || this.token_expired()
-		}
 
 		title() {
 			return 'Bog Music'
 		}
 
 		@$mol_mem
-		token(next?: string) {
-			if (next !== undefined) {
-				const extracted = this.extract_token(next)
-				const cookies = this.extract_cookies(next)
-				this.$.$bog_vk_api.token(extracted)
-				if (cookies) this.$.$bog_vk_api.cookies(cookies)
-				this.token_expired(false)
-			}
-			return this.$.$bog_vk_api.token()
-		}
-
-		extract_token(input: string): string {
-			const trimmed = input.trim()
-			const match = trimmed.match(/access_token=([^&\s'"]+)/)
-			if (match) return match[1]
-			const vk_match = trimmed.match(/vk1\.a\.[A-Za-z0-9_-]+/)
-			if (vk_match) return vk_match[0]
-			return trimmed
-		}
-
-		extract_cookies(input: string): string {
-			const match = input.match(/-b\s+'([^']+)'/)
-			if (match) return match[1]
-			const match2 = input.match(/--cookie\s+'([^']+)'/)
-			if (match2) return match2[1]
-			return ''
-		}
-
-		@$mol_mem
 		page(next?: string) {
 			if (next !== undefined) {
 				$mol_state_arg.value('page', next)
-				if (next !== 'search') this.search_query('')
 				return next
 			}
 			return $mol_state_arg.value('page') ?? 'my'
 		}
 
-		@$mol_mem
-		cached_audios(): $bog_vk_api_audio[] {
-			$bog_vk_cache.version()
-			return ($mol_wire_sync($bog_vk_cache) as any).all_cached()
+		archive_mode() {
+			return this.page() === 'archive'
 		}
 
-		/**
-		 * Персональные треки пользователя из Giper Baza — синкаются между устройствами.
-		 * Возвращает массив примитивов, поэтому @$mol_mem безопасен.
-		 */
+		/** Активные треки из Giper Baza home land. */
 		@$mol_mem
 		synced_audios(): $bog_vk_api_audio[] {
 			try {
@@ -195,7 +94,6 @@ namespace $.$$ {
 			}
 		}
 
-		/** Архивные треки (мягко удалённые). */
 		@$mol_mem
 		archived_audios(): $bog_vk_api_audio[] {
 			try {
@@ -207,105 +105,18 @@ namespace $.$$ {
 			}
 		}
 
-		/** Множество ключей архивных треков — для фильтрации из VK-списка. */
-		@$mol_mem
-		archived_keys(): Set<string> {
-			return new Set(this.archived_audios().map(a => `${a.owner_id}_${a.id}`))
-		}
-
-		/** Склейка cached + synced без дубликатов, с сортировкой по Order из baza. */
-		merged_offline(): $bog_vk_api_audio[] {
-			const cached = this.cached_audios()
-			const synced = this.synced_audios()
-			const archived = this.archived_keys()
-			// Убираем из cached то, что помечено Archived.
-			const cached_active = cached.filter(a => !archived.has(`${a.owner_id}_${a.id}`))
-			if (!synced.length) return cached_active
-			// synced уже отсортирован по Order. Берём его порядок, добавляем cached-only в конец.
-			const by_key = new Map<string, $bog_vk_api_audio>()
-			for (const a of cached_active) by_key.set(`${a.owner_id}_${a.id}`, a)
-			const out: $bog_vk_api_audio[] = []
-			const used = new Set<string>()
-			for (const a of synced) {
-				const key = `${a.owner_id}_${a.id}`
-				// Берём cached если есть (там реальный URL для HLS).
-				out.push(by_key.get(key) ?? a)
-				used.add(key)
-			}
-			for (const a of cached_active) {
-				const key = `${a.owner_id}_${a.id}`
-				if (!used.has(key)) out.push(a)
-			}
-			return out
-		}
-
-		@$mol_mem
-		my_audios() {
-			if (this.offline_mode()) return this.ordered_online(this.merged_offline())
-			try {
-				const result = this.$.$bog_vk_api.my_audios()?.items ?? []
-				this.token_expired(false)
-				const archived = this.archived_keys()
-				const active = result.filter((a: $bog_vk_api_audio) => !archived.has(`${a.owner_id}_${a.id}`))
-				return this.ordered_online(active)
-			} catch (e: any) {
-				if (e instanceof Promise || e?.constructor?.name === '$mol_fail_hidden') throw e
-				const msg = String(e?.message)
-				if (msg.includes('expired') || msg.includes('authorization') || msg.includes('User authorization failed')) {
-					this.token_expired(true)
-				}
-				console.warn('[app] API failed, using cache:', msg)
-				return this.ordered_online(this.merged_offline())
-			}
-		}
-
-		/**
-		 * Переупорядочивает онлайн-список: сначала треки в порядке synced (Order из baza),
-		 * затем те, что есть только в VK-списке.
-		 */
-		ordered_online(source: $bog_vk_api_audio[]): $bog_vk_api_audio[] {
-			const synced = this.synced_audios()
-			if (!synced.length) return source
-			const by_key = new Map<string, $bog_vk_api_audio>()
-			for (const a of source) by_key.set(`${a.owner_id}_${a.id}`, a)
-			const out: $bog_vk_api_audio[] = []
-			const used = new Set<string>()
-			for (const s of synced) {
-				const key = `${s.owner_id}_${s.id}`
-				const found = by_key.get(key)
-				// Локальные треки (owner_id === 0) живут только в baza — берём их оттуда.
-				if (found || s.owner_id === 0) {
-					out.push(found ?? s)
-					used.add(key)
-				}
-			}
-			for (const a of source) {
-				const key = `${a.owner_id}_${a.id}`
-				if (!used.has(key)) out.push(a)
-			}
-			return out
-		}
-
-		@$mol_mem
-		search_results() {
-			const query = this.search_query().trim()
-			if (!query) return []
-			if (this.offline_mode()) return []
-			return this.$.$bog_vk_api.search_audios(query)?.items ?? []
-		}
-
 		@$mol_mem
 		visible_audios() {
-			if (this.page() === 'archive') return this.archived_audios()
-			if (this.page() === 'search' && this.search_query().trim()) {
-				return this.search_results()
-			}
-			return this.my_audios()
+			return this.archive_mode() ? this.archived_audios() : this.synced_audios()
 		}
 
-		/** В архиве показываем архивные как "текущий контекст", но UI-кнопки разные. */
-		archive_mode() {
-			return this.page() === 'archive'
+		tab_options() {
+			const my = this.synced_audios().length
+			const arch = this.archived_audios().length
+			return {
+				my: my ? `Моя музыка ${my}` : 'Моя музыка',
+				archive: arch ? `Архив ${arch}` : 'Архив',
+			}
 		}
 
 		@$mol_mem
@@ -322,8 +133,6 @@ namespace $.$$ {
 			if (from < 0 || to < 0 || from >= list.length || to >= list.length) return
 			const moving = list[from]
 			if (!moving) return
-			// Прогоняем серию swap'ов — каждый перестановкой сдвигает moving на одну позицию
-			// в нужную сторону. Локальный list статичен, а в baza Order меняется реально.
 			try { $bog_vk_store.save_track(moving) } catch (e: any) { if (e instanceof Promise) return }
 			if (from < to) {
 				for (let i = from; i < to; i++) {
@@ -385,13 +194,11 @@ namespace $.$$ {
 			this.Player().queue_index(idx >= 0 ? idx : 0)
 			this.Player().play_track(audio)
 
-			// Сохраняем трек в персональный Giper Baza home land — для синка между устройствами.
 			try { $bog_vk_store.save_track(audio) } catch (e: any) {
 				if (e instanceof Promise) return
 				console.warn('[app] baza save failed:', e?.message)
 			}
 
-			// Положительный сигнал в Мою волну — этот тег user слушает.
 			const item = this.recsys_item(audio)
 			if (item) {
 				$bog_recsys.namespace('vk')
@@ -402,32 +209,19 @@ namespace $.$$ {
 		@$mol_mem
 		upload_files(next?: File[]) {
 			if (next?.length) {
-				console.log('[app] upload_files received:', next.length, 'file(s):', next.map(f => `${f.name} (${f.size}B, ${f.type})`).join(', '))
 				for (const file of next) {
 					try {
-						// arrayBuffer() читается через wire-sync ВНЕ @$mol_action —
-						// иначе action откатывается и Type/Chunks не записываются.
 						const buffer = new Uint8Array(($mol_wire_sync(file) as any).arrayBuffer())
-						console.log('[app] arrayBuffer ready for', file.name, buffer.byteLength, 'bytes')
-						const audio = $bog_vk_store.save_local_track(file, buffer)
-						console.log('[app] save_local_track ok:', audio?.title, 'id:', audio?.id)
+						$bog_vk_store.save_local_track(file, buffer)
 					} catch (e: any) {
-						if (e instanceof Promise) {
-							console.log('[app] upload waiting on promise:', file.name)
-							throw e
-						}
-						console.warn('[app] upload failed:', file.name, e?.message, e)
+						if (e instanceof Promise) throw e
+						console.warn('[app] upload failed:', file.name, e?.message)
 					}
 				}
 			}
 			return next ?? []
 		}
 
-		/**
-		 * Каждая overlay-панель — независимый булевый toggle в localStorage,
-		 * как было у старого show_hint. Несколько панелей могут быть открыты
-		 * одновременно, треки/таб-бар при этом не прячутся.
-		 */
 		@$mol_mem
 		account_open(next?: boolean) {
 			return $mol_state_local.value('vk_account_open', next) ?? false
@@ -438,7 +232,6 @@ namespace $.$$ {
 			return $mol_state_local.value('vk_wave_mode', next) ?? false
 		}
 
-		/** Превращает audio в item для $bog_recsys: id + tag по исполнителю. */
 		recsys_item(audio: $bog_vk_api_audio | null) {
 			if (!audio) return null
 			const tags: string[] = []
@@ -446,10 +239,6 @@ namespace $.$$ {
 			return { id: `${audio.owner_id}_${audio.id}`, tags }
 		}
 
-		/**
-		 * Хук для Player.next(): когда включена «Моя волна», берём следующий трек
-		 * через $bog_recsys по cosine + ε-greedy на per-tag rewards.
-		 */
 		player_pick_next(current: $bog_vk_api_audio | null): $bog_vk_api_audio | null {
 			if (!this.wave_mode()) return null
 			const pool = this.visible_audios()
@@ -470,18 +259,6 @@ namespace $.$$ {
 			return super.Account()
 		}
 
-		/** Динамические лейблы вкладок с количеством треков. */
-		tab_options() {
-			const my = this.my_audios().length
-			const arch = this.archived_audios().length
-			return {
-				my: my ? `Моя музыка ${my}` : 'Моя музыка',
-				search: 'Поиск',
-				archive: arch ? `Архив ${arch}` : 'Архив',
-			}
-		}
-
-		/** Никнейм для шапки — берём прямо из home land профиля. */
 		@$mol_mem
 		nickname_label() {
 			try {
@@ -498,20 +275,9 @@ namespace $.$$ {
 			return super.Nickname_label()
 		}
 
-		/**
-		 * Держим home land живым пока приложение в DOM —
-		 * чтобы $giper_baza_glob не вызвал destructor() и не порвал подписки.
-		 */
 		auto() {
 			try { $bog_vk_store.saved_audios() } catch {}
 			return super.auto()
 		}
-
-
-		Search_bar() {
-			if (this.page() !== 'search') return null as any
-			return super.Search_bar()
-		}
-
 	}
 }

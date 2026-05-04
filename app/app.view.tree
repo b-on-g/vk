@@ -31,11 +31,7 @@ $bog_vk_app $mol_page
 			value? <=> page? \my
 			options <= tab_options *
 				my \Моя музыка
-				search \Поиск
 				archive \Архив
-		<= Search_bar $mol_string
-			hint \Поиск музыки...
-			value? <=> search_query? \
 		<= Tracks $bog_vk_tracks
 			audios <= visible_audios /
 			current_audio <= current_audio null

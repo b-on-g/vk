@@ -1,6 +1,14 @@
 $bog_vk_account $mol_list
 	rows /
-		<= Sync_status $giper_baza_status
+		<= Sync_row $mol_view
+			sub /
+				<= Sync_status $giper_baza_status
+				<= Download_all $mol_button_minor
+					title \Скачать всё в zip
+					click? <=> download_all? null
+					sub /
+						<= Download_all_icon $mol_icon_download
+				<= Download_all_status $mol_view sub / <= download_all_status \
 		<= Nickname_field $mol_form_field
 			name \Имя
 			Content <= Nickname_input $mol_string
