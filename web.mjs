@@ -4672,25 +4672,29 @@ var $;
 		[data-mol-tip] {
 			position: relative;
 		}
-		[data-mol-tip]:hover::after,
-		[data-mol-tip]:focus-visible::after {
-			content: attr(data-mol-tip);
-			position: absolute;
-			z-index: 1000;
-			top: calc(100% + 4px);
-			left: 50%;
-			transform: translateX(-50%);
-			background: var(--mol_theme_card);
-			color: var(--mol_theme_text);
-			padding: 0.25rem 0.5rem;
-			border-radius: 0.25rem;
-			font-size: 0.75rem;
-			line-height: 1.2;
-			white-space: nowrap;
-			max-width: min(80vw, 24rem);
-			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
-			pointer-events: none;
-			animation: bog-tooltip-in 0.08s ease-out;
+		/* Только устройства с настоящим hover (десктоп с мышью).
+		   На touch-девайсах синтетический hover после tap не снимается и tooltip залипает —
+		   поэтому всё показывается ИСКЛЮЧИТЕЛЬНО внутри @media (hover: hover). */
+		@media (hover: hover) and (pointer: fine) {
+			[data-mol-tip]:hover::after {
+				content: attr(data-mol-tip);
+				position: absolute;
+				z-index: 1000;
+				top: calc(100% + 4px);
+				left: 50%;
+				transform: translateX(-50%);
+				background: var(--mol_theme_card);
+				color: var(--mol_theme_text);
+				padding: 0.25rem 0.5rem;
+				border-radius: 0.25rem;
+				font-size: 0.75rem;
+				line-height: 1.2;
+				white-space: nowrap;
+				max-width: min(80vw, 24rem);
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+				pointer-events: none;
+				animation: bog-tooltip-in 0.08s ease-out;
+			}
 		}
 		@keyframes bog-tooltip-in {
 			from { opacity: 0; transform: translate(-50%, -2px); }
@@ -15334,12 +15338,12 @@ var $;
         }
         async units_save(units) {
             const mine = this.mine();
-            const part = new $giper_baza_pack_part(units);
-            const pack = $giper_baza_pack.make([[this.link().str, part]]);
-            this.bus().send(pack.buffer);
             const reaping = [...this.units_reaping];
             this.units_reaping.clear();
             await $mol_wire_async(mine).units_save({ ins: units, del: reaping });
+            const part = new $giper_baza_pack_part(units);
+            const pack = $giper_baza_pack.make([[this.link().str, part]]);
+            this.bus().send(pack.buffer);
             if (this.$.$giper_baza_log())
                 this.$.$mol_log3_done({
                     place: this,
@@ -32113,7 +32117,7 @@ var $;
                 // Иначе все 30 треков сваливаются в один pack из 7000+ юнитов и сливаются
                 // одной транзакцией — 30+ MB через интернет = десятки секунд.
                 // С отдельным land каждый blob синкается независимо и не блокирует home land.
-                const store = track.File('auto').ensure([[null, $giper_baza_rank_read]]);
+                const store = track.File('auto').ensure([]);
                 if (!store)
                     return;
                 store.buffer(buffer);
@@ -32148,7 +32152,7 @@ var $;
                 if (track.Playlist()?.val() == null)
                     track.Playlist('auto').val('');
                 // Blob — в отдельном land (см. save_blob).
-                const store = track.File('auto').ensure([[null, $giper_baza_rank_read]]);
+                const store = track.File('auto').ensure([]);
                 if (store) {
                     store.buffer(buffer);
                     store.type(file.type || 'audio/mpeg');
