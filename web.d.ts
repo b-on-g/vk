@@ -16384,6 +16384,68 @@ declare namespace $.$$ {
 }
 
 declare namespace $ {
+    /**
+     * Расширение `$giper_baza_atom_link_to` с автоматическим запуском `.sync()`
+     * на target-land при чтении ссылки. Стандартный `remote()` только создаёт
+     * Pawn proxy без триггера sync (см. `land.ts:345` — `.sync()` закомменчен в Pawn()).
+     *
+     * Без этого blob-lands треков не подсасываются с master'а пока пользователь
+     * не нажмёт play. С этой обёрткой любой `.remote()` сразу инициирует sync.
+     */
+    export function $bog_vk_atom_link_to_synced<const Value extends any>(Value: Value): {
+        new (): {
+            Value: Value;
+            remote(next?: $mol_type_result<$mol_type_result<Value>> | null | undefined): $mol_type_result<$mol_type_result<Value>> | null;
+            remote_of(peer: $giper_baza_link | null, next?: $mol_type_result<$mol_type_result<Value>> | null | undefined): $mol_type_result<$mol_type_result<Value>> | null;
+            ensure(config?: null | $giper_baza_rank_preset | $giper_baza_land): $mol_type_result<$mol_type_result<Value>> | null;
+            ensure_of(peer: $giper_baza_link | null, config?: null | $giper_baza_rank_preset | $giper_baza_land): $mol_type_result<$mol_type_result<Value>> | null;
+            ensure_here(peer: $giper_baza_link | null): void;
+            ensure_area(peer: $giper_baza_link | null, land: $giper_baza_land): void;
+            ensure_lord(peer: $giper_baza_link | null, preset: $giper_baza_rank_preset): void;
+            remote_ensure(preset?: $giper_baza_rank_preset): $mol_type_result<$mol_type_result<Value>> | null;
+            local_ensure(): $mol_type_result<$mol_type_result<Value>> | null;
+            val(next?: $giper_baza_link | null | undefined): $giper_baza_link | null;
+            val_of(peer: $giper_baza_link | null, next?: $giper_baza_link | null | undefined): $giper_baza_link | null;
+            pick_unit(peer: $giper_baza_link | null): $giper_baza_unit_sand | undefined;
+            vary(next?: $giper_baza_vary_type): $giper_baza_vary_type;
+            vary_of(peer: $giper_baza_link | null, next?: $giper_baza_vary_type): $giper_baza_vary_type;
+            [$mol_dev_format_head](): any[];
+            land(): $giper_baza_land;
+            head(): $giper_baza_link;
+            land_link(): $giper_baza_link;
+            link(): $giper_baza_link;
+            toJSON(): string;
+            cast<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1): InstanceType<Pawn_1>;
+            pawns<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1 | null): readonly InstanceType<Pawn_1>[];
+            units(): $giper_baza_unit_sand[];
+            units_of(peer: $giper_baza_link | null): $giper_baza_unit_sand[];
+            meta(next?: $giper_baza_link): $giper_baza_link | null;
+            meta_of(peer: $giper_baza_link | null): $giper_baza_link | null;
+            filled(): boolean;
+            can_change(): boolean;
+            last_change(): $mol_time_moment | null;
+            authors(): $giper_baza_auth_pass[];
+            get $(): $;
+            set $(next: $);
+            destructor(): void;
+            toString(): string;
+            [Symbol.toStringTag]: string;
+            [$mol_ambient_ref]: $;
+            [Symbol.dispose](): void;
+        };
+        toString(): any;
+        Value: typeof $giper_baza_dict;
+        parse: typeof $giper_baza_vary_cast_link;
+        tag: keyof typeof $giper_baza_unit_sand_tag;
+        meta: null | $giper_baza_link;
+        make<This extends typeof $mol_object>(this: This, config: Partial<InstanceType<This>>): InstanceType<This>;
+        $: $;
+        create<Instance>(this: new (init?: (instance: any) => void) => Instance, init?: (instance: $mol_type_writable<Instance>) => void): Instance;
+        toJSON(): any;
+        destructor(): void;
+        [Symbol.toPrimitive](): any;
+        [$mol_key_handle](): any;
+    };
     const $bog_vk_track_baza_base: Omit<typeof $giper_baza_dict, "prototype"> & {
         new (...args: any[]): $mol_type_override<$giper_baza_dict, {
             readonly Vk_id: (auto?: any) => $giper_baza_atom_text | null;
@@ -16508,6 +16570,9 @@ declare namespace $ {
      * Персональная запись трека в home land пользователя.
      * Синкается между устройствами через Giper Baza.
      * Ключ в $giper_baza_dict_to — VK cache_key (`${owner_id}_${id}`).
+     *
+     * `File` использует synced-версию atom_link — sync blob-land автоматически
+     * запускается при первом чтении ссылки.
      */
     export class $bog_vk_track_baza extends $bog_vk_track_baza_base {
     }
@@ -17100,13 +17165,13 @@ declare namespace $.$$ {
         prefetch_blobs(items: $bog_vk_api_audio[]): Promise<void>;
         private _migration_done;
         /**
-         * Реактивно ИНИЦИИРУЕТ sync blob-lands всех треков в фоне.
-         * Без явного `.land().sync()` blob-lands доступны через `Pawn(link)`,
-         * но yard их не подсасывает (в land.ts:345 строка `.sync()` закомменчена,
-         * так что Pawn() не запускает sync автоматически).
+         * Реактивно прокликивает все File-ссылки треков. Используется
+         * `$bog_vk_atom_link_to_synced` (см. track_baza.ts) — его `.remote()`
+         * сам вызывает `.land().sync()` на blob-land. Здесь только итерируем,
+         * чтобы каждый трек был "потроган" хотя бы раз.
          *
-         * `$mol_wire_solid()` держит этот cell живым между тиками — иначе $mol его
-         * рипает после первого вызова в auto() и blob-lands перестают тачиться.
+         * `$mol_wire_solid()` держит cell живым между тиками — иначе $mol его
+         * рипает и blob-lands перестают синкаться.
          */
         prefetch_blob_lands(): number;
         auto(): any;

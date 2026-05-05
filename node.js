@@ -21154,9 +21154,41 @@ var $;
 var $;
 (function ($) {
     /**
+     * Расширение `$giper_baza_atom_link_to` с автоматическим запуском `.sync()`
+     * на target-land при чтении ссылки. Стандартный `remote()` только создаёт
+     * Pawn proxy без триггера sync (см. `land.ts:345` — `.sync()` закомменчен в Pawn()).
+     *
+     * Без этого blob-lands треков не подсасываются с master'а пока пользователь
+     * не нажмёт play. С этой обёрткой любой `.remote()` сразу инициирует sync.
+     */
+    function $bog_vk_atom_link_to_synced(Value) {
+        const Base = $giper_baza_atom_link_to(Value);
+        class $bog_vk_atom_link_to_synced extends Base {
+            remote(next) {
+                const r = super.remote(next);
+                if (r && next === undefined) {
+                    try {
+                        r.land().sync();
+                    }
+                    catch (e) {
+                        // Promise = async sync в фоне, это нормально
+                        if (!(e instanceof Promise))
+                            throw e;
+                    }
+                }
+                return r;
+            }
+        }
+        return $bog_vk_atom_link_to_synced;
+    }
+    $.$bog_vk_atom_link_to_synced = $bog_vk_atom_link_to_synced;
+    /**
      * Персональная запись трека в home land пользователя.
      * Синкается между устройствами через Giper Baza.
      * Ключ в $giper_baza_dict_to — VK cache_key (`${owner_id}_${id}`).
+     *
+     * `File` использует synced-версию atom_link — sync blob-land автоматически
+     * запускается при первом чтении ссылки.
      */
     class $bog_vk_track_baza extends $giper_baza_dict.with({
         Vk_id: $giper_baza_atom_text,
@@ -21167,7 +21199,7 @@ var $;
         Added: $giper_baza_atom_real,
         Order: $giper_baza_atom_real,
         Archived: $giper_baza_atom_bool,
-        File: $giper_baza_atom_link_to(() => $giper_baza_file),
+        File: $bog_vk_atom_link_to_synced(() => $giper_baza_file),
     }) {
     }
     $.$bog_vk_track_baza = $bog_vk_track_baza;
@@ -23192,36 +23224,27 @@ var $;
             }
             _migration_done = false;
             /**
-             * Реактивно ИНИЦИИРУЕТ sync blob-lands всех треков в фоне.
-             * Без явного `.land().sync()` blob-lands доступны через `Pawn(link)`,
-             * но yard их не подсасывает (в land.ts:345 строка `.sync()` закомменчена,
-             * так что Pawn() не запускает sync автоматически).
+             * Реактивно прокликивает все File-ссылки треков. Используется
+             * `$bog_vk_atom_link_to_synced` (см. track_baza.ts) — его `.remote()`
+             * сам вызывает `.land().sync()` на blob-land. Здесь только итерируем,
+             * чтобы каждый трек был "потроган" хотя бы раз.
              *
-             * `$mol_wire_solid()` держит этот cell живым между тиками — иначе $mol его
-             * рипает после первого вызова в auto() и blob-lands перестают тачиться.
+             * `$mol_wire_solid()` держит cell живым между тиками — иначе $mol его
+             * рипает и blob-lands перестают синкаться.
              */
             prefetch_blob_lands() {
                 $mol_wire_solid();
                 const dict = this.tracks_dict();
                 const keys = (dict.keys() ?? []);
-                let synced = 0;
+                let touched = 0;
                 for (const key of keys) {
                     const track = dict.key(key);
                     if (!track)
                         continue;
-                    const file = track.File()?.remote();
-                    if (!file)
-                        continue;
-                    try {
-                        file.land().sync();
-                        synced++;
-                    }
-                    catch (e) {
-                        if (e instanceof Promise)
-                            continue;
-                    }
+                    if (track.File()?.remote())
+                        touched++;
                 }
-                return synced;
+                return touched;
             }
             auto() {
                 // Прогрев чтения из baza — кидает Promise при загрузке, ретраится здесь.
