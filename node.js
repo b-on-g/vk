@@ -19713,7 +19713,7 @@ var $;
 })($ || ($ = {}));
 
 ;
-	($.$bog_vk_account) = class $bog_vk_account extends ($.$mol_list) {
+	($.$bog_vk_account) = class $bog_vk_account extends ($.$mol_view) {
 		Sync_status(){
 			const obj = new this.$.$giper_baza_status();
 			return obj;
@@ -19779,6 +19779,11 @@ var $;
 			(obj.sub) = () => (["ЛК:", (this.Lord_text())]);
 			return obj;
 		}
+		Profile(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([(this.Nickname_field()), (this.Lord())]);
+			return obj;
+		}
 		Warning(){
 			const obj = new this.$.$mol_paragraph();
 			(obj.title) = () => ("Ссылка ниже — СЕКРЕТ. Не делись ей публично.");
@@ -19800,6 +19805,15 @@ var $;
 		Copy_status(){
 			const obj = new this.$.$mol_view();
 			(obj.sub) = () => ([(this.copy_status())]);
+			return obj;
+		}
+		Export(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([
+				(this.Warning()), 
+				(this.Copy()), 
+				(this.Copy_status())
+			]);
 			return obj;
 		}
 		Import_hint(){
@@ -19835,6 +19849,16 @@ var $;
 			(obj.sub) = () => ([(this.import_status())]);
 			return obj;
 		}
+		Import(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([
+				(this.Import_hint()), 
+				(this.Import_input()), 
+				(this.Import_apply()), 
+				(this.Import_status())
+			]);
+			return obj;
+		}
 		Reset_hint(){
 			const obj = new this.$.$mol_paragraph();
 			(obj.title) = () => ("Сбросить состояние и сгенерировать новый аккаунт. Текущие треки в Giper Baza останутся orphan.");
@@ -19850,21 +19874,23 @@ var $;
 			(obj.click) = (next) => ((this.reset_account(next)));
 			return obj;
 		}
-		rows(){
-			return [
-				(this.Sync_row()), 
-				(this.Nickname_field()), 
-				(this.Lord()), 
-				(this.Warning()), 
-				(this.Copy()), 
-				(this.Copy_status()), 
-				(this.Import_hint()), 
-				(this.Import_input()), 
-				(this.Import_apply()), 
-				(this.Import_status()), 
-				(this.Reset_hint()), 
-				(this.Reset_button())
-			];
+		Reset(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([(this.Reset_hint()), (this.Reset_button())]);
+			return obj;
+		}
+		Cards(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([
+				(this.Profile()), 
+				(this.Export()), 
+				(this.Import()), 
+				(this.Reset())
+			]);
+			return obj;
+		}
+		sub(){
+			return [(this.Sync_row()), (this.Cards())];
 		}
 	};
 	($mol_mem(($.$bog_vk_account.prototype), "Sync_status"));
@@ -19878,19 +19904,24 @@ var $;
 	($mol_mem(($.$bog_vk_account.prototype), "Nickname_field"));
 	($mol_mem(($.$bog_vk_account.prototype), "Lord_text"));
 	($mol_mem(($.$bog_vk_account.prototype), "Lord"));
+	($mol_mem(($.$bog_vk_account.prototype), "Profile"));
 	($mol_mem(($.$bog_vk_account.prototype), "Warning"));
 	($mol_mem(($.$bog_vk_account.prototype), "copy"));
 	($mol_mem(($.$bog_vk_account.prototype), "Copy"));
 	($mol_mem(($.$bog_vk_account.prototype), "Copy_status"));
+	($mol_mem(($.$bog_vk_account.prototype), "Export"));
 	($mol_mem(($.$bog_vk_account.prototype), "Import_hint"));
 	($mol_mem(($.$bog_vk_account.prototype), "import_link"));
 	($mol_mem(($.$bog_vk_account.prototype), "Import_input"));
 	($mol_mem(($.$bog_vk_account.prototype), "apply_import"));
 	($mol_mem(($.$bog_vk_account.prototype), "Import_apply"));
 	($mol_mem(($.$bog_vk_account.prototype), "Import_status"));
+	($mol_mem(($.$bog_vk_account.prototype), "Import"));
 	($mol_mem(($.$bog_vk_account.prototype), "Reset_hint"));
 	($mol_mem(($.$bog_vk_account.prototype), "reset_account"));
 	($mol_mem(($.$bog_vk_account.prototype), "Reset_button"));
+	($mol_mem(($.$bog_vk_account.prototype), "Reset"));
+	($mol_mem(($.$bog_vk_account.prototype), "Cards"));
 
 
 ;
@@ -20277,8 +20308,8 @@ var $;
     var $$;
     (function ($$) {
         $mol_style_define($bog_vk_account, {
+            flex: { direction: 'column' },
             width: '100%',
-            maxWidth: $mol_style_func.calc('100vw - 1rem'),
             boxSizing: 'border-box',
             padding: {
                 top: '0.5rem',
@@ -20286,15 +20317,53 @@ var $;
                 left: '0.5rem',
                 right: '0.5rem',
             },
-            gap: '0.25rem',
+            gap: '0.75rem',
+            Sync_row: {
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: { left: '0.25rem', right: '0.25rem' },
+            },
+            Download_all_status: {
+                font: { size: '0.8125rem' },
+                color: $mol_theme.shade,
+                flex: { grow: 1 },
+            },
+            Cards: {
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 18rem), 1fr))',
+                gap: '0.75rem',
+                alignItems: 'start',
+            },
+            Profile: {
+                flex: { direction: 'column' },
+                background: { color: $mol_theme.card },
+                border: { radius: $mol_gap.round },
+                padding: {
+                    top: '0.75rem',
+                    bottom: '0.75rem',
+                    left: '0.75rem',
+                    right: '0.75rem',
+                },
+                gap: '0.5rem',
+            },
             Lord: {
                 font: {
                     family: 'monospace',
                     size: '0.875rem',
                 },
+                alignItems: 'baseline',
+                padding: { top: '0.25rem', bottom: '0.25rem' },
+                gap: '0.5rem',
+            },
+            Export: {
+                flex: { direction: 'column' },
+                background: { color: $mol_theme.card },
+                border: { radius: $mol_gap.round },
                 padding: {
-                    top: '0.25rem',
-                    bottom: '0.25rem',
+                    top: '0.75rem',
+                    bottom: '0.75rem',
+                    left: '0.75rem',
+                    right: '0.75rem',
                 },
                 gap: '0.5rem',
             },
@@ -20307,12 +20376,40 @@ var $;
                 color: $mol_theme.shade,
                 minHeight: '1rem',
             },
+            Import: {
+                flex: { direction: 'column' },
+                background: { color: $mol_theme.card },
+                border: { radius: $mol_gap.round },
+                padding: {
+                    top: '0.75rem',
+                    bottom: '0.75rem',
+                    left: '0.75rem',
+                    right: '0.75rem',
+                },
+                gap: '0.5rem',
+            },
+            Import_hint: {
+                font: { size: '0.8125rem' },
+                color: $mol_theme.shade,
+            },
             Import_status: {
                 font: { size: '0.8125rem' },
                 color: $mol_theme.shade,
                 minHeight: '1rem',
             },
-            Import_hint: {
+            Reset: {
+                flex: { direction: 'column' },
+                background: { color: $mol_theme.card },
+                border: { radius: $mol_gap.round },
+                padding: {
+                    top: '0.75rem',
+                    bottom: '0.75rem',
+                    left: '0.75rem',
+                    right: '0.75rem',
+                },
+                gap: '0.5rem',
+            },
+            Reset_hint: {
                 font: { size: '0.8125rem' },
                 color: $mol_theme.shade,
             },
@@ -21198,7 +21295,9 @@ var $;
         Url: $giper_baza_atom_text,
         Added: $giper_baza_atom_real,
         Order: $giper_baza_atom_real,
-        Archived: $giper_baza_atom_bool,
+        // Id плейлиста: '' = main, 'archive' = архив, любое другое — кастомный плейлист.
+        // Расширяется без миграции схемы; полную метадату плейлистов держим в $bog_vk_store.Playlists.
+        Playlist: $giper_baza_atom_text,
         File: $bog_vk_atom_link_to_synced(() => $giper_baza_file),
     }) {
     }
@@ -22721,8 +22820,9 @@ var $;
                     return false;
                 }
             }
-            /** Активные/архивные треки, отсортированные по Order (asc, fallback Added). */
-            list_audios(archived) {
+            /** Треки в указанном плейлисте, отсортированные по Order (asc, fallback Added).
+             *  '' = main (default), 'archive' = архив, любой другой id — кастомный плейлист. */
+            list_audios_in(playlist) {
                 const dict = this.tracks_dict();
                 const keys = (dict.keys() ?? []);
                 const rows = [];
@@ -22730,8 +22830,8 @@ var $;
                     const track = dict.key(key);
                     if (!track)
                         continue;
-                    const is_arch = track.Archived()?.val() === true;
-                    if (is_arch !== archived)
+                    const track_playlist = track.Playlist()?.val() ?? '';
+                    if (track_playlist !== playlist)
                         continue;
                     const vk_id = track.Vk_id()?.val() ?? String(key);
                     const parts = vk_id.split('_');
@@ -22757,6 +22857,10 @@ var $;
                 }
                 rows.sort((a, b) => a.order !== b.order ? a.order - b.order : b.added - a.added);
                 return rows.map(r => r.audio);
+            }
+            /** Backward-compat обёртка: archived bool → playlist id. */
+            list_audios(archived) {
+                return this.list_audios_in(archived ? 'archive' : '');
             }
             saved_audios() {
                 try {
@@ -22870,7 +22974,9 @@ var $;
                     track.Added('auto').val(Date.now());
                 if (track.Order()?.val() == null)
                     track.Order('auto').val(this.max_order() + 1);
-                track.Archived('auto').val(false);
+                // '' = main playlist (default).
+                if (track.Playlist()?.val() == null)
+                    track.Playlist('auto').val('');
                 // Blob — в отдельном land (см. save_blob).
                 const store = track.File('auto').ensure([[null, $giper_baza_rank_read]]);
                 if (store) {
@@ -22902,23 +23008,21 @@ var $;
                 ta.Order('auto').val(next_a);
                 tb.Order('auto').val(next_b);
             }
-            archive_track(audio) {
+            /** Перенести трек в плейлист по id (`''` = main, `'archive'` = архив). */
+            move_to_playlist(audio, playlist) {
                 if (!audio)
                     return;
                 const dict = this.tracks_dict();
                 const track = dict.key(this.cache_key(audio));
                 if (!track)
                     return;
-                track.Archived('auto').val(true);
+                track.Playlist('auto').val(playlist);
+            }
+            archive_track(audio) {
+                this.move_to_playlist(audio, 'archive');
             }
             restore_track(audio) {
-                if (!audio)
-                    return;
-                const dict = this.tracks_dict();
-                const track = dict.key(this.cache_key(audio));
-                if (!track)
-                    return;
-                track.Archived('auto').val(false);
+                this.move_to_playlist(audio, '');
             }
             delete_track(audio) {
                 if (!audio)
@@ -23226,8 +23330,10 @@ var $;
             /**
              * Реактивно прокликивает все File-ссылки треков. Используется
              * `$bog_vk_atom_link_to_synced` (см. track_baza.ts) — его `.remote()`
-             * сам вызывает `.land().sync()` на blob-land. Здесь только итерируем,
-             * чтобы каждый трек был "потроган" хотя бы раз.
+             * сам вызывает `.land().sync()` на blob-land.
+             *
+             * Итерируем в порядке UI (saved → archived, оба asc по Order) — yard
+             * стартует sync в этом порядке, и первые в списке треки приходят первыми.
              *
              * `$mol_wire_solid()` держит cell живым между тиками — иначе $mol его
              * рипает и blob-lands перестают синкаться.
@@ -23235,10 +23341,13 @@ var $;
             prefetch_blob_lands() {
                 $mol_wire_solid();
                 const dict = this.tracks_dict();
-                const keys = (dict.keys() ?? []);
+                const audios = [
+                    ...this.list_audios(false),
+                    ...this.list_audios(true),
+                ];
                 let touched = 0;
-                for (const key of keys) {
-                    const track = dict.key(key);
+                for (const audio of audios) {
+                    const track = dict.key(this.cache_key(audio));
                     if (!track)
                         continue;
                     if (track.File()?.remote())
@@ -23309,6 +23418,9 @@ var $;
         __decorate([
             $mol_action
         ], $bog_vk_app.prototype, "swap_order", null);
+        __decorate([
+            $mol_action
+        ], $bog_vk_app.prototype, "move_to_playlist", null);
         __decorate([
             $mol_action
         ], $bog_vk_app.prototype, "archive_track", null);

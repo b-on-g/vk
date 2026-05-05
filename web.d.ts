@@ -13943,72 +13943,97 @@ declare namespace $ {
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_paragraph__title_bog_vk_account_12 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_account_12 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_paragraph__title_bog_vk_account_13 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_paragraph['title'] >
 	>
-	type $mol_button_minor__title_bog_vk_account_13 = $mol_type_enforce<
+	type $mol_button_minor__title_bog_vk_account_14 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_button_minor['title'] >
 	>
-	type $mol_button_minor__click_bog_vk_account_14 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_account_15 = $mol_type_enforce<
 		ReturnType< $bog_vk_account['copy'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
-	type $mol_view__sub_bog_vk_account_15 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_account_16 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_paragraph__title_bog_vk_account_16 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_account_17 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_paragraph__title_bog_vk_account_18 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_paragraph['title'] >
 	>
-	type $mol_string__hint_bog_vk_account_17 = $mol_type_enforce<
+	type $mol_string__hint_bog_vk_account_19 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_string['hint'] >
 	>
-	type $mol_string__value_bog_vk_account_18 = $mol_type_enforce<
+	type $mol_string__value_bog_vk_account_20 = $mol_type_enforce<
 		ReturnType< $bog_vk_account['import_link'] >
 		,
 		ReturnType< $mol_string['value'] >
 	>
-	type $mol_button_minor__title_bog_vk_account_19 = $mol_type_enforce<
+	type $mol_button_minor__title_bog_vk_account_21 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_button_minor['title'] >
 	>
-	type $mol_button_minor__click_bog_vk_account_20 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_account_22 = $mol_type_enforce<
 		ReturnType< $bog_vk_account['apply_import'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
-	type $mol_view__sub_bog_vk_account_21 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_account_23 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_paragraph__title_bog_vk_account_22 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_account_24 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_paragraph__title_bog_vk_account_25 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_paragraph['title'] >
 	>
-	type $mol_button_minor__title_bog_vk_account_23 = $mol_type_enforce<
+	type $mol_button_minor__title_bog_vk_account_26 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_button_minor['title'] >
 	>
-	type $mol_button_minor__click_bog_vk_account_24 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_account_27 = $mol_type_enforce<
 		ReturnType< $bog_vk_account['reset_account'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
-	export class $bog_vk_account extends $mol_list {
+	type $mol_view__sub_bog_vk_account_28 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_view__sub_bog_vk_account_29 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	export class $bog_vk_account extends $mol_view {
 		Sync_status( ): $giper_baza_status
 		download_all( next?: any ): any
 		Download_all_icon( ): $mol_icon_download
@@ -14022,11 +14047,13 @@ declare namespace $ {
 		lord_short( ): string
 		Lord_text( ): $mol_view
 		Lord( ): $mol_view
+		Profile( ): $mol_view
 		Warning( ): $mol_paragraph
 		copy( next?: any ): any
 		Copy( ): $mol_button_minor
 		copy_status( ): string
 		Copy_status( ): $mol_view
+		Export( ): $mol_view
 		Import_hint( ): $mol_paragraph
 		import_link( next?: string ): string
 		Import_input( ): $mol_string
@@ -14034,10 +14061,13 @@ declare namespace $ {
 		Import_apply( ): $mol_button_minor
 		import_status( ): string
 		Import_status( ): $mol_view
+		Import( ): $mol_view
 		Reset_hint( ): $mol_paragraph
 		reset_account( next?: any ): any
 		Reset_button( ): $mol_button_minor
-		rows( ): readonly(any)[]
+		Reset( ): $mol_view
+		Cards( ): $mol_view
+		sub( ): readonly(any)[]
 	}
 	
 }
@@ -16455,7 +16485,7 @@ declare namespace $ {
             readonly Url: (auto?: any) => $giper_baza_atom_text | null;
             readonly Added: (auto?: any) => $giper_baza_atom_real | null;
             readonly Order: (auto?: any) => $giper_baza_atom_real | null;
-            readonly Archived: (auto?: any) => $giper_baza_atom_bool | null;
+            readonly Playlist: (auto?: any) => $giper_baza_atom_text | null;
             readonly File: (auto?: any) => {
                 Value: Value;
                 remote(next?: $giper_baza_file | null | undefined): $giper_baza_file | null;
@@ -16509,7 +16539,7 @@ declare namespace $ {
             readonly Url: typeof $giper_baza_atom_text;
             readonly Added: typeof $giper_baza_atom_real;
             readonly Order: typeof $giper_baza_atom_real;
-            readonly Archived: typeof $giper_baza_atom_bool;
+            readonly Playlist: typeof $giper_baza_atom_text;
             readonly File: {
                 new (): {
                     Value: () => typeof $giper_baza_file;
@@ -17092,7 +17122,10 @@ declare namespace $.$$ {
         /** Blob трека из baza или RAM. null если нет. */
         local_blob(audio: $bog_vk_api_audio): Blob | null;
         is_cached(audio: $bog_vk_api_audio): boolean;
-        /** Активные/архивные треки, отсортированные по Order (asc, fallback Added). */
+        /** Треки в указанном плейлисте, отсортированные по Order (asc, fallback Added).
+         *  '' = main (default), 'archive' = архив, любой другой id — кастомный плейлист. */
+        list_audios_in(playlist: string): $bog_vk_api_audio[];
+        /** Backward-compat обёртка: archived bool → playlist id. */
         list_audios(archived: boolean): $bog_vk_api_audio[];
         saved_audios(): $bog_vk_api_audio[];
         archived_audios(): $bog_vk_api_audio[];
@@ -17102,6 +17135,8 @@ declare namespace $.$$ {
         save_blob(audio: $bog_vk_api_audio, buffer: Uint8Array, mime: string): void;
         save_local_track(file: File, buffer: Uint8Array): $bog_vk_api_audio | null;
         swap_order(a: $bog_vk_api_audio, b: $bog_vk_api_audio): void;
+        /** Перенести трек в плейлист по id (`''` = main, `'archive'` = архив). */
+        move_to_playlist(audio: $bog_vk_api_audio, playlist: string): void;
         archive_track(audio: $bog_vk_api_audio): void;
         restore_track(audio: $bog_vk_api_audio): void;
         delete_track(audio: $bog_vk_api_audio): void;
@@ -17167,8 +17202,10 @@ declare namespace $.$$ {
         /**
          * Реактивно прокликивает все File-ссылки треков. Используется
          * `$bog_vk_atom_link_to_synced` (см. track_baza.ts) — его `.remote()`
-         * сам вызывает `.land().sync()` на blob-land. Здесь только итерируем,
-         * чтобы каждый трек был "потроган" хотя бы раз.
+         * сам вызывает `.land().sync()` на blob-land.
+         *
+         * Итерируем в порядке UI (saved → archived, оба asc по Order) — yard
+         * стартует sync в этом порядке, и первые в списке треки приходят первыми.
          *
          * `$mol_wire_solid()` держит cell живым между тиками — иначе $mol его
          * рипает и blob-lands перестают синкаться.
