@@ -10252,6 +10252,16 @@ declare namespace $.$$ {
          */
         prefetch_blobs(items: $bog_vk_api_audio[]): Promise<void>;
         private _migration_done;
+        /**
+         * Реактивно ИНИЦИИРУЕТ sync blob-lands всех треков в фоне.
+         * Без явного `.land().sync()` blob-lands доступны через `Pawn(link)`,
+         * но yard их не подсасывает (в land.ts:345 строка `.sync()` закомменчена,
+         * так что Pawn() не запускает sync автоматически).
+         *
+         * `$mol_wire_solid()` держит этот cell живым между тиками — иначе $mol его
+         * рипает после первого вызова в auto() и blob-lands перестают тачиться.
+         */
+        prefetch_blob_lands(): number;
         auto(): any;
     }
 }

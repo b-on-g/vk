@@ -23182,10 +23182,50 @@ var $;
                 console.log('[app] prefetch done:', done, 'downloaded,', failed, 'failed');
             }
             _migration_done = false;
+            /**
+             * Реактивно ИНИЦИИРУЕТ sync blob-lands всех треков в фоне.
+             * Без явного `.land().sync()` blob-lands доступны через `Pawn(link)`,
+             * но yard их не подсасывает (в land.ts:345 строка `.sync()` закомменчена,
+             * так что Pawn() не запускает sync автоматически).
+             *
+             * `$mol_wire_solid()` держит этот cell живым между тиками — иначе $mol его
+             * рипает после первого вызова в auto() и blob-lands перестают тачиться.
+             */
+            prefetch_blob_lands() {
+                $mol_wire_solid();
+                const dict = this.tracks_dict();
+                const keys = (dict.keys() ?? []);
+                let synced = 0;
+                for (const key of keys) {
+                    const track = dict.key(key);
+                    if (!track)
+                        continue;
+                    const file = track.File()?.remote();
+                    if (!file)
+                        continue;
+                    try {
+                        file.land().sync();
+                        synced++;
+                    }
+                    catch (e) {
+                        if (e instanceof Promise)
+                            continue;
+                    }
+                }
+                return synced;
+            }
             auto() {
                 // Прогрев чтения из baza — кидает Promise при загрузке, ретраится здесь.
                 try {
                     this.saved_audios();
+                }
+                catch (e) {
+                    if (e instanceof Promise)
+                        throw e;
+                }
+                // Тачим blob-lands всех треков — синк блобов идёт фоном параллельно.
+                try {
+                    this.prefetch_blob_lands();
                 }
                 catch (e) {
                     if (e instanceof Promise)
@@ -23291,6 +23331,9 @@ var $;
         __decorate([
             $mol_mem
         ], $bog_vk_app.prototype, "prefetch_state", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_app.prototype, "prefetch_blob_lands", null);
         $$.$bog_vk_app = $bog_vk_app;
     })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));
