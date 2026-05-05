@@ -667,9 +667,43 @@ namespace $.$$ {
 
 		private _migration_done = false
 
+		/**
+		 * Реактивно ИНИЦИИРУЕТ sync blob-lands всех треков в фоне.
+		 * Без явного `.land().sync()` blob-lands доступны через `Pawn(link)`,
+		 * но yard их не подсасывает (в land.ts:345 строка `.sync()` закомменчена,
+		 * так что Pawn() не запускает sync автоматически).
+		 *
+		 * `$mol_wire_solid()` держит этот cell живым между тиками — иначе $mol его
+		 * рипает после первого вызова в auto() и blob-lands перестают тачиться.
+		 */
+		@$mol_mem
+		prefetch_blob_lands(): number {
+			$mol_wire_solid()
+			const dict = this.tracks_dict()
+			const keys = (dict.keys() ?? []) as string[]
+			let synced = 0
+			for (const key of keys) {
+				const track = dict.key(key)
+				if (!track) continue
+				const file = track.File()?.remote()
+				if (!file) continue
+				try {
+					file.land().sync()
+					synced++
+				} catch (e: any) {
+					if (e instanceof Promise) continue
+				}
+			}
+			return synced
+		}
+
 		auto() {
 			// Прогрев чтения из baza — кидает Promise при загрузке, ретраится здесь.
 			try { this.saved_audios() } catch (e: any) {
+				if (e instanceof Promise) throw e
+			}
+			// Тачим blob-lands всех треков — синк блобов идёт фоном параллельно.
+			try { this.prefetch_blob_lands() } catch (e: any) {
 				if (e instanceof Promise) throw e
 			}
 			// Одноразовая миграция блоб-линков (паттерн giper_baza_link_remote).
