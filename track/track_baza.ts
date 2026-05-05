@@ -43,7 +43,9 @@ namespace $ {
 		Url: $giper_baza_atom_text,
 		Added: $giper_baza_atom_real,
 		Order: $giper_baza_atom_real,
-		Archived: $giper_baza_atom_bool,
+		// Id плейлиста: '' = main, 'archive' = архив, любое другое — кастомный плейлист.
+		// Расширяется без миграции схемы; полную метадату плейлистов держим в $bog_vk_store.Playlists.
+		Playlist: $giper_baza_atom_text,
 		File: $bog_vk_atom_link_to_synced(() => $giper_baza_file),
 	}) {}
 

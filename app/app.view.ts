@@ -178,8 +178,9 @@ namespace $.$$ {
 			}
 		}
 
-		/** Активные/архивные треки, отсортированные по Order (asc, fallback Added). */
-		list_audios(archived: boolean): $bog_vk_api_audio[] {
+		/** Треки в указанном плейлисте, отсортированные по Order (asc, fallback Added).
+		 *  '' = main (default), 'archive' = архив, любой другой id — кастомный плейлист. */
+		list_audios_in(playlist: string): $bog_vk_api_audio[] {
 			const dict = this.tracks_dict()
 			const keys = (dict.keys() ?? []) as string[]
 			type Row = { audio: $bog_vk_api_audio, order: number, added: number }
@@ -187,8 +188,8 @@ namespace $.$$ {
 			for (const key of keys) {
 				const track = dict.key(key)
 				if (!track) continue
-				const is_arch = track.Archived()?.val() === true
-				if (is_arch !== archived) continue
+				const track_playlist = track.Playlist()?.val() ?? ''
+				if (track_playlist !== playlist) continue
 				const vk_id = track.Vk_id()?.val() ?? String(key)
 				const parts = vk_id.split('_')
 				const owner_id = Number(parts[0])
@@ -212,6 +213,11 @@ namespace $.$$ {
 			}
 			rows.sort((a, b) => a.order !== b.order ? a.order - b.order : b.added - a.added)
 			return rows.map(r => r.audio)
+		}
+
+		/** Backward-compat обёртка: archived bool → playlist id. */
+		list_audios(archived: boolean): $bog_vk_api_audio[] {
+			return this.list_audios_in(archived ? 'archive' : '')
 		}
 
 		@$mol_mem
@@ -317,7 +323,8 @@ namespace $.$$ {
 			track.Artist('auto')!.val(artist)
 			if (track.Added()?.val() == null) track.Added('auto')!.val(Date.now())
 			if (track.Order()?.val() == null) track.Order('auto')!.val(this.max_order() + 1)
-			track.Archived('auto')!.val(false)
+			// '' = main playlist (default).
+			if (track.Playlist()?.val() == null) track.Playlist('auto')!.val('')
 			// Blob — в отдельном land (см. save_blob).
 			const store = track.File('auto')!.ensure([[null, $giper_baza_rank_read]])
 			if (store) {
@@ -349,22 +356,24 @@ namespace $.$$ {
 			tb.Order('auto')!.val(next_b)
 		}
 
+		/** Перенести трек в плейлист по id (`''` = main, `'archive'` = архив). */
 		@$mol_action
-		archive_track(audio: $bog_vk_api_audio): void {
+		move_to_playlist(audio: $bog_vk_api_audio, playlist: string): void {
 			if (!audio) return
 			const dict = this.tracks_dict()
 			const track = dict.key(this.cache_key(audio))
 			if (!track) return
-			track.Archived('auto')!.val(true)
+			track.Playlist('auto')!.val(playlist)
+		}
+
+		@$mol_action
+		archive_track(audio: $bog_vk_api_audio): void {
+			this.move_to_playlist(audio, 'archive')
 		}
 
 		@$mol_action
 		restore_track(audio: $bog_vk_api_audio): void {
-			if (!audio) return
-			const dict = this.tracks_dict()
-			const track = dict.key(this.cache_key(audio))
-			if (!track) return
-			track.Archived('auto')!.val(false)
+			this.move_to_playlist(audio, '')
 		}
 
 		@$mol_action
@@ -670,8 +679,10 @@ namespace $.$$ {
 		/**
 		 * Реактивно прокликивает все File-ссылки треков. Используется
 		 * `$bog_vk_atom_link_to_synced` (см. track_baza.ts) — его `.remote()`
-		 * сам вызывает `.land().sync()` на blob-land. Здесь только итерируем,
-		 * чтобы каждый трек был "потроган" хотя бы раз.
+		 * сам вызывает `.land().sync()` на blob-land.
+		 *
+		 * Итерируем в порядке UI (saved → archived, оба asc по Order) — yard
+		 * стартует sync в этом порядке, и первые в списке треки приходят первыми.
 		 *
 		 * `$mol_wire_solid()` держит cell живым между тиками — иначе $mol его
 		 * рипает и blob-lands перестают синкаться.
@@ -680,10 +691,13 @@ namespace $.$$ {
 		prefetch_blob_lands(): number {
 			$mol_wire_solid()
 			const dict = this.tracks_dict()
-			const keys = (dict.keys() ?? []) as string[]
+			const audios = [
+				...this.list_audios(false),
+				...this.list_audios(true),
+			]
 			let touched = 0
-			for (const key of keys) {
-				const track = dict.key(key)
+			for (const audio of audios) {
+				const track = dict.key(this.cache_key(audio))
 				if (!track) continue
 				if (track.File()?.remote()) touched++
 			}

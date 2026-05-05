@@ -1,5 +1,5 @@
-$bog_vk_account $mol_list
-	rows /
+$bog_vk_account $mol_view
+	sub /
 		<= Sync_row $mol_view
 			sub /
 				<= Sync_status $giper_baza_status
@@ -9,32 +9,42 @@ $bog_vk_account $mol_list
 					sub /
 						<= Download_all_icon $mol_icon_download
 				<= Download_all_status $mol_view sub / <= download_all_status \
-		<= Nickname_field $mol_form_field
-			name \Имя
-			Content <= Nickname_input $mol_string
-				value? <=> nickname? \
-				hint \Как тебя зовут?
-		<= Lord $mol_view
+		<= Cards $mol_view
 			sub /
-				\ЛК:
-				<= Lord_text $mol_view sub / <= lord_short \
-		<= Warning $mol_paragraph
-			title \Ссылка ниже — СЕКРЕТ. Не делись ей публично.
-		<= Copy $mol_button_minor
-			title \Скопировать ссылку для переноса
-			click? <=> copy? null
-		<= Copy_status $mol_view sub / <= copy_status \
-		<= Import_hint $mol_paragraph
-			title \Перенести с другого устройства — вставь ссылку:
-		<= Import_input $mol_string
-			hint \https://.../vk/#account=...
-			value? <=> import_link? \
-		<= Import_apply $mol_button_minor
-			title \Применить
-			click? <=> apply_import? null
-		<= Import_status $mol_view sub / <= import_status \
-		<= Reset_hint $mol_paragraph
-			title \Сбросить состояние и сгенерировать новый аккаунт. Текущие треки в Giper Baza останутся orphan.
-		<= Reset_button $mol_button_minor
-			title \Сбросить локальный аккаунт
-			click? <=> reset_account? null
+				<= Profile $mol_view
+					sub /
+						<= Nickname_field $mol_form_field
+							name \Имя
+							Content <= Nickname_input $mol_string
+								value? <=> nickname? \
+								hint \Как тебя зовут?
+						<= Lord $mol_view
+							sub /
+								\ЛК:
+								<= Lord_text $mol_view sub / <= lord_short \
+				<= Export $mol_view
+					sub /
+						<= Warning $mol_paragraph
+							title \Ссылка ниже — СЕКРЕТ. Не делись ей публично.
+						<= Copy $mol_button_minor
+							title \Скопировать ссылку для переноса
+							click? <=> copy? null
+						<= Copy_status $mol_view sub / <= copy_status \
+				<= Import $mol_view
+					sub /
+						<= Import_hint $mol_paragraph
+							title \Перенести с другого устройства — вставь ссылку:
+						<= Import_input $mol_string
+							hint \https://.../vk/#account=...
+							value? <=> import_link? \
+						<= Import_apply $mol_button_minor
+							title \Применить
+							click? <=> apply_import? null
+						<= Import_status $mol_view sub / <= import_status \
+				<= Reset $mol_view
+					sub /
+						<= Reset_hint $mol_paragraph
+							title \Сбросить состояние и сгенерировать новый аккаунт. Текущие треки в Giper Baza останутся orphan.
+						<= Reset_button $mol_button_minor
+							title \Сбросить локальный аккаунт
+							click? <=> reset_account? null
