@@ -668,33 +668,26 @@ namespace $.$$ {
 		private _migration_done = false
 
 		/**
-		 * Реактивно ИНИЦИИРУЕТ sync blob-lands всех треков в фоне.
-		 * Без явного `.land().sync()` blob-lands доступны через `Pawn(link)`,
-		 * но yard их не подсасывает (в land.ts:345 строка `.sync()` закомменчена,
-		 * так что Pawn() не запускает sync автоматически).
+		 * Реактивно прокликивает все File-ссылки треков. Используется
+		 * `$bog_vk_atom_link_to_synced` (см. track_baza.ts) — его `.remote()`
+		 * сам вызывает `.land().sync()` на blob-land. Здесь только итерируем,
+		 * чтобы каждый трек был "потроган" хотя бы раз.
 		 *
-		 * `$mol_wire_solid()` держит этот cell живым между тиками — иначе $mol его
-		 * рипает после первого вызова в auto() и blob-lands перестают тачиться.
+		 * `$mol_wire_solid()` держит cell живым между тиками — иначе $mol его
+		 * рипает и blob-lands перестают синкаться.
 		 */
 		@$mol_mem
 		prefetch_blob_lands(): number {
 			$mol_wire_solid()
 			const dict = this.tracks_dict()
 			const keys = (dict.keys() ?? []) as string[]
-			let synced = 0
+			let touched = 0
 			for (const key of keys) {
 				const track = dict.key(key)
 				if (!track) continue
-				const file = track.File()?.remote()
-				if (!file) continue
-				try {
-					file.land().sync()
-					synced++
-				} catch (e: any) {
-					if (e instanceof Promise) continue
-				}
+				if (track.File()?.remote()) touched++
 			}
-			return synced
+			return touched
 		}
 
 		auto() {
