@@ -294,7 +294,7 @@ namespace $.$$ {
 			// Иначе все 30 треков сваливаются в один pack из 7000+ юнитов и сливаются
 			// одной транзакцией — 30+ MB через интернет = десятки секунд.
 			// С отдельным land каждый blob синкается независимо и не блокирует home land.
-			const store = track.File('auto')!.ensure([[null, $giper_baza_rank_read]])
+			const store = track.File('auto')!.ensure([])
 			if (!store) return
 			store.buffer(buffer as Uint8Array<ArrayBuffer>)
 			store.type(mime || 'audio/mpeg')
@@ -326,7 +326,7 @@ namespace $.$$ {
 			// '' = main playlist (default).
 			if (track.Playlist()?.val() == null) track.Playlist('auto')!.val('')
 			// Blob — в отдельном land (см. save_blob).
-			const store = track.File('auto')!.ensure([[null, $giper_baza_rank_read]])
+			const store = track.File('auto')!.ensure([])
 			if (store) {
 				store.buffer(buffer as Uint8Array<ArrayBuffer>)
 				store.type(file.type || 'audio/mpeg')
