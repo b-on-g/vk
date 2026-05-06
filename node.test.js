@@ -21894,8 +21894,13 @@ var $;
     var $$;
     (function ($$) {
         class $bog_vk_player extends $.$bog_vk_player {
-            _audio_el;
             _queue_idx = 0;
+            _audio_el;
+            _last_blob_url = '';
+            _msg_listener_set = false;
+            is_extension() {
+                return typeof chrome !== 'undefined' && !!chrome?.runtime?.id;
+            }
             audio_el() {
                 if (this._audio_el)
                     return this._audio_el;
@@ -21935,16 +21940,71 @@ var $;
                 el.addEventListener('loadedmetadata', () => {
                     this.duration(el.duration);
                 });
-                el.addEventListener('error', (e) => {
+                el.addEventListener('error', () => {
                     console.error('[player] audio error:', el.error?.code, el.error?.message, el.error);
                 });
                 this._audio_el = el;
                 return el;
             }
+            offscreen_link() {
+                if (!this.is_extension())
+                    return null;
+                if (this._msg_listener_set)
+                    return null;
+                this._msg_listener_set = true;
+                chrome.runtime.onMessage.addListener((msg) => {
+                    if (msg?.target !== 'popup')
+                        return;
+                    if (msg.type === 'state') {
+                        if (typeof msg.playing === 'boolean') {
+                            this.playing(msg.playing);
+                            if ('mediaSession' in navigator) {
+                                navigator.mediaSession.playbackState = msg.playing ? 'playing' : 'paused';
+                            }
+                        }
+                        if (typeof msg.current_time === 'number')
+                            this.current_time(msg.current_time);
+                        if (typeof msg.duration === 'number' && isFinite(msg.duration))
+                            this.duration(msg.duration);
+                        if (msg.current_audio !== undefined)
+                            this.current_audio(msg.current_audio);
+                    }
+                    if (msg.type === 'ended') {
+                        try {
+                            const finished = this.current_audio();
+                            this.next();
+                            if (finished && navigator.onLine) {
+                                $bog_vk_app.Root(0).save_hls(finished).catch(() => { });
+                            }
+                        }
+                        catch (e) {
+                            console.warn('[player] ended handler error:', e);
+                        }
+                    }
+                    if (msg.type === 'error') {
+                        console.error('[player] offscreen error:', msg.code, msg.message);
+                    }
+                });
+                chrome.runtime.sendMessage({ target: 'background', type: 'ensure_offscreen' })
+                    .then(() => chrome.runtime.sendMessage({ target: 'offscreen', type: 'get_state' }))
+                    .then((s) => {
+                    if (!s)
+                        return;
+                    if (typeof s.playing === 'boolean')
+                        this.playing(s.playing);
+                    if (typeof s.current_time === 'number')
+                        this.current_time(s.current_time);
+                    if (typeof s.duration === 'number' && isFinite(s.duration))
+                        this.duration(s.duration);
+                    if (s.current_audio)
+                        this.current_audio(s.current_audio);
+                })
+                    .catch(() => { });
+                return null;
+            }
             setup_media_session() {
                 if (!('mediaSession' in navigator))
                     return;
-                const el = this.audio_el();
                 const ms = navigator.mediaSession;
                 ms.setActionHandler('previoustrack', () => { try {
                     this.prev();
@@ -21954,12 +22014,28 @@ var $;
                     this.next();
                 }
                 catch { } });
-                ms.setActionHandler('seekto', (details) => {
-                    if (details.seekTime != null)
-                        el.currentTime = details.seekTime;
-                });
-                ms.setActionHandler('play', () => { el.play().catch(() => { }); });
-                ms.setActionHandler('pause', () => { el.pause(); });
+                if (this.is_extension()) {
+                    ms.setActionHandler('seekto', (details) => {
+                        if (details.seekTime != null)
+                            this.send('seek', { time: details.seekTime });
+                    });
+                    ms.setActionHandler('play', () => { this.send('resume'); });
+                    ms.setActionHandler('pause', () => { this.send('pause'); });
+                }
+                else {
+                    const el = this.audio_el();
+                    ms.setActionHandler('seekto', (details) => {
+                        if (details.seekTime != null)
+                            el.currentTime = details.seekTime;
+                    });
+                    ms.setActionHandler('play', () => { el.play().catch(() => { }); });
+                    ms.setActionHandler('pause', () => { el.pause(); });
+                }
+            }
+            send(type, payload) {
+                if (!this.is_extension())
+                    return;
+                chrome.runtime.sendMessage({ target: 'offscreen', type, ...payload }).catch(() => { });
             }
             queue_index(next) {
                 if (next !== undefined)
@@ -22013,14 +22089,12 @@ var $;
             play_track(audio) {
                 if (!audio)
                     return;
-                const el = this.audio_el();
                 this.current_audio(audio);
                 if ('mediaSession' in navigator) {
                     const artwork = [];
                     const thumb = audio.album?.thumb?.photo_300;
-                    if (thumb) {
+                    if (thumb)
                         artwork.push({ src: thumb, sizes: '300x300' });
-                    }
                     navigator.mediaSession.metadata = new MediaMetadata({
                         title: audio.title,
                         artist: audio.artist,
@@ -22028,25 +22102,61 @@ var $;
                     });
                     this.setup_media_session();
                 }
-                // Immediately claim audio focus before any async work.
-                // On iOS/Android lock screen, user activation expires fast —
-                // calling play() synchronously preserves the gesture context.
-                if (audio.url) {
-                    el.src = audio.url;
-                    el.play().catch(() => { });
+                if (this.is_extension()) {
+                    this.dispatch_play_offscreen(audio);
                 }
-                this.play_source(audio, el);
+                else {
+                    const el = this.audio_el();
+                    if (audio.url) {
+                        el.src = audio.url;
+                        el.play().catch(() => { });
+                    }
+                    this.play_source_local(audio, el);
+                }
             }
-            _last_blob_url = '';
-            async play_source(audio, el) {
+            async dispatch_play_offscreen(audio) {
                 try {
-                    // Revoke previous blob URL to prevent memory leaks
+                    await chrome.runtime.sendMessage({ target: 'background', type: 'ensure_offscreen' });
+                    const app = $bog_vk_app.Root(0);
+                    let blob = null;
+                    try {
+                        blob = await $mol_wire_async(app).local_blob(audio);
+                    }
+                    catch { }
+                    if (!blob && audio.url) {
+                        try {
+                            await app.save_hls(audio);
+                            blob = app.local_blob(audio);
+                        }
+                        catch (e) {
+                            console.error('[player] save_hls failed:', e?.message);
+                        }
+                    }
+                    if (blob) {
+                        const buffer = await blob.arrayBuffer();
+                        await chrome.runtime.sendMessage({
+                            target: 'offscreen',
+                            type: 'play_track',
+                            audio,
+                            buffer,
+                            mime: blob.type || 'audio/mpeg',
+                        });
+                        return;
+                    }
+                    console.warn('[player] no source:', audio.artist, '—', audio.title);
+                }
+                catch (e) {
+                    console.error('[player] play failed:', e);
+                    this.playing(false);
+                }
+            }
+            async play_source_local(audio, el) {
+                try {
                     if (this._last_blob_url) {
                         URL.revokeObjectURL(this._last_blob_url);
                         this._last_blob_url = '';
                     }
                     const app = $bog_vk_app.Root(0);
-                    // 0. Blob из Giper Baza — единый источник для offline (локальные + VK).
                     const blob = await $mol_wire_async(app).local_blob(audio);
                     if (blob) {
                         const url = URL.createObjectURL(blob);
@@ -22055,7 +22165,6 @@ var $;
                         await this.safe_play(el);
                         return;
                     }
-                    // 1. Try direct URL (Safari supports HLS natively)
                     if (audio.url) {
                         el.src = audio.url;
                         try {
@@ -22063,11 +22172,8 @@ var $;
                             app.save_hls(audio).catch(() => { });
                             return;
                         }
-                        catch {
-                            // Direct play failed — download first
-                        }
+                        catch { }
                     }
-                    // 2. Forced download → save blob to baza → play from baza.
                     if (audio.url) {
                         await app.save_hls(audio);
                         const blob2 = app.local_blob(audio);
@@ -22091,8 +22197,6 @@ var $;
                     await el.play();
                 }
                 catch (e) {
-                    // NotAllowedError = user activation lost (lock screen, background tab)
-                    // Retry: set up to play when user interacts or audio becomes available
                     if (e?.name === 'NotAllowedError') {
                         console.warn('[player] play blocked, will resume on user interaction');
                         el.muted = true;
@@ -22100,7 +22204,6 @@ var $;
                             await el.play();
                         }
                         catch { }
-                        // Unmute after short delay — audio context is now active
                         el.muted = false;
                     }
                     else {
@@ -22109,12 +22212,18 @@ var $;
                 }
             }
             toggle() {
-                const el = this.audio_el();
-                if (this.playing()) {
-                    el.pause();
+                if (this.is_extension()) {
+                    if (this.playing())
+                        this.send('pause');
+                    else
+                        this.send('resume');
                 }
                 else {
-                    el.play();
+                    const el = this.audio_el();
+                    if (this.playing())
+                        el.pause();
+                    else
+                        el.play();
                 }
             }
             prev() {
@@ -22126,7 +22235,6 @@ var $;
                 }
             }
             next() {
-                // Если родитель подкинул pick_next (Моя волна) — пробуем сначала её.
                 try {
                     const picked = this.pick_next(this.current_audio());
                     if (picked) {
@@ -22166,10 +22274,14 @@ var $;
                 return super.Pause();
             }
             auto() {
+                this.offscreen_link();
                 const style = this.Progress_bar().dom_node().style;
                 style.width = `${this.progress_percent()}%`;
             }
         }
+        __decorate([
+            $mol_mem
+        ], $bog_vk_player.prototype, "offscreen_link", null);
         __decorate([
             $mol_mem
         ], $bog_vk_player.prototype, "playing", null);

@@ -158,3 +158,5 @@
 	deploy \/bog/vk/ext/content.js
 	deploy \/bog/vk/ext/inject.js
 	deploy \/bog/vk/ext/background.js
+	deploy \/bog/vk/ext/offscreen.html
+	deploy \/bog/vk/ext/offscreen.js

@@ -16867,12 +16867,18 @@ declare namespace $ {
 }
 
 //# sourceMappingURL=player.view.tree.d.ts.map
+declare const chrome: any;
 declare namespace $.$$ {
     class $bog_vk_player extends $.$bog_vk_player {
-        private _audio_el?;
         private _queue_idx;
+        private _audio_el?;
+        private _last_blob_url;
+        private _msg_listener_set;
+        private is_extension;
         audio_el(): HTMLAudioElement;
+        private offscreen_link;
         private setup_media_session;
+        private send;
         queue_index(next?: number): number;
         playing(next?: boolean): boolean;
         current_time(next?: number): number;
@@ -16886,8 +16892,8 @@ declare namespace $.$$ {
         format_time(seconds: number): string;
         progress_percent(): number;
         play_track(audio?: $bog_vk_api_audio | null): void;
-        private _last_blob_url;
-        private play_source;
+        private dispatch_play_offscreen;
+        private play_source_local;
         private safe_play;
         toggle(): void;
         prev(): void;

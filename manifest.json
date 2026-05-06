@@ -10,11 +10,9 @@
 	"manifest_version": 3,
 	"version": "1.2.2.1",
 	"action": {
+		"default_popup": "index.html",
 		"default_title": "Bog VK Music",
 		"default_icon": "bog/vk/app/favicon.svg"
-	},
-	"side_panel": {
-		"default_path": "index.html"
 	},
 	"background": {
 		"service_worker": "bog/vk/ext/background.js"
@@ -22,7 +20,7 @@
 	"permissions": [
 		"storage",
 		"cookies",
-		"sidePanel"
+		"offscreen"
 	],
 	"host_permissions": [
 		"https://api.vk.com/*",
