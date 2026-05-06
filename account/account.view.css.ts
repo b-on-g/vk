@@ -13,8 +13,18 @@ namespace $.$$ {
 
 		Sync_row: {
 			alignItems: 'center',
+			flex: { wrap: 'wrap' },
 			gap: '0.5rem',
 			padding: { left: '0.25rem', right: '0.25rem' },
+		},
+
+		Download_all: {
+			gap: '0.375rem',
+			alignItems: 'center',
+		},
+
+		Download_all_label: {
+			font: { size: '0.875rem' },
 		},
 
 		Download_all_status: {

@@ -28,13 +28,13 @@ jobs:
         folder: 'bog/vk/app/-'
 
     - name: Pack extension
-      if: startsWith(github.ref, 'refs/tags/v')
+      if: github.ref == 'refs/heads/master'
       run: |
         cd bog/vk/app/-
         zip -r "$GITHUB_WORKSPACE/bog-vk-extension-${GITHUB_REF_NAME}.zip" .
 
     - name: Publish release
-      if: startsWith(github.ref, 'refs/tags/v')
+      if: github.ref == 'refs/heads/master'
       uses: softprops/action-gh-release@v2
       with:
         files: bog-vk-extension-*.zip
