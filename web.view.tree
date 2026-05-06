@@ -1995,10 +1995,10 @@ $bog_vk_account $mol_view
 			sub /
 				<= Sync_status $giper_baza_status
 				<= Download_all $mol_button_minor
-					title \Скачать всё в zip
 					click? <=> download_all? null
 					sub /
 						<= Download_all_icon $mol_icon_download
+						<= Download_all_label $mol_view sub / \Скачать всё в zip
 				<= Download_all_status $mol_view sub / <= download_all_status \
 		<= Cards $mol_view
 			sub /

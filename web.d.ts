@@ -4158,6 +4158,7 @@ declare namespace $ {
         toJSON(): string;
         [Symbol.toPrimitive](): string;
         [$mol_dev_format_head](): any[];
+        _bin: null | Uint8Array<ArrayBuffer>;
         /** Binary representation (6/12/18/24 bytes). */
         toBin(): Uint8Array<ArrayBuffer>;
         /** Make from integer (6 bytes). */
@@ -5257,7 +5258,8 @@ declare namespace $ {
         sand_encode(sand: $giper_baza_unit_sand): Promise<$giper_baza_unit_sand>;
         sand_load(sand: $giper_baza_unit_sand): void;
         sand_decode(sand: $giper_baza_unit_sand): $giper_baza_vary_type;
-        sand_decrypt(sand: $giper_baza_unit_sand): Uint8Array<ArrayBuffer>;
+        sands_open(sands: readonly $giper_baza_unit_sand[]): Promise<Uint8Array<ArrayBuffer>[]> | undefined;
+        sand_open(sand: $giper_baza_unit_sand): Promise<Uint8Array<ArrayBuffer>>;
         encryptable(): boolean;
         encrypted(next?: boolean): boolean;
         secret(): $mol_crypto_sacred | null;
@@ -13888,10 +13890,10 @@ declare namespace $.$$ {
 
 declare namespace $ {
 
-	type $mol_button_minor__title_bog_vk_account_1 = $mol_type_enforce<
-		string
+	type $mol_view__sub_bog_vk_account_1 = $mol_type_enforce<
+		readonly(any)[]
 		,
-		ReturnType< $mol_button_minor['title'] >
+		ReturnType< $mol_view['sub'] >
 	>
 	type $mol_button_minor__click_bog_vk_account_2 = $mol_type_enforce<
 		ReturnType< $bog_vk_account['download_all'] >
@@ -14037,6 +14039,7 @@ declare namespace $ {
 		Sync_status( ): $giper_baza_status
 		download_all( next?: any ): any
 		Download_all_icon( ): $mol_icon_download
+		Download_all_label( ): $mol_view
 		Download_all( ): $mol_button_minor
 		download_all_status( ): string
 		Download_all_status( ): $mol_view
