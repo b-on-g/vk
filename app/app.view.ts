@@ -393,6 +393,55 @@ namespace $.$$ {
 			this.fresh_files.delete(this.cache_key(audio))
 		}
 
+		// ---------- last session (current track + position) ----------
+
+		/**
+		 * Последняя прослушиваемая запись из профиля. Возвращает audio + position
+		 * или null если ничего не сохранено / трек не найден в локальной баззе.
+		 */
+		last_session(): { audio: $bog_vk_api_audio, position: number } | null {
+			try {
+				const profile = this.$.$giper_baza_glob.home().land().Data($bog_vk_account_baza)
+				const key = profile.Last_track_key()?.val() ?? ''
+				if (!key) return null
+				const position = Number(profile.Last_position()?.val() ?? 0) || 0
+				const dict = this.tracks_dict()
+				const track = dict.key(String(key))
+				if (!track) return null
+				const vk_id = track.Vk_id()?.val() ?? key
+				const parts = String(vk_id).split('_')
+				const owner_id = Number(parts[0])
+				const id = Number(parts[1])
+				if (!Number.isFinite(owner_id) || !Number.isFinite(id)) return null
+				return {
+					audio: {
+						id,
+						owner_id,
+						artist: track.Artist()?.val() ?? '',
+						title: track.Title()?.val() ?? '',
+						duration: track.Duration()?.val() ?? 0,
+						url: track.Url()?.val() ?? '',
+					},
+					position,
+				}
+			} catch (e: any) {
+				if (e instanceof Promise) throw e
+				console.warn('[app] last_session read failed:', e?.message)
+				return null
+			}
+		}
+
+		save_last_session(audio: $bog_vk_api_audio, position: number) {
+			try {
+				const profile = this.$.$giper_baza_glob.home().land().Data($bog_vk_account_baza)
+				profile.Last_track_key('auto')!.val(this.cache_key(audio))
+				profile.Last_position('auto')!.val(Math.max(0, position || 0))
+			} catch (e: any) {
+				if (e instanceof Promise) return
+				console.warn('[app] save_last_session failed:', e?.message)
+			}
+		}
+
 		/**
 		 * Миграция: для треков с непустым buffer'ом форсит .remote(store).
 		 * Старые блобы писались без этого вызова → не синкались.

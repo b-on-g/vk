@@ -15,7 +15,7 @@ namespace $.$$ {
 		audio_el() {
 			if ( this._audio_el ) return this._audio_el
 			const el = new Audio()
-			el.volume = 0.7
+			el.volume = this.volume()
 			el.addEventListener( 'ended', () => {
 				try {
 					const finished = this.current_audio()
@@ -86,15 +86,104 @@ namespace $.$$ {
 			chrome.runtime.sendMessage( { target: 'background', type: 'ensure_offscreen' } )
 				.then( () => chrome.runtime.sendMessage( { target: 'offscreen', type: 'get_state' } ) )
 				.then( ( s: any ) => {
-					if ( !s ) return
-					if ( typeof s.playing === 'boolean' ) this.playing( s.playing )
-					if ( typeof s.current_time === 'number' ) this.current_time( s.current_time )
-					if ( typeof s.duration === 'number' && isFinite( s.duration ) ) this.duration( s.duration )
-					if ( s.current_audio ) this.current_audio( s.current_audio )
+					if ( s?.current_audio ) {
+						if ( typeof s.playing === 'boolean' ) this.playing( s.playing )
+						if ( typeof s.current_time === 'number' ) this.current_time( s.current_time )
+						if ( typeof s.duration === 'number' && isFinite( s.duration ) ) this.duration( s.duration )
+						this.current_audio( s.current_audio )
+						return
+					}
+					this.try_restore_session()
 				} )
 				.catch( () => {} )
 
 			return null
+		}
+
+		private _session_restored = false
+
+		private async try_restore_session() {
+			if ( this._session_restored ) return
+			this._session_restored = true
+			const app = $bog_vk_app.Root( 0 )
+			let session: { audio: $bog_vk_api_audio, position: number } | null = null
+			try {
+				session = await ( $mol_wire_async( app ) as any ).last_session() as any
+			} catch ( e: any ) {
+				console.warn( '[player] restore_session read failed:', e?.message )
+				return
+			}
+			if ( !session ) return
+			this.current_audio( session.audio )
+			this.current_time( session.position )
+			if ( session.audio.duration ) this.duration( session.audio.duration )
+
+			if ( this.is_extension() ) {
+				this.dispatch_restore_offscreen( session.audio, session.position ).catch( () => {} )
+			} else {
+				const el = this.audio_el()
+				this.load_local_paused( session.audio, session.position, el ).catch( () => {} )
+			}
+		}
+
+		private async dispatch_restore_offscreen( audio: $bog_vk_api_audio, position: number ) {
+			try {
+				await chrome.runtime.sendMessage( { target: 'background', type: 'ensure_offscreen' } )
+				const app = $bog_vk_app.Root( 0 )
+				let blob: Blob | null = null
+				try {
+					blob = await ( $mol_wire_async( app ) as any ).local_blob( audio ) as Blob | null
+				} catch {}
+				if ( !blob && audio.url ) {
+					try {
+						await app.save_hls( audio )
+						blob = app.local_blob( audio ) as Blob | null
+					} catch ( e: any ) {
+						console.error( '[player] restore save_hls failed:', e?.message )
+					}
+				}
+				if ( blob ) {
+					const buffer = await blob.arrayBuffer()
+					await chrome.runtime.sendMessage( {
+						target: 'offscreen',
+						type: 'play_track',
+						audio,
+						buffer,
+						mime: blob.type || 'audio/mpeg',
+						start_at: position,
+						autoplay: false,
+					} )
+				}
+			} catch ( e: any ) {
+				console.error( '[player] restore offscreen failed:', e )
+			}
+		}
+
+		private async load_local_paused( audio: $bog_vk_api_audio, position: number, el: HTMLAudioElement ) {
+			try {
+				const app = $bog_vk_app.Root( 0 )
+				let blob: Blob | null = null
+				try {
+					blob = await ( $mol_wire_async( app ) as any ).local_blob( audio ) as Blob | null
+				} catch {}
+				if ( blob ) {
+					if ( this._last_blob_url ) URL.revokeObjectURL( this._last_blob_url )
+					const url = URL.createObjectURL( blob )
+					this._last_blob_url = url
+					el.src = url
+				} else if ( audio.url ) {
+					el.src = audio.url
+				} else {
+					return
+				}
+				const seek = () => {
+					try { el.currentTime = position } catch {}
+					el.removeEventListener( 'loadedmetadata', seek )
+				}
+				el.addEventListener( 'loadedmetadata', seek )
+			} catch ( e: any ) {
+				console.error( '[player] local restore failed:', e )
+			}
 		}
 
 		private setup_media_session() {
@@ -143,6 +232,64 @@ namespace $.$$ {
 			return next ?? 0
 		}
 
+		@$mol_mem
+		volume( next?: number ) {
+			const v = $mol_state_local.value( 'bog_vk_volume', next ) ?? 0.7
+			return Math.max( 0, Math.min( 1, v as number ) )
+		}
+
+		private _vol_dragging = false
+
+		private volume_set_from_event( event: PointerEvent ) {
+			const target = event.currentTarget as HTMLElement
+			const rect = target.getBoundingClientRect()
+			const y = event.clientY - rect.top
+			const v = Math.max( 0, Math.min( 1, 1 - y / rect.height ) )
+			this.volume( v )
+		}
+
+		volume_pointer_down( event?: Event ) {
+			if ( !event ) return null
+			const e = event as PointerEvent
+			const target = e.currentTarget as HTMLElement
+			try { target.setPointerCapture( e.pointerId ) } catch {}
+			this._vol_dragging = true
+			this.volume_set_from_event( e )
+			e.preventDefault()
+			return null
+		}
+
+		volume_pointer_move( event?: Event ) {
+			if ( !event || !this._vol_dragging ) return null
+			this.volume_set_from_event( event as PointerEvent )
+			return null
+		}
+
+		volume_pointer_up( event?: Event ) {
+			if ( !event ) return null
+			const e = event as PointerEvent
+			const target = e.currentTarget as HTMLElement
+			try { target.releasePointerCapture( e.pointerId ) } catch {}
+			this._vol_dragging = false
+			try { this.Volume().hovered( false ) } catch {}
+			return null
+		}
+
+		volume_fill_height() {
+			return `${ Math.round( this.volume() * 100 ) }%`
+		}
+
+		@$mol_mem
+		private apply_volume() {
+			const v = this.volume()
+			if ( this.is_extension() ) {
+				this.send( 'volume', { value: v } )
+			} else if ( this._audio_el ) {
+				this._audio_el.volume = v
+			}
+			return v
+		}
+
 		title() {
 			return this.current_audio()?.title ?? ''
 		}
@@ -188,6 +335,7 @@ namespace $.$$ {
 		play_track( audio?: $bog_vk_api_audio | null ) {
 			if ( !audio ) return
 			this.current_audio( audio )
+			try { $bog_vk_app.Root( 0 ).save_last_session( audio, 0 ) } catch {}
 
 			if ( 'mediaSession' in navigator ) {
 				const artwork: MediaImage[] = []
@@ -314,13 +462,20 @@ namespace $.$$ {
 		}
 
 		toggle() {
+			const was_playing = this.playing()
 			if ( this.is_extension() ) {
-				if ( this.playing() ) this.send( 'pause' )
+				if ( was_playing ) this.send( 'pause' )
 				else this.send( 'resume' )
 			} else {
 				const el = this.audio_el()
-				if ( this.playing() ) el.pause()
+				if ( was_playing ) el.pause()
 				else el.play()
+			}
+			if ( was_playing ) {
+				const audio = this.current_audio()
+				if ( audio ) {
+					try { $bog_vk_app.Root( 0 ).save_last_session( audio, this.current_time() ) } catch {}
+				}
 			}
 		}
 
@@ -369,10 +524,28 @@ namespace $.$$ {
 			return super.Pause()
 		}
 
+		private _pagehide_listener_set = false
+
+		private setup_pagehide_save() {
+			if ( this._pagehide_listener_set ) return
+			this._pagehide_listener_set = true
+			window.addEventListener( 'pagehide', () => {
+				const audio = this.current_audio()
+				if ( !audio ) return
+				try { $bog_vk_app.Root( 0 ).save_last_session( audio, this.current_time() ) } catch {}
+			} )
+		}
+
 		auto() {
 			this.offscreen_link()
+			this.setup_pagehide_save()
+			if ( !this.is_extension() && !this.current_audio() ) {
+				this.try_restore_session()
+			}
+			this.apply_volume()
 			const style = ( this.Progress_bar().dom_node() as HTMLElement ).style
 			style.width = `${this.progress_percent()}%`
 		}
 	}
 }
+

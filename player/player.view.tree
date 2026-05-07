@@ -41,3 +41,20 @@ $bog_vk_player $mol_view
 						<= Next $mol_button_minor
 							click? <=> next? null
 							sub / <= Next_icon $mol_icon_skip_next
+				<= Volume $mol_pop_over
+					align \top_right
+					Anchor <= Volume_anchor $mol_button_minor
+						sub / <= Volume_icon $mol_icon_volume_high
+					bubble_content /
+						<= Volume_panel $mol_view
+							sub /
+								<= Volume_slider $mol_view
+									event *
+										pointerdown?event <=> volume_pointer_down?event null
+										pointermove?event <=> volume_pointer_move?event null
+										pointerup?event <=> volume_pointer_up?event null
+										pointercancel?event <=> volume_pointer_up?event null
+									sub /
+										<= Volume_fill $mol_view
+											style *
+												height <= volume_fill_height \

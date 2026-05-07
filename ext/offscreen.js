@@ -20,7 +20,9 @@ audio.addEventListener( 'error', () => {
 	} )
 } )
 
-function play_track( meta, buffer, mime ) {
+function play_track( meta, buffer, mime, opts ) {
+	const start_at = Number( opts?.start_at ) || 0
+	const autoplay = opts?.autoplay !== false
 	current_audio = meta
 	if ( last_blob_url ) {
 		URL.revokeObjectURL( last_blob_url )
@@ -36,15 +38,24 @@ function play_track( meta, buffer, mime ) {
 		broadcast( 'error', { message: 'no source' } )
 		return
 	}
-	broadcast( 'state', { current_audio: meta, current_time: 0, duration: 0 } )
-	audio.play().catch( e => broadcast( 'error', { message: String( e ) } ) )
+	if ( start_at > 0 ) {
+		const seek = () => {
+			try { audio.currentTime = start_at } catch {}
+			audio.removeEventListener( 'loadedmetadata', seek )
+		}
+		audio.addEventListener( 'loadedmetadata', seek )
+	}
+	broadcast( 'state', { current_audio: meta, current_time: start_at, duration: 0, playing: autoplay } )
+	if ( autoplay ) {
+		audio.play().catch( e => broadcast( 'error', { message: String( e ) } ) )
+	}
 }
 
 chrome.runtime.onMessage.addListener( ( msg, _sender, reply ) => {
 	if ( msg?.target !== 'offscreen' ) return
 	switch ( msg.type ) {
 		case 'play_track':
-			play_track( msg.audio, msg.buffer, msg.mime )
+			play_track( msg.audio, msg.buffer, msg.mime, { start_at: msg.start_at, autoplay: msg.autoplay } )
 			reply( { ok: true } )
 			return true
 		case 'pause':

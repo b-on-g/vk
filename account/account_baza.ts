@@ -6,6 +6,8 @@ namespace $ {
 	 */
 	export class $bog_vk_account_baza extends $giper_baza_dict.with({
 		Nickname: $giper_baza_atom_text,
+		Last_track_key: $giper_baza_atom_text,
+		Last_position: $giper_baza_atom_real,
 	}) {}
 
 }

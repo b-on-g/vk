@@ -168,5 +168,38 @@ namespace $.$$ {
 			gap: '0.25rem',
 		},
 
+		Volume_panel: {
+			padding: {
+				top: '0.75rem',
+				bottom: '0.75rem',
+				left: '0.5rem',
+				right: '0.5rem',
+			},
+			align: {
+				items: 'center',
+			},
+		},
+
+		Volume_slider: {
+			width: '6px',
+			height: '8rem',
+			background: { color: $mol_theme.line },
+			borderRadius: '3px',
+			cursor: 'pointer',
+			position: 'relative',
+			overflow: { x: 'hidden', y: 'hidden' },
+			touchAction: 'none',
+			userSelect: 'none',
+		},
+
+		Volume_fill: {
+			position: 'absolute',
+			left: 0,
+			right: 0,
+			bottom: 0,
+			background: { color: $mol_theme.focus },
+			borderRadius: '3px',
+		},
+
 	})
 }
