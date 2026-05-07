@@ -342,14 +342,6 @@ namespace $.$$ {
 
 		play_track( audio?: $bog_vk_api_audio | null ) {
 			if ( !audio ) return
-			// КРИТИЧНО: ресетим current_time/duration ДО любых других операций.
-			// Иначе apply_trim в auto, отреагировав на смену current_audio,
-			// прочитает stale значения от предыдущего трека (например t=200, dur=240),
-			// и если у нового трека сохранён trim_end < 200 — моментально дёрнет next()
-			// → каскад play_track-сообщений в offscreen → audio.src меняется быстрее
-			// чем успевает loadedmetadata → DEMUXER_ERROR_COULD_NOT_OPEN.
-			this.current_time( 0 )
-			this.duration( 0 )
 			this.current_audio( audio )
 			this._trim_end_skip = ''
 			const start_at = $bog_vk_app.Root( 0 ).trim_start( audio )
@@ -528,16 +520,7 @@ namespace $.$$ {
 			return `${ ( $bog_vk_app.Root( 0 ).trim_end( audio, dur ) / dur ) * 100 }%`
 		}
 
-		private _dispatching_key = ''
-
 		private async dispatch_play_offscreen( audio: $bog_vk_api_audio, start_at: number = 0 ) {
-			// Дедуп: click-handler $mol_wire_async ретраит весь chain on_play_click → on_play_audio
-			// → play_track при invalidate любой подписки внутри фибры (Trim_start atom,
-			// recsys mol_storage, и т.д.). Без дедупа каждый retry шлёт новый play_track-msg
-			// в offscreen, audio.src перезаписывается до loadedmetadata → DEMUXER_ERROR.
-			const key = `${audio.owner_id}_${audio.id}|${start_at}`
-			if ( this._dispatching_key === key ) return
-			this._dispatching_key = key
 			try {
 				await chrome.runtime.sendMessage( { target: 'background', type: 'ensure_offscreen' } )
 
@@ -572,8 +555,6 @@ namespace $.$$ {
 			} catch ( e: any ) {
 				console.error( '[player] play failed:', e )
 				this.playing( false )
-			} finally {
-				if ( this._dispatching_key === key ) this._dispatching_key = ''
 			}
 		}
 
