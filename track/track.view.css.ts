@@ -79,13 +79,6 @@ namespace $.$$ {
 			wordBreak: 'break-word',
 		},
 
-		Duration: {
-			font: {
-				size: '0.6875rem',
-			},
-			color: $mol_theme.shade,
-		},
-
 		Delete: {
 			flex: { shrink: 0 },
 			justify: { content: 'flex-end' },

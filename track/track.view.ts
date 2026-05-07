@@ -26,12 +26,6 @@ namespace $.$$ {
 			return super.Cover_placeholder()
 		}
 
-		duration_text() {
-			const d = this.audio_data()?.duration ?? 0
-			const min = Math.floor(d / 60)
-			const sec = d % 60
-			return `${min}:${sec.toString().padStart(2, '0')}`
-		}
 
 		@$mol_mem
 		cached(next?: boolean) {
