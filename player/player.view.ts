@@ -165,10 +165,12 @@ namespace $.$$ {
 			return super.Cover_placeholder()
 		}
 
-		time_text() {
-			const cur = this.current_time()
-			const dur = this.duration()
-			return `${this.format_time( cur )} / ${this.format_time( dur )}`
+		time_current_text() {
+			return this.format_time( this.current_time() )
+		}
+
+		time_total_text() {
+			return this.format_time( this.duration() )
 		}
 
 		format_time( seconds: number ) {

@@ -11,12 +11,33 @@ namespace $.$$ {
 		position: 'sticky',
 		bottom: 0,
 
+		Progress_row: {
+			flex: {
+				direction: 'row',
+				shrink: 0,
+			},
+			align: {
+				items: 'center',
+			},
+			padding: {
+				top: '0.25rem',
+				bottom: '0.25rem',
+				left: '0.75rem',
+				right: '0.75rem',
+			},
+			gap: $mol_gap.text,
+		},
+
 		Progress: {
 			height: '3px',
 			background: {
 				color: $mol_theme.line,
 			},
 			cursor: 'pointer',
+			flex: {
+				grow: 1,
+				shrink: 1,
+			},
 		},
 
 		Progress_bar: {
@@ -25,6 +46,20 @@ namespace $.$$ {
 				color: $mol_theme.focus,
 			},
 			width: 0,
+		},
+
+		Time_current: {
+			font: { size: '0.75rem' },
+			color: $mol_theme.shade,
+			whiteSpace: 'nowrap',
+			flex: { shrink: 0 },
+		},
+
+		Time_total: {
+			font: { size: '0.75rem' },
+			color: $mol_theme.shade,
+			whiteSpace: 'nowrap',
+			flex: { shrink: 0 },
 		},
 
 		Controls: {
@@ -133,23 +168,5 @@ namespace $.$$ {
 			gap: '0.25rem',
 		},
 
-		Right: {
-			flex: {
-				direction: 'row',
-				shrink: 0,
-			},
-			align: {
-				items: 'center',
-			},
-			gap: $mol_gap.text,
-		},
-
-		Time: {
-			font: {
-				size: '0.75rem',
-			},
-			color: $mol_theme.shade,
-			whiteSpace: 'nowrap',
-		},
 	})
 }
