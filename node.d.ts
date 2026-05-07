@@ -9883,99 +9883,109 @@ declare namespace $ {
 //# sourceMappingURL=next.view.tree.d.ts.map
 declare namespace $ {
 
-	type $mol_view__sub_bog_vk_player_1 = $mol_type_enforce<
+	type $mol_paragraph__title_bog_vk_player_1 = $mol_type_enforce<
+		ReturnType< $bog_vk_player['time_current_text'] >
+		,
+		ReturnType< $mol_paragraph['title'] >
+	>
+	type $mol_view__sub_bog_vk_player_2 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_image__uri_bog_vk_player_2 = $mol_type_enforce<
+	type $mol_paragraph__title_bog_vk_player_3 = $mol_type_enforce<
+		ReturnType< $bog_vk_player['time_total_text'] >
+		,
+		ReturnType< $mol_paragraph['title'] >
+	>
+	type $mol_view__sub_bog_vk_player_4 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_image__uri_bog_vk_player_5 = $mol_type_enforce<
 		ReturnType< $bog_vk_player['cover'] >
 		,
 		ReturnType< $mol_image['uri'] >
 	>
-	type $mol_paragraph__title_bog_vk_player_3 = $mol_type_enforce<
+	type $mol_paragraph__title_bog_vk_player_6 = $mol_type_enforce<
 		ReturnType< $bog_vk_player['title'] >
 		,
 		ReturnType< $mol_paragraph['title'] >
 	>
-	type $mol_paragraph__title_bog_vk_player_4 = $mol_type_enforce<
+	type $mol_paragraph__title_bog_vk_player_7 = $mol_type_enforce<
 		ReturnType< $bog_vk_player['artist'] >
 		,
 		ReturnType< $mol_paragraph['title'] >
 	>
-	type $mol_view__sub_bog_vk_player_5 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_player_8 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_view__sub_bog_vk_player_6 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_player_9 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_button_minor__click_bog_vk_player_7 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_player_10 = $mol_type_enforce<
 		ReturnType< $bog_vk_player['prev'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
-	type $mol_button_minor__sub_bog_vk_player_8 = $mol_type_enforce<
+	type $mol_button_minor__sub_bog_vk_player_11 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
-	type $mol_button_minor__click_bog_vk_player_9 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_player_12 = $mol_type_enforce<
 		ReturnType< $bog_vk_player['toggle'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
-	type $mol_button_minor__sub_bog_vk_player_10 = $mol_type_enforce<
+	type $mol_button_minor__sub_bog_vk_player_13 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
-	type $mol_button_minor__click_bog_vk_player_11 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_player_14 = $mol_type_enforce<
 		ReturnType< $bog_vk_player['toggle'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
-	type $mol_button_minor__sub_bog_vk_player_12 = $mol_type_enforce<
+	type $mol_button_minor__sub_bog_vk_player_15 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
-	type $mol_button_minor__click_bog_vk_player_13 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_player_16 = $mol_type_enforce<
 		ReturnType< $bog_vk_player['next'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
-	type $mol_button_minor__sub_bog_vk_player_14 = $mol_type_enforce<
+	type $mol_button_minor__sub_bog_vk_player_17 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_button_minor['sub'] >
-	>
-	type $mol_view__sub_bog_vk_player_15 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
-	>
-	type $mol_paragraph__title_bog_vk_player_16 = $mol_type_enforce<
-		ReturnType< $bog_vk_player['time_text'] >
-		,
-		ReturnType< $mol_paragraph['title'] >
-	>
-	type $mol_view__sub_bog_vk_player_17 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
 	>
 	type $mol_view__sub_bog_vk_player_18 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
+	type $mol_view__sub_bog_vk_player_19 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
 	export class $bog_vk_player extends $mol_view {
+		time_current_text( ): string
+		Time_current( ): $mol_paragraph
 		Progress_bar( ): $mol_view
 		Progress( ): $mol_view
+		time_total_text( ): string
+		Time_total( ): $mol_paragraph
+		Progress_row( ): $mol_view
 		cover( ): string
 		Cover( ): $mol_image
 		Cover_placeholder( ): $mol_icon_music
@@ -9997,9 +10007,6 @@ declare namespace $ {
 		Next_icon( ): $mol_icon_skip_next
 		Next( ): $mol_button_minor
 		Center( ): $mol_view
-		time_text( ): string
-		Time( ): $mol_paragraph
-		Right( ): $mol_view
 		Controls( ): $mol_view
 		current_audio( next?: any ): any
 		queue( ): readonly(any)[]
@@ -10033,7 +10040,8 @@ declare namespace $.$$ {
         cover(): any;
         Cover(): any;
         Cover_placeholder(): any;
-        time_text(): string;
+        time_current_text(): string;
+        time_total_text(): string;
         format_time(seconds: number): string;
         progress_percent(): number;
         play_track(audio?: $bog_vk_api_audio | null): void;

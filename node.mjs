@@ -21680,6 +21680,14 @@ var $;
 
 ;
 	($.$bog_vk_player) = class $bog_vk_player extends ($.$mol_view) {
+		time_current_text(){
+			return "";
+		}
+		Time_current(){
+			const obj = new this.$.$mol_paragraph();
+			(obj.title) = () => ((this.time_current_text()));
+			return obj;
+		}
 		Progress_bar(){
 			const obj = new this.$.$mol_view();
 			return obj;
@@ -21687,6 +21695,23 @@ var $;
 		Progress(){
 			const obj = new this.$.$mol_view();
 			(obj.sub) = () => ([(this.Progress_bar())]);
+			return obj;
+		}
+		time_total_text(){
+			return "";
+		}
+		Time_total(){
+			const obj = new this.$.$mol_paragraph();
+			(obj.title) = () => ((this.time_total_text()));
+			return obj;
+		}
+		Progress_row(){
+			const obj = new this.$.$mol_view();
+			(obj.sub) = () => ([
+				(this.Time_current()), 
+				(this.Progress()), 
+				(this.Time_total())
+			]);
 			return obj;
 		}
 		cover(){
@@ -21793,26 +21818,9 @@ var $;
 			]);
 			return obj;
 		}
-		time_text(){
-			return "";
-		}
-		Time(){
-			const obj = new this.$.$mol_paragraph();
-			(obj.title) = () => ((this.time_text()));
-			return obj;
-		}
-		Right(){
-			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([(this.Time())]);
-			return obj;
-		}
 		Controls(){
 			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([
-				(this.Left()), 
-				(this.Center()), 
-				(this.Right())
-			]);
+			(obj.sub) = () => ([(this.Left()), (this.Center())]);
 			return obj;
 		}
 		current_audio(next){
@@ -21835,11 +21843,14 @@ var $;
 			return null;
 		}
 		sub(){
-			return [(this.Progress()), (this.Controls())];
+			return [(this.Progress_row()), (this.Controls())];
 		}
 	};
+	($mol_mem(($.$bog_vk_player.prototype), "Time_current"));
 	($mol_mem(($.$bog_vk_player.prototype), "Progress_bar"));
 	($mol_mem(($.$bog_vk_player.prototype), "Progress"));
+	($mol_mem(($.$bog_vk_player.prototype), "Time_total"));
+	($mol_mem(($.$bog_vk_player.prototype), "Progress_row"));
 	($mol_mem(($.$bog_vk_player.prototype), "Cover"));
 	($mol_mem(($.$bog_vk_player.prototype), "Cover_placeholder"));
 	($mol_mem(($.$bog_vk_player.prototype), "Title"));
@@ -21858,8 +21869,6 @@ var $;
 	($mol_mem(($.$bog_vk_player.prototype), "Next_icon"));
 	($mol_mem(($.$bog_vk_player.prototype), "Next"));
 	($mol_mem(($.$bog_vk_player.prototype), "Center"));
-	($mol_mem(($.$bog_vk_player.prototype), "Time"));
-	($mol_mem(($.$bog_vk_player.prototype), "Right"));
 	($mol_mem(($.$bog_vk_player.prototype), "Controls"));
 	($mol_mem(($.$bog_vk_player.prototype), "current_audio"));
 	($mol_mem(($.$bog_vk_player.prototype), "queue_index"));
@@ -22054,10 +22063,11 @@ var $;
                     return null;
                 return super.Cover_placeholder();
             }
-            time_text() {
-                const cur = this.current_time();
-                const dur = this.duration();
-                return `${this.format_time(cur)} / ${this.format_time(dur)}`;
+            time_current_text() {
+                return this.format_time(this.current_time());
+            }
+            time_total_text() {
+                return this.format_time(this.duration());
             }
             format_time(seconds) {
                 const min = Math.floor(seconds / 60);
@@ -22296,12 +22306,32 @@ var $;
             },
             position: 'sticky',
             bottom: 0,
+            Progress_row: {
+                flex: {
+                    direction: 'row',
+                    shrink: 0,
+                },
+                align: {
+                    items: 'center',
+                },
+                padding: {
+                    top: '0.25rem',
+                    bottom: '0.25rem',
+                    left: '0.75rem',
+                    right: '0.75rem',
+                },
+                gap: $mol_gap.text,
+            },
             Progress: {
                 height: '3px',
                 background: {
                     color: $mol_theme.line,
                 },
                 cursor: 'pointer',
+                flex: {
+                    grow: 1,
+                    shrink: 1,
+                },
             },
             Progress_bar: {
                 height: '3px',
@@ -22309,6 +22339,18 @@ var $;
                     color: $mol_theme.focus,
                 },
                 width: 0,
+            },
+            Time_current: {
+                font: { size: '0.75rem' },
+                color: $mol_theme.shade,
+                whiteSpace: 'nowrap',
+                flex: { shrink: 0 },
+            },
+            Time_total: {
+                font: { size: '0.75rem' },
+                color: $mol_theme.shade,
+                whiteSpace: 'nowrap',
+                flex: { shrink: 0 },
             },
             Controls: {
                 flex: {
@@ -22407,23 +22449,6 @@ var $;
                     items: 'center',
                 },
                 gap: '0.25rem',
-            },
-            Right: {
-                flex: {
-                    direction: 'row',
-                    shrink: 0,
-                },
-                align: {
-                    items: 'center',
-                },
-                gap: $mol_gap.text,
-            },
-            Time: {
-                font: {
-                    size: '0.75rem',
-                },
-                color: $mol_theme.shade,
-                whiteSpace: 'nowrap',
             },
         });
     })($$ = $.$$ || ($.$$ = {}));
