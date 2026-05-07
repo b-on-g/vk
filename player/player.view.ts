@@ -37,6 +37,7 @@ namespace $.$$ {
 			} )
 			el.addEventListener( 'timeupdate', () => {
 				this.current_time( el.currentTime )
+				this.check_trim_end()
 			} )
 			el.addEventListener( 'loadedmetadata', () => {
 				this.duration( el.duration )
@@ -63,7 +64,10 @@ namespace $.$$ {
 							navigator.mediaSession.playbackState = msg.playing ? 'playing' : 'paused'
 						}
 					}
-					if ( typeof msg.current_time === 'number' ) this.current_time( msg.current_time )
+					if ( typeof msg.current_time === 'number' ) {
+						this.current_time( msg.current_time )
+						this.check_trim_end()
+					}
 					if ( typeof msg.duration === 'number' && isFinite( msg.duration ) ) this.duration( msg.duration )
 					if ( msg.current_audio !== undefined ) this.current_audio( msg.current_audio )
 				}
@@ -335,7 +339,9 @@ namespace $.$$ {
 		play_track( audio?: $bog_vk_api_audio | null ) {
 			if ( !audio ) return
 			this.current_audio( audio )
-			try { $bog_vk_app.Root( 0 ).save_last_session( audio, 0 ) } catch {}
+			this._trim_end_skip = ''
+			const start_at = $bog_vk_app.Root( 0 ).trim_start( audio )
+			try { $bog_vk_app.Root( 0 ).save_last_session( audio, start_at ) } catch {}
 
 			if ( 'mediaSession' in navigator ) {
 				const artwork: MediaImage[] = []
@@ -350,18 +356,135 @@ namespace $.$$ {
 			}
 
 			if ( this.is_extension() ) {
-				this.dispatch_play_offscreen( audio )
+				this.dispatch_play_offscreen( audio, start_at )
 			} else {
 				const el = this.audio_el()
 				if ( audio.url ) {
+					this.attach_seek_listener( el, start_at )
 					el.src = audio.url
 					el.play().catch( () => {} )
 				}
-				this.play_source_local( audio, el )
+				this.play_source_local( audio, el, start_at )
 			}
 		}
 
-		private async dispatch_play_offscreen( audio: $bog_vk_api_audio ) {
+		private attach_seek_listener( el: HTMLAudioElement, start_at: number ) {
+			if ( start_at <= 0 ) return
+			const seek = () => {
+				try { el.currentTime = start_at } catch {}
+				el.removeEventListener( 'loadedmetadata', seek )
+			}
+			el.addEventListener( 'loadedmetadata', seek )
+		}
+
+		private _trim_end_skip = ''
+
+		check_trim_end() {
+			const audio = this.current_audio()
+			if ( !audio ) return
+			const dur = this.duration()
+			if ( !dur ) return
+			const trim_end = $bog_vk_app.Root( 0 ).trim_end( audio, dur )
+			if ( trim_end >= dur ) return
+			if ( this.current_time() < trim_end ) return
+			const key = `${audio.owner_id}_${audio.id}`
+			if ( this._trim_end_skip === key ) return
+			this._trim_end_skip = key
+			try {
+				const finished = audio
+				this.next()
+				if ( finished && navigator.onLine ) {
+					$bog_vk_app.Root( 0 ).save_hls( finished ).catch( () => {} )
+				}
+			} catch ( e: any ) {
+				if ( e instanceof Promise ) throw e
+				console.warn( '[player] trim_end next failed:', e?.message )
+			}
+		}
+
+		// ---------- trim handles ----------
+
+		private _trim_drag: 'start' | 'end' | null = null
+
+		private trim_apply( event: PointerEvent ) {
+			const audio = this.current_audio()
+			if ( !audio ) return
+			const dur = this.duration()
+			if ( !dur ) return
+			const progress = this.Progress().dom_node() as HTMLElement
+			const rect = progress.getBoundingClientRect()
+			const x = event.clientX - rect.left
+			const pct = Math.max( 0, Math.min( 1, x / rect.width ) )
+			let seconds = pct * dur
+			const app = $bog_vk_app.Root( 0 )
+			if ( this._trim_drag === 'start' ) {
+				const end = app.trim_end( audio, dur )
+				seconds = Math.min( seconds, Math.max( 0, end - 1 ) )
+				app.save_trim_start( audio, seconds )
+			} else if ( this._trim_drag === 'end' ) {
+				const start = app.trim_start( audio )
+				seconds = Math.max( seconds, Math.min( dur, start + 1 ) )
+				app.save_trim_end( audio, seconds )
+			}
+		}
+
+		trim_start_pointer_down( event?: Event ) {
+			if ( !event ) return null
+			const e = event as PointerEvent
+			e.stopPropagation()
+			e.preventDefault()
+			try { ( e.currentTarget as HTMLElement ).setPointerCapture( e.pointerId ) } catch {}
+			this._trim_drag = 'start'
+			this.trim_apply( e )
+			return null
+		}
+
+		trim_start_pointer_move( event?: Event ) {
+			if ( !event || this._trim_drag !== 'start' ) return null
+			this.trim_apply( event as PointerEvent )
+			return null
+		}
+
+		trim_end_pointer_down( event?: Event ) {
+			if ( !event ) return null
+			const e = event as PointerEvent
+			e.stopPropagation()
+			e.preventDefault()
+			try { ( e.currentTarget as HTMLElement ).setPointerCapture( e.pointerId ) } catch {}
+			this._trim_drag = 'end'
+			this.trim_apply( e )
+			return null
+		}
+
+		trim_end_pointer_move( event?: Event ) {
+			if ( !event || this._trim_drag !== 'end' ) return null
+			this.trim_apply( event as PointerEvent )
+			return null
+		}
+
+		trim_pointer_up( event?: Event ) {
+			if ( !event ) return null
+			const e = event as PointerEvent
+			try { ( e.currentTarget as HTMLElement ).releasePointerCapture( e.pointerId ) } catch {}
+			this._trim_drag = null
+			return null
+		}
+
+		trim_start_left() {
+			const audio = this.current_audio()
+			const dur = this.duration()
+			if ( !audio || !dur ) return '0%'
+			return `${ ( $bog_vk_app.Root( 0 ).trim_start( audio ) / dur ) * 100 }%`
+		}
+
+		trim_end_left() {
+			const audio = this.current_audio()
+			const dur = this.duration()
+			if ( !audio || !dur ) return '100%'
+			return `${ ( $bog_vk_app.Root( 0 ).trim_end( audio, dur ) / dur ) * 100 }%`
+		}
+
+		private async dispatch_play_offscreen( audio: $bog_vk_api_audio, start_at: number = 0 ) {
 			try {
 				await chrome.runtime.sendMessage( { target: 'background', type: 'ensure_offscreen' } )
 
@@ -389,6 +512,7 @@ namespace $.$$ {
 						audio,
 						buffer,
 						mime: blob.type || 'audio/mpeg',
+						start_at,
 					} )
 					return
 				}
@@ -400,7 +524,7 @@ namespace $.$$ {
 			}
 		}
 
-		private async play_source_local( audio: $bog_vk_api_audio, el: HTMLAudioElement ) {
+		private async play_source_local( audio: $bog_vk_api_audio, el: HTMLAudioElement, start_at: number = 0 ) {
 			try {
 				if ( this._last_blob_url ) {
 					URL.revokeObjectURL( this._last_blob_url )
@@ -413,12 +537,14 @@ namespace $.$$ {
 				if ( blob ) {
 					const url = URL.createObjectURL( blob )
 					this._last_blob_url = url
+					this.attach_seek_listener( el, start_at )
 					el.src = url
 					await this.safe_play( el )
 					return
 				}
 
 				if ( audio.url ) {
+					this.attach_seek_listener( el, start_at )
 					el.src = audio.url
 					try {
 						await this.safe_play( el )
@@ -433,6 +559,7 @@ namespace $.$$ {
 					if ( blob2 ) {
 						const url = URL.createObjectURL( blob2 )
 						this._last_blob_url = url
+						this.attach_seek_listener( el, start_at )
 						el.src = url
 						await this.safe_play( el )
 						return

@@ -12,6 +12,22 @@ $bog_vk_player $mol_view
 				<= Progress $mol_view
 					sub /
 						<= Progress_bar $mol_view
+						<= Trim_start_handle $mol_view
+							event *
+								pointerdown?event <=> trim_start_pointer_down?event null
+								pointermove?event <=> trim_start_pointer_move?event null
+								pointerup?event <=> trim_pointer_up?event null
+								pointercancel?event <=> trim_pointer_up?event null
+							style *
+								left <= trim_start_left \
+						<= Trim_end_handle $mol_view
+							event *
+								pointerdown?event <=> trim_end_pointer_down?event null
+								pointermove?event <=> trim_end_pointer_move?event null
+								pointerup?event <=> trim_pointer_up?event null
+								pointercancel?event <=> trim_pointer_up?event null
+							style *
+								left <= trim_end_left \
 				<= Time_total $mol_paragraph
 					title <= time_total_text \
 		<= Controls $mol_view

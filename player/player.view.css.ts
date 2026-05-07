@@ -38,6 +38,7 @@ namespace $.$$ {
 				grow: 1,
 				shrink: 1,
 			},
+			position: 'relative',
 		},
 
 		Progress_bar: {
@@ -46,6 +47,35 @@ namespace $.$$ {
 				color: $mol_theme.focus,
 			},
 			width: 0,
+			pointerEvents: 'none',
+		},
+
+		Trim_start_handle: {
+			position: 'absolute',
+			top: '-3px',
+			width: '8px',
+			height: '9px',
+			margin: { left: '-4px' },
+			background: { color: $mol_theme.text },
+			borderRadius: '1px',
+			cursor: 'ew-resize',
+			touchAction: 'none',
+			userSelect: 'none',
+			zIndex: 2,
+		},
+
+		Trim_end_handle: {
+			position: 'absolute',
+			top: '-3px',
+			width: '8px',
+			height: '9px',
+			margin: { left: '-4px' },
+			background: { color: $mol_theme.text },
+			borderRadius: '1px',
+			cursor: 'ew-resize',
+			touchAction: 'none',
+			userSelect: 'none',
+			zIndex: 2,
 		},
 
 		Time_current: {

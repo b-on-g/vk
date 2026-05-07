@@ -47,6 +47,9 @@ namespace $ {
 		// Расширяется без миграции схемы; полную метадату плейлистов держим в $bog_vk_store.Playlists.
 		Playlist: $giper_baza_atom_text,
 		File: $bog_vk_atom_link_to_synced(() => $giper_baza_file),
+		// Персональный обрез песни (секунды). Trim_end = null означает «без обреза».
+		Trim_start: $giper_baza_atom_real,
+		Trim_end: $giper_baza_atom_real,
 	}) {}
 
 }

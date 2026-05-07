@@ -283,6 +283,48 @@ namespace $.$$ {
 			if (track.Order()?.val() == null) track.Order('auto')!.val(this.max_order() + 1)
 		}
 
+		/** Обрез начала трека (сек). 0 = без обреза. */
+		trim_start(audio: $bog_vk_api_audio): number {
+			try {
+				const track = this.tracks_dict().key(this.cache_key(audio))
+				const v = Number(track?.Trim_start()?.val() ?? 0)
+				return Number.isFinite(v) && v > 0 ? v : 0
+			} catch (e: any) {
+				if (e instanceof Promise) throw e
+				return 0
+			}
+		}
+
+		/** Обрез конца трека (сек). null/0 → fallback (полная длительность). */
+		trim_end(audio: $bog_vk_api_audio, fallback: number): number {
+			try {
+				const track = this.tracks_dict().key(this.cache_key(audio))
+				const raw = track?.Trim_end()?.val()
+				if (raw == null) return fallback
+				const v = Number(raw)
+				return Number.isFinite(v) && v > 0 ? v : fallback
+			} catch (e: any) {
+				if (e instanceof Promise) throw e
+				return fallback
+			}
+		}
+
+		@$mol_action
+		save_trim_start(audio: $bog_vk_api_audio, seconds: number): void {
+			if (!audio) return
+			const track = this.tracks_dict().key(this.cache_key(audio), 'auto')
+			if (!track) return
+			track.Trim_start('auto')!.val(Math.max(0, seconds))
+		}
+
+		@$mol_action
+		save_trim_end(audio: $bog_vk_api_audio, seconds: number): void {
+			if (!audio) return
+			const track = this.tracks_dict().key(this.cache_key(audio), 'auto')
+			if (!track) return
+			track.Trim_end('auto')!.val(Math.max(0, seconds))
+		}
+
 		@$mol_action
 		save_blob(audio: $bog_vk_api_audio, buffer: Uint8Array, mime: string): void {
 			if (!audio) return
