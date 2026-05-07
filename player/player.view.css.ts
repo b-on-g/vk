@@ -83,6 +83,9 @@ namespace $.$$ {
 			color: $mol_theme.shade,
 			whiteSpace: 'nowrap',
 			flex: { shrink: 0 },
+			minWidth: '2.5rem',
+			textAlign: 'right',
+			fontVariantNumeric: 'tabular-nums',
 		},
 
 		Time_total: {
@@ -90,6 +93,8 @@ namespace $.$$ {
 			color: $mol_theme.shade,
 			whiteSpace: 'nowrap',
 			flex: { shrink: 0 },
+			minWidth: '2.5rem',
+			fontVariantNumeric: 'tabular-nums',
 		},
 
 		Controls: {
