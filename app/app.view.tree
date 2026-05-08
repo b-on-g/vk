@@ -18,6 +18,10 @@ $bog_vk_app $mol_page
 			hint \Аккаунт
 			Icon <= Account_icon $mol_icon_account_circle
 			checked? <=> account_open? false
+		<= Feedback_toggle $mol_check_icon
+			hint \Обратная связь
+			Icon <= Feedback_icon $mol_icon_chat
+			checked? <=> feedback_open? false
 		<= Upload $mol_button_open
 			hint \Загрузить с устройства
 			accept \audio/*
@@ -27,6 +31,8 @@ $bog_vk_app $mol_page
 	body_scroll_top? <=> scroll? 0
 	body /
 		<= Account $bog_vk_account
+		<= Feedback $bog_feedback2_form
+			feedback_id \bog_vk
 		<= Share_toast $mol_view
 			sub / <= share_toast_text \
 		<= Tabs $mol_switch
