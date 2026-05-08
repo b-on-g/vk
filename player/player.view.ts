@@ -342,6 +342,13 @@ namespace $.$$ {
 
 		play_track( audio?: $bog_vk_api_audio | null ) {
 			if ( !audio ) return
+			// КРИТИЧНО: сбрасываем current_time/duration ДО смены current_audio.
+			// Иначе apply_trim в auto(), отреагировав на смену current_audio,
+			// прочитает stale значения от предыдущего трека (например t=200, dur=240),
+			// и если у нового трека сохранён trim_end < 200 — моментально дёрнет next()
+			// → каскад play_track-сообщений → src перезаписывается до loadedmetadata.
+			this.current_time( 0 )
+			this.duration( 0 )
 			this.current_audio( audio )
 			this._trim_end_skip = ''
 			const start_at = $bog_vk_app.Root( 0 ).trim_start( audio )
@@ -520,9 +527,21 @@ namespace $.$$ {
 			return `${ ( $bog_vk_app.Root( 0 ).trim_end( audio, dur ) / dur ) * 100 }%`
 		}
 
+		private _dispatch_token = 0
+
+		private is_current( audio: $bog_vk_api_audio ): boolean {
+			const cur = this.current_audio()
+			return !!cur && cur.id === audio.id && cur.owner_id === audio.owner_id
+		}
+
 		private async dispatch_play_offscreen( audio: $bog_vk_api_audio, start_at: number = 0 ) {
+			// Fast-clicks: пока local_blob/save_hls для трека A грузится через wire_async,
+			// пользователь кликает B. Без токена оба dispatch'а долетают до postMessage,
+			// порядок прибытия в offscreen неопределён → инфа от B, аудио от A.
+			const token = ++this._dispatch_token
 			try {
 				await chrome.runtime.sendMessage( { target: 'background', type: 'ensure_offscreen' } )
+				if ( token !== this._dispatch_token || !this.is_current( audio ) ) return
 
 				const app = $bog_vk_app.Root( 0 )
 
@@ -530,6 +549,7 @@ namespace $.$$ {
 				try {
 					blob = await ( $mol_wire_async( app ) as any ).local_blob( audio ) as Blob | null
 				} catch {}
+				if ( token !== this._dispatch_token || !this.is_current( audio ) ) return
 
 				if ( !blob && audio.url ) {
 					try {
@@ -538,6 +558,7 @@ namespace $.$$ {
 					} catch ( e: any ) {
 						console.error( '[player] save_hls failed:', e?.message )
 					}
+					if ( token !== this._dispatch_token || !this.is_current( audio ) ) return
 				}
 
 				if ( blob ) {
@@ -559,6 +580,7 @@ namespace $.$$ {
 		}
 
 		private async play_source_local( audio: $bog_vk_api_audio, el: HTMLAudioElement, start_at: number = 0 ) {
+			const token = ++this._dispatch_token
 			try {
 				if ( this._last_blob_url ) {
 					URL.revokeObjectURL( this._last_blob_url )
@@ -568,6 +590,8 @@ namespace $.$$ {
 				const app = $bog_vk_app.Root( 0 )
 
 				const blob = await ( $mol_wire_async( app ) as any ).local_blob( audio ) as Blob | null
+				if ( token !== this._dispatch_token || !this.is_current( audio ) ) return
+
 				if ( blob ) {
 					const url = URL.createObjectURL( blob )
 					this._last_blob_url = url
@@ -578,6 +602,7 @@ namespace $.$$ {
 				}
 
 				if ( audio.url ) {
+					if ( token !== this._dispatch_token || !this.is_current( audio ) ) return
 					this.attach_seek_listener( el, start_at )
 					el.src = audio.url
 					try {
@@ -589,6 +614,7 @@ namespace $.$$ {
 
 				if ( audio.url ) {
 					await app.save_hls( audio )
+					if ( token !== this._dispatch_token || !this.is_current( audio ) ) return
 					const blob2 = app.local_blob( audio )
 					if ( blob2 ) {
 						const url = URL.createObjectURL( blob2 )
