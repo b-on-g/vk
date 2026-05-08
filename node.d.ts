@@ -10285,6 +10285,8 @@ declare namespace $.$$ {
         trim_pointer_up(event?: Event): null;
         trim_start_left(): string;
         trim_end_left(): string;
+        private _dispatch_token;
+        private is_current;
         private dispatch_play_offscreen;
         private play_source_local;
         private safe_play;

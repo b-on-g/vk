@@ -31798,6 +31798,13 @@ var $;
             play_track(audio) {
                 if (!audio)
                     return;
+                // КРИТИЧНО: сбрасываем current_time/duration ДО смены current_audio.
+                // Иначе apply_trim в auto(), отреагировав на смену current_audio,
+                // прочитает stale значения от предыдущего трека (например t=200, dur=240),
+                // и если у нового трека сохранён trim_end < 200 — моментально дёрнет next()
+                // → каскад play_track-сообщений → src перезаписывается до loadedmetadata.
+                this.current_time(0);
+                this.duration(0);
                 this.current_audio(audio);
                 this._trim_end_skip = '';
                 const start_at = $bog_vk_app.Root(0).trim_start(audio);
@@ -31998,15 +32005,28 @@ var $;
                     return '100%';
                 return `${($bog_vk_app.Root(0).trim_end(audio, dur) / dur) * 100}%`;
             }
+            _dispatch_token = 0;
+            is_current(audio) {
+                const cur = this.current_audio();
+                return !!cur && cur.id === audio.id && cur.owner_id === audio.owner_id;
+            }
             async dispatch_play_offscreen(audio, start_at = 0) {
+                // Fast-clicks: пока local_blob/save_hls для трека A грузится через wire_async,
+                // пользователь кликает B. Без токена оба dispatch'а долетают до postMessage,
+                // порядок прибытия в offscreen неопределён → инфа от B, аудио от A.
+                const token = ++this._dispatch_token;
                 try {
                     await chrome.runtime.sendMessage({ target: 'background', type: 'ensure_offscreen' });
+                    if (token !== this._dispatch_token || !this.is_current(audio))
+                        return;
                     const app = $bog_vk_app.Root(0);
                     let blob = null;
                     try {
                         blob = await $mol_wire_async(app).local_blob(audio);
                     }
                     catch { }
+                    if (token !== this._dispatch_token || !this.is_current(audio))
+                        return;
                     if (!blob && audio.url) {
                         try {
                             await app.save_hls(audio);
@@ -32015,6 +32035,8 @@ var $;
                         catch (e) {
                             console.error('[player] save_hls failed:', e?.message);
                         }
+                        if (token !== this._dispatch_token || !this.is_current(audio))
+                            return;
                     }
                     if (blob) {
                         this.channel().postMessage({
@@ -32034,6 +32056,7 @@ var $;
                 }
             }
             async play_source_local(audio, el, start_at = 0) {
+                const token = ++this._dispatch_token;
                 try {
                     if (this._last_blob_url) {
                         URL.revokeObjectURL(this._last_blob_url);
@@ -32041,6 +32064,8 @@ var $;
                     }
                     const app = $bog_vk_app.Root(0);
                     const blob = await $mol_wire_async(app).local_blob(audio);
+                    if (token !== this._dispatch_token || !this.is_current(audio))
+                        return;
                     if (blob) {
                         const url = URL.createObjectURL(blob);
                         this._last_blob_url = url;
@@ -32050,6 +32075,8 @@ var $;
                         return;
                     }
                     if (audio.url) {
+                        if (token !== this._dispatch_token || !this.is_current(audio))
+                            return;
                         this.attach_seek_listener(el, start_at);
                         el.src = audio.url;
                         try {
@@ -32061,6 +32088,8 @@ var $;
                     }
                     if (audio.url) {
                         await app.save_hls(audio);
+                        if (token !== this._dispatch_token || !this.is_current(audio))
+                            return;
                         const blob2 = app.local_blob(audio);
                         if (blob2) {
                             const url = URL.createObjectURL(blob2);
