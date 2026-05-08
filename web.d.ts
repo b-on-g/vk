@@ -14228,6 +14228,15 @@ declare namespace $ {
 //# sourceMappingURL=music.view.tree.d.ts.map
 declare namespace $ {
 
+	export class $mol_icon_share extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=share.view.tree.d.ts.map
+declare namespace $ {
+
 	export class $mol_icon_archive extends $mol_icon {
 		path( ): string
 	}
@@ -16287,23 +16296,31 @@ declare namespace $ {
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_button_minor__click_bog_vk_track_8 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['delete_cached'] >
+	type $mol_view__attr_bog_vk_track_8 = $mol_type_enforce<
+		({ 
+			'bog_vk_track_share_button': boolean,
+			'bog_vk_track_share_selected': ReturnType< $bog_vk_track['share_selected'] >,
+		}) 
 		,
-		ReturnType< $mol_button_minor['click'] >
+		ReturnType< $mol_view['attr'] >
 	>
-	type $mol_button_minor__sub_bog_vk_track_9 = $mol_type_enforce<
+	type $mol_view__event_bog_vk_track_9 = $mol_type_enforce<
+		({ 
+			pointerdown( next?: ReturnType< $bog_vk_track['share_pointer_down'] > ): ReturnType< $bog_vk_track['share_pointer_down'] >,
+			pointerup( next?: ReturnType< $bog_vk_track['share_pointer_up'] > ): ReturnType< $bog_vk_track['share_pointer_up'] >,
+			pointercancel( next?: ReturnType< $bog_vk_track['share_pointer_cancel'] > ): ReturnType< $bog_vk_track['share_pointer_cancel'] >,
+			pointerleave( next?: ReturnType< $bog_vk_track['share_pointer_leave'] > ): ReturnType< $bog_vk_track['share_pointer_leave'] >,
+		}) 
+		,
+		ReturnType< $mol_view['event'] >
+	>
+	type $mol_view__sub_bog_vk_track_10 = $mol_type_enforce<
 		readonly(any)[]
 		,
-		ReturnType< $mol_button_minor['sub'] >
-	>
-	type $mol_button_minor__hint_bog_vk_track_10 = $mol_type_enforce<
-		string
-		,
-		ReturnType< $mol_button_minor['hint'] >
+		ReturnType< $mol_view['sub'] >
 	>
 	type $mol_button_minor__click_bog_vk_track_11 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['archive'] >
+		ReturnType< $bog_vk_track['delete_cached'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
@@ -16318,7 +16335,7 @@ declare namespace $ {
 		ReturnType< $mol_button_minor['hint'] >
 	>
 	type $mol_button_minor__click_bog_vk_track_14 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['restore'] >
+		ReturnType< $bog_vk_track['archive'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
@@ -16333,11 +16350,26 @@ declare namespace $ {
 		ReturnType< $mol_button_minor['hint'] >
 	>
 	type $mol_button_minor__click_bog_vk_track_17 = $mol_type_enforce<
-		ReturnType< $bog_vk_track['delete_forever'] >
+		ReturnType< $bog_vk_track['restore'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
 	type $mol_button_minor__sub_bog_vk_track_18 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	type $mol_button_minor__hint_bog_vk_track_19 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_button_minor['hint'] >
+	>
+	type $mol_button_minor__click_bog_vk_track_20 = $mol_type_enforce<
+		ReturnType< $bog_vk_track['delete_forever'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_bog_vk_track_21 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_button_minor['sub'] >
@@ -16356,6 +16388,12 @@ declare namespace $ {
 		artist( ): string
 		Artist( ): $mol_paragraph
 		Info( ): $mol_view
+		share_pointer_down( next?: any ): any
+		share_pointer_up( next?: any ): any
+		share_pointer_cancel( next?: any ): any
+		share_pointer_leave( next?: any ): any
+		Share_icon( ): $mol_icon_share
+		Share( ): $mol_view
 		delete_cached( next?: any ): any
 		Delete_icon( ): $mol_icon_delete
 		Delete( ): $mol_button_minor
@@ -16375,8 +16413,10 @@ declare namespace $ {
 		can_drag( ): boolean
 		drag_start( next?: any ): any
 		drop_here( next?: any ): any
+		share_selected( ): boolean
 		attr( ): ({ 
 			'bog_vk_track_current': ReturnType< $bog_vk_track['current'] >,
+			'bog_vk_track_share_selected': ReturnType< $bog_vk_track['share_selected'] >,
 			'draggable': ReturnType< $bog_vk_track['can_drag'] >,
 		}) 
 		event( ): ({ 
@@ -16410,6 +16450,14 @@ declare namespace $.$$ {
         event_drag_over(event: DragEvent): void;
         event_drop(event: DragEvent): void;
         delete_cached(): void;
+        private _share_press_timer;
+        private _share_long_press_fired;
+        private static SHARE_LONG_PRESS_MS;
+        share_selected(): boolean;
+        share_pointer_down(event?: Event): null;
+        share_pointer_up(event?: Event): null;
+        share_pointer_cancel(event?: Event): null;
+        share_pointer_leave(event?: Event): null;
     }
 }
 
@@ -17192,67 +17240,72 @@ declare namespace $ {
 		,
 		ReturnType< $bog_theme_toggle['theme_auto'] >
 	>
-	type $mol_switch__value_bog_vk_app_14 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_app_14 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_switch__value_bog_vk_app_15 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['page'] >
 		,
 		ReturnType< $mol_switch['value'] >
 	>
-	type $mol_switch__options_bog_vk_app_15 = $mol_type_enforce<
+	type $mol_switch__options_bog_vk_app_16 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['tab_options'] >
 		,
 		ReturnType< $mol_switch['options'] >
 	>
-	type $bog_vk_tracks__audios_bog_vk_app_16 = $mol_type_enforce<
+	type $bog_vk_tracks__audios_bog_vk_app_17 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_tracks['audios'] >
 	>
-	type $bog_vk_tracks__current_audio_bog_vk_app_17 = $mol_type_enforce<
+	type $bog_vk_tracks__current_audio_bog_vk_app_18 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['current_audio'] >
 	>
-	type $bog_vk_tracks__play_audio_bog_vk_app_18 = $mol_type_enforce<
+	type $bog_vk_tracks__play_audio_bog_vk_app_19 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['on_play_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['play_audio'] >
 	>
-	type $bog_vk_tracks__archive_mode_bog_vk_app_19 = $mol_type_enforce<
+	type $bog_vk_tracks__archive_mode_bog_vk_app_20 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['archive_mode'] >
 		,
 		ReturnType< $bog_vk_tracks['archive_mode'] >
 	>
-	type $bog_vk_tracks__reorder_to_bog_vk_app_20 = $mol_type_enforce<
+	type $bog_vk_tracks__reorder_to_bog_vk_app_21 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['reorder_to'] >
 		,
 		ReturnType< $bog_vk_tracks['reorder_to'] >
 	>
-	type $bog_vk_tracks__archive_audio_bog_vk_app_21 = $mol_type_enforce<
+	type $bog_vk_tracks__archive_audio_bog_vk_app_22 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['archive_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['archive_audio'] >
 	>
-	type $bog_vk_tracks__restore_audio_bog_vk_app_22 = $mol_type_enforce<
+	type $bog_vk_tracks__restore_audio_bog_vk_app_23 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['restore_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['restore_audio'] >
 	>
-	type $bog_vk_tracks__delete_audio_bog_vk_app_23 = $mol_type_enforce<
+	type $bog_vk_tracks__delete_audio_bog_vk_app_24 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['delete_audio'] >
 		,
 		ReturnType< $bog_vk_tracks['delete_audio'] >
 	>
-	type $bog_vk_player__queue_bog_vk_app_24 = $mol_type_enforce<
+	type $bog_vk_player__queue_bog_vk_app_25 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['visible_audios'] >
 		,
 		ReturnType< $bog_vk_player['queue'] >
 	>
-	type $bog_vk_player__current_audio_bog_vk_app_25 = $mol_type_enforce<
+	type $bog_vk_player__current_audio_bog_vk_app_26 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['current_audio'] >
 		,
 		ReturnType< $bog_vk_player['current_audio'] >
 	>
-	type $bog_vk_player__pick_next_bog_vk_app_26 = $mol_type_enforce<
+	type $bog_vk_player__pick_next_bog_vk_app_27 = $mol_type_enforce<
 		ReturnType< $bog_vk_app['player_pick_next'] >
 		,
 		ReturnType< $bog_vk_player['pick_next'] >
@@ -17275,6 +17328,8 @@ declare namespace $ {
 		Theme_btn( ): $bog_theme_toggle
 		scroll( next?: number ): number
 		Account( ): $bog_vk_account
+		share_toast_text( ): string
+		Share_toast( ): $mol_view
 		page( next?: string ): string
 		tab_options( ): ({ 
 			'my': string,
@@ -17309,6 +17364,79 @@ declare namespace $.$$ {
         title(): string;
         page(next?: string): string;
         archive_mode(): boolean;
+        share_mode(next?: boolean): boolean;
+        private _share_selection;
+        /** Реактивный счётчик для инвалидации share_selection и share_is_selected. */
+        private share_selection_version;
+        private bump_share_selection;
+        share_selection_size(): number;
+        share_is_selected(audio: $bog_vk_api_audio | null): boolean;
+        /** Long-press: вход в режим шаринга + добавление текущего трека. */
+        share_enter(audio: $bog_vk_api_audio | null): void;
+        share_toggle(audio: $bog_vk_api_audio | null): void;
+        share_exit(): void;
+        share_status(next?: string): string;
+        share_selected_audios(): $bog_vk_api_audio[];
+        /** Click на share-иконке трека вне режима шаринга — мгновенный одиночный шар. */
+        share_single(audio: $bog_vk_api_audio | null): void;
+        share_one_async(audio: $bog_vk_api_audio): Promise<void>;
+        /** Click на табе "Расшаренный" — финализирует мульти-шар. */
+        submit_share(): void;
+        submit_share_async(): Promise<void>;
+        private _share_doing;
+        /**
+         * Локальный ретрай чтения baza-значения. Без этого Promise всплывал бы
+         * через async/await до wire_async-fiber'а, и тот бы переретраивал ВСЁ
+         * `do_share` — c новым `$mol_crypto_sacred.make()` и `land_grab()` (PoW)
+         * на каждом ретрае. Бесконечная PoW-молотилка вешала main thread.
+         */
+        private share_read;
+        /**
+         * Создаёт share-land с публичным чтением, шифрует sender + meta + buffer
+         * каждого трека одноразовым AES-ключом, кладёт ссылку в буфер обмена.
+         */
+        private do_share;
+        private plural_tracks;
+        private share_url_for;
+        private share_encrypt;
+        private share_decrypt;
+        /**
+         * Sync-метод. Запускается через `$mol_wire_async(this).do_share_writes_in_fiber(…)`,
+         * чтобы все вложенные wire_task'и (`land_grab`, `units_load`, `ensure_lord`) кешировались
+         * как sub-tasks одной фибры — иначе на каждом ретрае создаётся новый IDB-запрос /
+         * новый land. На каждый ретрай тело перезапускается, но sub-task'и переиспользуются
+         * и возвращают закешированные результаты.
+         */
+        private do_share_writes_in_fiber;
+        private _share_imported_tokens;
+        share_import_status(next?: string): string;
+        import_share(token: string): Promise<void>;
+        /**
+         * Sync-метод. Под `$mol_wire_async` все вложенные wire_task'и
+         * (`units_load` для share-land, `Tracks.keys()`, etc.) кешируются как
+         * sub-task'и одной фибры — фибра ретраится на Promise'ах от async IDB-load
+         * и возвращает результат когда land загружен.
+         */
+        private import_share_header_in_fiber;
+        /**
+         * Sync-метод. В фибре читает Meta + File-blob одного трека —
+         * `units_load` шифр-блоб-land'а кешируется внутри фибры, ретраится
+         * пока baza не догрузит чанки файла.
+         */
+        /**
+         * Sync-метод. `save_track`/`move_to_playlist`/`save_blob` — `@$mol_action`,
+         * могут бросить Promise при `units_load` home-land'а или ensure'е blob-land'а.
+         * Без этой обёртки wire_async ретраит ВСЁ `import_share` (включая 8MB AES-decrypt)
+         * на каждом Promise, что выглядит как зависание.
+         */
+        private import_share_save_track_in_fiber;
+        private import_share_track_in_fiber;
+        private clear_share_hash;
+        shared_playlists(): {
+            id: string;
+            sender: string;
+            count: number;
+        }[];
         /** $bog_vk_store в home land текущего юзера. */
         tracks_store(): $bog_vk_store;
         /** Словарь треков (Tracks). */
@@ -17388,6 +17516,8 @@ declare namespace $.$$ {
         } | null;
         player_pick_next(current: $bog_vk_api_audio | null): $bog_vk_api_audio | null;
         Account(): any;
+        share_toast_text(): string;
+        Share_toast(): any;
         nickname_label(): string;
         Nickname_label(): any;
         /**
@@ -17429,11 +17559,223 @@ declare namespace $.$$ {
          * рипает и blob-lands перестают синкаться.
          */
         prefetch_blob_lands(): number;
+        private _share_import_started;
         auto(): any;
     }
 }
 
 declare namespace $.$$ {
+}
+
+declare namespace $ {
+    const $bog_vk_share_track_baza_base: Omit<typeof $giper_baza_dict, "prototype"> & {
+        new (...args: any[]): $mol_type_override<$giper_baza_dict, {
+            readonly Meta: (auto?: any) => $giper_baza_atom_blob | null;
+            readonly File: (auto?: any) => {
+                Value: Value;
+                remote(next?: $giper_baza_file | null | undefined): $giper_baza_file | null;
+                remote_of(peer: $giper_baza_link | null, next?: $giper_baza_file | null | undefined): $giper_baza_file | null;
+                ensure(config?: null | $giper_baza_rank_preset | $giper_baza_land): $giper_baza_file | null;
+                ensure_of(peer: $giper_baza_link | null, config?: null | $giper_baza_rank_preset | $giper_baza_land): $giper_baza_file | null;
+                ensure_here(peer: $giper_baza_link | null): void;
+                ensure_area(peer: $giper_baza_link | null, land: $giper_baza_land): void;
+                ensure_lord(peer: $giper_baza_link | null, preset: $giper_baza_rank_preset): void;
+                remote_ensure(preset?: $giper_baza_rank_preset): $giper_baza_file | null;
+                local_ensure(): $giper_baza_file | null;
+                val(next?: $giper_baza_link | null | undefined): $giper_baza_link | null;
+                val_of(peer: $giper_baza_link | null, next?: $giper_baza_link | null | undefined): $giper_baza_link | null;
+                pick_unit(peer: $giper_baza_link | null): $giper_baza_unit_sand | undefined;
+                vary(next?: $giper_baza_vary_type): $giper_baza_vary_type;
+                vary_of(peer: $giper_baza_link | null, next?: $giper_baza_vary_type): $giper_baza_vary_type;
+                [$mol_dev_format_head](): any[];
+                land(): $giper_baza_land;
+                head(): $giper_baza_link;
+                land_link(): $giper_baza_link;
+                link(): $giper_baza_link;
+                toJSON(): string;
+                cast<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1): InstanceType<Pawn_1>;
+                pawns<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1 | null): readonly InstanceType<Pawn_1>[];
+                units(): $giper_baza_unit_sand[];
+                units_of(peer: $giper_baza_link | null): $giper_baza_unit_sand[];
+                meta(next?: $giper_baza_link): $giper_baza_link | null;
+                meta_of(peer: $giper_baza_link | null): $giper_baza_link | null;
+                filled(): boolean;
+                can_change(): boolean;
+                last_change(): $mol_time_moment | null;
+                authors(): $giper_baza_auth_pass[];
+                get $(): $;
+                set $(next: $);
+                destructor(): void;
+                toString(): string;
+                [Symbol.toStringTag]: string;
+                [$mol_ambient_ref]: $;
+                [Symbol.dispose](): void;
+            } | null;
+        }>;
+        path: string;
+    } & {
+        schema: {
+            [x: string]: typeof $giper_baza_pawn;
+        } & {
+            readonly Meta: typeof $giper_baza_atom_blob;
+            readonly File: {
+                new (): {
+                    Value: () => typeof $giper_baza_file;
+                    remote(next?: $giper_baza_file | null | undefined): $giper_baza_file | null;
+                    remote_of(peer: $giper_baza_link | null, next?: $giper_baza_file | null | undefined): $giper_baza_file | null;
+                    ensure(config?: null | $giper_baza_rank_preset | $giper_baza_land): $giper_baza_file | null;
+                    ensure_of(peer: $giper_baza_link | null, config?: null | $giper_baza_rank_preset | $giper_baza_land): $giper_baza_file | null;
+                    ensure_here(peer: $giper_baza_link | null): void;
+                    ensure_area(peer: $giper_baza_link | null, land: $giper_baza_land): void;
+                    ensure_lord(peer: $giper_baza_link | null, preset: $giper_baza_rank_preset): void;
+                    remote_ensure(preset?: $giper_baza_rank_preset): $giper_baza_file | null;
+                    local_ensure(): $giper_baza_file | null;
+                    val(next?: $giper_baza_link | null | undefined): $giper_baza_link | null;
+                    val_of(peer: $giper_baza_link | null, next?: $giper_baza_link | null | undefined): $giper_baza_link | null;
+                    pick_unit(peer: $giper_baza_link | null): $giper_baza_unit_sand | undefined;
+                    vary(next?: $giper_baza_vary_type): $giper_baza_vary_type;
+                    vary_of(peer: $giper_baza_link | null, next?: $giper_baza_vary_type): $giper_baza_vary_type;
+                    [$mol_dev_format_head](): any[];
+                    land(): $giper_baza_land;
+                    head(): $giper_baza_link;
+                    land_link(): $giper_baza_link;
+                    link(): $giper_baza_link;
+                    toJSON(): string;
+                    cast<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1): InstanceType<Pawn_1>;
+                    pawns<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1 | null): readonly InstanceType<Pawn_1>[];
+                    units(): $giper_baza_unit_sand[];
+                    units_of(peer: $giper_baza_link | null): $giper_baza_unit_sand[];
+                    meta(next?: $giper_baza_link): $giper_baza_link | null;
+                    meta_of(peer: $giper_baza_link | null): $giper_baza_link | null;
+                    filled(): boolean;
+                    can_change(): boolean;
+                    last_change(): $mol_time_moment | null;
+                    authors(): $giper_baza_auth_pass[];
+                    get $(): $;
+                    set $(next: $);
+                    destructor(): void;
+                    toString(): string;
+                    [Symbol.toStringTag]: string;
+                    [$mol_ambient_ref]: $;
+                    [Symbol.dispose](): void;
+                };
+                toString(): any;
+                Value: typeof $giper_baza_dict;
+                parse: typeof $giper_baza_vary_cast_link;
+                tag: keyof typeof $giper_baza_unit_sand_tag;
+                meta: null | $giper_baza_link;
+                make<This extends typeof $mol_object>(this: This, config: Partial<InstanceType<This>>): InstanceType<This>;
+                $: $;
+                create<Instance>(this: new (init?: (instance: any) => void) => Instance, init?: (instance: $mol_type_writable<Instance>) => void): Instance;
+                toJSON(): any;
+                destructor(): void;
+                [Symbol.toPrimitive](): any;
+                [$mol_key_handle](): any;
+            };
+        };
+    };
+    /**
+     * Шаренный трек: зашифрованные метаданные + ссылка на отдельный land
+     * с зашифрованным буфером файла. Шифрование AES-CBC на стороне приложения
+     * с одноразовым ключом из URL — see $bog_vk_app.create_share / import_share.
+     *
+     * Meta содержит JSON {artist,title,duration,mime,owner_id,id} в виде
+     * `[16 bytes IV][ciphertext]`. File.buffer() — то же самое для аудио-байт.
+     */
+    export class $bog_vk_share_track_baza extends $bog_vk_share_track_baza_base {
+    }
+    const $bog_vk_share_tracks_dict_base: {
+        new (): {
+            Value: typeof $bog_vk_share_track_baza;
+            key(key: $giper_baza_vary_type, auto?: any): $bog_vk_share_track_baza;
+            keys(): readonly $giper_baza_vary_type[];
+            dive<Pawn_1 extends typeof $giper_baza_pawn>(key: $giper_baza_vary_type, Pawn: Pawn_1, auto?: any): InstanceType<Pawn_1> | null;
+            [$mol_dev_format_head](): any[];
+            items_vary(next?: readonly $giper_baza_vary_type[], tag?: keyof typeof $giper_baza_unit_sand_tag): readonly $giper_baza_vary_type[];
+            splice(next: readonly $giper_baza_vary_type[], from?: number, to?: number, tag?: keyof typeof $giper_baza_unit_sand_tag): void;
+            find(vary: $giper_baza_vary_type): $giper_baza_unit_sand | null;
+            has(vary: $giper_baza_vary_type, next?: boolean, tag?: keyof typeof $giper_baza_unit_sand_tag): boolean;
+            add(vary: $giper_baza_vary_type, tag?: keyof typeof $giper_baza_unit_sand_tag): void;
+            cut(vary: $giper_baza_vary_type): void;
+            move(from: number, to: number): void;
+            wipe(seat: number): void;
+            pawn_make<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1, vary: $giper_baza_vary_type, tag?: keyof typeof $giper_baza_unit_sand_tag): InstanceType<Pawn_1>;
+            land(): $giper_baza_land;
+            head(): $giper_baza_link;
+            land_link(): $giper_baza_link;
+            link(): $giper_baza_link;
+            toJSON(): string;
+            cast<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1): InstanceType<Pawn_1>;
+            pawns<Pawn_1 extends typeof $giper_baza_pawn>(Pawn: Pawn_1 | null): readonly InstanceType<Pawn_1>[];
+            units(): $giper_baza_unit_sand[];
+            units_of(peer: $giper_baza_link | null): $giper_baza_unit_sand[];
+            meta(next?: $giper_baza_link): $giper_baza_link | null;
+            meta_of(peer: $giper_baza_link | null): $giper_baza_link | null;
+            filled(): boolean;
+            can_change(): boolean;
+            last_change(): $mol_time_moment | null;
+            authors(): $giper_baza_auth_pass[];
+            get $(): $;
+            set $(next: $);
+            destructor(): void;
+            toString(): string;
+            [Symbol.toStringTag]: string;
+            [$mol_ambient_ref]: $;
+            [Symbol.dispose](): void;
+        };
+        toString(): any;
+        tag: keyof typeof $giper_baza_unit_sand_tag;
+        schema: Record<string, typeof $giper_baza_pawn>;
+        with<This extends typeof $giper_baza_dict, const Schema extends Record<string, {
+            tag: keyof typeof $giper_baza_unit_sand_tag;
+            new (): {};
+        }>>(this: This, schema: Schema, path?: string): Omit<This, "prototype"> & {
+            new (...args: any[]): $mol_type_override<InstanceType<This>, { readonly [Key in keyof Schema]: (auto?: any) => InstanceType<Schema[Key]> | null; }>;
+            path: string;
+        } & {
+            schema: {
+                [x: string]: typeof $giper_baza_pawn;
+            } & Schema;
+        };
+        meta: null | $giper_baza_link;
+        make<This extends typeof $mol_object>(this: This, config: Partial<InstanceType<This>>): InstanceType<This>;
+        $: $;
+        create<Instance>(this: new (init?: (instance: any) => void) => Instance, init?: (instance: $mol_type_writable<Instance>) => void): Instance;
+        toJSON(): any;
+        destructor(): void;
+        [Symbol.toPrimitive](): any;
+        [$mol_key_handle](): any;
+    };
+    export class $bog_vk_share_tracks_dict extends $bog_vk_share_tracks_dict_base {
+    }
+    const $bog_vk_share_baza_base: Omit<typeof $giper_baza_dict, "prototype"> & {
+        new (...args: any[]): $mol_type_override<$giper_baza_dict, {
+            readonly Sender: (auto?: any) => $giper_baza_atom_blob | null;
+            readonly Verifier: (auto?: any) => $giper_baza_atom_blob | null;
+            readonly Count: (auto?: any) => $giper_baza_atom_real | null;
+            readonly Tracks: (auto?: any) => $bog_vk_share_tracks_dict | null;
+        }>;
+        path: string;
+    } & {
+        schema: {
+            [x: string]: typeof $giper_baza_pawn;
+        } & {
+            readonly Sender: typeof $giper_baza_atom_blob;
+            readonly Verifier: typeof $giper_baza_atom_blob;
+            readonly Count: typeof $giper_baza_atom_real;
+            readonly Tracks: typeof $bog_vk_share_tracks_dict;
+        };
+    };
+    /**
+     * Эфемерный share-land. `[null, $giper_baza_rank_read]` — публичное чтение
+     * (на самом деле приватное: link достаточно длинный, payload зашифрован).
+     *
+     * Verifier — фиксированная зашифрованная строка для быстрой проверки ключа
+     * на стороне получателя без расшифровки крупного блоба.
+     */
+    export class $bog_vk_share_baza extends $bog_vk_share_baza_base {
+    }
+    export {};
 }
 
 declare namespace $ {

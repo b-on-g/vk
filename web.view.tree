@@ -2058,6 +2058,8 @@ $mol_switch $mol_check_list
 
 $mol_icon_music $mol_icon path \M21,3V15.5A3.5,3.5 0 0,1 17.5,19A3.5,3.5 0 0,1 14,15.5A3.5,3.5 0 0,1 17.5,12C18.04,12 18.55,12.12 19,12.34V6.47L9,8.6V17.5A3.5,3.5 0 0,1 5.5,21A3.5,3.5 0 0,1 2,17.5A3.5,3.5 0 0,1 5.5,14C6.04,14 6.55,14.12 7,14.34V6L21,3Z
 
+$mol_icon_share $mol_icon path \M21,12L14,5V9C7,10 4,15 3,20C5.5,16.5 9,14.9 14,14.9V19L21,12Z
+
 $mol_icon_archive $mol_icon path \M3,3H21V7H3V3M4,8H20V21H4V8M9.5,11A0.5,0.5 0 0,0 9,11.5V13H15V11.5A0.5,0.5 0 0,0 14.5,11H9.5Z
 
 $mol_icon_restore $mol_icon path \M13,3A9,9 0 0,0 4,12H1L4.89,15.89L4.96,16.03L9,12H6A7,7 0 0,1 13,5A7,7 0 0,1 20,12A7,7 0 0,1 13,19C11.07,19 9.32,18.21 8.06,16.94L6.64,18.36C8.27,20 10.5,21 13,21A9,9 0 0,0 22,12A9,9 0 0,0 13,3Z
@@ -2073,8 +2075,10 @@ $bog_vk_track $mol_view
 	archive? null
 	restore? null
 	delete_forever? null
+	share_selected false
 	attr *
 		bog_vk_track_current <= current
+		bog_vk_track_share_selected <= share_selected
 		draggable <= can_drag
 	event *
 		dragstart?event <=> event_drag_start?event null
@@ -2096,6 +2100,17 @@ $bog_vk_track $mol_view
 					title <= title \
 				<= Artist $mol_paragraph
 					title <= artist \
+		<= Share $mol_view
+			attr *
+				bog_vk_track_share_button true
+				bog_vk_track_share_selected <= share_selected
+			event *
+				pointerdown?event <=> share_pointer_down?event null
+				pointerup?event <=> share_pointer_up?event null
+				pointercancel?event <=> share_pointer_cancel?event null
+				pointerleave?event <=> share_pointer_leave?event null
+			sub /
+				<= Share_icon $mol_icon_share
 		<= Delete $mol_button_minor
 			click? <=> delete_cached? null
 			sub /
@@ -2262,6 +2277,8 @@ $bog_vk_app $mol_page
 	body_scroll_top? <=> scroll? 0
 	body /
 		<= Account $bog_vk_account
+		<= Share_toast $mol_view
+			sub / <= share_toast_text \
 		<= Tabs $mol_switch
 			value? <=> page? \my
 			options <= tab_options *

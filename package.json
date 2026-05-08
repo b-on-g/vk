@@ -343,6 +343,7 @@
     "$bog_vk_tracks",
     "$bog_vk_track",
     "$mol_icon_music",
+    "$mol_icon_share",
     "$mol_icon_delete",
     "$mol_icon_archive",
     "$mol_icon_restore",
@@ -361,6 +362,7 @@
     "$mol_icon_volume_high",
     "$mol_icon_volume",
     "$mol_pop_over",
+    "$bog_vk_share",
     "$bog_vk_store",
     "$bog_vk_cache",
     "$bog_recsys"
