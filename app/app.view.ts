@@ -1331,15 +1331,15 @@ namespace $.$$ {
 			return $mol_state_local.value('vk_account_open', next) ?? false
 		}
 
-		@$mol_mem
-		feedback_open(next?: boolean) {
-			return $mol_state_local.value('vk_feedback_open', next) ?? false
-		}
+		// @$mol_mem
+		// feedback_open(next?: boolean) {
+		// 	return $mol_state_local.value('vk_feedback_open', next) ?? false
+		// }
 
-		Feedback() {
-			if (!this.feedback_open()) return null as any
-			return super.Feedback()
-		}
+		// Feedback() {
+		// 	if (!this.feedback_open()) return null as any
+		// 	return super.Feedback()
+		// }
 
 		@$mol_mem
 		wave_mode(next?: boolean) {
