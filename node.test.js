@@ -20618,9 +20618,9 @@ var $;
      * CRUD — в $bog_vk_account как instance-методы.
      */
     class $bog_vk_account_baza extends $giper_baza_dict.with({
-        Nickname: $giper_baza_atom_text,
-        Last_track_key: $giper_baza_atom_text,
-        Last_position: $giper_baza_atom_real,
+        Nickname: $giper_baza_atom.of($mol_schema_string),
+        Last_track_key: $giper_baza_atom.of($mol_schema_string),
+        Last_position: $giper_baza_atom.of($mol_schema_float),
     }) {
     }
     $.$bog_vk_account_baza = $bog_vk_account_baza;
@@ -25185,7 +25185,7 @@ var $;
 var $;
 (function ($) {
     /**
-     * Расширение `$giper_baza_atom_link_to` с автоматическим запуском `.sync()`
+     * Расширение `$giper_baza_atom_link.to` с автоматическим запуском `.sync()`
      * на target-land при чтении ссылки. Стандартный `remote()` только создаёт
      * Pawn proxy без триггера sync (см. `land.ts:345` — `.sync()` закомменчен в Pawn()).
      *
@@ -25193,7 +25193,7 @@ var $;
      * не нажмёт play. С этой обёрткой любой `.remote()` сразу инициирует sync.
      */
     function $bog_vk_atom_link_to_synced(Value) {
-        const Base = $giper_baza_atom_link_to(Value);
+        const Base = $giper_baza_atom_link.to(Value);
         class $bog_vk_atom_link_to_synced extends Base {
             remote(next) {
                 const r = super.remote(next);
@@ -25222,20 +25222,20 @@ var $;
      * запускается при первом чтении ссылки.
      */
     class $bog_vk_track_baza extends $giper_baza_dict.with({
-        Vk_id: $giper_baza_atom_text,
-        Title: $giper_baza_atom_text,
-        Artist: $giper_baza_atom_text,
-        Duration: $giper_baza_atom_real,
-        Url: $giper_baza_atom_text,
-        Added: $giper_baza_atom_real,
-        Order: $giper_baza_atom_real,
+        Vk_id: $giper_baza_atom.of($mol_schema_string),
+        Title: $giper_baza_atom.of($mol_schema_string),
+        Artist: $giper_baza_atom.of($mol_schema_string),
+        Duration: $giper_baza_atom.of($mol_schema_float),
+        Url: $giper_baza_atom.of($mol_schema_string),
+        Added: $giper_baza_atom.of($mol_schema_float),
+        Order: $giper_baza_atom.of($mol_schema_float),
         // Id плейлиста: '' = main, 'archive' = архив, любое другое — кастомный плейлист.
         // Расширяется без миграции схемы; полную метадату плейлистов держим в $bog_vk_store.Playlists.
-        Playlist: $giper_baza_atom_text,
+        Playlist: $giper_baza_atom.of($mol_schema_string),
         File: $bog_vk_atom_link_to_synced(() => $giper_baza_file),
         // Персональный обрез песни (секунды). Trim_end = null означает «без обреза».
-        Trim_start: $giper_baza_atom_real,
-        Trim_end: $giper_baza_atom_real,
+        Trim_start: $giper_baza_atom.of($mol_schema_float),
+        Trim_end: $giper_baza_atom.of($mol_schema_float),
     }) {
     }
     $.$bog_vk_track_baza = $bog_vk_track_baza;
@@ -29221,7 +29221,7 @@ var $;
      * `[16 bytes IV][ciphertext]`. File.buffer() — то же самое для аудио-байт.
      */
     class $bog_vk_share_track_baza extends $giper_baza_dict.with({
-        Meta: $giper_baza_atom_blob,
+        Meta: $giper_baza_atom.of(Uint8Array),
         File: $bog_vk_atom_link_to_synced(() => $giper_baza_file),
     }) {
     }
@@ -29237,12 +29237,12 @@ var $;
      * на стороне получателя без расшифровки крупного блоба.
      */
     class $bog_vk_share_baza extends $giper_baza_dict.with({
-        Sender: $giper_baza_atom_blob,
-        Verifier: $giper_baza_atom_blob,
+        Sender: $giper_baza_atom.of(Uint8Array),
+        Verifier: $giper_baza_atom.of(Uint8Array),
         // Ожидаемое число треков в шаре. Используется получателем для polling'а
         // синка — `tracks.keys().length` догоняет до Count или истекает таймаут.
         // Plaintext (приватность count'а — приемлемая утечка).
-        Count: $giper_baza_atom_real,
+        Count: $giper_baza_atom.of($mol_schema_float),
         Tracks: $bog_vk_share_tracks_dict,
     }) {
     }
