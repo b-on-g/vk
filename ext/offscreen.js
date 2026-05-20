@@ -79,10 +79,6 @@ chrome.runtime.onMessage.addListener( ( msg, _sender, reply ) => {
 			if ( typeof msg.value === 'number' ) audio.volume = msg.value
 			reply( { ok: true } )
 			return true
-		case 'loop':
-			audio.loop = !!msg.value
-			reply( { ok: true } )
-			return true
 		case 'get_state':
 			reply( {
 				playing: !audio.paused,
