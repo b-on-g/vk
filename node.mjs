@@ -26118,11 +26118,10 @@ var $;
                     return this._audio_el;
                 const el = new Audio();
                 el.volume = this.volume();
-                el.loop = this.repeat_mode() === 'one';
                 el.addEventListener('ended', () => {
                     try {
                         const finished = this.current_audio();
-                        this.next();
+                        this.next(false);
                         if (finished && navigator.onLine) {
                             $bog_vk_app.Root(0).save_hls(finished).catch(() => { });
                         }
@@ -26185,7 +26184,7 @@ var $;
                     if (msg.type === 'ended') {
                         try {
                             const finished = this.current_audio();
-                            this.next();
+                            this.next(false);
                             if (finished && navigator.onLine) {
                                 $bog_vk_app.Root(0).save_hls(finished).catch(() => { });
                             }
@@ -26457,16 +26456,6 @@ var $;
                 }
                 return v;
             }
-            apply_loop() {
-                const loop = this.repeat_mode() === 'one';
-                if (this.is_extension()) {
-                    this.send('loop', { value: loop });
-                }
-                else if (this._audio_el) {
-                    this._audio_el.loop = loop;
-                }
-                return loop;
-            }
             title() {
                 return this.current_audio()?.title ?? '';
             }
@@ -26627,7 +26616,7 @@ var $;
                 this._trim_end_skip = key;
                 queueMicrotask(() => {
                     try {
-                        this.next();
+                        this.next(false);
                         if (navigator.onLine)
                             $bog_vk_app.Root(0).save_hls(audio).catch(() => { });
                     }
@@ -26895,13 +26884,21 @@ var $;
                     this.play_track(queue[idx - 1]);
                 }
             }
-            next() {
+            next(manual = true) {
                 const mode = this.repeat_mode();
                 const queue = this.queue();
-                // mode='one' обрабатывается через audio.loop=true в apply_loop():
-                // браузер сам перезапускает трек, `ended` не стреляет. Next-кнопка
-                // при этом всё равно ведёт к следующему треку — стандартное поведение
-                // плеера ("Повтор одного" не должен ломать ручной next).
+                // Авто-advance из `ended`-обработчика: при mode='one' перезапускаем
+                // тот же трек через play_track(cur) — он подхватит Trim_start как
+                // start_at. native audio.loop=true не использовали т.к. он крутит
+                // от 0 и игнорирует trim_start. Ручной клик по Next-кнопке
+                // (`manual=true`) всё равно ведёт к следующему треку.
+                if (!manual && mode === 'one') {
+                    const cur = this.current_audio();
+                    if (cur) {
+                        this.play_track(cur);
+                        return;
+                    }
+                }
                 if (mode === 'shuffle' && queue.length) {
                     const cur = this.current_audio();
                     const cur_idx = cur
@@ -26972,7 +26969,6 @@ var $;
                     this.try_restore_session();
                 }
                 this.apply_volume();
-                this.apply_loop();
                 try {
                     this.apply_trim();
                 }
@@ -27005,9 +27001,6 @@ var $;
         __decorate([
             $mol_mem
         ], $bog_vk_player.prototype, "apply_volume", null);
-        __decorate([
-            $mol_mem
-        ], $bog_vk_player.prototype, "apply_loop", null);
         $$.$bog_vk_player = $bog_vk_player;
     })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));

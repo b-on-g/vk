@@ -48586,7 +48586,6 @@ declare namespace $.$$ {
         Repeat_one_icon(): any;
         Shuffle_icon(): any;
         private apply_volume;
-        private apply_loop;
         title(): any;
         artist(): any;
         cover(): any;
@@ -48631,7 +48630,7 @@ declare namespace $.$$ {
         private safe_play;
         toggle(): void;
         prev(): void;
-        next(): void;
+        next(manual?: boolean): void;
         sub(): readonly any[];
         Play(): any;
         Pause(): any;
