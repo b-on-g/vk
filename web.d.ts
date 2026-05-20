@@ -54331,6 +54331,33 @@ declare namespace $ {
 //# sourceMappingURL=next.view.tree.d.ts.map
 declare namespace $ {
 
+	export class $mol_icon_repeat extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=repeat.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_icon_repeat_once extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=once.view.tree.d.ts.map
+declare namespace $ {
+
+	export class $mol_icon_shuffle extends $mol_icon {
+		path( ): string
+	}
+	
+}
+
+//# sourceMappingURL=shuffle.view.tree.d.ts.map
+declare namespace $ {
+
 	export class $mol_icon_volume_high extends $mol_icon {
 		path( ): string
 	}
@@ -54493,24 +54520,39 @@ declare namespace $ {
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
-	type $mol_view__sub_bog_vk_player_22 = $mol_type_enforce<
-		readonly(any)[]
+	type $mol_button_minor__hint_bog_vk_player_22 = $mol_type_enforce<
+		ReturnType< $bog_vk_player['repeat_hint'] >
 		,
-		ReturnType< $mol_view['sub'] >
+		ReturnType< $mol_button_minor['hint'] >
 	>
-	type $mol_button_minor__sub_bog_vk_player_23 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_player_23 = $mol_type_enforce<
+		ReturnType< $bog_vk_player['repeat_cycle'] >
+		,
+		ReturnType< $mol_button_minor['click'] >
+	>
+	type $mol_button_minor__sub_bog_vk_player_24 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_button_minor['sub'] >
 	>
-	type $mol_view__style_bog_vk_player_24 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_player_25 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_button_minor__sub_bog_vk_player_26 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_button_minor['sub'] >
+	>
+	type $mol_view__style_bog_vk_player_27 = $mol_type_enforce<
 		({ 
 			'height': ReturnType< $bog_vk_player['volume_fill_height'] >,
 		}) 
 		,
 		ReturnType< $mol_view['style'] >
 	>
-	type $mol_view__event_bog_vk_player_25 = $mol_type_enforce<
+	type $mol_view__event_bog_vk_player_28 = $mol_type_enforce<
 		({ 
 			pointerdown( next?: ReturnType< $bog_vk_player['volume_pointer_down'] > ): ReturnType< $bog_vk_player['volume_pointer_down'] >,
 			pointermove( next?: ReturnType< $bog_vk_player['volume_pointer_move'] > ): ReturnType< $bog_vk_player['volume_pointer_move'] >,
@@ -54520,32 +54562,32 @@ declare namespace $ {
 		,
 		ReturnType< $mol_view['event'] >
 	>
-	type $mol_view__sub_bog_vk_player_26 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_player_29 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_view__sub_bog_vk_player_27 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_player_30 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_pop_over__align_bog_vk_player_28 = $mol_type_enforce<
+	type $mol_pop_over__align_bog_vk_player_31 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_pop_over['align'] >
 	>
-	type $mol_pop_over__Anchor_bog_vk_player_29 = $mol_type_enforce<
+	type $mol_pop_over__Anchor_bog_vk_player_32 = $mol_type_enforce<
 		ReturnType< $bog_vk_player['Volume_anchor'] >
 		,
 		ReturnType< $mol_pop_over['Anchor'] >
 	>
-	type $mol_pop_over__bubble_content_bog_vk_player_30 = $mol_type_enforce<
+	type $mol_pop_over__bubble_content_bog_vk_player_33 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_pop_over['bubble_content'] >
 	>
-	type $mol_view__sub_bog_vk_player_31 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_player_34 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
@@ -54587,6 +54629,12 @@ declare namespace $ {
 		next( next?: any ): any
 		Next_icon( ): $mol_icon_skip_next
 		Next( ): $mol_button_minor
+		repeat_hint( ): string
+		repeat_cycle( next?: any ): any
+		Repeat_all_icon( ): $mol_icon_repeat
+		Repeat_one_icon( ): $mol_icon_repeat_once
+		Shuffle_icon( ): $mol_icon_shuffle
+		Repeat( ): $mol_button_minor
 		Center( ): $mol_view
 		Volume_icon( ): $mol_icon_volume_high
 		Volume_anchor( ): $mol_button_minor
@@ -54639,7 +54687,14 @@ declare namespace $.$$ {
         volume_pointer_move(event?: Event): null;
         volume_pointer_up(event?: Event): null;
         volume_fill_height(): string;
+        repeat_mode(next?: 'all' | 'one' | 'shuffle'): "all" | "one" | "shuffle";
+        repeat_cycle(): void;
+        repeat_hint(): "Повтор одного трека" | "Случайный порядок" | "Повтор плейлиста";
+        Repeat_all_icon(): any;
+        Repeat_one_icon(): any;
+        Shuffle_icon(): any;
         private apply_volume;
+        private apply_loop;
         title(): any;
         artist(): any;
         cover(): any;
@@ -54650,6 +54705,7 @@ declare namespace $.$$ {
         format_time(seconds: number): string;
         progress_percent(): number;
         play_track(audio?: $bog_vk_api_audio | null): void;
+        private try_play_local_sync;
         private attach_seek_listener;
         private seek_to;
         /**

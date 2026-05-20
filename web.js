@@ -33360,6 +33360,42 @@ var $;
 
 
 ;
+	($.$mol_icon_repeat) = class $mol_icon_repeat extends ($.$mol_icon) {
+		path(){
+			return "M17,17H7V14L3,18L7,22V19H19V13H17M7,7H17V10L21,6L17,2V5H5V11H7V7Z";
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
+	($.$mol_icon_repeat_once) = class $mol_icon_repeat_once extends ($.$mol_icon) {
+		path(){
+			return "M13,15V9H12L10,10V11H11.5V15M17,17H7V14L3,18L7,22V19H19V13H17M7,7H17V10L21,6L17,2V5H5V11H7V7Z";
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
+	($.$mol_icon_shuffle) = class $mol_icon_shuffle extends ($.$mol_icon) {
+		path(){
+			return "M14.83,13.41L13.42,14.82L16.55,17.95L14.5,20H20V14.5L17.96,16.54L14.83,13.41M14.5,4L16.54,6.04L4,18.59L5.41,20L17.96,7.46L20,9.5V4M10.59,9.17L5.41,4L4,5.41L9.17,10.58L10.59,9.17Z";
+		}
+	};
+
+
+;
+"use strict";
+
+
+;
 	($.$mol_icon_volume_high) = class $mol_icon_volume_high extends ($.$mol_icon) {
 		path(){
 			return "M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z";
@@ -33622,13 +33658,44 @@ var $;
 			(obj.sub) = () => ([(this.Next_icon())]);
 			return obj;
 		}
+		repeat_hint(){
+			return "";
+		}
+		repeat_cycle(next){
+			if(next !== undefined) return next;
+			return null;
+		}
+		Repeat_all_icon(){
+			const obj = new this.$.$mol_icon_repeat();
+			return obj;
+		}
+		Repeat_one_icon(){
+			const obj = new this.$.$mol_icon_repeat_once();
+			return obj;
+		}
+		Shuffle_icon(){
+			const obj = new this.$.$mol_icon_shuffle();
+			return obj;
+		}
+		Repeat(){
+			const obj = new this.$.$mol_button_minor();
+			(obj.hint) = () => ((this.repeat_hint()));
+			(obj.click) = (next) => ((this.repeat_cycle(next)));
+			(obj.sub) = () => ([
+				(this.Repeat_all_icon()), 
+				(this.Repeat_one_icon()), 
+				(this.Shuffle_icon())
+			]);
+			return obj;
+		}
 		Center(){
 			const obj = new this.$.$mol_view();
 			(obj.sub) = () => ([
 				(this.Prev()), 
 				(this.Play()), 
 				(this.Pause()), 
-				(this.Next())
+				(this.Next()), 
+				(this.Repeat())
 			]);
 			return obj;
 		}
@@ -33745,6 +33812,11 @@ var $;
 	($mol_mem(($.$bog_vk_player.prototype), "next"));
 	($mol_mem(($.$bog_vk_player.prototype), "Next_icon"));
 	($mol_mem(($.$bog_vk_player.prototype), "Next"));
+	($mol_mem(($.$bog_vk_player.prototype), "repeat_cycle"));
+	($mol_mem(($.$bog_vk_player.prototype), "Repeat_all_icon"));
+	($mol_mem(($.$bog_vk_player.prototype), "Repeat_one_icon"));
+	($mol_mem(($.$bog_vk_player.prototype), "Shuffle_icon"));
+	($mol_mem(($.$bog_vk_player.prototype), "Repeat"));
 	($mol_mem(($.$bog_vk_player.prototype), "Center"));
 	($mol_mem(($.$bog_vk_player.prototype), "Volume_icon"));
 	($mol_mem(($.$bog_vk_player.prototype), "Volume_anchor"));
@@ -33795,6 +33867,7 @@ var $;
                     return this._audio_el;
                 const el = new Audio();
                 el.volume = this.volume();
+                el.loop = this.repeat_mode() === 'one';
                 el.addEventListener('ended', () => {
                     try {
                         const finished = this.current_audio();
@@ -34087,6 +34160,42 @@ var $;
             volume_fill_height() {
                 return `${Math.round(this.volume() * 100)}%`;
             }
+            repeat_mode(next) {
+                const v = $mol_state_local.value('bog_vk_repeat_mode', next);
+                if (v === 'one' || v === 'shuffle')
+                    return v;
+                return 'all';
+            }
+            repeat_cycle() {
+                const cur = this.repeat_mode();
+                const order = ['all', 'one', 'shuffle'];
+                const idx = order.indexOf(cur);
+                const next = order[(idx + 1) % order.length];
+                this.repeat_mode(next);
+            }
+            repeat_hint() {
+                const m = this.repeat_mode();
+                if (m === 'one')
+                    return 'Повтор одного трека';
+                if (m === 'shuffle')
+                    return 'Случайный порядок';
+                return 'Повтор плейлиста';
+            }
+            Repeat_all_icon() {
+                if (this.repeat_mode() !== 'all')
+                    return null;
+                return super.Repeat_all_icon();
+            }
+            Repeat_one_icon() {
+                if (this.repeat_mode() !== 'one')
+                    return null;
+                return super.Repeat_one_icon();
+            }
+            Shuffle_icon() {
+                if (this.repeat_mode() !== 'shuffle')
+                    return null;
+                return super.Shuffle_icon();
+            }
             apply_volume() {
                 const v = this.volume();
                 if (this.is_extension()) {
@@ -34096,6 +34205,16 @@ var $;
                     this._audio_el.volume = v;
                 }
                 return v;
+            }
+            apply_loop() {
+                const loop = this.repeat_mode() === 'one';
+                if (this.is_extension()) {
+                    this.send('loop', { value: loop });
+                }
+                else if (this._audio_el) {
+                    this._audio_el.loop = loop;
+                }
+                return loop;
             }
             title() {
                 return this.current_audio()?.title ?? '';
@@ -34167,6 +34286,12 @@ var $;
                 }
                 else {
                     const el = this.audio_el();
+                    // iOS PWA: при заблокированном экране любой await перед el.play()
+                    // рвёт audio-session continuation от `ended`-обработчика — трек
+                    // идёт молча. Пробуем СИНХРОННО взять blob (в типичном случае он
+                    // в baza уже есть) и сразу же src+play в том же tick.
+                    if (this.try_play_local_sync(audio, el, start_at))
+                        return;
                     if (audio.url) {
                         this.attach_seek_listener(el, start_at);
                         el.src = audio.url;
@@ -34174,6 +34299,28 @@ var $;
                     }
                     this.play_source_local(audio, el, start_at);
                 }
+            }
+            try_play_local_sync(audio, el, start_at) {
+                let blob = null;
+                try {
+                    blob = $bog_vk_app.Root(0).local_blob(audio);
+                }
+                catch (e) {
+                    if (e instanceof Promise)
+                        return false;
+                    return false;
+                }
+                if (!blob)
+                    return false;
+                if (this._last_blob_url)
+                    URL.revokeObjectURL(this._last_blob_url);
+                const url = URL.createObjectURL(blob);
+                this._last_blob_url = url;
+                this._dispatch_token++;
+                this.attach_seek_listener(el, start_at);
+                el.src = url;
+                el.play().catch(() => { });
+                return true;
             }
             attach_seek_listener(el, start_at) {
                 if (start_at <= 0)
@@ -34498,10 +34645,27 @@ var $;
                 }
             }
             next() {
+                const mode = this.repeat_mode();
+                const queue = this.queue();
+                // mode='one' обрабатывается через audio.loop=true в apply_loop():
+                // браузер сам перезапускает трек, `ended` не стреляет. Next-кнопка
+                // при этом всё равно ведёт к следующему треку — стандартное поведение
+                // плеера ("Повтор одного" не должен ломать ручной next).
+                if (mode === 'shuffle' && queue.length) {
+                    const cur = this.current_audio();
+                    const cur_idx = cur
+                        ? queue.findIndex((a) => a.id === cur.id && a.owner_id === cur.owner_id)
+                        : -1;
+                    let idx = Math.floor(Math.random() * queue.length);
+                    if (queue.length > 1 && idx === cur_idx)
+                        idx = (idx + 1) % queue.length;
+                    this._queue_idx = idx;
+                    this.play_track(queue[idx]);
+                    return;
+                }
                 try {
                     const picked = this.pick_next(this.current_audio());
                     if (picked) {
-                        const queue = this.queue();
                         const idx = queue.findIndex((a) => a.id === picked.id && a.owner_id === picked.owner_id);
                         if (idx >= 0)
                             this._queue_idx = idx;
@@ -34514,7 +34678,6 @@ var $;
                         throw e;
                     console.warn('[player] pick_next failed:', e?.message);
                 }
-                const queue = this.queue();
                 if (!queue.length)
                     return;
                 const next_idx = this._queue_idx + 1 < queue.length ? this._queue_idx + 1 : 0;
@@ -34558,6 +34721,7 @@ var $;
                     this.try_restore_session();
                 }
                 this.apply_volume();
+                this.apply_loop();
                 try {
                     this.apply_trim();
                 }
@@ -34586,7 +34750,13 @@ var $;
         ], $bog_vk_player.prototype, "volume", null);
         __decorate([
             $mol_mem
+        ], $bog_vk_player.prototype, "repeat_mode", null);
+        __decorate([
+            $mol_mem
         ], $bog_vk_player.prototype, "apply_volume", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_player.prototype, "apply_loop", null);
         $$.$bog_vk_player = $bog_vk_player;
     })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));
