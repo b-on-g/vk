@@ -26,6 +26,7 @@ namespace $.$$ {
 			if ( this._audio_el ) return this._audio_el
 			const el = new Audio()
 			el.volume = this.volume()
+			el.loop = this.repeat_mode() === 'one'
 			el.addEventListener( 'ended', () => {
 				try {
 					const finished = this.current_audio()
@@ -288,6 +289,43 @@ namespace $.$$ {
 		}
 
 		@$mol_mem
+		repeat_mode( next?: 'all' | 'one' | 'shuffle' ) {
+			const v = $mol_state_local.value( 'bog_vk_repeat_mode', next ) as string | null
+			if ( v === 'one' || v === 'shuffle' ) return v
+			return 'all' as const
+		}
+
+		repeat_cycle() {
+			const cur = this.repeat_mode()
+			const order: ( 'all' | 'one' | 'shuffle' )[] = [ 'all', 'one', 'shuffle' ]
+			const idx = order.indexOf( cur as any )
+			const next = order[ ( idx + 1 ) % order.length ]
+			this.repeat_mode( next )
+		}
+
+		repeat_hint() {
+			const m = this.repeat_mode()
+			if ( m === 'one' ) return 'Повтор одного трека'
+			if ( m === 'shuffle' ) return 'Случайный порядок'
+			return 'Повтор плейлиста'
+		}
+
+		Repeat_all_icon() {
+			if ( this.repeat_mode() !== 'all' ) return null as any
+			return super.Repeat_all_icon()
+		}
+
+		Repeat_one_icon() {
+			if ( this.repeat_mode() !== 'one' ) return null as any
+			return super.Repeat_one_icon()
+		}
+
+		Shuffle_icon() {
+			if ( this.repeat_mode() !== 'shuffle' ) return null as any
+			return super.Shuffle_icon()
+		}
+
+		@$mol_mem
 		private apply_volume() {
 			const v = this.volume()
 			if ( this.is_extension() ) {
@@ -296,6 +334,17 @@ namespace $.$$ {
 				this._audio_el.volume = v
 			}
 			return v
+		}
+
+		@$mol_mem
+		private apply_loop() {
+			const loop = this.repeat_mode() === 'one'
+			if ( this.is_extension() ) {
+				this.send( 'loop', { value: loop } )
+			} else if ( this._audio_el ) {
+				this._audio_el.loop = loop
+			}
+			return loop
 		}
 
 		title() {
@@ -370,6 +419,11 @@ namespace $.$$ {
 				this.dispatch_play_offscreen( audio, start_at )
 			} else {
 				const el = this.audio_el()
+				// iOS PWA: при заблокированном экране любой await перед el.play()
+				// рвёт audio-session continuation от `ended`-обработчика — трек
+				// идёт молча. Пробуем СИНХРОННО взять blob (в типичном случае он
+				// в baza уже есть) и сразу же src+play в том же tick.
+				if ( this.try_play_local_sync( audio, el, start_at ) ) return
 				if ( audio.url ) {
 					this.attach_seek_listener( el, start_at )
 					el.src = audio.url
@@ -377,6 +431,25 @@ namespace $.$$ {
 				}
 				this.play_source_local( audio, el, start_at )
 			}
+		}
+
+		private try_play_local_sync( audio: $bog_vk_api_audio, el: HTMLAudioElement, start_at: number ): boolean {
+			let blob: Blob | null = null
+			try {
+				blob = $bog_vk_app.Root( 0 ).local_blob( audio )
+			} catch ( e: any ) {
+				if ( e instanceof Promise ) return false
+				return false
+			}
+			if ( !blob ) return false
+			if ( this._last_blob_url ) URL.revokeObjectURL( this._last_blob_url )
+			const url = URL.createObjectURL( blob )
+			this._last_blob_url = url
+			this._dispatch_token++
+			this.attach_seek_listener( el, start_at )
+			el.src = url
+			el.play().catch( () => {} )
+			return true
 		}
 
 		private attach_seek_listener( el: HTMLAudioElement, start_at: number ) {
@@ -676,10 +749,29 @@ namespace $.$$ {
 		}
 
 		next() {
+			const mode = this.repeat_mode()
+			const queue = this.queue()
+
+			// mode='one' обрабатывается через audio.loop=true в apply_loop():
+			// браузер сам перезапускает трек, `ended` не стреляет. Next-кнопка
+			// при этом всё равно ведёт к следующему треку — стандартное поведение
+			// плеера ("Повтор одного" не должен ломать ручной next).
+
+			if ( mode === 'shuffle' && queue.length ) {
+				const cur = this.current_audio()
+				const cur_idx = cur
+					? queue.findIndex( ( a: $bog_vk_api_audio ) => a.id === cur.id && a.owner_id === cur.owner_id )
+					: -1
+				let idx = Math.floor( Math.random() * queue.length )
+				if ( queue.length > 1 && idx === cur_idx ) idx = ( idx + 1 ) % queue.length
+				this._queue_idx = idx
+				this.play_track( queue[ idx ] as $bog_vk_api_audio )
+				return
+			}
+
 			try {
 				const picked = this.pick_next( this.current_audio() ) as $bog_vk_api_audio | null
 				if ( picked ) {
-					const queue = this.queue()
 					const idx = queue.findIndex( ( a: $bog_vk_api_audio ) => a.id === picked.id && a.owner_id === picked.owner_id )
 					if ( idx >= 0 ) this._queue_idx = idx
 					this.play_track( picked )
@@ -689,7 +781,6 @@ namespace $.$$ {
 				if ( e instanceof Promise ) throw e
 				console.warn( '[player] pick_next failed:', e?.message )
 			}
-			const queue = this.queue()
 			if ( !queue.length ) return
 			const next_idx = this._queue_idx + 1 < queue.length ? this._queue_idx + 1 : 0
 			this._queue_idx = next_idx
@@ -730,6 +821,7 @@ namespace $.$$ {
 				this.try_restore_session()
 			}
 			this.apply_volume()
+			this.apply_loop()
 			try { this.apply_trim() } catch ( e: any ) {
 				if ( e instanceof Promise ) throw e
 			}

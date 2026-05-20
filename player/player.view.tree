@@ -57,6 +57,13 @@ $bog_vk_player $mol_view
 						<= Next $mol_button_minor
 							click? <=> next? null
 							sub / <= Next_icon $mol_icon_skip_next
+						<= Repeat $mol_button_minor
+							hint <= repeat_hint \
+							click? <=> repeat_cycle? null
+							sub /
+								<= Repeat_all_icon $mol_icon_repeat
+								<= Repeat_one_icon $mol_icon_repeat_once
+								<= Shuffle_icon $mol_icon_shuffle
 				<= Volume $mol_pop_over
 					align \top_right
 					Anchor <= Volume_anchor $mol_button_minor
