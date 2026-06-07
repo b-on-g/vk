@@ -10650,7 +10650,7 @@ var $;
             }
             static default;
         }
-        return ((Class[Symbol.hasInstance] === $mol_schema_any[Symbol.hasInstance])
+        return ((Class?.[Symbol.hasInstance] === $mol_schema_any[Symbol.hasInstance])
             ? Class
             : $mol_schema_instance_);
     });
