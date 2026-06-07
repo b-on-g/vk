@@ -9,6 +9,39 @@ namespace $.$$ {
 		private _msg_listener_set = false
 		private _channel?: BroadcastChannel
 
+		// shuffle-bag: одна перетасовка всего плейлиста, играем без повторов
+		// до конца, затем перетасовываем заново. _bag_sig сторожит изменения
+		// состава queue (трек добавили/удалили/переместили) — несоответствие
+		// сигнатуры → пересборка.
+		private _shuffle_bag: string[] = []
+		private _shuffle_bag_idx = 0
+		private _shuffle_bag_sig = ''
+		private _shuffle_last_key = ''
+
+		private static audio_key( a: $bog_vk_api_audio ) {
+			return `${ a.owner_id }_${ a.id }`
+		}
+
+		private build_shuffle_bag( queue: readonly any[], exclude_first: string ) {
+			const keys = queue.map( ( a: $bog_vk_api_audio ) => $bog_vk_player.audio_key( a ) )
+			for ( let i = keys.length - 1; i > 0; i-- ) {
+				const j = Math.floor( Math.random() * ( i + 1 ) )
+				;[ keys[ i ], keys[ j ] ] = [ keys[ j ], keys[ i ] ]
+			}
+			if ( keys.length > 1 && exclude_first && keys[ 0 ] === exclude_first ) {
+				;[ keys[ 0 ], keys[ 1 ] ] = [ keys[ 1 ], keys[ 0 ] ]
+			}
+			return keys
+		}
+
+		private ensure_shuffle_bag( queue: readonly any[] ) {
+			const sig = queue.map( ( a: $bog_vk_api_audio ) => $bog_vk_player.audio_key( a ) ).join( ',' )
+			if ( sig === this._shuffle_bag_sig && this._shuffle_bag_idx < this._shuffle_bag.length ) return
+			this._shuffle_bag = this.build_shuffle_bag( queue, this._shuffle_last_key )
+			this._shuffle_bag_idx = 0
+			this._shuffle_bag_sig = sig
+		}
+
 		private is_extension() {
 			return typeof chrome !== 'undefined' && !!chrome?.runtime?.id
 		}
@@ -754,15 +787,18 @@ namespace $.$$ {
 			}
 
 			if ( mode === 'shuffle' && queue.length ) {
-				const cur = this.current_audio()
-				const cur_idx = cur
-					? queue.findIndex( ( a: $bog_vk_api_audio ) => a.id === cur.id && a.owner_id === cur.owner_id )
-					: -1
-				let idx = Math.floor( Math.random() * queue.length )
-				if ( queue.length > 1 && idx === cur_idx ) idx = ( idx + 1 ) % queue.length
-				this._queue_idx = idx
-				this.play_track( queue[ idx ] as $bog_vk_api_audio )
-				return
+				this.ensure_shuffle_bag( queue )
+				const key = this._shuffle_bag[ this._shuffle_bag_idx++ ]
+				if ( this._shuffle_bag_idx >= this._shuffle_bag.length ) {
+					this._shuffle_last_key = key
+					this._shuffle_bag_sig = ''  // следующий next() перетасует
+				}
+				const idx = queue.findIndex( ( a: $bog_vk_api_audio ) => $bog_vk_player.audio_key( a ) === key )
+				if ( idx >= 0 ) {
+					this._queue_idx = idx
+					this.play_track( queue[ idx ] as $bog_vk_api_audio )
+					return
+				}
 			}
 
 			try {
