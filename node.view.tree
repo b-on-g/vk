@@ -583,12 +583,13 @@ $bog_vk_account $mol_view
 		<= Sync_row $mol_view
 			sub /
 				<= Sync_status $giper_baza_status
-				<= Download_all $mol_button_minor
-					click? <=> download_all? null
+				<= Download_playlist $mol_button_minor
+					hint \Скачать треки видимого плейлиста в расширение
+					click? <=> download_playlist? null
 					sub /
-						<= Download_all_icon $mol_icon_download
-						<= Download_all_label $mol_view sub / \Скачать всё в zip
-				<= Download_all_status $mol_view sub / <= download_all_status \
+						<= Download_playlist_icon $mol_icon_download
+						<= Download_playlist_label $mol_view sub / \Скачать плейлист в расширение
+				<= Download_playlist_status $mol_view sub / <= download_playlist_status \
 		<= Cards $mol_view
 			sub /
 				<= Profile $mol_view

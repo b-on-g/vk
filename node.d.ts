@@ -34748,50 +34748,50 @@ declare namespace $ {
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_button_minor__click_bog_vk_account_2 = $mol_type_enforce<
-		ReturnType< $bog_vk_account['download_all'] >
+	type $mol_button_minor__hint_bog_vk_account_2 = $mol_type_enforce<
+		string
+		,
+		ReturnType< $mol_button_minor['hint'] >
+	>
+	type $mol_button_minor__click_bog_vk_account_3 = $mol_type_enforce<
+		ReturnType< $bog_vk_account['download_playlist'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
 	>
-	type $mol_button_minor__sub_bog_vk_account_3 = $mol_type_enforce<
+	type $mol_button_minor__sub_bog_vk_account_4 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_button_minor['sub'] >
-	>
-	type $mol_view__sub_bog_vk_account_4 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
 	>
 	type $mol_view__sub_bog_vk_account_5 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_string__value_bog_vk_account_6 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_account_6 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_string__value_bog_vk_account_7 = $mol_type_enforce<
 		ReturnType< $bog_vk_account['nickname'] >
 		,
 		ReturnType< $mol_string['value'] >
 	>
-	type $mol_string__hint_bog_vk_account_7 = $mol_type_enforce<
+	type $mol_string__hint_bog_vk_account_8 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_string['hint'] >
 	>
-	type $mol_form_field__name_bog_vk_account_8 = $mol_type_enforce<
+	type $mol_form_field__name_bog_vk_account_9 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_form_field['name'] >
 	>
-	type $mol_form_field__Content_bog_vk_account_9 = $mol_type_enforce<
+	type $mol_form_field__Content_bog_vk_account_10 = $mol_type_enforce<
 		ReturnType< $bog_vk_account['Nickname_input'] >
 		,
 		ReturnType< $mol_form_field['Content'] >
-	>
-	type $mol_view__sub_bog_vk_account_10 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
 	>
 	type $mol_view__sub_bog_vk_account_11 = $mol_type_enforce<
 		readonly(any)[]
@@ -34803,99 +34803,104 @@ declare namespace $ {
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_paragraph__title_bog_vk_account_13 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_account_13 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_paragraph__title_bog_vk_account_14 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_paragraph['title'] >
 	>
-	type $mol_button_minor__title_bog_vk_account_14 = $mol_type_enforce<
+	type $mol_button_minor__title_bog_vk_account_15 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_button_minor['title'] >
 	>
-	type $mol_button_minor__click_bog_vk_account_15 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_account_16 = $mol_type_enforce<
 		ReturnType< $bog_vk_account['copy'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_view__sub_bog_vk_account_16 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
 	>
 	type $mol_view__sub_bog_vk_account_17 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_paragraph__title_bog_vk_account_18 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_account_18 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_paragraph__title_bog_vk_account_19 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_paragraph['title'] >
 	>
-	type $mol_string__hint_bog_vk_account_19 = $mol_type_enforce<
+	type $mol_string__hint_bog_vk_account_20 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_string['hint'] >
 	>
-	type $mol_string__value_bog_vk_account_20 = $mol_type_enforce<
+	type $mol_string__value_bog_vk_account_21 = $mol_type_enforce<
 		ReturnType< $bog_vk_account['import_link'] >
 		,
 		ReturnType< $mol_string['value'] >
 	>
-	type $mol_button_minor__title_bog_vk_account_21 = $mol_type_enforce<
+	type $mol_button_minor__title_bog_vk_account_22 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_button_minor['title'] >
 	>
-	type $mol_button_minor__click_bog_vk_account_22 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_account_23 = $mol_type_enforce<
 		ReturnType< $bog_vk_account['apply_import'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_view__sub_bog_vk_account_23 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
 	>
 	type $mol_view__sub_bog_vk_account_24 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
-	type $mol_paragraph__title_bog_vk_account_25 = $mol_type_enforce<
+	type $mol_view__sub_bog_vk_account_25 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_paragraph__title_bog_vk_account_26 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_paragraph['title'] >
 	>
-	type $mol_button_minor__title_bog_vk_account_26 = $mol_type_enforce<
+	type $mol_button_minor__title_bog_vk_account_27 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $mol_button_minor['title'] >
 	>
-	type $mol_button_minor__click_bog_vk_account_27 = $mol_type_enforce<
+	type $mol_button_minor__click_bog_vk_account_28 = $mol_type_enforce<
 		ReturnType< $bog_vk_account['reset_account'] >
 		,
 		ReturnType< $mol_button_minor['click'] >
-	>
-	type $mol_view__sub_bog_vk_account_28 = $mol_type_enforce<
-		readonly(any)[]
-		,
-		ReturnType< $mol_view['sub'] >
 	>
 	type $mol_view__sub_bog_vk_account_29 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $mol_view['sub'] >
 	>
+	type $mol_view__sub_bog_vk_account_30 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
 	export class $bog_vk_account extends $mol_view {
 		Sync_status( ): $giper_baza_status
-		download_all( next?: any ): any
-		Download_all_icon( ): $mol_icon_download
-		Download_all_label( ): $mol_view
-		Download_all( ): $mol_button_minor
-		download_all_status( ): string
-		Download_all_status( ): $mol_view
+		download_playlist( next?: any ): any
+		Download_playlist_icon( ): $mol_icon_download
+		Download_playlist_label( ): $mol_view
+		Download_playlist( ): $mol_button_minor
+		download_playlist_status( ): string
+		Download_playlist_status( ): $mol_view
 		Sync_row( ): $mol_view
 		nickname( next?: string ): string
 		Nickname_input( ): $mol_string
@@ -34946,10 +34951,9 @@ declare namespace $.$$ {
         copy(): void;
         import_link(next?: string): string;
         import_status(next?: string): string;
-        download_all_status(next?: string): string;
-        /** Триггер: запускает async-генератор ZIP из baza-блобов. */
-        download_all(): null;
-        download_all_async(): Promise<void>;
+        /** Форвард на app.download_playlist() — скачивает видимый плейлист в baza. */
+        download_playlist(): null;
+        download_playlist_status(): string;
         reset_account(): void;
         apply_import(): void;
     }
@@ -49125,12 +49129,6 @@ declare namespace $.$$ {
          * Возвращает пустой массив если не в extension / без токена.
          */
         vk_audios(): $bog_vk_api_audio[];
-        /**
-         * Реактивная авторегистрация: при готовности baza + появлении треков
-         * стартует фоновый префетч. Идемпотентно через флаг.
-         */
-        auto_import(): number;
-        private _prefetch_started;
         prefetch_state(next?: {
             total: number;
             done: number;
@@ -49140,6 +49138,10 @@ declare namespace $.$$ {
             done: number;
             failed: number;
         };
+        download_playlist_status(next?: string): string;
+        /** Триггер: качает треки видимого плейлиста в baza (НЕ на ПК). */
+        download_playlist(): null;
+        download_playlist_async(): Promise<void>;
         /**
          * Фоновый префетч — реактивный wire_async fiber, ретраит при Promise.
          * Метаданные сохраняются по одному перед каждой выкачкой блоба, чтобы
@@ -49160,6 +49162,12 @@ declare namespace $.$$ {
          */
         prefetch_blob_lands(): number;
         private _share_import_started;
+        pending_keys_version(next?: number): number;
+        private _pending_listener_set;
+        private setup_pending_listener;
+        private open_pending_db;
+        private _draining;
+        drain_pending(): Promise<void>;
         auto(): any;
     }
 }

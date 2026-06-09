@@ -140,6 +140,41 @@
 		return { mime: 'audio/aac', ext: 'aac' }
 	}
 
+	function buf_to_b64(bytes) {
+		// btoa с большой строкой может упасть в call stack — режем чанками.
+		const u8 = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes)
+		let bin = ''
+		const chunk = 0x8000
+		for (let i = 0; i < u8.length; i += chunk) {
+			bin += String.fromCharCode.apply(null, u8.subarray(i, i + chunk))
+		}
+		return btoa(bin)
+	}
+
+	// Очередь pending-треков для popup'а. content.js → background.js (SW) → IDB
+	// под расширенским origin (chrome-extension://). popup.app.view.ts читает из
+	// того же IDB и пишет в Giper Baza. Бинарь через sendMessage не выживает
+	// (JSON), поэтому здесь base64 → background → atob → Uint8Array → IDB.
+	async function save_to_extension(audio, raw, mime) {
+		const buf_b64 = buf_to_b64(raw)
+		const resp = await chrome.runtime.sendMessage({
+			target: 'background',
+			type: 'save_audio',
+			audio: {
+				id: audio.id,
+				owner_id: audio.owner_id,
+				title: audio.title || '',
+				artist: audio.artist || '',
+				duration: audio.duration || 0,
+				url: audio.url || '',
+				access_key: audio.access_key || '',
+			},
+			mime: mime || 'audio/aac',
+			buf_b64,
+		})
+		if (!resp || !resp.ok) throw new Error((resp && resp.error) || 'background save failed')
+	}
+
 	async function download_audio(audio, btn) {
 		const set_state = (cls, label) => {
 			if (!btn) return
@@ -179,28 +214,24 @@
 			for (const c of chunks) { merged.set(new Uint8Array(c), off); off += c.byteLength }
 
 			let raw = merged
-			let { mime, ext } = detect_format(merged)
+			let { mime } = detect_format(merged)
 			if (merged[0] === 0x47) {
 				const audio_bytes = demux_ts(merged)
-				if (audio_bytes) { raw = audio_bytes; mime = 'audio/aac'; ext = 'aac' }
+				if (audio_bytes) { raw = audio_bytes; mime = 'audio/aac' }
 			}
 
-			const safe = (s) => (s || '').replace(/[\\/:*?"<>|]/g, '_').slice(0, 80)
-			const filename = (safe(audio.artist) + ' - ' + safe(audio.title) + '.' + ext).replace(/^ - /, '')
-			const blob = new Blob([raw], { type: mime })
-			const a = document.createElement('a')
-			a.href = URL.createObjectURL(blob)
-			a.download = filename
-			document.body.appendChild(a)
-			a.click()
-			a.remove()
-			setTimeout(() => URL.revokeObjectURL(a.href), 60_000)
+			set_state('loading', '💾')
+			await save_to_extension(audio, raw, mime)
 			set_state('done', '✓')
 			setTimeout(() => set_state('', '⬇'), 2000)
 		} catch (e) {
-			console.warn('[bog_vk_ext] download failed', e)
+			console.warn('[bog_vk_ext] save failed', e)
 			set_state('error', '⚠')
-			setTimeout(() => set_state('', '⬇'), 2500)
+			if (btn) btn.title = String((e && e.message) || e)
+			setTimeout(() => {
+				set_state('', '⬇')
+				if (btn) btn.title = 'Сохранить в Bog VK'
+			}, 3500)
 		}
 	}
 
@@ -312,7 +343,7 @@
 
 		const btn = document.createElement('button')
 		btn.className = 'bog-vk-dl'
-		btn.title = 'Скачать (Bog VK)'
+		btn.title = 'Сохранить в Bog VK'
 		btn.textContent = '⬇'
 		btn.addEventListener('click', async (e) => {
 			e.preventDefault(); e.stopPropagation()
@@ -328,7 +359,7 @@
 				console.warn('[bog_vk_ext] click failed', err)
 				btn.dataset.state = 'error'; btn.textContent = '⚠'
 				btn.title = String(err && err.message || err)
-				setTimeout(() => { btn.dataset.state = ''; btn.textContent = '⬇'; btn.title = 'Скачать (Bog VK)' }, 3500)
+				setTimeout(() => { btn.dataset.state = ''; btn.textContent = '⬇'; btn.title = 'Сохранить в Bog VK' }, 3500)
 			}
 		})
 

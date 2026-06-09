@@ -19611,39 +19611,40 @@ var $;
 			const obj = new this.$.$giper_baza_status();
 			return obj;
 		}
-		download_all(next){
+		download_playlist(next){
 			if(next !== undefined) return next;
 			return null;
 		}
-		Download_all_icon(){
+		Download_playlist_icon(){
 			const obj = new this.$.$mol_icon_download();
 			return obj;
 		}
-		Download_all_label(){
+		Download_playlist_label(){
 			const obj = new this.$.$mol_view();
-			(obj.sub) = () => (["Скачать всё в zip"]);
+			(obj.sub) = () => (["Скачать плейлист в расширение"]);
 			return obj;
 		}
-		Download_all(){
+		Download_playlist(){
 			const obj = new this.$.$mol_button_minor();
-			(obj.click) = (next) => ((this.download_all(next)));
-			(obj.sub) = () => ([(this.Download_all_icon()), (this.Download_all_label())]);
+			(obj.hint) = () => ("Скачать треки видимого плейлиста в расширение");
+			(obj.click) = (next) => ((this.download_playlist(next)));
+			(obj.sub) = () => ([(this.Download_playlist_icon()), (this.Download_playlist_label())]);
 			return obj;
 		}
-		download_all_status(){
+		download_playlist_status(){
 			return "";
 		}
-		Download_all_status(){
+		Download_playlist_status(){
 			const obj = new this.$.$mol_view();
-			(obj.sub) = () => ([(this.download_all_status())]);
+			(obj.sub) = () => ([(this.download_playlist_status())]);
 			return obj;
 		}
 		Sync_row(){
 			const obj = new this.$.$mol_view();
 			(obj.sub) = () => ([
 				(this.Sync_status()), 
-				(this.Download_all()), 
-				(this.Download_all_status())
+				(this.Download_playlist()), 
+				(this.Download_playlist_status())
 			]);
 			return obj;
 		}
@@ -19791,11 +19792,11 @@ var $;
 		}
 	};
 	($mol_mem(($.$bog_vk_account.prototype), "Sync_status"));
-	($mol_mem(($.$bog_vk_account.prototype), "download_all"));
-	($mol_mem(($.$bog_vk_account.prototype), "Download_all_icon"));
-	($mol_mem(($.$bog_vk_account.prototype), "Download_all_label"));
-	($mol_mem(($.$bog_vk_account.prototype), "Download_all"));
-	($mol_mem(($.$bog_vk_account.prototype), "Download_all_status"));
+	($mol_mem(($.$bog_vk_account.prototype), "download_playlist"));
+	($mol_mem(($.$bog_vk_account.prototype), "Download_playlist_icon"));
+	($mol_mem(($.$bog_vk_account.prototype), "Download_playlist_label"));
+	($mol_mem(($.$bog_vk_account.prototype), "Download_playlist"));
+	($mol_mem(($.$bog_vk_account.prototype), "Download_playlist_status"));
 	($mol_mem(($.$bog_vk_account.prototype), "Sync_row"));
 	($mol_mem(($.$bog_vk_account.prototype), "nickname"));
 	($mol_mem(($.$bog_vk_account.prototype), "Nickname_input"));
@@ -19832,126 +19833,6 @@ var $;
 (function ($) {
     var $$;
     (function ($$) {
-        const CRC_TABLE = (() => {
-            const t = new Uint32Array(256);
-            for (let n = 0; n < 256; n++) {
-                let c = n;
-                for (let k = 0; k < 8; k++)
-                    c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
-                t[n] = c;
-            }
-            return t;
-        })();
-        function crc32(buf) {
-            let c = 0xFFFFFFFF;
-            for (let i = 0; i < buf.length; i++)
-                c = CRC_TABLE[(c ^ buf[i]) & 0xFF] ^ (c >>> 8);
-            return (c ^ 0xFFFFFFFF) >>> 0;
-        }
-        /** Минимальный stored (uncompressed) ZIP encoder — см. APPNOTE.TXT. */
-        function build_zip(files) {
-            const enc = new TextEncoder();
-            const entries = [];
-            let total_local = 0;
-            for (const f of files) {
-                const name_bytes = enc.encode(f.name);
-                const crc = crc32(f.data);
-                entries.push({ name_bytes, data: f.data, crc, offset: total_local });
-                total_local += 30 + name_bytes.length + f.data.length;
-            }
-            let total_central = 0;
-            for (const e of entries)
-                total_central += 46 + e.name_bytes.length;
-            const total_size = total_local + total_central + 22;
-            const buf = new Uint8Array(total_size);
-            const dv = new DataView(buf.buffer);
-            let p = 0;
-            for (const e of entries) {
-                dv.setUint32(p, 0x04034b50, true);
-                p += 4;
-                dv.setUint16(p, 20, true);
-                p += 2;
-                dv.setUint16(p, 0, true);
-                p += 2;
-                dv.setUint16(p, 0, true);
-                p += 2;
-                dv.setUint16(p, 0, true);
-                p += 2;
-                dv.setUint16(p, 0, true);
-                p += 2;
-                dv.setUint32(p, e.crc, true);
-                p += 4;
-                dv.setUint32(p, e.data.length, true);
-                p += 4;
-                dv.setUint32(p, e.data.length, true);
-                p += 4;
-                dv.setUint16(p, e.name_bytes.length, true);
-                p += 2;
-                dv.setUint16(p, 0, true);
-                p += 2;
-                buf.set(e.name_bytes, p);
-                p += e.name_bytes.length;
-                buf.set(e.data, p);
-                p += e.data.length;
-            }
-            const cd_offset = p;
-            for (const e of entries) {
-                dv.setUint32(p, 0x02014b50, true);
-                p += 4;
-                dv.setUint16(p, 20, true);
-                p += 2;
-                dv.setUint16(p, 20, true);
-                p += 2;
-                dv.setUint16(p, 0, true);
-                p += 2;
-                dv.setUint16(p, 0, true);
-                p += 2;
-                dv.setUint16(p, 0, true);
-                p += 2;
-                dv.setUint16(p, 0, true);
-                p += 2;
-                dv.setUint32(p, e.crc, true);
-                p += 4;
-                dv.setUint32(p, e.data.length, true);
-                p += 4;
-                dv.setUint32(p, e.data.length, true);
-                p += 4;
-                dv.setUint16(p, e.name_bytes.length, true);
-                p += 2;
-                dv.setUint16(p, 0, true);
-                p += 2;
-                dv.setUint16(p, 0, true);
-                p += 2;
-                dv.setUint16(p, 0, true);
-                p += 2;
-                dv.setUint16(p, 0, true);
-                p += 2;
-                dv.setUint32(p, 0, true);
-                p += 4;
-                dv.setUint32(p, e.offset, true);
-                p += 4;
-                buf.set(e.name_bytes, p);
-                p += e.name_bytes.length;
-            }
-            const cd_size = p - cd_offset;
-            dv.setUint32(p, 0x06054b50, true);
-            p += 4;
-            dv.setUint16(p, 0, true);
-            p += 2;
-            dv.setUint16(p, 0, true);
-            p += 2;
-            dv.setUint16(p, entries.length, true);
-            p += 2;
-            dv.setUint16(p, entries.length, true);
-            p += 2;
-            dv.setUint32(p, cd_size, true);
-            p += 4;
-            dv.setUint32(p, cd_offset, true);
-            p += 4;
-            dv.setUint16(p, 0, true);
-            p += 2;
-            return buf;
-        }
         class $bog_vk_account extends $.$bog_vk_account {
             /** Профиль в home land — паттерн blitz: instance-метод, БЕЗ @$mol_mem. */
             profile_data() {
@@ -20031,85 +19912,20 @@ var $;
             import_status(next) {
                 return next ?? '';
             }
-            download_all_status(next) {
-                return next ?? '';
-            }
-            /** Триггер: запускает async-генератор ZIP из baza-блобов. */
-            download_all() {
-                $mol_wire_async(this).download_all_async();
+            /** Форвард на app.download_playlist() — скачивает видимый плейлист в baza. */
+            download_playlist() {
+                $bog_vk_app.Root(0).download_playlist();
                 return null;
             }
-            async download_all_async() {
-                const safe = (s) => (s || '').replace(/[\\/:*?"<>|]/g, '_').slice(0, 80).trim() || 'track';
-                const ext_of = (mime) => {
-                    if (!mime)
-                        return 'aac';
-                    if (mime.includes('mpeg') || mime.includes('mp3'))
-                        return 'mp3';
-                    if (mime.includes('mp4') || mime.includes('m4a'))
-                        return 'm4a';
-                    if (mime.includes('aac'))
-                        return 'aac';
-                    if (mime.includes('wav'))
-                        return 'wav';
-                    if (mime.includes('ogg'))
-                        return 'ogg';
-                    if (mime.includes('flac'))
-                        return 'flac';
-                    return 'bin';
-                };
-                const app = $bog_vk_app.Root(0);
-                // Порядок такой же, как в UI (сверху вниз). Префикс с индексом сохраняет
-                // его в файлменеджере несмотря на алфавитную сортировку.
-                const tracks = [
-                    ...app.saved_audios(),
-                    ...app.archived_audios(),
-                ];
-                if (!tracks.length) {
-                    this.download_all_status('Нечего скачивать');
-                    return;
+            download_playlist_status() {
+                try {
+                    return $bog_vk_app.Root(0).download_playlist_status();
                 }
-                const entries = [];
-                const pad = String(tracks.length).length;
-                let i = 0;
-                for (const audio of tracks) {
-                    ++i;
-                    this.download_all_status(`Сборка ${i}/${tracks.length}…`);
-                    let blob = null;
-                    let mime = 'audio/aac';
-                    try {
-                        // Через wire_async — иначе throw Promise (baza loading) ретраит ВСЮ
-                        // download_all_async с начала → бесконечный цикл "skip" логов.
-                        blob = await $mol_wire_async(app).local_blob(audio);
-                        mime = blob?.type || 'audio/mpeg';
-                    }
-                    catch (e) {
-                        console.warn('[account] zip skip:', audio.title, e?.message ?? e);
-                    }
-                    if (!blob)
-                        continue;
-                    const ext = ext_of(mime);
-                    // Префикс с zero-padded индексом — иначе файлменеджер сортирует по
-                    // алфавиту имени артиста, и порядок прослушивания теряется.
-                    const idx = String(i).padStart(pad, '0');
-                    const name = `${idx}. ${safe(audio.artist)} - ${safe(audio.title)}.${ext}`;
-                    entries.push({ name, data: new Uint8Array(await blob.arrayBuffer()) });
+                catch (e) {
+                    if (e instanceof Promise)
+                        throw e;
+                    return '';
                 }
-                if (!entries.length) {
-                    this.download_all_status('Нет доступных аудио');
-                    return;
-                }
-                this.download_all_status(`Упаковка ${entries.length}…`);
-                const zip = build_zip(entries);
-                const url = URL.createObjectURL(new Blob([zip.buffer.slice(zip.byteOffset, zip.byteOffset + zip.byteLength)], { type: 'application/zip' }));
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `bog-vk-music-${new Date().toISOString().slice(0, 10)}.zip`;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                setTimeout(() => URL.revokeObjectURL(url), 60_000);
-                this.download_all_status(`Готово, ${entries.length} файлов`);
             }
             reset_account() {
                 if (typeof window === 'undefined')
@@ -20172,9 +19988,6 @@ var $;
             $mol_mem
         ], $bog_vk_account.prototype, "import_status", null);
         __decorate([
-            $mol_mem
-        ], $bog_vk_account.prototype, "download_all_status", null);
-        __decorate([
             $mol_action
         ], $bog_vk_account.prototype, "reset_account", null);
         __decorate([
@@ -20224,14 +20037,14 @@ var $;
                 gap: '0.5rem',
                 padding: { left: '0.25rem', right: '0.25rem' },
             },
-            Download_all: {
+            Download_playlist: {
                 gap: '0.375rem',
                 alignItems: 'center',
             },
-            Download_all_label: {
+            Download_playlist_label: {
                 font: { size: '0.875rem' },
             },
-            Download_all_status: {
+            Download_playlist_status: {
                 font: { size: '0.8125rem' },
                 color: $mol_theme.shade,
                 flex: { grow: 1 },
@@ -28619,7 +28432,7 @@ var $;
                 return super.Nickname_label();
             }
             // =========================================================================
-            // Реактивный авто-импорт VK-треков + фоновый префетч блобов.
+            // Ручной импорт VK-треков + фоновый префетч блобов (по кнопке).
             // =========================================================================
             /**
              * Список треков из VK. @$mol_mem ретраит fetch при появлении токена.
@@ -28642,25 +28455,38 @@ var $;
                     return [];
                 }
             }
-            /**
-             * Реактивная авторегистрация: при готовности baza + появлении треков
-             * стартует фоновый префетч. Идемпотентно через флаг.
-             */
-            auto_import() {
-                const items = this.vk_audios();
-                if (!items.length)
-                    return 0;
-                // прогрев dict — кидает Promise если baza ещё грузится, @$mol_mem ретраит.
-                this.tracks_dict();
-                if (!this._prefetch_started) {
-                    this._prefetch_started = true;
-                    $mol_wire_async(this).prefetch_blobs(items);
-                }
-                return items.length;
-            }
-            _prefetch_started = false;
             prefetch_state(next) {
                 return next ?? { total: 0, done: 0, failed: 0 };
+            }
+            download_playlist_status(next) {
+                return next ?? '';
+            }
+            /** Триггер: качает треки видимого плейлиста в baza (НЕ на ПК). */
+            download_playlist() {
+                $mol_wire_async(this).download_playlist_async();
+                return null;
+            }
+            async download_playlist_async() {
+                const page = this.page();
+                let items;
+                if (page === 'my') {
+                    items = this.vk_audios();
+                    if (!items.length) {
+                        this.download_playlist_status($bog_vk_api.in_extension() ? 'Список VK пуст' : 'Нет VK-токена (открой расширение)');
+                        return;
+                    }
+                }
+                else {
+                    items = this.visible_audios();
+                    if (!items.length) {
+                        this.download_playlist_status('Плейлист пуст');
+                        return;
+                    }
+                }
+                this.download_playlist_status(`Скачиваю ${items.length}…`);
+                await this.prefetch_blobs(items);
+                const s = this.prefetch_state();
+                this.download_playlist_status(`Готово: ${s.done}/${s.total}${s.failed ? `, ошибок ${s.failed}` : ''}`);
             }
             /**
              * Фоновый префетч — реактивный wire_async fiber, ретраит при Promise.
@@ -28741,6 +28567,97 @@ var $;
                 return touched;
             }
             _share_import_started = false;
+            // =========================================================================
+            // Очередь pending-треков от content.js. Поток: vk.com → background.js (SW)
+            // → IDB (`bog_vk_pending` / `pending` store) в chrome-extension origin.
+            // popup и offscreen — тот же origin, видят тот же IDB.
+            // Здесь читаем store, save_track + save_blob в Giper Baza, удаляем запись.
+            // =========================================================================
+            pending_keys_version(next) {
+                return next ?? 0;
+            }
+            _pending_listener_set = false;
+            setup_pending_listener() {
+                if (this._pending_listener_set)
+                    return;
+                const ext = globalThis.chrome;
+                if (!ext?.runtime?.onMessage?.addListener)
+                    return;
+                this._pending_listener_set = true;
+                ext.runtime.onMessage.addListener((msg) => {
+                    if (msg?.target !== 'popup' || msg.type !== 'pending_added')
+                        return;
+                    this.pending_keys_version(this.pending_keys_version() + 1);
+                });
+            }
+            open_pending_db() {
+                return new Promise((resolve, reject) => {
+                    const req = indexedDB.open('bog_vk_pending', 1);
+                    req.onupgradeneeded = () => {
+                        const db = req.result;
+                        if (!db.objectStoreNames.contains('pending')) {
+                            db.createObjectStore('pending', { keyPath: 'key' });
+                        }
+                    };
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            }
+            _draining = false;
+            async drain_pending() {
+                if (this._draining)
+                    return;
+                this._draining = true;
+                try {
+                    // Цикл до пустоты: если pending_added прилетит ВО ВРЕМЯ дренажа,
+                    // версия бампнётся снаружи, но из-за _draining-guard'а сюда не
+                    // войдёт ещё один вызов. Снаружи ретрига больше не будет, поэтому
+                    // дренажим повторно из этой же фибры.
+                    while (true) {
+                        const db = await this.open_pending_db();
+                        let entries = [];
+                        try {
+                            entries = await new Promise((resolve, reject) => {
+                                const tx = db.transaction(['pending'], 'readonly');
+                                const req = tx.objectStore('pending').getAll();
+                                req.onsuccess = () => resolve(req.result || []);
+                                req.onerror = () => reject(req.error);
+                            });
+                            if (!entries.length)
+                                break;
+                            console.log('[app] drain pending from IDB:', entries.length);
+                            for (const entry of entries) {
+                                try {
+                                    const raw = entry.buf;
+                                    const buf = raw instanceof Uint8Array
+                                        ? raw
+                                        : new Uint8Array(raw);
+                                    this.save_track(entry.audio);
+                                    this.save_blob(entry.audio, buf, entry.mime || 'audio/aac');
+                                    await new Promise((resolve, reject) => {
+                                        const tx = db.transaction(['pending'], 'readwrite');
+                                        tx.objectStore('pending').delete(entry.key);
+                                        tx.oncomplete = () => resolve();
+                                        tx.onerror = () => reject(tx.error);
+                                        tx.onabort = () => reject(tx.error);
+                                    });
+                                }
+                                catch (e) {
+                                    if (e instanceof Promise)
+                                        throw e;
+                                    console.warn('[app] drain failed:', entry.key, e?.message ?? e);
+                                }
+                            }
+                        }
+                        finally {
+                            db.close();
+                        }
+                    }
+                }
+                finally {
+                    this._draining = false;
+                }
+            }
             auto() {
                 // Прогрев чтения из baza — кидает Promise при загрузке, ретраится здесь.
                 try {
@@ -28769,19 +28686,16 @@ var $;
                             throw e;
                     }
                 }
-                // Реактивный авто-импорт.
-                try {
-                    this.auto_import();
-                }
-                catch (e) {
-                    if (e instanceof Promise)
-                        throw e;
-                }
                 // Импорт шара из URL (#share=…) — wire_async ретраит на baza-Promise'ах.
                 if (pending_share && !this._share_import_started) {
                     this._share_import_started = true;
                     $mol_wire_async(this).import_share(pending_share);
                 }
+                // Дренаж pending-очереди от content.js. Подписка на version →
+                // перезапуск при pending_added-сообщении от background.js.
+                this.setup_pending_listener();
+                this.pending_keys_version();
+                $mol_wire_async(this).drain_pending();
                 return super.auto();
             }
         }
@@ -28889,13 +28803,16 @@ var $;
         ], $bog_vk_app.prototype, "vk_audios", null);
         __decorate([
             $mol_mem
-        ], $bog_vk_app.prototype, "auto_import", null);
-        __decorate([
-            $mol_mem
         ], $bog_vk_app.prototype, "prefetch_state", null);
         __decorate([
             $mol_mem
+        ], $bog_vk_app.prototype, "download_playlist_status", null);
+        __decorate([
+            $mol_mem
         ], $bog_vk_app.prototype, "prefetch_blob_lands", null);
+        __decorate([
+            $mol_mem
+        ], $bog_vk_app.prototype, "pending_keys_version", null);
         $$.$bog_vk_app = $bog_vk_app;
     })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));
