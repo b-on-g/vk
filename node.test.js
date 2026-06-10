@@ -27042,7 +27042,13 @@ var $;
          * `chrome-extension://`, и yard.web.ts пушит его в masters_default. Кроме того,
          * peer-ы из Seed().peers() могут принести относительные URL, которые в extension
          * резолвятся в chrome-extension://. Любой такой URL → `new WebSocket(...)` →
-         * SyntaxError. Чистим default-список и подкладываем публичный baza-master.
+         * SyntaxError. Чистим default-список и подкладываем актуальный baza-master.
+         *
+         * Master domain: `baza.91.219.148.98.ip.giper.dev` — IP-обёртка вокруг IP мастера
+         * (Meridian-deploy, см. memory/giper_baza_deploy_behind_meridian.md). Старый
+         * `baza.giper.dev` отвалился. Тот же URL хранится в bundled web.baza Seed:Peers,
+         * но на холодном старте yard может не успеть вытащить его до первого connect'а
+         * — поэтому ставим явный fallback.
          */
         ;
         (function fix_yard_masters_in_extension() {
@@ -27052,14 +27058,20 @@ var $;
                 const proto = location.protocol;
                 if (proto !== 'chrome-extension:' && proto !== 'moz-extension:')
                     return;
+                const FALLBACK_MASTER = 'https://baza.91.219.148.98.ip.giper.dev/';
                 const yard = $giper_baza_yard;
                 const list = yard.masters_default;
                 for (let i = list.length - 1; i >= 0; i--) {
                     if (!/^(http|https|ws|wss):/.test(list[i]))
                         list.splice(i, 1);
                 }
-                if (!list.includes('https://baza.giper.dev/'))
-                    list.push('https://baza.giper.dev/');
+                // На случай если в каком-то билде остался стейл-URL — выкидываем.
+                for (let i = list.length - 1; i >= 0; i--) {
+                    if (list[i] === 'https://baza.giper.dev/')
+                        list.splice(i, 1);
+                }
+                if (!list.includes(FALLBACK_MASTER))
+                    list.push(FALLBACK_MASTER);
                 if (!yard.__bog_vk_masters_patched) {
                     const orig = yard.masters.bind(yard);
                     Object.defineProperty(yard, 'masters', {
