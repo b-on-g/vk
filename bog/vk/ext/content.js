@@ -1,10 +1,10 @@
 // Content script for vk.com.
 // 1. Sniffs access_token from XHR/fetch on api.vk.com → chrome.storage.local.vk_token.
-// 2. Captures every audio object that flies through audio.get / audio.search / audio.getById /
-//    audio.getRecommendations / audio.getPopular and stores them by `${owner_id}_${id}` in window.__bog_vk_audios.
-// 3. Injects a "Download" button into the VK audio player rows; click → fetches the HLS playlist,
-//    decrypts/concatenates segments and triggers a Blob download (raw AAC/M4A — playable in modern browsers
-//    and music libraries).
+// 2. Captures audio objects flying through audio.get* methods into window cache.
+// 3. Injects a "Save" button on every VK audio row; click → sendMessage to background
+//    с маленьким {audio_meta}. Background сам качает HLS, демуксит, пишет в IDB.
+//    Так бинарь (~8MB) не путешествует через chrome.runtime.sendMessage и SW
+//    не падает с «context invalidated».
 
 (function () {
 	'use strict'
@@ -12,9 +12,6 @@
 	console.info('[bog_vk_ext] content_script loaded on', location.host)
 
 	// --- 1) Inject page-world patch via <script src="chrome-extension://...">.
-	// VK ships strict CSP that blocks inline <script>. The script URL itself is
-	// allowlisted by Chrome (script-src includes chrome-extension://<id>/), so we
-	// use web_accessible_resources to expose inject.js.
 
 	try {
 		const tag = document.createElement('script')
@@ -25,7 +22,7 @@
 		console.warn('[bog_vk_ext] inject failed', e)
 	}
 
-	// --- 2) Isolated-world: keep token + audios cache ---------------------------------------
+	// --- 2) Isolated-world: keep token + audios cache --------------------------
 
 	const audios_cache = new Map() // key: `${owner_id}_${id}` → audio
 
@@ -53,126 +50,60 @@
 		}
 	})
 
-	// --- 3) HLS download: fetch m3u8, decrypt segments, concat raw bytes, save as Blob ------
+	// --- 3) Trigger save via background ----------------------------------------
 
-	async function fetch_buf(url) {
-		const r = await fetch(url, { credentials: 'omit' })
-		if (!r.ok) throw new Error('HTTP ' + r.status + ' ' + url)
-		return r.arrayBuffer()
+	function is_context_dead_error(e) {
+		const msg = String((e && e.message) || e || '')
+		return msg.includes('Extension context invalidated')
 	}
 
-	function parse_m3u8(text, base) {
-		const lines = text.split('\n')
-		let key_url = '', key_iv = ''
-		const segments = []
-		for (const raw of lines) {
-			const l = raw.trim()
-			if (l.startsWith('#EXT-X-KEY:')) {
-				const u = l.match(/URI="([^"]+)"/)
-				if (u) key_url = u[1].startsWith('http') ? u[1] : base + u[1]
-				const iv = l.match(/IV=0x([0-9a-fA-F]+)/)
-				if (iv) key_iv = iv[1]
-			} else if (l && !l.startsWith('#')) {
-				segments.push(l.startsWith('http') ? l : base + l)
+	// Через port, а не sendMessage. reply-канал sendMessage'а имеет таймаут
+	// (anecdotal ~30s — 5min) → длинный fetch HLS-сегментов рвёт его, sender
+	// видит «channel closed». chrome.runtime.connect держит SW живым пока
+	// порт open.
+	function save_to_extension(audio) {
+		return new Promise((resolve, reject) => {
+			let port
+			try {
+				port = chrome.runtime.connect({ name: 'bog_vk_download' })
+			} catch (e) {
+				reject(e)
+				return
 			}
-		}
-		return { segments, key_url, key_iv }
-	}
-
-	async function decrypt(buf, cryptoKey, idx, iv_hex) {
-		let iv
-		if (iv_hex) {
-			const bytes = new Uint8Array(16)
-			for (let i = 0; i < 16 && i * 2 < iv_hex.length; i++) bytes[i] = parseInt(iv_hex.substr(i * 2, 2), 16)
-			iv = bytes.buffer
-		} else {
-			const b = new Uint8Array(16)
-			b[15] = idx & 0xff; b[14] = (idx >> 8) & 0xff; b[13] = (idx >> 16) & 0xff; b[12] = (idx >> 24) & 0xff
-			iv = b.buffer
-		}
-		return crypto.subtle.decrypt({ name: 'AES-CBC', iv }, cryptoKey, buf)
-	}
-
-	// Strip MPEG-TS framing and PES headers, extract raw ADTS/AAC.
-	function demux_ts(ts) {
-		const groups = new Map()
-		for (let pos = 0; pos + 188 <= ts.length; pos += 188) {
-			if (ts[pos] !== 0x47) continue
-			const pusi = !!(ts[pos + 1] & 0x40)
-			const pid = ((ts[pos + 1] & 0x1f) << 8) | ts[pos + 2]
-			const afc = (ts[pos + 3] >> 4) & 0x03
-			if (pid === 0 || pid === 0x1fff) continue
-			if (!(afc & 0x01)) continue
-			let off = 4
-			if (afc & 0x02) off += 1 + ts[pos + 4]
-			if (off >= 188) continue
-			if (!groups.has(pid)) groups.set(pid, [])
-			groups.get(pid).push({ pusi, data: ts.slice(pos + off, pos + 188) })
-		}
-		for (const [pid, chunks] of groups) {
-			const first = chunks.find(c => c.pusi)
-			if (!first) continue
-			const d = first.data
-			if (d.length < 9 || d[0] !== 0x00 || d[1] !== 0x00 || d[2] !== 0x01) continue
-			if (d[3] < 0xc0 || d[3] > 0xdf) continue
-			const parts = []
-			for (const c of chunks) {
-				if (c.pusi) {
-					const p = c.data
-					if (p.length < 9 || p[0] !== 0x00 || p[1] !== 0x00 || p[2] !== 0x01) continue
-					const hdrLen = 9 + p[8]
-					if (hdrLen < p.length) parts.push(p.slice(hdrLen))
-				} else parts.push(c.data)
+			let done = false
+			port.onMessage.addListener((msg) => {
+				if (msg?.type === 'done') {
+					done = true
+					try { port.disconnect() } catch {}
+					resolve()
+				} else if (msg?.type === 'error') {
+					done = true
+					try { port.disconnect() } catch {}
+					reject(new Error(msg.error || 'save failed'))
+				}
+			})
+			port.onDisconnect.addListener(() => {
+				if (done) return
+				const err = chrome.runtime.lastError
+				reject(new Error((err && err.message) || 'port disconnected'))
+			})
+			try {
+				port.postMessage({
+					type: 'download_track',
+					audio: {
+						id: audio.id,
+						owner_id: audio.owner_id,
+						title: audio.title || '',
+						artist: audio.artist || '',
+						duration: audio.duration || 0,
+						url: audio.url || '',
+						access_key: audio.access_key || '',
+					},
+				})
+			} catch (e) {
+				reject(e)
 			}
-			const total = parts.reduce((s, p) => s + p.length, 0)
-			if (!total) continue
-			const out = new Uint8Array(total); let o = 0
-			for (const p of parts) { out.set(p, o); o += p.length }
-			return out
-		}
-		return null
-	}
-
-	function detect_format(bytes) {
-		if (bytes[0] === 0xff && (bytes[1] & 0xf0) === 0xf0) return { mime: 'audio/aac', ext: 'aac' }
-		if (bytes[0] === 0xff && (bytes[1] & 0xe0) === 0xe0) return { mime: 'audio/mpeg', ext: 'mp3' }
-		if (bytes[0] === 0x49 && bytes[1] === 0x44 && bytes[2] === 0x33) return { mime: 'audio/mpeg', ext: 'mp3' }
-		return { mime: 'audio/aac', ext: 'aac' }
-	}
-
-	function buf_to_b64(bytes) {
-		// btoa с большой строкой может упасть в call stack — режем чанками.
-		const u8 = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes)
-		let bin = ''
-		const chunk = 0x8000
-		for (let i = 0; i < u8.length; i += chunk) {
-			bin += String.fromCharCode.apply(null, u8.subarray(i, i + chunk))
-		}
-		return btoa(bin)
-	}
-
-	// Очередь pending-треков для popup'а. content.js → background.js (SW) → IDB
-	// под расширенским origin (chrome-extension://). popup.app.view.ts читает из
-	// того же IDB и пишет в Giper Baza. Бинарь через sendMessage не выживает
-	// (JSON), поэтому здесь base64 → background → atob → Uint8Array → IDB.
-	async function save_to_extension(audio, raw, mime) {
-		const buf_b64 = buf_to_b64(raw)
-		const resp = await chrome.runtime.sendMessage({
-			target: 'background',
-			type: 'save_audio',
-			audio: {
-				id: audio.id,
-				owner_id: audio.owner_id,
-				title: audio.title || '',
-				artist: audio.artist || '',
-				duration: audio.duration || 0,
-				url: audio.url || '',
-				access_key: audio.access_key || '',
-			},
-			mime: mime || 'audio/aac',
-			buf_b64,
 		})
-		if (!resp || !resp.ok) throw new Error((resp && resp.error) || 'background save failed')
 	}
 
 	async function download_audio(audio, btn) {
@@ -182,60 +113,25 @@
 			if (label) btn.textContent = label
 		}
 		try {
-			let url = audio.url
-			if (!url) throw new Error('No URL')
 			set_state('loading', '⏳')
-
-			const m3u8_resp = await fetch(url)
-			if (!m3u8_resp.ok) throw new Error('m3u8 ' + m3u8_resp.status)
-			const text = await m3u8_resp.text()
-			const base = url.substring(0, url.lastIndexOf('/') + 1)
-			const { segments, key_url, key_iv } = parse_m3u8(text, base)
-			if (!segments.length) throw new Error('No segments')
-
-			let cryptoKey = null
-			if (key_url) {
-				const k = await fetch_buf(key_url)
-				cryptoKey = await crypto.subtle.importKey('raw', k, 'AES-CBC', false, ['decrypt'])
-			}
-
-			const chunks = []
-			for (let i = 0; i < segments.length; i++) {
-				let buf = await fetch_buf(segments[i])
-				const first = new Uint8Array(buf)[0]
-				if (cryptoKey && first !== 0x47) buf = await decrypt(buf, cryptoKey, i, key_iv)
-				chunks.push(buf)
-				set_state('loading', '⏳ ' + (i + 1) + '/' + segments.length)
-			}
-
-			const total = chunks.reduce((s, c) => s + c.byteLength, 0)
-			const merged = new Uint8Array(total)
-			let off = 0
-			for (const c of chunks) { merged.set(new Uint8Array(c), off); off += c.byteLength }
-
-			let raw = merged
-			let { mime } = detect_format(merged)
-			if (merged[0] === 0x47) {
-				const audio_bytes = demux_ts(merged)
-				if (audio_bytes) { raw = audio_bytes; mime = 'audio/aac' }
-			}
-
-			set_state('loading', '💾')
-			await save_to_extension(audio, raw, mime)
+			await save_to_extension(audio)
 			set_state('done', '✓')
 			setTimeout(() => set_state('', '⬇'), 2000)
 		} catch (e) {
 			console.warn('[bog_vk_ext] save failed', e)
 			set_state('error', '⚠')
-			if (btn) btn.title = String((e && e.message) || e)
+			const text = is_context_dead_error(e)
+				? 'Расширение / SW упал. Открой extension popup и нажми ⟳, потом F5 на vk.com'
+				: String((e && e.message) || e)
+			if (btn) btn.title = text
 			setTimeout(() => {
 				set_state('', '⬇')
 				if (btn) btn.title = 'Сохранить в Bog VK'
-			}, 3500)
+			}, 5000)
 		}
 	}
 
-	// --- 4) UI injection: place a Download button on every audio row ------------------------
+	// --- 4) UI injection: place a Save button on every audio row ----------------
 
 	const STYLE = `
 		.bog-vk-dl {
@@ -265,7 +161,6 @@
 
 	// VK ships row metadata as a JSON array in `data-audio`:
 	//   [id, owner_id, url, title, artist, duration, ..., access_key, ...]
-	// `url` is usually empty until the user hits Play; we fall back to audio.getById on click.
 	function parse_row(node) {
 		try {
 			const raw = node.getAttribute && node.getAttribute('data-audio')
@@ -281,7 +176,6 @@
 				duration: Number(arr[5]) || 0,
 				access_key: '',
 			}
-			// access_key — длинная alpha-numeric строка где-то в массиве.
 			for (const v of arr) {
 				if (typeof v !== 'string' || v.length < 50) continue
 				if (!/^[A-Za-z0-9_-]+$/.test(v)) continue
@@ -293,42 +187,9 @@
 		} catch (e) { return null }
 	}
 
-	async function get_token() {
-		return new Promise((resolve) => {
-			try { chrome.storage.local.get(['vk_token'], (r) => resolve(r?.vk_token || '')) }
-			catch (e) { resolve('') }
-		})
-	}
-
-	async function refresh_url(audio) {
-		const token = await get_token()
-		if (!token) throw new Error('Нет токена — открой раздел Музыка на vk.com, токен подцепится сам')
-		const id_str = audio.access_key
-			? audio.owner_id + '_' + audio.id + '_' + audio.access_key
-			: audio.owner_id + '_' + audio.id
-		const body = new URLSearchParams({
-			audios: id_str,
-			access_token: token,
-			v: '5.275',
-			client_id: '6287487',
-		})
-		const r = await fetch('https://api.vk.com/method/audio.getById', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-			body: body.toString(),
-			credentials: 'include',
-		})
-		const data = await r.json()
-		if (data && data.error) throw new Error(data.error.error_msg || 'VK API error')
-		const fresh = data && data.response && data.response[0]
-		if (!fresh || !fresh.url) throw new Error('VK не отдал URL (возможно DRM или удалён)')
-		return fresh
-	}
-
 	function add_button_to(row) {
 		if (!row || row.querySelector('.bog-vk-dl')) return
 		let audio = parse_row(row)
-		// Fallback: row без data-audio но с data-full-id="owner_id" (например в плейлистах).
 		if (!audio) {
 			const fid = row.getAttribute && row.getAttribute('data-full-id')
 			if (fid) {
@@ -345,25 +206,11 @@
 		btn.className = 'bog-vk-dl'
 		btn.title = 'Сохранить в Bog VK'
 		btn.textContent = '⬇'
-		btn.addEventListener('click', async (e) => {
+		btn.addEventListener('click', (e) => {
 			e.preventDefault(); e.stopPropagation()
-			try {
-				let target = audio
-				if (!target.url) {
-					btn.dataset.state = 'loading'; btn.textContent = '⏳'
-					const fresh = await refresh_url(audio)
-					target = Object.assign({}, audio, fresh)
-				}
-				download_audio(target, btn)
-			} catch (err) {
-				console.warn('[bog_vk_ext] click failed', err)
-				btn.dataset.state = 'error'; btn.textContent = '⚠'
-				btn.title = String(err && err.message || err)
-				setTimeout(() => { btn.dataset.state = ''; btn.textContent = '⬇'; btn.title = 'Сохранить в Bog VK' }, 3500)
-			}
+			download_audio(audio, btn)
 		})
 
-		// Кладём кнопку рядом с длительностью трека — это самое стабильное место поперёк layout-ов VK.
 		const duration = row.querySelector('[class*="audio_row__duration"], [class*="audioRow__duration"], [class*="audio_row__info"], [class*="audioRow__info"]')
 		if (duration && duration.parentElement) {
 			duration.parentElement.insertBefore(btn, duration.nextSibling)
@@ -373,10 +220,8 @@
 	}
 
 	function scan() {
-		// VK ставит data-audio на сам ряд — самый надёжный селектор.
 		const rows = document.querySelectorAll('[data-audio]')
 		rows.forEach(add_button_to)
-		// Запасной — для контекстов без data-audio (нечасто).
 		document.querySelectorAll('[data-full-id][class*="audio_row"], [data-full-id][class*="AudioRow"]').forEach(add_button_to)
 		if (rows.length && !window.__bog_vk_scan_logged) {
 			console.info('[bog_vk_ext] found', rows.length, 'audio rows on', location.host)

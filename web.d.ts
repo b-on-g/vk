@@ -55255,15 +55255,17 @@ declare namespace $.$$ {
         prefetch_blobs(items: $bog_vk_api_audio[]): Promise<void>;
         private _migration_done;
         /**
-         * Реактивно прокликивает все File-ссылки треков. Используется
-         * `$bog_vk_atom_link_to_synced` (см. track_baza.ts) — его `.remote()`
-         * сам вызывает `.land().sync()` на blob-land.
+         * Реактивно прокликивает все File-ссылки треков — `$bog_vk_atom_link_to_synced`
+         * (см. track_baza.ts) при `.remote()` сам зовёт `.land().sync()` на blob-land.
          *
-         * Итерируем в порядке UI (saved → archived, оба asc по Order) — yard
-         * стартует sync в этом порядке, и первые в списке треки приходят первыми.
+         * **БЫЛО `@$mol_mem`** — это side-effect в чистом вычислении (sync() пишет
+         * в атомы yard'а), invalidation cycle лочит main thread. Per MOL_QUICK_START
+         * #circular-subscription — @$mol_mem может ТОЛЬКО читать. Поэтому теперь
+         * `@$mol_action`: одноразовый wire_task, не подписывается → не зацикливается.
          *
-         * `$mol_wire_solid()` держит cell живым между тиками — иначе $mol его
-         * рипает и blob-lands перестают синкаться.
+         * Триггеримся вручную из auto() через `$mol_wire_async`, фибра ретраит
+         * на baza-Promise'ах. Идемпотентность (`if remote()` — null-check) делает
+         * повторы безопасными.
          */
         prefetch_blob_lands(): number;
         private _share_import_started;
@@ -55272,6 +55274,21 @@ declare namespace $.$$ {
         private setup_pending_listener;
         private open_pending_db;
         private _draining;
+        /**
+         * Sync-метод. Запускается через `$mol_wire_async(this).save_entry_in_fiber(...)`.
+         *
+         * **Зачем фибра**: `save_blob` → `track.File('auto').ensure([])` дёргает
+         * `glob.land_grab` → `auth.grab` → `wire_sync(auth).generate` (PoW).
+         * PoW-wire_task кешируется ТОЛЬКО внутри одной fiber-context'ы. Если save_blob
+         * запущен ВНЕ фибры — Promise-throw из ensure поднимается до drain_pending,
+         * wire_async ретраит ВЕСЬ drain → save_blob → ensure → новый PoW с нуля → ∞.
+         *
+         * Внутри фибры на Promise-throw фибра ретраит САМОЁ СЕБЯ, и PoW-task возвращает
+         * закешированный результат. Один проход — один PoW. См. share-flow:
+         * `do_share_writes_in_fiber`.
+         */
+        private save_entry_in_fiber;
+        private delete_pending_key;
         drain_pending(): Promise<void>;
         auto(): any;
     }

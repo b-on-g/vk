@@ -28029,22 +28029,37 @@ var $;
             save_blob(audio, buffer, mime) {
                 if (!audio)
                     return;
-                const dict = this.tracks_dict();
                 const key = this.cache_key(audio);
+                const t0 = performance.now();
+                console.log('[save_blob] start key=', key, 'bytes=', buffer.byteLength);
+                const dict = this.tracks_dict();
+                console.log('[save_blob] dict ok');
                 const track = dict.key(key, 'auto');
-                if (!track)
+                if (!track) {
+                    console.warn('[save_blob] track null');
                     return;
+                }
+                console.log('[save_blob] track ok, ensure file land (king_grab → PoW)…');
+                const ensure_t = performance.now();
                 // Blob лежит в ОТДЕЛЬНОМ land (king_grab с public read), НЕ в home land.
                 // Иначе все 30 треков сваливаются в один pack из 7000+ юнитов и сливаются
                 // одной транзакцией — 30+ MB через интернет = десятки секунд.
                 // С отдельным land каждый blob синкается независимо и не блокирует home land.
                 const store = track.File('auto').ensure([]);
-                if (!store)
+                console.log('[save_blob] ensure done in', Math.round(performance.now() - ensure_t), 'ms');
+                if (!store) {
+                    console.warn('[save_blob] store null');
                     return;
+                }
+                const buf_t = performance.now();
                 store.buffer(buffer);
+                console.log('[save_blob] buffer written in', Math.round(performance.now() - buf_t), 'ms');
                 store.type(mime || 'audio/mpeg');
+                const remote_t = performance.now();
                 // Без .remote(store) link существует только локально — в pack для пуша не попадает.
                 track.File('auto').remote(store);
+                console.log('[save_blob] remote linked in', Math.round(performance.now() - remote_t), 'ms');
+                console.log('[save_blob] DONE total', Math.round(performance.now() - t0), 'ms');
             }
             save_local_track(file, buffer) {
                 console.log('[upload/save] start file=', file.name);
@@ -28530,18 +28545,19 @@ var $;
             }
             _migration_done = false;
             /**
-             * Реактивно прокликивает все File-ссылки треков. Используется
-             * `$bog_vk_atom_link_to_synced` (см. track_baza.ts) — его `.remote()`
-             * сам вызывает `.land().sync()` на blob-land.
+             * Реактивно прокликивает все File-ссылки треков — `$bog_vk_atom_link_to_synced`
+             * (см. track_baza.ts) при `.remote()` сам зовёт `.land().sync()` на blob-land.
              *
-             * Итерируем в порядке UI (saved → archived, оба asc по Order) — yard
-             * стартует sync в этом порядке, и первые в списке треки приходят первыми.
+             * **БЫЛО `@$mol_mem`** — это side-effect в чистом вычислении (sync() пишет
+             * в атомы yard'а), invalidation cycle лочит main thread. Per MOL_QUICK_START
+             * #circular-subscription — @$mol_mem может ТОЛЬКО читать. Поэтому теперь
+             * `@$mol_action`: одноразовый wire_task, не подписывается → не зацикливается.
              *
-             * `$mol_wire_solid()` держит cell живым между тиками — иначе $mol его
-             * рипает и blob-lands перестают синкаться.
+             * Триггеримся вручную из auto() через `$mol_wire_async`, фибра ретраит
+             * на baza-Promise'ах. Идемпотентность (`if remote()` — null-check) делает
+             * повторы безопасными.
              */
             prefetch_blob_lands() {
-                $mol_wire_solid();
                 const dict = this.tracks_dict();
                 const audios = [
                     ...this.list_audios(false),
@@ -28595,58 +28611,102 @@ var $;
                 });
             }
             _draining = false;
-            async drain_pending() {
-                if (this._draining)
-                    return;
-                this._draining = true;
+            /**
+             * Sync-метод. Запускается через `$mol_wire_async(this).save_entry_in_fiber(...)`.
+             *
+             * **Зачем фибра**: `save_blob` → `track.File('auto').ensure([])` дёргает
+             * `glob.land_grab` → `auth.grab` → `wire_sync(auth).generate` (PoW).
+             * PoW-wire_task кешируется ТОЛЬКО внутри одной fiber-context'ы. Если save_blob
+             * запущен ВНЕ фибры — Promise-throw из ensure поднимается до drain_pending,
+             * wire_async ретраит ВЕСЬ drain → save_blob → ensure → новый PoW с нуля → ∞.
+             *
+             * Внутри фибры на Promise-throw фибра ретраит САМОЁ СЕБЯ, и PoW-task возвращает
+             * закешированный результат. Один проход — один PoW. См. share-flow:
+             * `do_share_writes_in_fiber`.
+             */
+            save_entry_in_fiber(entry) {
+                const raw = entry.buf;
+                const buf = raw instanceof Uint8Array ? raw : new Uint8Array(raw);
+                this.save_track(entry.audio);
+                this.save_blob(entry.audio, buf, entry.mime || 'audio/aac');
+                return true;
+            }
+            async delete_pending_key(key) {
+                const db = await this.open_pending_db();
                 try {
-                    // Цикл до пустоты: если pending_added прилетит ВО ВРЕМЯ дренажа,
-                    // версия бампнётся снаружи, но из-за _draining-guard'а сюда не
-                    // войдёт ещё один вызов. Снаружи ретрига больше не будет, поэтому
-                    // дренажим повторно из этой же фибры.
+                    await new Promise((resolve, reject) => {
+                        const tx = db.transaction(['pending'], 'readwrite');
+                        tx.objectStore('pending').delete(key);
+                        tx.oncomplete = () => resolve();
+                        tx.onerror = () => reject(tx.error);
+                        tx.onabort = () => reject(tx.error);
+                    });
+                }
+                finally {
+                    db.close();
+                }
+            }
+            async drain_pending() {
+                if (this._draining) {
+                    console.log('[drain] skip — already draining');
+                    return;
+                }
+                this._draining = true;
+                const drain_t0 = performance.now();
+                console.log('[drain] enter');
+                try {
+                    let iter = 0;
                     while (true) {
+                        iter++;
+                        console.log(`[drain] iter ${iter}: open IDB…`);
                         const db = await this.open_pending_db();
                         let entries = [];
                         try {
+                            console.log(`[drain] iter ${iter}: getAll…`);
                             entries = await new Promise((resolve, reject) => {
                                 const tx = db.transaction(['pending'], 'readonly');
                                 const req = tx.objectStore('pending').getAll();
                                 req.onsuccess = () => resolve(req.result || []);
                                 req.onerror = () => reject(req.error);
                             });
-                            if (!entries.length)
-                                break;
-                            console.log('[app] drain pending from IDB:', entries.length);
-                            for (const entry of entries) {
-                                try {
-                                    const raw = entry.buf;
-                                    const buf = raw instanceof Uint8Array
-                                        ? raw
-                                        : new Uint8Array(raw);
-                                    this.save_track(entry.audio);
-                                    this.save_blob(entry.audio, buf, entry.mime || 'audio/aac');
-                                    await new Promise((resolve, reject) => {
-                                        const tx = db.transaction(['pending'], 'readwrite');
-                                        tx.objectStore('pending').delete(entry.key);
-                                        tx.oncomplete = () => resolve();
-                                        tx.onerror = () => reject(tx.error);
-                                        tx.onabort = () => reject(tx.error);
-                                    });
-                                }
-                                catch (e) {
-                                    if (e instanceof Promise)
-                                        throw e;
-                                    console.warn('[app] drain failed:', entry.key, e?.message ?? e);
-                                }
-                            }
                         }
                         finally {
                             db.close();
+                            console.log(`[drain] iter ${iter}: db closed (after read)`);
+                        }
+                        if (!entries.length) {
+                            console.log(`[drain] iter ${iter}: empty → break`);
+                            break;
+                        }
+                        console.log(`[drain] iter ${iter}: got ${entries.length} entries`);
+                        for (let i = 0; i < entries.length; i++) {
+                            const entry = entries[i];
+                            const ekey = entry?.key;
+                            console.log(`[drain] entry ${i + 1}/${entries.length} key=${ekey} buf=${entry?.buf?.byteLength ?? '?'}b → save in fiber…`);
+                            const fiber_t = performance.now();
+                            try {
+                                await $mol_wire_async(this).save_entry_in_fiber(entry);
+                                console.log(`[drain] entry ${ekey}: saved in fiber in`, Math.round(performance.now() - fiber_t), 'ms');
+                            }
+                            catch (e) {
+                                // Promise здесь быть не должно (фибра внутри его съела).
+                                // Если есть — лог и идём дальше, чтобы не висеть на записи.
+                                console.warn(`[drain] entry ${ekey}: fiber failed:`, e?.message ?? e);
+                                continue;
+                            }
+                            try {
+                                await this.delete_pending_key(ekey);
+                                console.log(`[drain] entry ${ekey}: deleted from IDB ✓`);
+                            }
+                            catch (e) {
+                                console.warn(`[drain] entry ${ekey}: delete failed:`, e?.message ?? e);
+                            }
                         }
                     }
                 }
                 finally {
                     this._draining = false;
+                    console.log('[drain] exit, total', Math.round(performance.now() - drain_t0), 'ms');
                 }
             }
             auto() {
@@ -28659,13 +28719,9 @@ var $;
                         throw e;
                 }
                 // Тачим blob-lands всех треков — синк блобов идёт фоном параллельно.
-                try {
-                    this.prefetch_blob_lands();
-                }
-                catch (e) {
-                    if (e instanceof Promise)
-                        throw e;
-                }
+                // Через wire_async (а не sync-вызов в auto) чтобы Promise'ы от baza-load
+                // ретраились в отдельной фибре и не лочили основной auto-fiber.
+                $mol_wire_async(this).prefetch_blob_lands();
                 // Одноразовая миграция блоб-линков (паттерн giper_baza_link_remote).
                 if (!this._migration_done) {
                     try {
@@ -28799,7 +28855,7 @@ var $;
             $mol_mem
         ], $bog_vk_app.prototype, "download_playlist_status", null);
         __decorate([
-            $mol_mem
+            $mol_action
         ], $bog_vk_app.prototype, "prefetch_blob_lands", null);
         __decorate([
             $mol_mem
