@@ -858,6 +858,19 @@ namespace $.$$ {
 			}
 			const style = ( this.Progress_bar().dom_node() as HTMLElement ).style
 			style.width = `${this.progress_percent()}%`
+			// Trim_*_handle.style.left биндится в view.tree, но style()-замыкание
+			// каждой ручки на телефоне иногда теряет инвалидацию от baza-sync —
+			// audio.ended при этом срабатывает (apply_trim в этом же auto читает
+			// trim_end), а ручки визуально остаются в старой позиции. Дублируем
+			// применение left отсюда: auto() гарантированно re-run-ится.
+			try {
+				const ts_node = this.Trim_start_handle().dom_node() as HTMLElement
+				ts_node.style.left = this.trim_start_left()
+				const te_node = this.Trim_end_handle().dom_node() as HTMLElement
+				te_node.style.left = this.trim_end_left()
+			} catch ( e: any ) {
+				if ( e instanceof Promise ) throw e
+			}
 		}
 	}
 }
