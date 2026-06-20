@@ -43,6 +43,7 @@ $bog_theme_auto $mol_plugin
 	theme_next? null
 	theme_prev? null
 	theme_set? null
+	is_light_now false
 	attr * mol_theme <= theme \
 
 $bog_popup_plugin $mol_plugin
