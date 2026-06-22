@@ -1950,7 +1950,10 @@ declare namespace $.$$ {
     type $bog_theme_mode = 'light' | 'dark' | 'system' | 'custom';
     class $bog_theme_auto extends $.$bog_theme_auto {
         themes_default(): readonly $.$bog_theme_name[];
-        /** Stores current mode in localStorage. Defaults to 'system'. */
+        /** Stores current mode in localStorage. Defaults to 'system'.
+         *  При записи дёргает класс `.bog_theme_switching` на `<html>` —
+         *  это активирует CSS-transition'ы на цветах темы.
+         */
         mode(next?: $bog_theme_mode): $bog_theme_mode;
         click_step(next?: number): number;
         /** 3-click cycle: opposite → back → system. */
@@ -1964,6 +1967,9 @@ declare namespace $.$$ {
         /** Called by picker. Sets mode to light/dark or custom for themed palettes. */
         theme_set(index: number): void;
     }
+}
+
+declare namespace $ {
 }
 
 declare namespace $ {
@@ -3248,9 +3254,6 @@ declare namespace $.$$ {
         picker_close(): void;
         backdrop_click(event?: MouseEvent): null;
     }
-}
-
-declare namespace $ {
 }
 
 declare namespace $.$$ {
