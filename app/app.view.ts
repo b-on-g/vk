@@ -880,6 +880,21 @@ namespace $.$$ {
 				if (!track) continue
 				const track_playlist = track.Playlist()?.val() ?? ''
 				if (track_playlist !== playlist) continue
+				// Скрываем трек, пока blob не засинкается. fresh_files — свежезалит
+				// локально на этой сессии; baza-buffer > 0 — чанки доехали. Глотаем
+				// ВСЁ (включая Promise от sync и партиал-CBOR ошибки): подписка на
+				// buffer-atom уже зарегистрирована → cell инвалидируется когда
+				// чанки приедут. Если бросать Promise — весь список саспендится
+				// из-за одного недосинканного трека.
+				if (!this.fresh_files.has(key)) {
+					try {
+						const file = track.File()?.remote()
+						const buf = file?.buffer()
+						if (!buf || buf.byteLength === 0) continue
+					} catch {
+						continue
+					}
+				}
 				const vk_id = track.Vk_id()?.val() ?? String(key)
 				const parts = vk_id.split('_')
 				const owner_id = Number(parts[0])
