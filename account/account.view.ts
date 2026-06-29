@@ -89,10 +89,18 @@ namespace $.$$ {
 			return next ?? ''
 		}
 
-		/** Форвард на app.download_playlist() — скачивает видимый плейлист в baza. */
+		/** Форвард на app.download_playlist() — в extension в baza, в PWA zip-архивом. */
 		download_playlist() {
 			$bog_vk_app.Root(0).download_playlist()
 			return null
+		}
+
+		download_playlist_label() {
+			return $bog_vk_api.in_extension() ? this.ext_label() : this.pwa_label()
+		}
+
+		download_playlist_hint() {
+			return $bog_vk_api.in_extension() ? this.ext_hint() : this.pwa_hint()
 		}
 
 		download_playlist_status() {

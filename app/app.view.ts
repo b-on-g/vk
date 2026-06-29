@@ -1477,12 +1477,19 @@ namespace $.$$ {
 		}
 
 		async download_playlist_async() {
+			// PWA/сайт: VK API недоступен, но локальные blob'ы засинканы из baza —
+			// упаковываем что есть в zip и отдаём как файл. extension-режим
+			// продолжает качать с VK и кеширует в baza (для синка на другие устройства).
+			if (!$bog_vk_api.in_extension()) {
+				await this.download_playlist_zip_async()
+				return
+			}
 			const page = this.page()
 			let items: $bog_vk_api_audio[]
 			if (page === 'my') {
 				items = this.vk_audios()
 				if (!items.length) {
-					this.download_playlist_status($bog_vk_api.in_extension() ? 'Список VK пуст' : 'Нет VK-токена (открой расширение)')
+					this.download_playlist_status('Список VK пуст')
 					return
 				}
 			} else {
@@ -1496,6 +1503,161 @@ namespace $.$$ {
 			await this.prefetch_blobs(items)
 			const s = this.prefetch_state()
 			this.download_playlist_status(`Готово: ${s.done}/${s.total}${s.failed ? `, ошибок ${s.failed}` : ''}`)
+		}
+
+		/** PWA-путь: собирает локально засинканные blob'ы в ZIP (STORE) и триггерит браузерный download. */
+		async download_playlist_zip_async() {
+			const items = this.visible_audios()
+			if (!items.length) {
+				this.download_playlist_status('Плейлист пуст')
+				return
+			}
+			this.download_playlist_status(`Архивирую 0/${items.length}…`)
+			const files: { name: string, data: Uint8Array }[] = []
+			let skipped = 0
+			for (let i = 0; i < items.length; i++) {
+				const audio = items[i]
+				let blob: Blob | null = null
+				try {
+					blob = this.local_blob(audio)
+				} catch (e: any) {
+					if (e instanceof Promise) { try { await e } catch {}; i--; continue }
+				}
+				if (!blob) { skipped++; this.download_playlist_status(`Архивирую ${files.length}/${items.length}…`); continue }
+				try {
+					const buf = new Uint8Array(await blob.arrayBuffer())
+					files.push({ name: this.zip_filename(audio, files.length + 1, blob.type), data: buf })
+				} catch (e: any) {
+					skipped++
+					console.warn('[zip] read failed:', audio.artist, '—', audio.title, '|', e?.message ?? String(e))
+				}
+				this.download_playlist_status(`Архивирую ${files.length}/${items.length}…`)
+			}
+			if (!files.length) {
+				this.download_playlist_status('Нет локально доступных треков для архива')
+				return
+			}
+			this.download_playlist_status('Собираю zip…')
+			const zip_ab = this.build_zip(files)
+			const blob = new Blob([zip_ab], { type: 'application/zip' })
+			const url = URL.createObjectURL(blob)
+			const a = document.createElement('a')
+			a.href = url
+			a.download = `vk-playlist-${new Date().toISOString().slice(0, 10)}.zip`
+			document.body.appendChild(a)
+			a.click()
+			a.remove()
+			setTimeout(() => URL.revokeObjectURL(url), 1000)
+			const skipped_note = skipped ? `, пропущено ${skipped}` : ''
+			this.download_playlist_status(`Готово: ${files.length} ${this.plural_tracks(files.length)}${skipped_note}`)
+		}
+
+		private zip_filename(audio: $bog_vk_api_audio, index: number, mime: string): string {
+			const ext_map: Record<string, string> = {
+				'audio/mpeg': 'mp3',
+				'audio/mp3': 'mp3',
+				'audio/mp4': 'm4a',
+				'audio/aac': 'aac',
+				'audio/ogg': 'ogg',
+				'audio/webm': 'webm',
+				'audio/wav': 'wav',
+				'audio/flac': 'flac',
+			}
+			const ext = ext_map[(mime || '').toLowerCase()] || 'mp3'
+			const safe = (s: string) => (s || '').replace(/[\\/:*?"<>|\x00-\x1f]/g, '_').trim().slice(0, 80)
+			const num = String(index).padStart(3, '0')
+			const artist = safe(audio.artist) || 'unknown'
+			const title = safe(audio.title) || 'unknown'
+			return `${num} - ${artist} - ${title}.${ext}`
+		}
+
+		private static _crc32_table: Uint32Array | null = null
+		private static crc32_table() {
+			if ($bog_vk_app._crc32_table) return $bog_vk_app._crc32_table
+			const t = new Uint32Array(256)
+			for (let i = 0; i < 256; i++) {
+				let c = i
+				for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1)
+				t[i] = c
+			}
+			$bog_vk_app._crc32_table = t
+			return t
+		}
+		private static crc32(data: Uint8Array): number {
+			const t = $bog_vk_app.crc32_table()
+			let crc = 0xFFFFFFFF
+			for (let i = 0; i < data.length; i++) crc = (crc >>> 8) ^ t[(crc ^ data[i]) & 0xFF]
+			return (crc ^ 0xFFFFFFFF) >>> 0
+		}
+
+		/** STORE-only ZIP encoder (no compression — аудио и так сжато). */
+		private build_zip(files: { name: string, data: Uint8Array }[]): ArrayBuffer {
+			const enc = new TextEncoder()
+			type Entry = { name: Uint8Array, data: Uint8Array, crc: number, offset: number }
+			const entries: Entry[] = files.map(f => ({
+				name: enc.encode(f.name),
+				data: f.data,
+				crc: $bog_vk_app.crc32(f.data),
+				offset: 0,
+			}))
+			let local_size = 0
+			let cd_size = 0
+			for (const e of entries) {
+				local_size += 30 + e.name.length + e.data.length
+				cd_size += 46 + e.name.length
+			}
+			const ab = new ArrayBuffer(local_size + cd_size + 22)
+			const buf = new Uint8Array(ab)
+			const view = new DataView(ab)
+			let off = 0
+			for (const e of entries) {
+				e.offset = off
+				view.setUint32(off, 0x04034b50, true)
+				view.setUint16(off + 4, 20, true)
+				view.setUint16(off + 6, 0x0800, true) // UTF-8 filename
+				view.setUint16(off + 8, 0, true) // STORE
+				view.setUint16(off + 10, 0, true)
+				view.setUint16(off + 12, 0, true)
+				view.setUint32(off + 14, e.crc, true)
+				view.setUint32(off + 18, e.data.length, true)
+				view.setUint32(off + 22, e.data.length, true)
+				view.setUint16(off + 26, e.name.length, true)
+				view.setUint16(off + 28, 0, true)
+				buf.set(e.name, off + 30)
+				buf.set(e.data, off + 30 + e.name.length)
+				off += 30 + e.name.length + e.data.length
+			}
+			const cd_off = off
+			for (const e of entries) {
+				view.setUint32(off, 0x02014b50, true)
+				view.setUint16(off + 4, 20, true)
+				view.setUint16(off + 6, 20, true)
+				view.setUint16(off + 8, 0x0800, true)
+				view.setUint16(off + 10, 0, true)
+				view.setUint16(off + 12, 0, true)
+				view.setUint16(off + 14, 0, true)
+				view.setUint32(off + 16, e.crc, true)
+				view.setUint32(off + 20, e.data.length, true)
+				view.setUint32(off + 24, e.data.length, true)
+				view.setUint16(off + 28, e.name.length, true)
+				view.setUint16(off + 30, 0, true)
+				view.setUint16(off + 32, 0, true)
+				view.setUint16(off + 34, 0, true)
+				view.setUint16(off + 36, 0, true)
+				view.setUint32(off + 38, 0, true)
+				view.setUint32(off + 42, e.offset, true)
+				buf.set(e.name, off + 46)
+				off += 46 + e.name.length
+			}
+			view.setUint32(off, 0x06054b50, true)
+			view.setUint16(off + 4, 0, true)
+			view.setUint16(off + 6, 0, true)
+			view.setUint16(off + 8, entries.length, true)
+			view.setUint16(off + 10, entries.length, true)
+			view.setUint32(off + 12, cd_size, true)
+			view.setUint32(off + 16, cd_off, true)
+			view.setUint16(off + 20, 0, true)
+			return ab
 		}
 
 		/**
