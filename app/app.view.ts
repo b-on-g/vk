@@ -941,24 +941,20 @@ namespace $.$$ {
 				if (!track) continue
 				const track_playlist = track.Playlist()?.val() ?? ''
 				if (track_playlist !== playlist) continue
-				// Скрываем трек, пока blob не засинкается. Источники «видим»:
-				//   1) fresh_files — свежезалит локально в этой сессии
-				//   2) synced_cache — флаг в localStorage, ставится после первого
-				//      успешного прочтения buffer'а. На cold-open показывает трек
-				//      МГНОВЕННО, без чтения baza-chunks из IDB (иначе пустой
-				//      список «синхронизации» при каждом запуске).
-				//   3) buffer.byteLength > 0 — фактическая проверка для новых треков
-				// Глотаем все ошибки (Promise sync / партиал-CBOR): подписка на
-				// buffer-atom зарегистрирована → cell инвалидируется при апдейте.
-				const known_synced = this.synced_cache().has(key)
-				if (!known_synced && !this.fresh_files.has(key)) {
-					let ok = false
+				// Показываем трек если есть file-link (когда-то заливали blob).
+				// Проверять buffer.byteLength на cold-open ненадёжно: chunks ещё
+				// не подсосаны из IDB → false → треки прячутся → паника. Link же
+				// доступен сразу как только атом ссылки приехал (это атомарный
+				// JSON, не chunked binary). Слабее чем «до полного синка», но
+				// устойчиво. Cache используем как fast-path чтобы не дёргать
+				// .remote() (он триггерит land().sync() через wrapper) при каждом
+				// рендере для уже отмеченных ключей.
+				if (!this.synced_cache().has(key) && !this.fresh_files.has(key)) {
+					let has_link = false
 					try {
-						const file = track.File()?.remote()
-						const buf = file?.buffer()
-						if (buf && buf.byteLength > 0) ok = true
+						if (track.File()?.remote()) has_link = true
 					} catch {}
-					if (!ok) continue
+					if (!has_link) continue
 					this.mark_synced(key)
 				}
 				const vk_id = track.Vk_id()?.val() ?? String(key)
