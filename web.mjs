@@ -35849,25 +35849,11 @@ var $;
                     const track_playlist = track.Playlist()?.val() ?? '';
                     if (track_playlist !== playlist)
                         continue;
-                    // Показываем трек если есть file-link (когда-то заливали blob).
-                    // Проверять buffer.byteLength на cold-open ненадёжно: chunks ещё
-                    // не подсосаны из IDB → false → треки прячутся → паника. Link же
-                    // доступен сразу как только атом ссылки приехал (это атомарный
-                    // JSON, не chunked binary). Слабее чем «до полного синка», но
-                    // устойчиво. Cache используем как fast-path чтобы не дёргать
-                    // .remote() (он триггерит land().sync() через wrapper) при каждом
-                    // рендере для уже отмеченных ключей.
-                    if (!this.synced_cache().has(key) && !this.fresh_files.has(key)) {
-                        let has_link = false;
-                        try {
-                            if (track.File()?.remote())
-                                has_link = true;
-                        }
-                        catch { }
-                        if (!has_link)
-                            continue;
-                        this.mark_synced(key);
-                    }
+                    // БЕЗ ФИЛЬТРА по sync-статусу: чтение .File().remote()/buffer на
+                    // cold-open ненадёжно (Promise/partial CBOR errors), треки прячутся
+                    // и не возвращаются. Если track-pawn в dict есть — показываем как
+                    // раньше. «Скрывать до полного синка» вернём через явный sync-флаг
+                    // в самой схеме трека (доп. атом), когда придумаем как.
                     const vk_id = track.Vk_id()?.val() ?? String(key);
                     const parts = vk_id.split('_');
                     const owner_id = Number(parts[0]);
