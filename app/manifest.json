@@ -22,11 +22,20 @@
 		"https://baza.giper.dev/*",
 		"wss://baza.giper.dev/*"
 	],
-	"icons": {
-		"16": "bog/vk/app/favicon.svg",
-		"48": "bog/vk/app/favicon.svg",
-		"128": "bog/vk/app/favicon.svg"
-	},
+	"icons": [
+		{
+			"src": "bog/vk/app/favicon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml",
+			"purpose": "any"
+		},
+		{
+			"src": "bog/vk/app/favicon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml",
+			"purpose": "maskable"
+		}
+	],
 	"content_scripts": [
 		{
 			"matches": [
