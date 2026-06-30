@@ -843,6 +843,53 @@ namespace $.$$ {
 		/** RAM-кеш свежезагруженных файлов на текущей сессии. */
 		private fresh_files = new Map<string, File>()
 
+		// Персистентный кеш «этот ключ хоть раз был засинкан полностью на этом устройстве».
+		// Без него на cold-open фильтр в list_audios_in скрывает все треки до прихода
+		// чанков из IDB → каждый запуск показывает «синхронизацию». С флагом — рендерим
+		// сразу, без чтения file.buffer().
+		private _synced_cache: Set<string> | null = null
+		private synced_cache(): Set<string> {
+			if (this._synced_cache) return this._synced_cache
+			try {
+				const raw = localStorage.getItem('bog_vk_synced_keys')
+				this._synced_cache = raw ? new Set(JSON.parse(raw) as string[]) : new Set()
+			} catch {
+				this._synced_cache = new Set()
+			}
+			return this._synced_cache
+		}
+		private persist_synced() {
+			try {
+				localStorage.setItem('bog_vk_synced_keys', JSON.stringify([...this.synced_cache()]))
+			} catch {}
+		}
+		mark_synced(key: string) {
+			const set = this.synced_cache()
+			if (set.has(key)) return
+			set.add(key)
+			this.persist_synced()
+		}
+		unmark_synced(key: string) {
+			const set = this.synced_cache()
+			if (!set.delete(key)) return
+			this.persist_synced()
+		}
+		// Одноразовая чистка флагов, чьих треков больше нет в baza (удалены здесь
+		// или с другого устройства через sync).
+		private _swept = false
+		sweep_synced() {
+			if (this._swept) return
+			const dict = this.tracks_dict()
+			const live = new Set((dict.keys() ?? []) as string[])
+			const cache = this.synced_cache()
+			let changed = false
+			for (const k of [...cache]) {
+				if (!live.has(k)) { cache.delete(k); changed = true }
+			}
+			if (changed) this.persist_synced()
+			this._swept = true
+		}
+
 		/** Blob трека из baza или RAM. null если нет. */
 		local_blob(audio: $bog_vk_api_audio): Blob | null {
 			const key = this.cache_key(audio)
@@ -880,20 +927,25 @@ namespace $.$$ {
 				if (!track) continue
 				const track_playlist = track.Playlist()?.val() ?? ''
 				if (track_playlist !== playlist) continue
-				// Скрываем трек, пока blob не засинкается. fresh_files — свежезалит
-				// локально на этой сессии; baza-buffer > 0 — чанки доехали. Глотаем
-				// ВСЁ (включая Promise от sync и партиал-CBOR ошибки): подписка на
-				// buffer-atom уже зарегистрирована → cell инвалидируется когда
-				// чанки приедут. Если бросать Promise — весь список саспендится
-				// из-за одного недосинканного трека.
-				if (!this.fresh_files.has(key)) {
+				// Скрываем трек, пока blob не засинкается. Источники «видим»:
+				//   1) fresh_files — свежезалит локально в этой сессии
+				//   2) synced_cache — флаг в localStorage, ставится после первого
+				//      успешного прочтения buffer'а. На cold-open показывает трек
+				//      МГНОВЕННО, без чтения baza-chunks из IDB (иначе пустой
+				//      список «синхронизации» при каждом запуске).
+				//   3) buffer.byteLength > 0 — фактическая проверка для новых треков
+				// Глотаем все ошибки (Promise sync / партиал-CBOR): подписка на
+				// buffer-atom зарегистрирована → cell инвалидируется при апдейте.
+				const known_synced = this.synced_cache().has(key)
+				if (!known_synced && !this.fresh_files.has(key)) {
+					let ok = false
 					try {
 						const file = track.File()?.remote()
 						const buf = file?.buffer()
-						if (!buf || buf.byteLength === 0) continue
-					} catch {
-						continue
-					}
+						if (buf && buf.byteLength > 0) ok = true
+					} catch {}
+					if (!ok) continue
+					this.mark_synced(key)
 				}
 				const vk_id = track.Vk_id()?.val() ?? String(key)
 				const parts = vk_id.split('_')
@@ -1319,6 +1371,7 @@ namespace $.$$ {
 		delete_audio(audio: $bog_vk_api_audio | null) {
 			if (!audio) return
 			this.delete_track(audio)
+			this.unmark_synced(this.cache_key(audio))
 		}
 
 		@$mol_action
@@ -1870,6 +1923,11 @@ namespace $.$$ {
 		}
 
 		auto() {
+			// Одноразовая чистка synced_cache от ключей, чьих треков больше нет
+			// в baza (delete на другом устройстве, импорт нового аккаунта и т.п.).
+			try { this.sweep_synced() } catch (e: any) {
+				if (e instanceof Promise) throw e
+			}
 			// Прогрев чтения из baza — кидает Promise при загрузке, ретраится здесь.
 			try { this.saved_audios() } catch (e: any) {
 				if (e instanceof Promise) throw e
