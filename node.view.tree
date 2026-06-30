@@ -1378,7 +1378,7 @@ $bog_vk_app $mol_page
 			checked? <=> feedback_open? false
 		<= Upload $mol_button_open
 			hint \Загрузить с устройства
-			accept \audio/*
+			accept \audio/*,.mp3,.m4a,.aac,.wav,.ogg,.flac
 			files? <=> upload_files? /File
 		<= Theme_btn $bog_theme_toggle
 			theme_auto <= Theme

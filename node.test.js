@@ -26821,7 +26821,7 @@ var $;
 		Upload(){
 			const obj = new this.$.$mol_button_open();
 			(obj.hint) = () => ("Загрузить с устройства");
-			(obj.accept) = () => ("audio/*");
+			(obj.accept) = () => ("audio/*,.mp3,.m4a,.aac,.wav,.ogg,.flac");
 			(obj.files) = (next) => ((this.upload_files(next)));
 			return obj;
 		}
