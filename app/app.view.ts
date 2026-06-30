@@ -880,8 +880,22 @@ namespace $.$$ {
 		sweep_synced() {
 			if (this._swept) return
 			const dict = this.tracks_dict()
-			const live = new Set((dict.keys() ?? []) as string[])
+			const live_arr = (dict.keys() ?? []) as string[]
+			const live = new Set(live_arr)
 			const cache = this.synced_cache()
+			// Bootstrap: апгрейд на synced_cache с пустым кешем. Треки в твоей
+			// baza уже точно «синканы» (иначе бы их там не было), но фильтр
+			// требует пройти buffer-check, а на cold-open чанки ещё в IDB →
+			// все треки скрыты → паника. Если в dict есть ключи — проставляем
+			// флаги всем. Дальше работает обычная логика (новые треки от sync
+			// проходят buffer-check). Если dict пуст → дожидаемся (без _swept).
+			if (cache.size === 0) {
+				if (live_arr.length === 0) return
+				for (const k of live_arr) cache.add(k)
+				this.persist_synced()
+				this._swept = true
+				return
+			}
 			let changed = false
 			for (const k of [...cache]) {
 				if (!live.has(k)) { cache.delete(k); changed = true }
