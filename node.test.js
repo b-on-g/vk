@@ -26003,11 +26003,20 @@ var $;
                 if ('mediaSession' in navigator) {
                     const artwork = [];
                     const thumb = audio.album?.thumb?.photo_300;
-                    if (thumb)
-                        artwork.push({ src: thumb, sizes: '300x300' });
+                    if (thumb) {
+                        artwork.push({ src: thumb, sizes: '300x300', type: 'image/jpeg' });
+                    }
+                    else {
+                        // iOS PWA: без artwork iOS считает это не «настоящим медиа» и душит
+                        // фоновый звук. Подсовываем favicon как фоллбэк (несколько размеров —
+                        // iOS любит выбрать нужный сам).
+                        const fav = 'bog/vk/app/favicon.svg';
+                        artwork.push({ src: fav, sizes: '96x96', type: 'image/svg+xml' }, { src: fav, sizes: '192x192', type: 'image/svg+xml' }, { src: fav, sizes: '512x512', type: 'image/svg+xml' });
+                    }
                     navigator.mediaSession.metadata = new MediaMetadata({
                         title: audio.title,
                         artist: audio.artist,
+                        album: 'Bog VK Music',
                         artwork,
                     });
                     this.setup_media_session();
